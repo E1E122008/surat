@@ -1,4 +1,6 @@
-<x-app-layout>
+@extends('layouts.app')
+
+@section('content')
     <div class="form-section">
         <div class="form-header">
             <h2>Tambah Surat Masuk</h2>
@@ -75,4 +77,4 @@
             </div>
         </form>
     </div>
-</x-app-layout> 
+@endsection
