@@ -9,6 +9,8 @@ use App\Http\Controllers\SptDalamDaerahController;
 use App\Http\Controllers\SptLuarDaerahController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\BukuAgendaController;
+use App\Http\Controllers\UserProfileController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -72,4 +74,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('spt-luar-daerah.print');
     Route::get('spt-luar-daerah-export', [SptLuarDaerahController::class, 'export'])
         ->name('spt-luar-daerah.export');
+
+    Route::get('/buku-agenda', [BukuAgendaController::class, 'index'])->name('buku-agenda.index');
+
+    Route::get('/profile', [UserProfileController::class, 'index'])->name('profile');
 });

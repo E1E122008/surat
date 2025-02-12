@@ -72,6 +72,12 @@
                 </li>
             </ul>
         </li>
+        <li class="my-2">
+            <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('buku-agenda.*') ? 'bg-blue-200' : '' }}" 
+               href="{{ route('buku-agenda.index') }}">
+                <i class="fas fa-book mr-2"></i> Buku Agenda
+            </a>
+        </li>
     </ul>
 </div>
 

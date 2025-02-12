@@ -1,4 +1,6 @@
-<x-app-layout>
+@extends('layouts.app')
+
+@section('content')
     <!-- Welcome Section -->
     <div class="dashboard-welcome mb-4">
         <div class="row align-items-center">
@@ -136,4 +138,4 @@
             </div>
         </div>
     </div>
-</x-app-layout> 
+@endsection 
