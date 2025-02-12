@@ -363,6 +363,41 @@
         .btn-submit:hover {
             background-color: #3182ce;
         }
+
+        .sidebar {
+            width: 250px;
+            background-color: rgba(248, 250, 252, 0.8);
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: -250px;
+            height: 100%;
+            transition: left 0.3s ease;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar a {
+            color: #374151;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #e5e7eb;
+        }
+
+        .sidebar a.active {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
     </style>
 
     <!-- Font Awesome -->
@@ -373,9 +408,14 @@
         <!-- Navigation -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-                <a class="navbar-brand fw-bold" href="{{ route('dashboard') }}">BPKD BANJAR</a>
+                <a class="navbar-brand fw-bold" href="{{ route('dashboard') }}">SIAP BRO!</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
+                </button>
+                <button class="btn btn-outline-light" onclick="toggleSidebar()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto">
@@ -418,6 +458,9 @@
             </div>
         </nav>
 
+        <!-- Sidebar -->
+        @include('layouts.sidebar')
+        
         <!-- Page Content -->
         <main class="container py-4">
             {{ $slot }}
@@ -426,5 +469,11 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+    </script>
 </body>
 </html> 
