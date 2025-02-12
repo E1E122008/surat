@@ -11,6 +11,9 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BukuAgendaController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\SKController;
+use App\Http\Controllers\PerdaController;
+use App\Http\Controllers\PergubController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -79,3 +82,27 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/profile', [UserProfileController::class, 'index'])->name('profile');
 });
+
+Route::get('/draft-phd/sk', [SKController::class, 'index'])->name('draft-phd.sk.index');
+
+Route::get('/draft-phd/perda', [PerdaController::class, 'perdaIndex'])->name('draft-phd.perda.index');
+
+Route::get('/draft-phd/pergub', [PergubController::class, 'pergubIndex'])->name('draft-phd.pergub.index');
+
+// Rute untuk menampilkan form tambah SK
+Route::get('/draft-phd/sk/create', [SKController::class, 'create'])->name('draft-phd.sk.create');
+
+// Rute untuk menyimpan SK
+Route::post('/draft-phd/sk', [SKController::class, 'store'])->name('draft-phd.sk.store');
+
+// Rute untuk mengekspor SK
+Route::get('/draft-phd/sk/export', [SKController::class, 'export'])->name('draft-phd.sk.export');
+
+// Rute untuk menampilkan form edit SK
+Route::get('/draft-phd/sk/{sk}/edit', [SKController::class, 'edit'])->name('draft-phd.sk.edit');
+
+// Rute untuk memperbarui SK
+Route::put('/draft-phd/sk/{sk}', [SKController::class, 'update'])->name('draft-phd.sk.update');
+
+// Rute untuk menghapus SK
+Route::delete('/draft-phd/sk/{sk}', [SKController::class, 'destroy'])->name('draft-phd.sk.destroy');
