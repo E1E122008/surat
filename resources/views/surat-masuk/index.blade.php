@@ -29,8 +29,9 @@
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Surat</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Terima</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Perihal</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Catatan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Status</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -43,6 +44,9 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->tanggal_surat->format('d/m/Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->tanggal_terima->format('d/m/Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->perihal }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap catatan-col">
+                                            <textarea name="catatan" rows="3" class="catatan-textarea border border-gray-300 rounded-md mt-2 mb-2 mx-2" placeholder="Tulis catatan..." style="padding: 10px; line-height: 1.5;">{{ old('catatan', $surat->catatan) }}</textarea>
+                                        </td>
                                         <td class="px-4 py-4 whitespace-nowrap text-center">
                                             <select name="disposisi" onchange="showSubpoints(this)" class="disposisi-dropdown text-center" style="background-color: lightblue; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
                                                 <option value="">Pilih Disposisi</option>
@@ -54,15 +58,24 @@
                                                 <option value="">Pilih Subpoint</option>
                                             </select>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap catatan-col">
-                                            <textarea name="catatan" rows="3" class="catatan-textarea border border-gray-300 rounded-md mt-2 mb-2 mx-2" placeholder="Tulis catatan..." style="padding: 10px; line-height: 1.5;">{{ old('catatan', $surat->catatan) }}</textarea>
+
+                                        <td class="px-4 py-4 whitespace-nowrap text-center">
+                                            <select name="status" class="status-dropdown text-center" style="background-color: lightgreen; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
+                                                <option value="">Pilih Status</option>
+                                                <option value="tercatat">Tercatat</option>
+                                                <option value="terdisposisi">Terdisposisi</option>
+                                                <option value="diproses">Diproses</option>
+                                                <option value="koreksi">Koreksi</option>
+                                                <option value="selesai">Selesai</option>
+                                                <option value="diambil">Diambil</option>
+                                            </select>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex justify-center items-center">
                                                 <a href="{{ route('surat-masuk.edit', $surat->id) }}" class="text-indigo-600 hover:text-indigo-900" title="Edit">
                                                     <i class="fas fa-edit" style="font-size: 1.5em;"></i>
                                                 </a>
-                                                <form class="inline-block" action="{{ route('surat-masuk.destroy', $surat->id) }}" method="POST">
+                                                <form action="{{ route('surat-masuk.destroy', $surat->id) }}" method="POST" onsubmit="return confirmDelete(event);">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="ml-2 text-red-600 hover:text-red-900" title="Hapus">
@@ -84,6 +97,7 @@
             </div>
         </div>
     </div>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script>
         function showSubpoints(select) {
             let selectedValue = select.value;
@@ -107,6 +121,24 @@
             }
 
             subpointSelect.style.display = selectedValue ? 'block' : 'none';
+        }
+        
+        function confirmDelete(event) {
+            event.preventDefault();
+            const form = event.target.closest('form');
+
+            swal({
+                title: "Apakah Anda yakin?",
+                text: "Data ini akan dihapus!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+                if (willDelete) {
+                    form.submit();
+                }
+            });
         }
     </script>
 @endsection
