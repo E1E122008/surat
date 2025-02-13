@@ -93,4 +93,18 @@ class SuratMasukController extends Controller
     {
         return Excel::download(new SuratMasukExport, 'surat-masuk.xlsx');
     }
-} 
+
+    public function updateDisposisi(Request $request, $id)
+    {
+        $request->validate([
+            'disposisi' => 'required|string|max:255',
+        ]);
+
+        $suratMasuk = SuratMasuk::findOrFail($id);
+        $suratMasuk->disposisi = $request->disposisi;
+        $suratMasuk->save();
+
+        return response()->json(['success' => true]);
+    }
+}
+
