@@ -21,17 +21,17 @@
 
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-blue-200">
+                            <thead class="bg-blue-300">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider text-center">No</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider text-center">No Surat</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Pengirim</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Tanggal SK</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Tanggal Terima</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Perihal</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Disposisi</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Catatan</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Aksi</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal SK</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Terima</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Perihal</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Catatan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -44,30 +44,32 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tanggal_terima->format('d/m/Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->perihal }}</td>
                                         <td class="px-4 py-4 whitespace-nowrap text-center">
-                                            <select name="disposisi" onchange="showSubpoints(this)" class="disposisi-dropdown text-center"  style="background-color: lightblue;">
+                                            <select name="disposisi" onchange="showSubpoints(this)" class="disposisi-dropdown text-center" style="background-color: lightblue; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
                                                 <option value="">Pilih Disposisi</option>
                                                 <option value="kabag">Perancangan perUU Kab/Kota</option>
                                                 <option value="bankum">Kabag Bantuan dan Hukum</option>
                                                 <option value="madya">Perancangan PerUU Ahli Madya</option>
                                             </select>
-                                            <select name="subpoint" class="subpoint text center" style="display: none; margin-top: 5px; background-color: lightblue;">
+                                            <select name="subpoint" class="subpoint text center" style="display: none; margin-top: 5px; background-color: rgb(183, 223, 236); border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
                                                 <option value="">Pilih Subpoint</option>
                                             </select>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap catatan-col">
-                                            <textarea name="catatan" rows="3" class="catatan-textarea border border-gray-300 rounded-md" placeholder="Tulis catatan...">{{ old('catatan', $item->catatan) }}</textarea>
+                                            <textarea name="catatan" rows="3" class="catatan-textarea border border-gray-300 rounded-md mt-2 mb-2 mx-2" placeholder="Tulis catatan..." style="padding: 10px; line-height: 1.5;">{{ old('catatan', $item->catatan) }}</textarea>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <a href="{{ route('draft-phd.sk.edit', $item->id) }}" class="text-indigo-600 hover:text-indigo-900">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form class="inline-block" action="{{ route('draft-phd.sk.destroy', $item->id) }}" method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="ml-2 text-red-600 hover:text-red-900">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
+                                            <div class="flex justify-center items-center">
+                                                <a href="{{ route('draft-phd.sk.edit', $item->id) }}" class="text-indigo-600 hover:text-indigo-900">
+                                                    <i class="fas fa-edit" style="font-size: 1.5em;"></i>
+                                                </a>
+                                                <form class="inline-block" action="{{ route('draft-phd.sk.destroy', $item->id) }}" method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="ml-2 text-red-600 hover:text-red-900">
+                                                        <i class="fas fa-trash" style="font-size: 1.5em;"></i>
+                                                    </button>
+                                                </form>
+                                            </div>    
                                         </td>
                                     </tr>
                                 @endforeach

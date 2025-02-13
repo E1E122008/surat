@@ -1,5 +1,5 @@
 <div class="sidebar bg-gray-50 shadow-md rounded-lg p-4 w-64 overflow-y-auto" id="sidebar">
-    <img src="{{ asset('C:\laragon\www\manejementsuratbaru\public\images\logo.png') }}" alt="Logo" class="w-16 h-16 mx-auto mb-2">
+    <img src="{{ asset('public\images\logo.png') }}" alt="Logo" class="w-16 h-16 mx-auto mb-2">
     <a class="navbar-brand fw-bold text-center text-xl mb-4 text-blue-600" href="{{ route('dashboard') }}" style="font-size: 25px; color: #3B82F6;">SIAP BRO!</a>
     <h2 class="text-lg font-bold mb-2">Menu Utama</h2>
     <ul class="list-none p-0">
@@ -113,6 +113,12 @@
         item.addEventListener('click', event => {
             const submenu = item.nextElementSibling;
             submenu.classList.toggle('hidden');
+            
+            // Putar ikon chevron
+            const iconChevron = item.querySelector('.fa-chevron-down');
+            iconChevron.classList.toggle('rotate-180');
         });
     });
+
+
 </script>

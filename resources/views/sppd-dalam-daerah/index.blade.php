@@ -21,34 +21,42 @@
 
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
+                            <thead class="bg-blue-300">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Surat</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Perihal</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Petugas</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Perihal</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Nama Petugas</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach($sppd as $index => $item)
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $index + 1 }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $item->no_surat }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $item->tanggal->format('d/m/Y') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $item->perihal }}</td>
-                                        <td class="px-6 py-4">{{ $item->nama_petugas }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $index + 1 }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->no_surat }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tanggal->format('d/m/Y') }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->perihal }}</td>
+                                        <td class="px-6 py-4 text-center">{{ $item->nama_petugas }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <a href="{{ route('sppd-dalam-daerah.print', $item->id) }}" 
-                                               class="text-green-600 hover:text-green-900 mr-2">Print</a>
-                                            <a href="{{ route('sppd-dalam-daerah.edit', $item->id) }}" 
-                                               class="text-indigo-600 hover:text-indigo-900 mr-2">Edit</a>
-                                            <form class="inline-block" action="{{ route('sppd-dalam-daerah.destroy', $item->id) }}" method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
-                                            </form>
+                                            <div class="flex justify-center items-center">
+                                                <a href="{{ route('sppd-dalam-daerah.print', $item->id) }}" 
+                                                class="text-green-600 hover:text-green-900 mr-2" title="Print">
+                                                    <i class="fas fa-print" style="font-size: 1.5em;"></i>
+                                                </a>
+                                                <a href="{{ route('sppd-dalam-daerah.edit', $item->id) }}" 
+                                                class="text-indigo-600 hover:text-indigo-900 mr-2" title="Edit">
+                                                    <i class="fas fa-edit" style="font-size: 1.5em;"></i>
+                                                </a>
+                                                <form class="inline-block" action="{{ route('sppd-dalam-daerah.destroy', $item->id) }}" method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus">
+                                                        <i class="fas fa-trash" style="font-size: 1.5em;"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach
