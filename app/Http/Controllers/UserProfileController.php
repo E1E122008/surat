@@ -9,4 +9,6 @@ class UserProfileController extends Controller
     {
         return view('profile'); // Pastikan Anda memiliki tampilan profile.blade.php
     }
+
+    // Anda bisa menghapus metode show jika tidak diperlukan
 } 

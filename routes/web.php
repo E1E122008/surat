@@ -14,6 +14,7 @@ use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\SKController;
 use App\Http\Controllers\PerdaController;
 use App\Http\Controllers\PergubController;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -81,6 +82,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/buku-agenda', [BukuAgendaController::class, 'index'])->name('buku-agenda.index');
 
     Route::get('/profile', [UserProfileController::class, 'index'])->name('profile');
+
+
 });
 
 Route::get('/draft-phd/sk', [SKController::class, 'index'])->name('draft-phd.sk.index');

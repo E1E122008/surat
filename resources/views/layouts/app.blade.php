@@ -450,15 +450,40 @@
                 <div class="navbar-nav">
                     <!-- Profil Pengguna -->
                     <div class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user-circle"></i> {{ Auth::user()->name }}
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            @if(Auth::user()->profile_photo_url)
+                                <img src="{{ Auth::user()->profile_photo_url }}" alt="User Avatar" class="rounded-circle border border-light" style="width: 40px; height: 40px;">
+                            @else
+                                <div class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; border: 2px solid white;">
+                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                </div>
+                            @endif
+                            <span class="ms-2 d-none d-lg-inline text-white">{{ Auth::user()->name }}</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{{ route('profile') }}">Profil</a></li>
-                            <li><a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a></li>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                @csrf
-                            </form>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" style="min-width: 180px;">
+                            <li class="dropdown-header d-flex align-items-center">
+                                @if(Auth::user()->profile_photo_url)
+                                    <img src="{{ Auth::user()->profile_photo_url }}" alt="User Avatar" class="rounded-circle border border-light" style="width: 40px; height: 40px;">
+                                @else
+                                    <div class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; border: 2px solid white;">
+                                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                                <div class="ms-2">
+                                    <strong>{{ Auth::user()->name }}</strong><br>
+                                    <small class="text-muted">Admin</small>
+                                </div>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ route('profile') }}"><i class="fas fa-user me-2"></i> Profil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button class="dropdown-item text-danger" type="submit">
+                                        <i class="fas fa-sign-out-alt me-2"></i> Log Out
+                                    </button>
+                                </form>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -478,9 +503,17 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('active');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+
+        sidebar.classList.toggle('active'); // Menampilkan sidebar
+        
+        if (sidebar.classList.contains('active')) {
+            mainContent.style.marginLeft = "16rem"; // Geser konten utama ke kanan
+        } else {
+            mainContent.style.marginLeft = "0"; // Kembalikan ke posisi awal
         }
+    }
     </script>
 </body>
 </html> 
