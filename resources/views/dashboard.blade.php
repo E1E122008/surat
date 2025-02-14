@@ -19,46 +19,54 @@
     <!-- Statistics Section -->
     <div class="row mb-4">
         <div class="col-md-3">
-            <div class="dashboard-stats">
+            <div class="dashboard-card surat-masuk">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h2>150</h2>
-                        <p>Surat Masuk</p>
+                        <h2 class="card-value">150</h2>
+                        <p class="card-title">Surat Masuk</p>
                     </div>
-                    <i class="fas fa-envelope fa-2x"></i>
+                    <div class="card-icon">
+                        <i class="fas fa-envelope fa-2x"></i>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="dashboard-stats" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);">
+            <div class="dashboard-card surat-keluar">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h2>89</h2>
-                        <p>Surat Keluar</p>
+                        <h2 class="card-value">89</h2>
+                        <p class="card-title">Surat Keluar</p>
                     </div>
-                    <i class="fas fa-paper-plane fa-2x"></i>
+                    <div class="card-icon">
+                        <i class="fas fa-paper-plane fa-2x"></i>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="dashboard-stats" style="background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);">
+            <div class="dashboard-card sppd">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h2>45</h2>
-                        <p>SPPD</p>
+                        <h2 class="card-value">45</h2>
+                        <p class="card-title">SPPD</p>
                     </div>
-                    <i class="fas fa-plane fa-2x"></i>
+                    <div class="card-icon">
+                        <i class="fas fa-plane fa-2x"></i>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="dashboard-stats" style="background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);">
+            <div class="dashboard-card spt">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h2>32</h2>
-                        <p>SPT</p>
+                        <h2 class="card-value">32</h2>
+                        <p class="card-title">SPT</p>
                     </div>
-                    <i class="fas fa-file-alt fa-2x"></i>
+                    <div class="card-icon">
+                        <i class="fas fa-file-alt fa-2x"></i>
+                    </div>
                 </div>
             </div>
         </div>
