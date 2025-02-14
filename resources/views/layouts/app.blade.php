@@ -1038,10 +1038,83 @@
             transform: translateY(0) !important;
             box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3) !important;
         }
+
+        /* Textarea catatan styling */
+        .catatan-textarea {
+            width: 200px !important; /* Memperlebar textarea */
+            height: 60px !important;
+            min-height: 60px !important;
+            max-height: 60px !important;
+            border: 1px solid #d1d5db !important;
+            border-radius: 6px !important;
+            padding: 10px !important;
+            font-size: 14px !important;
+            outline: none !important;
+            transition: all 0.2s ease !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+            resize: none !important;
+        }
+
+        .catatan-textarea::placeholder {
+            color: #888 !important;
+        }
+
+        .catatan-textarea:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .catatan-textarea:hover {
+            border-color: #9ca3af !important;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12) !important;
+        }
+
+        /* Catatan container dan grid styling */
+        .catatan-container {
+            width: 100% !important;
+            padding: 10px !important;
+        }
+
+        .catatan-grid {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 15px !important;
+        }
+
+        .catatan-item {
+            width: 100% !important;
+        }
+
+        .profile-avatar {
+            position: relative !important;
+            width: 32px !important;
+            height: 32px !important;
+            border-radius: 50% !important;
+            overflow: visible !important; /* Ubah dari hidden ke visible */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .profile-avatar::after {
+            content: "" !important;
+            position: absolute !important;
+            width: 8px !important;
+            height: 8px !important;
+            background: #22c55e !important;
+            border: 1.5px solid #1e1b4b !important;
+            border-radius: 50% !important;
+            bottom: 1px !important;
+            right: 1px !important;
+            z-index: 10 !important; /* Memastikan dot muncul di atas */
+        }
     </style>
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 </head>
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-100">
@@ -1107,7 +1180,7 @@
                                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                                     </div>
                                 @endif
-                                <span class="status-indicator"></span>
+                                <div class="status-indicator"></div>
                             </div>
                             
                         </a>
@@ -1168,7 +1241,54 @@
     }
     </script>
 
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Script untuk notifikasi -->
     <script>
+        // Notifikasi sukses
+        @if(session('success'))
+            Swal.fire({
+                title: "Berhasil!",
+                text: "{{ session('success') }}",
+                icon: "success",
+                showConfirmButton: false,
+                timer: 2000,
+                toast: true,
+                position: "top-end",
+                showClass: {
+                    popup: 'animate__animated animate__fadeInRight'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutRight'
+                },
+                background: '#10B981',
+                color: '#ffffff'
+            });
+        @endif
+
+        // Notifikasi error
+        @if(session('error'))
+            Swal.fire({
+                title: "Error!",
+                text: "{{ session('error') }}",
+                icon: "error",
+                showConfirmButton: false,
+                timer: 3000,
+                toast: true,
+                position: "top-end",
+                showClass: {
+                    popup: 'animate__animated animate__fadeInRight'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutRight'
+                },
+                background: '#EF4444',
+                color: '#ffffff'
+            });
+        @endif
+
+        // Konfirmasi delete dengan loading state
         function confirmDelete(id) {
             Swal.fire({
                 title: 'Apakah Anda yakin?',
@@ -1183,12 +1303,10 @@
                 cancelButtonText: 'Batal',
                 showClass: {
                     popup: 'animate__animated animate__bounceIn'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOut'
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // Loading state
                     Swal.fire({
                         title: 'Menghapus data...',
                         imageUrl: "https://cdn-icons-png.flaticon.com/512/4812/4812420.png",
@@ -1214,47 +1332,6 @@
                 }
             });
         }
-
-        // Alert Sukses
-        @if(session('success'))
-            Swal.fire({
-                title: 'Berhasil!',
-                text: "{{ session('success') }}",
-                imageUrl: "https://cdn-icons-png.flaticon.com/512/190/190411.png",
-                imageWidth: 80,
-                imageHeight: 80,
-                showClass: {
-                    popup: 'animate__animated animate__fadeInDown'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOutUp'
-                },
-                timer: 2000,
-                timerProgressBar: true,
-                showConfirmButton: false
-            });
-        @endif
-
-        // Alert Error
-        @if(session('error'))
-            Swal.fire({
-                title: 'Error!',
-                text: "{{ session('error') }}",
-                imageUrl: "https://cdn-icons-png.flaticon.com/512/1680/1680012.png",
-                imageWidth: 80,
-                imageHeight: 80,
-                showClass: {
-                    popup: 'animate__animated animate__shakeX'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOut'
-                }
-            });
-        @endif
     </script>
-
-    <!-- Pastikan SweetAlert2 dan Animate.css sudah di-include -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html> 

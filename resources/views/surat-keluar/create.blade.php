@@ -30,15 +30,7 @@
                     @enderror
                 </div>
 
-                <div class="form-group">
-                    <label for="tujuan" class="form-label">Tujuan</label>
-                    <input type="text" name="tujuan" id="tujuan" 
-                        class="form-control @error('tujuan') is-invalid @enderror"
-                        value="{{ old('tujuan') }}" required>
-                    @error('tujuan')
-                        <div class="form-error">{{ $message }}</div>
-                    @enderror
-                </div>
+                
 
                 <div class="form-group form-grid-full">
                     <label for="perihal" class="form-label">Perihal</label>

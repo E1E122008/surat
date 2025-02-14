@@ -45,7 +45,13 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->tanggal_terima->format('d/m/Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->perihal }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap catatan-col">
-                                            <textarea name="catatan" rows="3" class="catatan-textarea border border-gray-300 rounded-md mt-2 mb-2 mx-2" placeholder="Tulis catatan..." style="padding: 10px; line-height: 1.5;">{{ old('catatan', $surat->catatan) }}</textarea>
+                                            <div style="width: 100%;">
+                                                <textarea 
+                                                    class="catatan-textarea"
+                                                    placeholder="Tulis catatan..."
+                                                    style="width: 100%;"
+                                                >{{ old('catatan') }}</textarea>
+                                            </div>
                                         </td>
                                         <td class="px-4 py-4 whitespace-nowrap text-center">
                                             <select name="disposisi" onchange="showSubpoints(this)" class="disposisi-dropdown text-center" style="background-color: lightblue; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
@@ -199,9 +205,48 @@
             });
         }
 
-    
-        
-        
-        
+        @if(session('success'))
+        <script>
+            Swal.fire({
+                title: "Berhasil!",
+                text: "{{ session('success') }}",
+                icon: "success",
+                showConfirmButton: false,
+                timer: 2000,
+                toast: true,
+                position: "top-end",
+                showClass: {
+                    popup: 'animate__animated animate__fadeInRight'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutRight'
+                },
+                background: '#10B981',
+                color: '#ffffff'
+            });
+        </script>
+        @endif
+
+        @if(session('error'))
+        <script>
+            Swal.fire({
+                title: "Error!",
+                text: "{{ session('error') }}",
+                icon: "error",
+                showConfirmButton: false,
+                timer: 3000,
+                toast: true,
+                position: "top-end",
+                showClass: {
+                    popup: 'animate__animated animate__fadeInRight'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutRight'
+                },
+                background: '#EF4444',
+                color: '#ffffff'
+            });
+        </script>
+        @endif
     </script>
 @endsection
