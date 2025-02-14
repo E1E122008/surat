@@ -400,12 +400,26 @@
         }
 
         .btn-cancel {
-            background-color: #718096;
-            color: white;
+            background-color: #6B7280 !important;
+            color: white !important;
+            padding: 0.625rem 1.25rem !important;
+            border-radius: 0.5rem !important;
+            font-weight: 500 !important;
+            transition: all 0.3s ease !important;
+            border: none !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+            cursor: pointer !important;
         }
 
         .btn-cancel:hover {
-            background-color: #4a5568;
+            background-color: #4B5563 !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        .btn-cancel:active {
+            transform: translateY(0) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
         }
 
         .btn-submit {
@@ -966,6 +980,63 @@
             background: #2563EB;
             color: white;
             border-color: #2563EB;
+        }
+
+        /* Textarea styling */
+        textarea.form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            min-height: 120px;
+            resize: vertical;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        textarea.form-textarea:hover {
+            border-color: #cbd5e1;
+        }
+
+        textarea.form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            ring: 2px;
+            ring-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Button container */
+        .button-container {
+            display: flex;
+            gap: 6px !important;  /* Jarak antar tombol */
+            justify-content: flex-end;
+            margin-top: 20px !important;
+        }
+
+        /* Button styling */
+        .btn-update {
+            background-color: #3B82F6 !important;
+            color: white !important;
+            padding: 0.625rem 1.25rem !important;
+            border-radius: 0.5rem !important;
+            font-weight: 500 !important;
+            transition: all 0.3s ease !important;
+            border: none !important;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3) !important;
+            margin-left: 12px !important;
+            cursor: pointer !important;
+        }
+
+        .btn-update:hover {
+            background-color: #2563EB !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.4) !important;
+        }
+
+        .btn-update:active {
+            transform: translateY(0) !important;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3) !important;
         }
     </style>
 

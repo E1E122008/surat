@@ -54,11 +54,15 @@
                                 @enderror
                             </div>
 
-                            <div class="md:col-span-2">
-                                <label for="perihal" class="block text-sm font-medium text-gray-700">Perihal</label>
-                                <textarea name="perihal" id="perihal" rows="3" 
-                                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                    required>{{ old('perihal', $suratMasuk->perihal) }}</textarea>
+                            <div class="form-group md:col-span-2">
+                                <label for="perihal" class="block text-sm font-medium text-gray-700 mb-2">Perihal</label>
+                                <textarea 
+                                    name="perihal" 
+                                    id="perihal" 
+                                    class="form-textarea" 
+                                    placeholder="Masukkan perihal surat" 
+                                    required
+                                >{{ old('perihal', $suratMasuk->perihal) }}</textarea>
                                 @error('perihal')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
@@ -85,13 +89,13 @@
                             </div>
                         </div>
 
-                        <div class="mt-6 flex items-center justify-end">
+                        <div class="button-container">
                             <a href="{{ route('surat-masuk.index') }}" 
-                                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-2">
+                                class="btn-cancel">
                                 Batal
                             </a>
                             <button type="submit" 
-                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                class="btn-update">
                                 Update
                             </button>
                         </div>
