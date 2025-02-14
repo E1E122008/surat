@@ -9,19 +9,19 @@
                         <h2 class="text-2xl font-semibold">Surat Masuk</h2>
                         <div class="flex space-x-2">
                             <a href="{{ route('surat-masuk.create') }}" 
-                               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                + Surat Masuk
+                               class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Surat Masuk
                             </a>
                             <a href="{{ route('surat-masuk.export') }}" 
-                               class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                                Export Excel
+                               class="btn btn-success">
+                                <i class="fas fa-file-excel"></i> Export Excel
                             </a>
                         </div>
                     </div>
 
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-blue-300">
+                            <thead class="table-bordered">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
@@ -72,14 +72,14 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex justify-center items-center">
-                                                <a href="{{ route('surat-masuk.edit', $surat->id) }}" class="text-indigo-600 hover:text-indigo-900" title="Edit">
-                                                    <i class="fas fa-edit" style="font-size: 1.5em;"></i>
+                                                <a href="{{ route('surat-masuk.edit', $surat->id) }}" class="btn btn-info btn-sm edit-btn">
+                                                    <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form action="{{ route('surat-masuk.destroy', $surat->id) }}" method="POST" onsubmit="return confirmDelete(event);">
+                                                <form id="delete-form-{{ $surat->id }}" action="{{ route('surat-masuk.destroy', $surat->id) }}" method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="ml-2 text-red-600 hover:text-red-900" title="Hapus">
-                                                        <i class="fas fa-trash" style="font-size: 1.5em;"></i>
+                                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $surat->id }})">
+                                                        <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
                                             </div>
@@ -122,23 +122,86 @@
 
             subpointSelect.style.display = selectedValue ? 'block' : 'none';
         }
-        
-        function confirmDelete(event) {
-            event.preventDefault();
-            const form = event.target.closest('form');
 
-            swal({
-                title: "Apakah Anda yakin?",
-                text: "Data ini akan dihapus!",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-            })
-            .then((willDelete) => {
-                if (willDelete) {
-                    form.submit();
+        
+        // Fungsi untuk konfirmasi hapus dengan SweetAlert2
+        function confirmDelete(deleteUrl) {
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data ini akan dihapus secara permanen!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal',
+                showClass: {
+                    popup: 'animate__animated animate__bounceIn'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOut'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Tampilkan loading state dengan progress bar
+                    Swal.fire({
+                        title: 'Menghapus data...',
+                        html: 'Tunggu sebentar, sedang diproses <b></b> detik.',
+                        timer: 2000,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                            const timer = Swal.getHtmlContainer().querySelector('b');
+                            let timeLeft = 2;
+                            const interval = setInterval(() => {
+                                timer.textContent = timeLeft;
+                                timeLeft--;
+                                if (timeLeft < 0) clearInterval(interval);
+                            }, 1000);
+                        }
+                    }).then(() => {
+                        // Setelah loading selesai, lakukan penghapusan
+                        window.location.href = deleteUrl;
+                    });
                 }
             });
         }
+
+        // Fungsi untuk menampilkan alert sukses
+        function showSuccess(message) {
+            Swal.fire({
+                title: 'Berhasil!',
+                text: message,
+                icon: 'success',
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                },
+                timer: 2000,
+                timerProgressBar: true
+            });
+        }
+
+        // Fungsi untuk menampilkan alert error
+        function showError(message) {
+            Swal.fire({
+                title: 'Error!',
+                text: message,
+                icon: 'error',
+                showClass: {
+                    popup: 'animate__animated animate__shakeX'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOut'
+                }
+            });
+        }
+
+    
+        
+        
+        
     </script>
 @endsection

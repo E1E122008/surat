@@ -57,19 +57,51 @@
 
         /* Button Styles */
         .btn {
-            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin: 5px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             padding: 0.5rem 1rem;
+            border-radius: 8px;
             transition: all 0.3s ease;
         }
 
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Tombol Tambah */
         .btn-primary {
-            background: #3232f7;  
+            background: #5b7ef1 !important;
             border: none;
+            color: white;
         }
 
         .btn-primary:hover {
-            background: #3232f7;  /* Ungu yang lebih gelap untuk hover */
-            transform: translateY(-1px);
+            background: #1e5add !important;
+        }
+
+        /* Tombol Export */
+        .btn-success, 
+        .btn-success:hover,
+        .btn-success:active,
+        .btn-success:focus {
+            background: #10b92c !important;
+            border: none;
+            color: rgb(255, 255, 255);
+        }
+
+        /* Icon dalam button */
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        /* Spacing antara buttons */
+        .btn + .btn {
+            margin-left: 0.5rem;
         }
 
         .btn-outline-light {
@@ -81,26 +113,27 @@
         }
 
         /* Table Styles */
-        .table {
-            width: 100%;
-            margin-bottom: 1rem;
-            background-color: transparent;
-            border-collapse: collapse;
-        }
-        
-        .table th {
+        .table thead th,
+        .table th,
+        .table-bordered thead th,
+        .table-bordered th {
+            background-color: #1E3A8A !important;
+            color: #FFFFFF !important;
+            border-bottom: 2px solid #1E3A8A !important;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
             padding: 1rem;
             vertical-align: middle;
-            background: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
-            font-weight: 600;
-            color: #495057;
         }
         
-        .table td {
+        .table td,
+        .table-bordered td {
             padding: 1rem;
             vertical-align: middle;
             border-bottom: 1px solid #dee2e6;
+            color: #475569;
         }
 
         .table tr:hover {
@@ -732,11 +765,10 @@
 
         /* Table container update */
         .table-container {
-            background: rgba(255, 255, 255, 0.95);
+            background: white;
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
-                       0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            padding: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
             margin-bottom: 2rem;
         }
 
@@ -809,6 +841,131 @@
             position: relative;
             z-index: 2;
             color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Form Controls */
+        select, input, .btn {
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            border: 1px solid #D1D5DB;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Dropdown Styles */
+        select {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        /* Style untuk dropdown Disposisi */
+        select[name="disposisi"] {
+            background-color: #5b7ef1 !important;  /* Light blue */
+            color: #1e3a8a !important;
+            border: none !important;
+        }
+
+        /* Style untuk dropdown Subpoint */
+        select[name="subpoint"] {
+            background-color: #f1c75b !important;  /* Light yellow */
+            color: #8a5e1e !important; 
+            border: none !important;
+        }
+
+        /* Style untuk dropdown Status */
+        select[name="status"] {
+            background-color: #5fdb17 !important;  /* Light green */
+            color: #166534 !important;
+            border: none !important;
+        }
+
+        /* Hover effect untuk kedua dropdown */
+        select:hover {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Focus effect untuk kedua dropdown */
+        select:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Status Badge */
+        .status {
+            background-color: #D1FAE5;
+            color: #047857;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            display: inline-block;
+        }
+
+        .status.pending {
+            background-color: #FEF3C7;
+            color: #D97706;
+        }
+
+        .status.rejected {
+            background-color: #FEE2E2;
+            color: #DC2626;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Table Header Section */
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* Search and Filter Controls */
+        .table-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* Pagination Styling */
+        .pagination {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.25rem;
+        }
+
+        .page-link {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid #D1D5DB;
+            color: #374151;
+            background: #F9FAFB;
+            transition: all 0.3s ease;
+        }
+
+        .page-link:hover {
+            background: #F3F4F6;
+            color: #2563EB;
+        }
+
+        .page-item.active .page-link {
+            background: #2563EB;
+            color: white;
+            border-color: #2563EB;
         }
     </style>
 
@@ -939,5 +1096,94 @@
         }
     }
     </script>
+
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data ini akan dihapus secara permanen!",
+                imageUrl: "https://cdn-icons-png.flaticon.com/512/564/564619.png",
+                imageWidth: 80,
+                imageHeight: 80,
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal',
+                showClass: {
+                    popup: 'animate__animated animate__bounceIn'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOut'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Menghapus data...',
+                        imageUrl: "https://cdn-icons-png.flaticon.com/512/4812/4812420.png",
+                        imageWidth: 80,
+                        imageHeight: 80,
+                        html: 'Tunggu sebentar, sedang diproses <b></b> detik.',
+                        timer: 2000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                            const timer = Swal.getHtmlContainer().querySelector('b');
+                            let timeLeft = 2;
+                            const interval = setInterval(() => {
+                                timer.textContent = timeLeft;
+                                timeLeft--;
+                                if (timeLeft < 0) clearInterval(interval);
+                            }, 1000);
+                        }
+                    }).then(() => {
+                        document.getElementById('delete-form-' + id).submit();
+                    });
+                }
+            });
+        }
+
+        // Alert Sukses
+        @if(session('success'))
+            Swal.fire({
+                title: 'Berhasil!',
+                text: "{{ session('success') }}",
+                imageUrl: "https://cdn-icons-png.flaticon.com/512/190/190411.png",
+                imageWidth: 80,
+                imageHeight: 80,
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                },
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+        @endif
+
+        // Alert Error
+        @if(session('error'))
+            Swal.fire({
+                title: 'Error!',
+                text: "{{ session('error') }}",
+                imageUrl: "https://cdn-icons-png.flaticon.com/512/1680/1680012.png",
+                imageWidth: 80,
+                imageHeight: 80,
+                showClass: {
+                    popup: 'animate__animated animate__shakeX'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOut'
+                }
+            });
+        @endif
+    </script>
+
+    <!-- Pastikan SweetAlert2 dan Animate.css sudah di-include -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html> 

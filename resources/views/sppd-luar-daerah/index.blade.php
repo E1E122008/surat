@@ -9,19 +9,19 @@
                         <h2 class="text-2xl font-semibold">SPPD Luar Daerah</h2>
                         <div class="flex space-x-2">
                             <a href="{{ route('sppd-luar-daerah.create') }}" 
-                               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                + SPPD Baru
+                               class="btn btn-primary">
+                                <i class="fas fa-plus"></i> SPPD Baru
                             </a>
                             <a href="{{ route('sppd-luar-daerah.export') }}" 
-                               class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                                Export Excel
+                               class="btn btn-success">
+                                <i class="fas fa-file-excel"></i> Export Excel
                             </a>
                         </div>
                     </div>
 
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-blue-300">
+                            <thead class="table-bordered">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
@@ -42,18 +42,18 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex justify-center items-center">
                                                 <a href="{{ route('sppd-luar-daerah.print', $item->id) }}" 
-                                                class="text-green-600 hover:text-green-900 mr-2" title="Print">
-                                                    <i class="fas fa-print" style="font-size: 1.5em;"></i>
+                                                class="btn btn-success btn-sm" title="Print">
+                                                    <i class="fas fa-print"></i>
                                                 </a>
                                                 <a href="{{ route('sppd-luar-daerah.edit', $item->id) }}" 
-                                                class="text-indigo-600 hover:text-indigo-900 mr-2" title="Edit">
-                                                    <i class="fas fa-edit" style="font-size: 1.5em;"></i>
+                                                class="btn btn-info btn-sm edit-btn">
+                                                    <i class="fas fa-edit"></i>
                                                 </a>
                                                 <form class="inline-block" action="{{ route('sppd-luar-daerah.destroy', $item->id) }}" method="POST">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus">
-                                                        <i class="fas fa-trash" style="font-size: 1.5em;"></i>
+                                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $item->id }})">
+                                                        <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
                                             </div>

@@ -9,19 +9,19 @@
                         <h2 class="text-2xl font-semibold">Surat Keluar</h2>
                         <div class="flex space-x-2">
                             <a href="{{ route('surat-keluar.create') }}" 
-                               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                + Surat Keluar
+                                class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Surat Keluar
                             </a>
                             <a href="{{ route('surat-keluar.export') }}" 
-                               class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                                Export Excel
+                               class="btn btn-success">
+                                <i class="fas fa-file-excel"></i> Export Excel
                             </a>
                         </div>
                     </div>
 
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-blue-300">
+                            <thead class="table-bordered">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
@@ -39,14 +39,14 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->perihal }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex justify-center items-center">
-                                                <a href="{{ route('surat-keluar.edit', $surat->id) }}" class="text-indigo-600 hover:text-indigo-900 mx-2">
-                                                    <i class="fas fa-edit" style="font-size: 1.5em;"></i>
+                                                <a href="{{ route('surat-masuk.edit', $surat->id) }}" class="btn btn-info btn-sm edit-btn">
+                                                    <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form class="inline-block" action="{{ route('surat-keluar.destroy', $surat->id) }}" method="POST">
+                                                <form id="delete-form-{{ $surat->id }}" action="{{ route('surat-masuk.destroy', $surat->id) }}" method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:text-red-900 mx-2">
-                                                        <i class="fas fa-trash" style="font-size: 1.5em;"></i>
+                                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $surat->id }})">
+                                                        <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
                                             </div>
