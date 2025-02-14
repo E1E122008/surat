@@ -46,6 +46,15 @@
             background: rgba(255,255,255,0.15);
         }
 
+        .navbar-nav .nav-item {
+        display: flex;
+        align-items: center;
+        }
+
+        .navbar-nav .nav-item span {
+            margin-right: 10px; /* Jarak antara tanggal dan profil */
+        }
+
         /* Button Styles */
         .btn {
             border-radius: 5px;
@@ -398,10 +407,151 @@
             background-color: #d1fae5;
             color: #065f46;
         }
+
+        .date-display {
+            white-space: nowrap; /* Mencegah text wrap ke bawah */
+            display: inline-block; /* Membuat elemen tetap dalam satu baris */
+            margin-right: 15px; /* Jarak dengan profil */
+        }
+
+        /* Styling untuk tanggal */
+        .date-display {
+            white-space: nowrap;
+            display: inline-block;
+            margin-right: 15px;
+        }
+
+        /* Styling untuk profil */
+        .profile-container {
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 3px; /* Menambah padding untuk ruang indikator */
+        }
+
+        .profile-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            background: linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.3) 100%);
+        }
+
+        .profile-initial {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(145deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            font-weight: bold;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .profile-name {
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Hover Effects */
+        .profile-link:hover .profile-image,
+        .profile-link:hover .profile-initial {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            border-color: white;
+        }
+
+        .profile-link:hover .profile-name {
+            color: #e6e6e6 !important;
+        }
+
+        /* Dropdown styling */
+        .dropdown-menu {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
+        }
+
+        .dropdown-item {
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f0f2f5;
+            transform: translateX(5px);
+        }
+
+        /* Status Indicator Styling yang diperbarui */
+        .status-indicator {
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
+            width: 12px;
+            height: 12px;
+            background-color: #2ecc71;
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.3);
+            animation: pulse 2s infinite;
+            transform: translate(25%, 25%); /* Menggeser indikator ke luar lingkaran */
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 6px rgba(46, 204, 113, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
+            }
+        }
+
+        /* Memastikan container profil memiliki ruang untuk indikator */
+        .profile-container {
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 3px; /* Menambah padding untuk ruang indikator */
+        }
+
+        /* Menyesuaikan hover effect */
+        .profile-link:hover .status-indicator {
+            transform: translate(25%, 25%) scale(1.1);
+        }
+
+        /* Styling untuk dropdown icon */
+        .dropdown-icon {
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+            margin-left: 5px !important;
+        }
+
+        /* Efek rotasi saat dropdown terbuka */
+        .show .dropdown-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Hover effect untuk icon */
+        .profile-link:hover .dropdown-icon {
+            color: white;
+            transform: translateY(2px);
+        }
+
+        .show .profile-link:hover .dropdown-icon {
+            transform: rotate(180deg) translateY(-2px);
+        }
     </style>
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-100">
@@ -414,7 +564,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
                     </svg>
                 </button>
-                
+                 
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
@@ -447,28 +597,40 @@
                         </li>
                     </ul>
                 </div>
+
                 <div class="navbar-nav">
-                    <!-- Profil Pengguna -->
-                    <div class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            @if(Auth::user()->profile_photo_url)
-                                <img src="{{ Auth::user()->profile_photo_url }}" alt="User Avatar" class="rounded-circle border border-light" style="width: 40px; height: 40px;">
-                            @else
-                                <div class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; border: 2px solid white;">
-                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                                </div>
-                            @endif
-                            <span class="ms-2 d-none d-lg-inline text-white">{{ Auth::user()->name }}</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow" style="min-width: 180px;">
-                            <li class="dropdown-header d-flex align-items-center">
+                    <span class="nav-item text-white me-3 d-flex align-items-center">
+                        <span class="date-display">{{ now()->format('d F Y') }}</span>
+                    </span>
+                    
+                    <!-- Profil Pengguna dengan Custom Dropdown Icon -->
+                    <div class="nav-item dropdown profile-container">
+                        <a class="nav-link d-flex align-items-center profile-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-chevron-down ms-2 dropdown-icon"></i>
+                            <span class="ms-2 d-none d-lg-inline text-white profile-name">{{ Auth::user()->name }}</span>
+                        
+                            <div class="position-relative">
                                 @if(Auth::user()->profile_photo_url)
-                                    <img src="{{ Auth::user()->profile_photo_url }}" alt="User Avatar" class="rounded-circle border border-light" style="width: 40px; height: 40px;">
+                                    <img src="{{ Auth::user()->profile_photo_url }}" alt="User Avatar" class="profile-image">
                                 @else
-                                    <div class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; border: 2px solid white;">
+                                    <div class="profile-initial">
                                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                                     </div>
                                 @endif
+                                <span class="status-indicator"></span>
+                            </div>
+                            
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow">
+                            <li class="dropdown-header d-flex align-items-center">
+                                @if(Auth::user()->profile_photo_url)
+                                    <img src="{{ Auth::user()->profile_photo_url }}" alt="User Avatar" class="profile-image">
+                                @else
+                                    <div class="profile-initial">
+                                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                                
                                 <div class="ms-2">
                                     <strong>{{ Auth::user()->name }}</strong><br>
                                     <small class="text-muted">Admin</small>

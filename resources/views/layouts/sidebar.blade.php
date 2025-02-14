@@ -1,6 +1,12 @@
 <div class="sidebar bg-gray-50 shadow-md rounded-lg p-4 w-64 overflow-y-auto" id="sidebar">
-    <img src="{{ asset('public\images\logo.png') }}" alt="Logo" class="w-16 h-16 mx-auto mb-2">
-    <a class="navbar-brand fw-bold text-center text-xl mb-4 text-blue-600" href="{{ route('dashboard') }}" style="font-size: 25px; color: #3B82F6;">SIAP BRO!</a>
+    <!-- Logo Container -->
+    <div class="logo-container text-center mb-6">
+        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-image mx-auto mb-2">
+        <a class="navbar-brand fw-bold text-center text-xl text-primary hover:opacity-80 transition-opacity duration-200" style="color: #0d6efd !important;" href="{{ route('dashboard') }}">
+            SIAP BRO!
+        </a>
+    </div>
+
     <h2 class="text-lg font-bold mb-2">Menu Utama</h2>
     <ul class="list-none p-0">
         <li class="my-2">
@@ -122,3 +128,38 @@
 
 
 </script>
+
+<style>
+    /* Logo Styling */
+    .logo-container {
+        padding: 0.75rem 0;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .logo-image {
+        width: auto;
+        height: 85px; /* Ukuran diperbesar menjadi 65px */
+        max-width: 100%; /* Memperbesar lebar maksimal */
+        object-fit: contain;
+        margin-bottom: 0.5rem;
+        transition: transform 0.3s ease;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .logo-image {
+            height: 58px; /* Ukuran untuk mobile juga disesuaikan */
+        }
+    }
+
+    /* Style lainnya tetap sama */
+    .logo-image:hover {
+        transform: scale(1.05);
+    }
+
+    .navbar-brand {
+        font-size: 1.25rem;
+        margin-top: 0.25rem;
+    }
+</style>
