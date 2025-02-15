@@ -45,14 +45,14 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->tanggal_terima->format('d/m/Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->perihal }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap catatan-col">
-                                            <div style="width: 100%;">
-                                                <textarea 
-                                                    class="catatan-textarea"
-                                                    placeholder="Tulis catatan..."
-                                                    style="width: 100%;"
-                                                >{{ old('catatan') }}</textarea>
+                                            <div class="flex items-center space-x-2" data-surat-id="{{ $surat->id }}">
+                                                <textarea name="" id="" cols="10" rows="2" class="catatan-textarea" placeholder="Tulis catatan..." readonly>{{ $surat->catatan }}</textarea>
+                                                <button class="btn btn-sm btn-success" onclick="editCatatan({{ $surat->id }}, '{{ $surat->catatan }}')">
+                                                    <i class="fas fa-sync-alt"></i>
+                                                </button>
                                             </div>
                                         </td>
+
                                         <td class="px-4 py-4 whitespace-nowrap text-center">
                                             <select name="disposisi" onchange="showSubpoints(this)" class="disposisi-dropdown text-center" style="background-color: lightblue; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
                                                 <option value="">Pilih Disposisi</option>
@@ -206,7 +206,7 @@
         }
 
         @if(session('success'))
-        <script>
+        
             Swal.fire({
                 title: "Berhasil!",
                 text: "{{ session('success') }}",
@@ -224,11 +224,11 @@
                 background: '#10B981',
                 color: '#ffffff'
             });
-        </script>
+        
         @endif
 
         @if(session('error'))
-        <script>
+        
             Swal.fire({
                 title: "Error!",
                 text: "{{ session('error') }}",
@@ -246,7 +246,53 @@
                 background: '#EF4444',
                 color: '#ffffff'
             });
-        </script>
+            
         @endif
+
+        function editCatatan(suratId, currentCatatan) {
+            const container = document.querySelector(`[data-surat-id="${suratId}"]`);
+            const textarea = container.querySelector('.catatan-textarea');
+            
+            // Toggle readonly state
+            textarea.readOnly = !textarea.readOnly;
+            
+            if (!textarea.readOnly) {
+                // Enter edit mode
+                textarea.focus();
+                container.querySelector('.btn-success i').classList.remove('fa-sync-alt');
+                container.querySelector('.btn-success i').classList.add('fa-save');
+            } else {
+                // Save mode
+                container.querySelector('.btn-success i').classList.remove('fa-save');
+                container.querySelector('.btn-success i').classList.add('fa-sync-alt');
+                
+                // Send AJAX request to update catatan
+                fetch(`/surat-masuk/${suratId}/update-catatan`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        catatan: textarea.value
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showSuccess('Catatan berhasil diperbarui');
+                    } else {
+                        showError('Gagal memperbarui catatan');
+                        textarea.value = currentCatatan; // Revert to original value
+                    }
+                })
+                .catch(error => {
+                    showError('Terjadi kesalahan sistem');
+                    textarea.value = currentCatatan; // Revert to original value
+                });
+            }
+        }
+    
+
     </script>
 @endsection

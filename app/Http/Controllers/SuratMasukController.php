@@ -119,5 +119,29 @@ class SuratMasukController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function updateCatatan(Request $request, $id)
+    {
+        try {
+            // Log the incoming request data
+            \Log::info('Updating catatan:', $request->all());
+
+            $suratMasuk = SuratMasuk::findOrFail($id);
+            $suratMasuk->update([
+                'catatan' => $request->catatan
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Catatan berhasil diperbarui'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error updating catatan:', ['error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memperbarui catatan'
+            ], 500);
+        }
+    }
 }
 

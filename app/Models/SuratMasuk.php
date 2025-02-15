@@ -17,7 +17,8 @@ class SuratMasuk extends Model
         'tanggal_surat',
         'tanggal_terima',
         'perihal',
-        'lampiran'
+        'lampiran',
+        'catatan',
     ];
 
     protected $casts = [
