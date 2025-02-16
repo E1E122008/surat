@@ -93,4 +93,28 @@ class SKController extends Controller
     {
         return Excel::download(new SKExport, 'sk.xlsx'); // Pastikan Anda memiliki export untuk SK
     }
+
+    public function updateCatatan(Request $request, $id)
+    {
+        try {
+            // Log the incoming request data
+            \Log::info('Updating catatan:', $request->all());
+
+            $sk = SK::findOrFail($id); // Ensure you're using the SK model
+            $sk->update([
+                'catatan' => $request->catatan
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Catatan berhasil diperbarui'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error updating catatan:', ['error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memperbarui catatan'
+            ], 500);
+        }
+    }
 } 

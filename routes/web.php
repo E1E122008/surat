@@ -113,3 +113,5 @@ Route::delete('/draft-phd/sk/{sk}', [SKController::class, 'destroy'])->name('dra
 Route::post('/update-disposisi/{id}', [SuratMasukController::class, 'updateDisposisi']);
 
 Route::post('/surat-masuk/{id}/update-catatan', [SuratMasukController::class, 'updateCatatan'])->name('surat-masuk.update-catatan');
+
+Route::post('/draft-phd/sk/{id}/update-catatan', [SKController::class, 'updateCatatan']);

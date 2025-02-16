@@ -45,7 +45,12 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tanggal_terima->format('d/m/Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->perihal }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap catatan-col">
-                                            <textarea name="catatan" rows="3" class="catatan-textarea border border-gray-300 rounded-md mt-2 mb-2 mx-2" placeholder="Tulis catatan..." style="padding: 10px; line-height: 1.5;">{{ old('catatan', $item->catatan) }}</textarea>
+                                            <div class="flex items-center space-x-2" data-surat-id="{{ $item->id }}">
+                                                <textarea name="" id="" cols="10" rows="2" class="catatan-textarea" placeholder="Tulis catatan..." readonly>{{ $item->catatan }}</textarea>
+                                                <button class="btn btn-sm btn-success" onclick="editCatatan({{ $item->id }}, '{{ $item->catatan }}')">
+                                                    <i class="fas fa-sync-alt"></i>
+                                                </button>
+                                            </div>
                                         </td>
                                         <td class="px-4 py-4 whitespace-nowrap text-center">
                                             <select name="disposisi" onchange="showSubpoints(this)" class="disposisi-dropdown text-center" style="background-color: lightblue; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
@@ -120,6 +125,72 @@
             }
 
             subpointSelect.style.display = selectedValue ? 'block' : 'none';
+        }
+
+        // Fungsi untuk menampilkan alert sukses
+        function showSuccess(message) {
+            Swal.fire({
+                title: 'Berhasil!',
+                text: message,
+                icon: 'success',
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                },
+                timer: 2000,
+                timerProgressBar: true
+            });
+        }
+
+        function editCatatan(suratId, currentCatatan) {
+            const container = document.querySelector(`[data-surat-id="${suratId}"]`);
+            const textarea = container.querySelector('.catatan-textarea');
+            
+            // Toggle readonly state
+            textarea.readOnly = !textarea.readOnly;
+            
+            if (!textarea.readOnly) {
+                // Enter edit mode
+                textarea.focus();
+                container.querySelector('.btn-success i').classList.remove('fa-sync-alt');
+                container.querySelector('.btn-success i').classList.add('fa-save');
+            } else {
+                // Save mode
+                container.querySelector('.btn-success i').classList.remove('fa-save');
+                container.querySelector('.btn-success i').classList.add('fa-sync-alt');
+                
+                // Send AJAX request to update catatan
+                fetch(`/draft-phd/sk/${suratId}/update-catatan`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        catatan: textarea.value
+                    })
+                })
+                .then(response => {
+                    console.log('Response:', response); // Log the response for debugging
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Data:', data); // Log the data returned from the server
+                    if (data.success) {
+                        showSuccess('Catatan berhasil diperbarui');
+                    } else {
+                        showError('Gagal memperbarui catatan');
+                        textarea.value = currentCatatan; // Revert to original value
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error); // Log any errors
+                    showError('Terjadi kesalahan sistem');
+                    textarea.value = currentCatatan; // Revert to original value
+                });
+            }
         }
     </script>
 @endsection
