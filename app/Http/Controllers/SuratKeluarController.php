@@ -28,6 +28,7 @@ class SuratKeluarController extends Controller
             'no_agenda' => 'required|string|max:255',
             'no_surat' => 'required|string|max:255',
             'tanggal_surat' => 'required|date',
+            'tujuan' => 'required|string|max:255',
             'perihal' => 'required|string|max:255',
             'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
         ]);
@@ -58,6 +59,7 @@ class SuratKeluarController extends Controller
                 'no_agenda' => 'required|string|max:255',
                 'no_surat' => 'required|string|max:255',
                 'tanggal_surat' => 'required|date',
+                'tujuan' => 'required|string|max:255',
                 'perihal' => 'required|string|max:255',
                 'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
             ]);

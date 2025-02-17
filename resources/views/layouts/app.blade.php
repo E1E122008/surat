@@ -30,6 +30,10 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
+        .navbar-logo {
+        padding-right: 10px; /* Jarak di sebelah kanan logo */
+}
+
         .navbar-dark .navbar-nav .nav-link {
             color: rgba(255,255,255,.85);
             padding: 0.5rem 1rem;
@@ -1106,6 +1110,21 @@
             right: 1px !important;
             z-index: 10 !important; /* Memastikan dot muncul di atas */
         }
+
+        
+
+        .header h2 {
+            border-bottom: 2px solid #ccc; /* Garis bawah */
+            padding-bottom: 5px; /* Jarak antara teks dan garis */
+        }
+
+        .header h3 {
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Bayangan */
+        }
+
+        .table-container table td {
+            text-align: center; /* Rata tengah untuk semua sel */
+        }
     </style>
 
     <!-- Font Awesome -->
@@ -1124,6 +1143,7 @@
         <!-- Navigation -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-image mx-auto mb-2">
                 <a class="navbar-brand fw-bold" href="{{ route('dashboard') }}">SIAP BRO!</a>
                 <button class="btn btn-outline-light" onclick="toggleSidebar()">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

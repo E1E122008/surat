@@ -5,7 +5,7 @@
     <div class="dashboard-welcome mb-4">
         <div class="row align-items-center">
             <div class="col-md-8">
-                <h2>Selamat Datang di Sistem Manajemen Surat</h2>
+                <h2>Selamat Datang di Sistem Informasi Administrasi Persuratan Biro hukum</h2>
                 <p class="text-muted">Pemerintah Sulawesi Tenggara</p>
             </div>
             <div class="col-md-4 text-end">
