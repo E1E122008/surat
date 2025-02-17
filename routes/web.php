@@ -108,7 +108,7 @@ Route::get('/draft-phd/sk/{sk}/edit', [SKController::class, 'edit'])->name('draf
 Route::put('/draft-phd/sk/{sk}', [SKController::class, 'update'])->name('draft-phd.sk.update');
 
 // Rute untuk menghapus SK
-Route::delete('/draft-phd/sk/{sk}', [SKController::class, 'destroy'])->name('draft-phd.sk.destroy');
+Route::delete('/draft-phd/sk/{id}', [SKController::class, 'destroy'])->name('draft-phd.sk.destroy');
 
 Route::post('/update-disposisi/{id}', [SuratMasukController::class, 'updateDisposisi']);
 

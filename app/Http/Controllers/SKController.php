@@ -24,12 +24,13 @@ class SKController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'no_agenda' => 'required|string|max:255',
             'no_surat' => 'required|string|max:255|unique:sks,no_surat',
             'pengirim' => 'required|string|max:255',
             'tanggal_surat' => 'required|date',
             'tanggal_terima' => 'required|date',
             'perihal' => 'required|string|max:255',
-            'lampiran' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
         ]);
 
         if ($request->hasFile('lampiran')) {
@@ -52,12 +53,13 @@ class SKController extends Controller
     public function update(Request $request, SK $sk)
     {
         $validated = $request->validate([
+            'no_agenda' => 'required|string|max:255',
             'no_surat' => 'required|string|max:255',
             'pengirim' => 'required|string|max:255',
             'tanggal_surat' => 'required|date',
             'tanggal_terima' => 'required|date',
             'perihal' => 'required|string|max:255',
-            'lampiran' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
         ]);
 
         if ($request->hasFile('lampiran')) {
@@ -77,16 +79,25 @@ class SKController extends Controller
             ->with('success', 'SK berhasil diperbarui');
     }
 
-    public function destroy(SK $sk)
+    public function destroy($id)
     {
-        if ($sk->lampiran) {
-            Storage::disk('public')->delete($sk->lampiran);
-        }
-        
-        $sk->delete();
+        try {
+            $sk = SK::findOrFail($id);
+            
+            // Jika ada lampiran, hapus dari storage
+            if ($sk->lampiran) {
+                Storage::disk('public')->delete($sk->lampiran);
+            }
+            
+            // Hapus data SK
+            $sk->delete();
 
-        return redirect()->route('draft-phd.sk.index')
-            ->with('success', 'SK berhasil dihapus');
+            return redirect()->route('draft-phd.sk.index')
+                ->with('success', 'Data SK berhasil dihapus!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat menghapus data!');
+        }
     }
 
     public function export() 

@@ -12,6 +12,7 @@ class SK extends Model
     protected $table = 'sks';
     
     protected $fillable = [
+        'no_agenda',
         'no_surat',
         'pengirim',
         'tanggal_surat',

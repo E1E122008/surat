@@ -15,6 +15,16 @@
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
+                                <label for="no_agenda" class="block text-sm font-medium text-gray-700">Nomor Agenda</label>
+                                <input type="text" name="no_agenda" id="no_agenda" 
+                                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                    value="{{ old('no_agenda', $sk->no_agenda) }}" required>
+                                @error('no_agenda')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
                                 <label for="no_surat" class="block text-sm font-medium text-gray-700">Nomor SK</label>
                                 <input type="text" name="no_surat" id="no_surat" 
                                     class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -38,7 +48,7 @@
                                 <label for="tanggal_surat" class="block text-sm font-medium text-gray-700">Tanggal SK</label>
                                 <input type="date" name="tanggal_surat" id="tanggal_surat" 
                                     class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                    value="{{ old('tanggal_surat', $sk->tanggal_surat) }}" required>
+                                    value="{{ old('tanggal_surat', $sk->tanggal_surat ? $sk->tanggal_surat->format('Y-m-d') : '') }}" required>
                                 @error('tanggal_surat')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
@@ -48,24 +58,28 @@
                                 <label for="tanggal_terima" class="block text-sm font-medium text-gray-700">Tanggal Terima</label>
                                 <input type="date" name="tanggal_terima" id="tanggal_terima" 
                                     class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                    value="{{ old('tanggal_terima', $sk->tanggal_terima) }}" required>
+                                    value="{{ old('tanggal_terima', $sk->tanggal_terima ? $sk->tanggal_terima->format('Y-m-d') : '') }}" required>
                                 @error('tanggal_terima')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            <div class="md:col-span-2">
-                                <label for="perihal" class="block text-sm font-medium text-gray-700">Perihal</label>
-                                <textarea name="perihal" id="perihal" rows="3" 
-                                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                    required>{{ old('perihal', $sk->perihal) }}</textarea>
+                            <div class="form-group md:col-span-2">
+                                <label for="perihal" class="block text-sm font-medium text-gray-700 mb-2">Perihal</label>
+                                <textarea 
+                                    name="perihal" 
+                                    id="perihal" 
+                                    class="form-textarea" 
+                                    placeholder="Masukkan perihal surat" 
+                                    required
+                                >{{ old('perihal', $sk->perihal) }}</textarea>
                                 @error('perihal')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             <div class="md:col-span-2">
-                                <label for="lampiran" class="block text-sm font-medium text-gray-700">Lampiran</label>
+                                <label for="lampiran" class="block text-sm font-medium text-gray-700">Lampiran (PDF, DOC, DOCX, Gambar)</label>
                                 @if($sk->lampiran)
                                     <div class="mt-2">
                                         <p class="text-sm text-gray-500">File saat ini: {{ basename($sk->lampiran) }}</p>
@@ -77,7 +91,8 @@
                                     file:rounded-md file:border-0
                                     file:text-sm file:font-semibold
                                     file:bg-blue-50 file:text-blue-700
-                                    hover:file:bg-blue-100">
+                                    hover:file:bg-blue-100"
+                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
                                 <p class="mt-1 text-sm text-gray-500">Biarkan kosong jika tidak ingin mengubah file</p>
                                 @error('lampiran')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>

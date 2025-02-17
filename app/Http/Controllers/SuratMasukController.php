@@ -24,12 +24,13 @@ class SuratMasukController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'no_agenda' => 'required|string|max:255',
             'no_surat' => 'required|string|max:255',
             'pengirim' => 'required|string|max:255',
             'tanggal_surat' => 'required|date',
             'tanggal_terima' => 'required|date',
             'perihal' => 'required|string|max:255',
-            'lampiran' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
         ]);
 
         if ($request->hasFile('lampiran')) {
@@ -54,13 +55,14 @@ class SuratMasukController extends Controller
         try {
             $suratMasuk = SuratMasuk::findOrFail($id);
             
-            $validated = $request->validate([
+            $validated = $request->validate([               
+                'no_agenda' => 'required|string|max:255',
                 'no_surat' => 'required|string|max:255',
                 'pengirim' => 'required|string|max:255',
                 'tanggal_surat' => 'required|date',
                 'tanggal_terima' => 'required|date',
                 'perihal' => 'required|string|max:255',
-                'lampiran' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
             ]);
 
             if ($request->hasFile('lampiran')) {

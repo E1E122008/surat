@@ -23,7 +23,8 @@
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="table-bordered">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>   
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Surat</th>
@@ -40,6 +41,7 @@
                                 @foreach($suratMasuk as $index => $surat)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $index + 1 }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->no_agenda }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->no_surat }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->pengirim }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->tanggal_surat->format('d/m/Y') }}</td>

@@ -24,11 +24,13 @@
                             <thead class="table-bordered">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal SK</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Terima</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Perihal</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Lampiran</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Catatan</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Status</th>
@@ -39,11 +41,15 @@
                                 @foreach($sk as $index => $item)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $index + 1 }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->no_agenda }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->no_surat }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->pengirim }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tanggal_surat->format('d/m/Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tanggal_terima->format('d/m/Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->perihal }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->lampiran }} <a href="{{ asset('storage/' . $item->lampiran) }}" target="_blank" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </a></td>
                                         <td class="px-6 py-4 whitespace-nowrap catatan-col">
                                             <div class="flex items-center space-x-2" data-surat-id="{{ $item->id }}">
                                                 <textarea name="" id="" cols="10" rows="2" class="catatan-textarea" placeholder="Tulis catatan..." readonly>{{ $item->catatan }}</textarea>
@@ -79,7 +85,7 @@
                                                 <a href="{{ route('draft-phd.sk.edit', $item->id) }}" class="btn btn-info btn-sm edit-btn">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form class="inline-block" action="{{ route('draft-phd.sk.destroy', $item->id) }}" method="POST">
+                                                <form class="inline-block" id="delete-form-{{ $item->id }}">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $item->id }})">
@@ -189,6 +195,29 @@
                     console.error('Error:', error); // Log any errors
                     showError('Terjadi kesalahan sistem');
                     textarea.value = currentCatatan; // Revert to original value
+                });
+            }
+        }
+
+        function confirmDelete(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus SK ini?')) {
+                $.ajax({
+                    url: '{{ route("draft-phd.sk.destroy", ":id") }}'.replace(':id', id),
+                    type: 'DELETE',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert('SK berhasil dihapus');
+                            $('#delete-form-' + id).closest('tr').remove(); // Hapus baris dari tabel
+                        } else {
+                            alert('Gagal menghapus SK: ' + response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('Terjadi kesalahan saat menghapus SK');
+                    }
                 });
             }
         }
