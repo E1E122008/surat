@@ -6,6 +6,7 @@ use App\Models\SuratKeluar;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Illuminate\Support\Facades\Log;
 
 class SuratKeluarExport implements FromCollection, WithHeadings, WithMapping
 {
@@ -18,9 +19,11 @@ class SuratKeluarExport implements FromCollection, WithHeadings, WithMapping
     {
         return [
             'No',
+            'No Agenda',
             'Nomor Surat',
-            'Tanggal',
+            'Tanggal Surat',
             'Perihal',
+            'Lampiran',
         ];
     }
 
@@ -29,11 +32,15 @@ class SuratKeluarExport implements FromCollection, WithHeadings, WithMapping
         static $no = 0;
         $no++;
         
+        Log::info('Surat Keluar:', [$suratKeluar]);
+
         return [
             $no,
+            $suratKeluar->no_agenda,
             $suratKeluar->no_surat,
-            $suratKeluar->tanggal->format('d/m/Y'),
+            $suratKeluar->tanggal_surat ? $suratKeluar->tanggal_surat->format('d/m/Y') : 'N/A',
             $suratKeluar->perihal,
+            $suratKeluar->lampiran,
         ];
     }
 } 

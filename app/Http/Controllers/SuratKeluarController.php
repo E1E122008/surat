@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\SuratKeluar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Exports\SuratKeluarExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SuratKeluarController extends Controller
 {
@@ -88,5 +90,10 @@ class SuratKeluarController extends Controller
 
         return redirect()->route('surat-keluar.index')
             ->with('success', 'Surat keluar berhasil dihapus');
+    }
+
+    public function export()
+    {
+        return Excel::download(new SuratKeluarExport, 'surat-keluar.xlsx');
     }
 } 

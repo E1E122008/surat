@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\SppdDalamDaerah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Exports\SppdDalamDaerahExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SppdDalamDaerahController extends Controller
 {

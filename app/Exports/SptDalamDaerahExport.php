@@ -18,10 +18,13 @@ class SptDalamDaerahExport implements FromCollection, WithHeadings, WithMapping
     {
         return [
             'No',
+            'No Agenda',
             'Nomor Surat',
             'Tanggal',
+            'Tujuan',
             'Perihal',
             'Nama Petugas',
+            'Lampiran',
         ];
     }
 
@@ -32,10 +35,13 @@ class SptDalamDaerahExport implements FromCollection, WithHeadings, WithMapping
         
         return [
             $no,
+            $spt->no_agenda,
             $spt->no_surat,
             $spt->tanggal->format('d/m/Y'),
+            $spt->tujuan,
             $spt->perihal,
             $spt->nama_petugas,
+            $spt->lampiran,
         ];
     }
 } 
