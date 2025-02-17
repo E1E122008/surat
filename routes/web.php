@@ -55,7 +55,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('surat-keluar-export', [SuratKeluarController::class, 'export'])
         ->name('surat-keluar.export');
 
-    Route::resource('sppd-dalam-daerah', SppdDalamDaerahController::class);
+    Route::resource('sppd-dalam-daerah', SppdDalamDaerahController::class)->except(['show']);
+    Route::get('sppd-dalam-daerah/{id}/edit', [SppdDalamDaerahController::class, 'edit'])
+        ->name('sppd-dalam-daerah.edit');
     Route::get('sppd-dalam-daerah/{sppdDalamDaerah}/print', [SppdDalamDaerahController::class, 'print'])
         ->name('sppd-dalam-daerah.print');
     Route::get('sppd-dalam-daerah-export', [SppdDalamDaerahController::class, 'export'])
@@ -115,3 +117,5 @@ Route::post('/update-disposisi/{id}', [SuratMasukController::class, 'updateDispo
 Route::post('/surat-masuk/{id}/update-catatan', [SuratMasukController::class, 'updateCatatan'])->name('surat-masuk.update-catatan');
 
 Route::post('/draft-phd/sk/{id}/update-catatan', [SKController::class, 'updateCatatan']);
+
+Route::put('sppd-dalam-daerah/{id}', [SppdDalamDaerahController::class, 'update'])->name('sppd-dalam-daerah.update');

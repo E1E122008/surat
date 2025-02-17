@@ -13,9 +13,13 @@ class SppdDalamDaerah extends Model
     
     protected $fillable = [
         'no_surat',
+        'no_agenda',
         'tanggal',
+        'tujuan',
         'perihal',
-        'nama_petugas'
+        'nama_petugas',
+        'lampiran',
+        'catatan'
     ];
 
     protected $casts = [

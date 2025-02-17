@@ -47,9 +47,11 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tanggal_surat->format('d/m/Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tanggal_terima->format('d/m/Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->perihal }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->lampiran }} <a href="{{ asset('storage/' . $item->lampiran) }}" target="_blank" class="btn btn-primary btn-sm">
-                                            <i class="fas fa-eye"></i>
-                                        </a></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                                            <button onclick="window.location.href='{{ asset('storage/' . $item->lampiran) }}'" class="btn btn-primary">
+                                                <i class="fas fa-eye"></i> Lihat Lampiran
+                                            </button>
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap catatan-col">
                                             <div class="flex items-center space-x-2" data-surat-id="{{ $item->id }}">
                                                 <textarea name="" id="" cols="10" rows="2" class="catatan-textarea" placeholder="Tulis catatan..." readonly>{{ $item->catatan }}</textarea>
