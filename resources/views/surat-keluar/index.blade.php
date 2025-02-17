@@ -40,17 +40,18 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->no_surat }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->tanggal_surat ? $surat->tanggal_surat->format('d/m/Y') : '-' }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->perihal }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->lampiran }} 
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">
                                             <button onclick="window.location.href='{{ asset('storage/' . $surat->lampiran) }}'" class="btn btn-primary">
                                                 <i class="fas fa-eye"></i> Lihat Lampiran
                                             </button>
                                         </td>
+
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex justify-center items-center">
-                                                <a href="{{ route('surat-masuk.edit', $surat->id) }}" class="btn btn-info btn-sm edit-btn">
+                                                <a href="{{ route('surat-keluar.edit', $surat->id) }}" class="btn btn-info btn-sm edit-btn">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form id="delete-form-{{ $surat->id }}" action="{{ route('surat-masuk.destroy', $surat->id) }}" method="POST" class="d-inline">
+                                                <form id="delete-form-{{ $surat->id }}" action="{{ route('surat-keluar.destroy', $surat->id) }}" method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $surat->id }})">

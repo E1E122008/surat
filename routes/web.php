@@ -52,6 +52,9 @@ Route::middleware(['auth'])->group(function () {
         ->name('surat-masuk.export');
 
     Route::resource('surat-keluar', SuratKeluarController::class);
+    Route::get('surat-keluar/{id}/edit', [SuratKeluarController::class, 'edit'])->name('surat-keluar.edit');
+    Route::put('surat-keluar/{id}', [SuratKeluarController::class, 'update'])
+        ->name('surat-keluar.update');
     Route::get('surat-keluar-export', [SuratKeluarController::class, 'export'])
         ->name('surat-keluar.export');
 

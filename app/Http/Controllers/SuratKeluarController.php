@@ -29,8 +29,7 @@ class SuratKeluarController extends Controller
             'no_surat' => 'required|string|max:255',
             'tanggal_surat' => 'required|date',
             'perihal' => 'required|string|max:255',
-            'tujuan' => 'required|string|max:255',
-            'lampiran' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
         ]);
 
         if ($request->hasFile('lampiran')) {
@@ -45,38 +44,44 @@ class SuratKeluarController extends Controller
             ->with('success', 'Surat keluar berhasil ditambahkan');
     }
 
-    public function edit(SuratKeluar $suratKeluar)
+    public function edit($id)
     {
+        $suratKeluar = SuratKeluar::findOrFail($id);
         return view('surat-keluar.edit', compact('suratKeluar'));
     }
 
-    public function update(Request $request, SuratKeluar $suratKeluar)
+    public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'no_agenda' => 'required|string|max:255',
-            'no_surat' => 'required|string|max:255',
-            'tanggal_surat' => 'required|date',
-            'perihal' => 'required|string|max:255',
-            'tujuan' => 'required|string|max:255',
-            'lampiran' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
-        ]);
+        try {
+            $suratKeluar = SuratKeluar::findOrFail($id);
+            $validated = $request->validate([
+                'no_agenda' => 'required|string|max:255',
+                'no_surat' => 'required|string|max:255',
+                'tanggal_surat' => 'required|date',
+                'perihal' => 'required|string|max:255',
+                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
+            ]);
 
-        if ($request->hasFile('lampiran')) {
-            // Hapus file lama jika ada
-            if ($suratKeluar->lampiran) {
-                Storage::disk('public')->delete($suratKeluar->lampiran);
+            if ($request->hasFile('lampiran')) {
+                // Hapus file lama jika ada
+                if ($suratKeluar->lampiran) {
+                    Storage::disk('public')->delete($suratKeluar->lampiran);
+                }
+                
+                // Upload file baru
+                $file = $request->file('lampiran');
+                $path = $file->store('lampiran/surat-keluar', 'public');
+                $validated['lampiran'] = $path;
             }
-            
-            // Upload file baru
-            $file = $request->file('lampiran');
-            $path = $file->store('lampiran/surat-keluar', 'public');
-            $validated['lampiran'] = $path;
+
+            $suratKeluar->update($validated);
+
+            return redirect()->route('surat-keluar.index')
+                ->with('success', 'Surat keluar berhasil diperbarui');
+        } catch (\Exception $e) {
+            return redirect()->route('surat-keluar.edit', $suratKeluar->id)
+                ->with('error', 'Gagal memperbarui surat keluar: ' . $e->getMessage());
         }
-
-        $suratKeluar->update($validated);
-
-        return redirect()->route('surat-keluar.index')
-            ->with('success', 'Surat keluar berhasil diperbarui');
     }
 
     public function destroy(SuratKeluar $suratKeluar)

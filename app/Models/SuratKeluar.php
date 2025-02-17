@@ -16,7 +16,6 @@ class SuratKeluar extends Model
         'no_surat',
         'tanggal_surat',
         'perihal',
-        'tujuan',
         'lampiran'
     ];
 
