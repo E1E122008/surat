@@ -9,7 +9,16 @@
         <form action="{{ route('sppd-dalam-daerah.store') }}" method="POST">
             @csrf
             
-            <div class="form-grid">
+            <div class="form-grid"> 
+                <div class="form-group">
+                    <label for="no_agenda" class="form-label">Nomor Agenda</label>
+                    <input type="text" name="no_agenda" id="no_agenda" 
+                        class="form-control @error('no_agenda') is-invalid @enderror"
+                        value="{{ old('no_agenda') }}" required>
+                    @error('no_agenda')
+                        <div class="form-error">{{ $message }}</div>
+                    @enderror
+                </div>  
                 <div class="form-group">
                     <label for="no_surat" class="form-label">Nomor Surat</label>
                     <input type="text" name="no_surat" id="no_surat" 
@@ -29,6 +38,16 @@
                         <div class="form-error">{{ $message }}</div>
                     @enderror
                 </div>
+
+                <div class="form-group">
+                    <label for="tujuan" class="form-label">Tujuan</label>
+                    <textarea name="tujuan" id="tujuan" rows="4" 
+                        class="form-control @error('tujuan') is-invalid @enderror"
+                        style="height: 50px;" required>{{ old('tujuan') }}</textarea>
+                    @error('tujuan')
+                        <div class="form-error">{{ $message }}</div>
+                    @enderror
+                </div>  
 
                 <div class="form-group form-grid-full">
                     <label for="perihal" class="form-label">Perihal</label>

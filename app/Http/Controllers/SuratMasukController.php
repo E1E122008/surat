@@ -55,7 +55,7 @@ class SuratMasukController extends Controller
         try {
             $suratMasuk = SuratMasuk::findOrFail($id);
             
-            $validated = $request->validate([               
+            $validated = $request->validate([
                 'no_agenda' => 'required|string|max:255',
                 'no_surat' => 'required|string|max:255',
                 'pengirim' => 'required|string|max:255',
