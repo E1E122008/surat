@@ -24,10 +24,12 @@ class SptDalamDaerahController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'no_agenda' => 'required|string|max:255',
             'no_surat' => 'required|string|max:255',
             'tanggal' => 'required|date',
             'perihal' => 'required|string|max:255',
             'nama_petugas' => 'required|string',
+            'lampiran' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
         ]);
 
         SptDalamDaerah::create($validated);
@@ -44,10 +46,12 @@ class SptDalamDaerahController extends Controller
     public function update(Request $request, SptDalamDaerah $sptDalamDaerah)
     {
         $validated = $request->validate([
+            'no_agenda' => 'required|string|max:255',
             'no_surat' => 'required|string|max:255',
             'tanggal' => 'required|date',
             'perihal' => 'required|string|max:255',
             'nama_petugas' => 'required|string',
+            'lampiran' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
         ]);
 
         $sptDalamDaerah->update($validated);

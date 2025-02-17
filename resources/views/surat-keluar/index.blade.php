@@ -24,9 +24,11 @@
                             <thead class="table-bordered">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Perihal</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Lampiran</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -34,9 +36,15 @@
                                 @foreach($suratKeluar as $index => $surat)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $index + 1 }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->no_agenda }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->no_surat }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->tanggal_surat ? $surat->tanggal_surat->format('d/m/Y') : '-' }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->perihal }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->lampiran }} 
+                                            <button onclick="window.location.href='{{ asset('storage/' . $surat->lampiran) }}'" class="btn btn-primary">
+                                                <i class="fas fa-eye"></i> Lihat Lampiran
+                                            </button>
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex justify-center items-center">
                                                 <a href="{{ route('surat-masuk.edit', $surat->id) }}" class="btn btn-info btn-sm edit-btn">

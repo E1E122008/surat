@@ -24,10 +24,12 @@
                             <thead class="table-bordered">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Perihal</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Nama Petugas</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Lampiran</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -35,10 +37,16 @@
                                 @foreach($spt as $index => $item)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $index + 1 }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $item->no_agenda }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $item->no_surat }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $item->tanggal->format('d/m/Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $item->perihal }}</td>
-                                        <td class="px-6 py-4">{{ $item->nama_petugas }}</td>
+                                        <td class="px-6 py-4 text-center">{{ $item->nama_petugas }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $item->lampiran }} 
+                                            <button onclick="window.location.href='{{ asset('storage/' . $item->lampiran) }}'" class="btn btn-primary">
+                                                <i class="fas fa-eye"></i> Lihat Lampiran
+                                            </button>
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex justify-center items-center">
                                                 <a href="{{ route('spt-luar-daerah.print', $item->id) }}" 

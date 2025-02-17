@@ -23,6 +23,7 @@ class SuratKeluarController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'no_agenda' => 'required|string|max:255',
             'no_surat' => 'required|string|max:255',
             'tanggal_surat' => 'required|date',
             'perihal' => 'required|string|max:255',
@@ -50,6 +51,7 @@ class SuratKeluarController extends Controller
     public function update(Request $request, SuratKeluar $suratKeluar)
     {
         $validated = $request->validate([
+            'no_agenda' => 'required|string|max:255',
             'no_surat' => 'required|string|max:255',
             'tanggal_surat' => 'required|date',
             'perihal' => 'required|string|max:255',
