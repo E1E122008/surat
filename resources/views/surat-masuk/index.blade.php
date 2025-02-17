@@ -29,6 +29,7 @@
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Surat</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Terima</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Perihal</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Lampiran</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Catatan</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Status</th>
@@ -44,6 +45,9 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->tanggal_surat->format('d/m/Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->tanggal_terima->format('d/m/Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->perihal }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->lampiran }} <a href="{{ asset('storage/' . $surat->lampiran) }}" target="_blank" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </a></td>
                                         <td class="px-6 py-4 whitespace-nowrap catatan-col">
                                             <div class="flex items-center space-x-2" data-surat-id="{{ $surat->id }}">
                                                 <textarea name="" id="" cols="10" rows="2" class="catatan-textarea" placeholder="Tulis catatan..." readonly>{{ $surat->catatan }}</textarea>
@@ -56,9 +60,11 @@
                                         <td class="px-4 py-4 whitespace-nowrap text-center">
                                             <select name="disposisi" onchange="showSubpoints(this)" class="disposisi-dropdown text-center" style="background-color: lightblue; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
                                                 <option value="">Pilih Disposisi</option>
-                                                <option value="kabag">Perancangan perUU Kab/Kota</option>
-                                                <option value="bankum">Kabag Bantuan dan Hukum</option>
-                                                <option value="madya">Perancangan PerUU Ahli Madya</option>
+                                                <option value="kabag">Kabag Perancangan Per-UU Kab/Kota</option>
+                                                <option value="bankum">Kabag Bantuan Hukum dan HAM</option>
+                                                <option value="madya">Koord. Perancangan Per-UU Ahli Madya</option>
+                                                <option value="kasubag">Kasubag Tata Usaha</option>
+
                                             </select>
                                             <select name="subpoint" class="subpoint text center" style="display: none; margin-top: 5px; background-color: rgb(183, 223, 236); border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
                                                 <option value="">Pilih Subpoint</option>
@@ -110,7 +116,7 @@
             let subpointSelect = select.parentElement.querySelector('.subpoint');
             
             let subpoints = {
-                'kabag': ['Analisis Hukum 1', 'Analisis Hukum 2','Analisis Hukum 3'],
+                'kabag': ['Analisis Hukum ahli muda wilayah 1', 'Analisis Hukum ahli muda wilayah 2','Analisis Hukum ahli muda wilayah 3'],
                 'bankum': ['Litigasi', 'Non-litigasi', 'Kasubag Tata Usaha'],
                 'madya': ['Subker Penetapan', 'Subker Pengaturan']
             };
