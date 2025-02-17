@@ -18,11 +18,15 @@ class SKExport implements FromCollection, WithHeadings, WithMapping
     {
         return [
             'No',
+            'No Agenda',
             'Nomor SK',
             'Pengirim',
             'Tanggal SK',
             'Tanggal Terima',
             'Perihal',
+            'Lampiran',
+            'Catatan',
+            'Disposisi',
         ];
     }
 
@@ -33,11 +37,15 @@ class SKExport implements FromCollection, WithHeadings, WithMapping
         
         return [
             $no,
+            $sk->no_agenda,
             $sk->no_surat,
             $sk->pengirim,
             $sk->tanggal_surat->format('d/m/Y'),
             $sk->tanggal_terima->format('d/m/Y'),
             $sk->perihal,
+            $sk->lampiran,
+            $sk->catatan,
+            $sk->disposisi,
         ];
     }
 }

@@ -18,12 +18,17 @@ class SuratMasukExport implements FromCollection, WithHeadings, WithMapping
     {
         return [
             'No',
+            'No Agenda',
             'Nomor Surat',
             'Pengirim',
             'Tanggal Surat',
             'Tanggal Terima',
             'Perihal',
-        ];
+            'Lampiran',
+            'Catatan',
+            'Disposisi',
+            
+            ];
     }
 
     public function map($suratMasuk): array
@@ -33,11 +38,15 @@ class SuratMasukExport implements FromCollection, WithHeadings, WithMapping
         
         return [
             $no,
+            $suratMasuk->no_agenda,
             $suratMasuk->no_surat,
             $suratMasuk->pengirim,
             $suratMasuk->tanggal_surat->format('d/m/Y'),
             $suratMasuk->tanggal_terima->format('d/m/Y'),
             $suratMasuk->perihal,
+            $suratMasuk->lampiran,
+            $suratMasuk->catatan,
+            $suratMasuk->disposisi,
         ];
     }
 } 
