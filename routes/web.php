@@ -58,12 +58,18 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('sppd-dalam-daerah', SppdDalamDaerahController::class)->except(['show']);
     Route::get('sppd-dalam-daerah/{id}/edit', [SppdDalamDaerahController::class, 'edit'])
         ->name('sppd-dalam-daerah.edit');
+    Route::delete('sppd-dalam-daerah/{id}', [SppdDalamDaerahController::class, 'destroy'])
+        ->name('sppd-dalam-daerah.destroy');
     Route::get('sppd-dalam-daerah/{sppdDalamDaerah}/print', [SppdDalamDaerahController::class, 'print'])
         ->name('sppd-dalam-daerah.print');
     Route::get('sppd-dalam-daerah-export', [SppdDalamDaerahController::class, 'export'])
         ->name('sppd-dalam-daerah.export');
 
     Route::resource('sppd-luar-daerah', SppdLuarDaerahController::class);
+    Route::get('sppd-luar-daerah/{sppdLuarDaerah}/edit', [SppdLuarDaerahController::class, 'edit'])
+        ->name('sppd-luar-daerah.edit');
+    Route::put('sppd-luar-daerah/{sppdLuarDaerah}', [SppdLuarDaerahController::class, 'update'])
+        ->name('sppd-luar-daerah.update');
     Route::get('sppd-luar-daerah/{sppdLuarDaerah}/print', [SppdLuarDaerahController::class, 'print'])
         ->name('sppd-luar-daerah.print');
     Route::get('sppd-luar-daerah-export', [SppdLuarDaerahController::class, 'export'])

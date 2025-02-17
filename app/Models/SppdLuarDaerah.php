@@ -12,10 +12,14 @@ class SppdLuarDaerah extends Model
     protected $table = 'sppd_luar_daerah';
     
     protected $fillable = [
+        'no_agenda',
         'no_surat',
         'tanggal',
+        'tujuan',
         'perihal',
-        'nama_petugas'
+        'nama_petugas',
+        'lampiran',
+        'catatan',
     ];
 
     protected $casts = [

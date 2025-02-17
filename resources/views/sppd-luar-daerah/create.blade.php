@@ -11,6 +11,16 @@
             
             <div class="form-grid">
                 <div class="form-group">
+                    <label for="no_agenda" class="form-label">Nomor Agenda</label>
+                    <input type="text" name="no_agenda" id="no_agenda" 
+                        class="form-control @error('no_agenda') is-invalid @enderror"
+                        value="{{ old('no_agenda') }}" required>
+                    @error('no_agenda')
+                        <div class="form-error">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group">
                     <label for="no_surat" class="form-label">Nomor Surat</label>
                     <input type="text" name="no_surat" id="no_surat" 
                         class="form-control @error('no_surat') is-invalid @enderror"
@@ -30,9 +40,16 @@
                     @enderror
                 </div>
 
+                <div class="form-group">
+                    <label for="tujuan" class="form-label">Tujuan</label>
+                    <input type="text" name="tujuan" id="tujuan" 
+                        class="form-control @error('tujuan') is-invalid @enderror"
+                        value="{{ old('tujuan') }}" required>
+                </div>
+
                 <div class="form-group form-grid-full">
                     <label for="perihal" class="form-label">Perihal</label>
-                    <textarea name="perihal" id="perihal" rows="3" 
+                    <textarea name="perihal" id="perihal" rows="3"
                         class="form-control @error('perihal') is-invalid @enderror"
                         required>{{ old('perihal') }}</textarea>
                     @error('perihal')
@@ -42,11 +59,20 @@
 
                 <div class="form-group form-grid-full">
                     <label for="nama_petugas" class="form-label">Nama Petugas</label>
-                    <textarea name="nama_petugas" id="nama_petugas" rows="4" 
+                    <textarea name="nama_petugas" id="nama_petugas" rows="4"
                         class="form-control @error('nama_petugas') is-invalid @enderror"
                         required>{{ old('nama_petugas') }}</textarea>
-                    <div class="form-help">Masukkan nama-nama petugas yang ditugaskan</div>
                     @error('nama_petugas')
+                        <div class="form-error">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group md:col-span-2">
+                    <label for="lampiran" class="form-label">Lampiran</label>
+                    <input type="file" name="lampiran" id="lampiran" 
+                        class="form-control @error('lampiran') is-invalid @enderror">
+                    <div class="form-help">PDF, DOC, DOCX, atau Gambar (Maksimal 2MB)</div>
+                    @error('lampiran')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
                 </div>
