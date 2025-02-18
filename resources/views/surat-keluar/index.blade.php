@@ -9,7 +9,9 @@
             <div class="p-6 bg-white border-b border-gray-200">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-semibold">Surat Keluar</h2>
+                    
                     <div class="flex space-x-2">
+                        
                         <a href="{{ route('surat-keluar.create') }}" 
                             class="btn btn-primary">
                             <i class="fas fa-plus"></i> Surat Keluar
@@ -74,4 +76,28 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function searchTable() {
+            const input = document.getElementById('search');
+            const filter = input.value.toLowerCase();
+            const table = document.querySelector('table');
+            const tr = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < tr.length; i++) {
+                const td = tr[i].getElementsByTagName('td');
+                let found = false;
+                for (let j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        const txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                tr[i].style.display = found ? "" : "none";
+            }
+        }
+    </script>
 @endsection
