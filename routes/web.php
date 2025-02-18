@@ -94,37 +94,34 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/profile', [UserProfileController::class, 'index'])->name('profile');
 
+    Route::get('/draft-phd/sk', [SKController::class, 'index'])->name('draft-phd.sk.index');
 
+    Route::get('/draft-phd/perda', [PerdaController::class, 'perdaIndex'])->name('draft-phd.perda.index');
+
+    Route::get('/draft-phd/pergub', [PergubController::class, 'pergubIndex'])->name('draft-phd.pergub.index');
+
+    // Rute untuk menampilkan form tambah SK
+    Route::get('/draft-phd/sk/create', [SKController::class, 'create'])->name('draft-phd.sk.create');
+    Route::post('/draft-phd/sk', [SKController::class, 'store'])->name('draft-phd.sk.store');
+    Route::get('/draft-phd/sk/export', [SKController::class, 'export'])->name('draft-phd.sk.export');
+    Route::get('/draft-phd/sk/{sk}/edit', [SKController::class, 'edit'])->name('draft-phd.sk.edit');
+    Route::put('/draft-phd/sk/{sk}', [SKController::class, 'update'])->name('draft-phd.sk.update');
+    Route::delete('/draft-phd/sk/{id}', [SKController::class, 'destroy'])->name('draft-phd.sk.destroy');
+    Route::post('/draft-phd/sk/{id}/update-catatan', [SKController::class, 'updateCatatan']);
+
+    Route::post('/update-disposisi/{id}', [SuratMasukController::class, 'updateDisposisi']);
+    Route::post('/surat-masuk/{id}/update-catatan', [SuratMasukController::class, 'updateCatatan'])->name('surat-masuk.update-catatan');
+    
+    Route::put('sppd-dalam-daerah/{id}', [SppdDalamDaerahController::class, 'update'])->name('sppd-dalam-daerah.update');
+
+    //Route perda
+    Route::get('/draft-phd/perda', [PerdaController::class, 'index'])->name('draft-phd.perda.index');
+    Route::get('/draft-phd/perda/create', [PerdaController::class, 'create'])->name('draft-phd.perda.create');
+    Route::get('/draft-phd/perda/{perda}/edit', [PerdaController::class, 'edit'])->name('draft-phd.perda.edit');
+    Route::put('/draft-phd/perda/{perda}', [PerdaController::class, 'update'])->name('draft-phd.perda.update');
+    Route::delete('/draft-phd/perda/{id}', [PerdaController::class, 'destroy'])->name('draft-phd.perda.destroy');
+    Route::post('/draft-phd/perda/{id}/update-catatan', [PerdaController::class, 'updateCatatan']);
+    Route::post('/draft-phd/perda', [PerdaController::class, 'store'])->name('draft-phd.perda.store');
+    Route::get('/draft-phd/perda/export', [PerdaController::class, 'export'])->name('draft-phd.perda.export');
+    Route::get('/draft-phd/pergub/export', [PergubController::class, 'export'])->name('draft-phd.pergub.export');
 });
-
-Route::get('/draft-phd/sk', [SKController::class, 'index'])->name('draft-phd.sk.index');
-
-Route::get('/draft-phd/perda', [PerdaController::class, 'perdaIndex'])->name('draft-phd.perda.index');
-
-Route::get('/draft-phd/pergub', [PergubController::class, 'pergubIndex'])->name('draft-phd.pergub.index');
-
-// Rute untuk menampilkan form tambah SK
-Route::get('/draft-phd/sk/create', [SKController::class, 'create'])->name('draft-phd.sk.create');
-
-// Rute untuk menyimpan SK
-Route::post('/draft-phd/sk', [SKController::class, 'store'])->name('draft-phd.sk.store');
-
-// Rute untuk mengekspor SK
-Route::get('/draft-phd/sk/export', [SKController::class, 'export'])->name('draft-phd.sk.export');
-
-// Rute untuk menampilkan form edit SK
-Route::get('/draft-phd/sk/{sk}/edit', [SKController::class, 'edit'])->name('draft-phd.sk.edit');
-
-// Rute untuk memperbarui SK
-Route::put('/draft-phd/sk/{sk}', [SKController::class, 'update'])->name('draft-phd.sk.update');
-
-// Rute untuk menghapus SK
-Route::delete('/draft-phd/sk/{id}', [SKController::class, 'destroy'])->name('draft-phd.sk.destroy');
-
-Route::post('/update-disposisi/{id}', [SuratMasukController::class, 'updateDisposisi']);
-
-Route::post('/surat-masuk/{id}/update-catatan', [SuratMasukController::class, 'updateCatatan'])->name('surat-masuk.update-catatan');
-
-Route::post('/draft-phd/sk/{id}/update-catatan', [SKController::class, 'updateCatatan']);
-
-Route::put('sppd-dalam-daerah/{id}', [SppdDalamDaerahController::class, 'update'])->name('sppd-dalam-daerah.update');

@@ -1013,9 +1013,8 @@
         /* Button container */
         .button-container {
             display: flex;
-            gap: 6px !important;  /* Jarak antar tombol */
             justify-content: flex-end;
-            margin-top: 20px !important;
+            margin-top: 20px;
         }
 
         /* Button styling */
