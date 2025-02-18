@@ -98,6 +98,39 @@
             </div>
         </div>
 
+        <div class="col-md-4 mb-4">
+            <div class="dashboard-menu-card">
+                <div class="icon">
+                    <i class="fas fa-gavel"></i>
+                </div>
+                <h3>Surat Keputusan</h3>
+                <p>Kelola dan pantau surat keputusan organisasi</p>
+                <a href="{{ route('draft-phd.sk.index') }}" class="btn btn-primary">Lihat Data</a>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="dashboard-menu-card">
+                <div class="icon">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <h3>Peraturan Daerah</h3>
+                <p>Kelola dan pantau peraturan daerah</p>
+                <a href="{{ route('draft-phd.perda.index') }}" class="btn btn-primary">Lihat Data</a>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="dashboard-menu-card">
+                <div class="icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h3>Peraturan Gubernur</h3>
+                <p>Kelola dan pantau peraturan gubernur</p>
+                <a href="{{ route('draft-phd.pergub.index') }}" class="btn btn-primary">Lihat Data</a>
+            </div>
+        </div>
+
         <!-- SPPD Dalam -->
         <div class="col-md-4 mb-4">
             <div class="dashboard-menu-card">

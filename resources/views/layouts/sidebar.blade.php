@@ -46,13 +46,13 @@
                 <li class="my-1">
                     <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('draft-phd.sk.*') ? 'active' : '' }}" 
                        href="{{ route('draft-phd.sk.index') }}">
-                        <i class="fas fa-file-alt mr-2"></i> SK
+                        <i class="fas fa-gavel mr-2"></i> SK
                     </a>
                 </li>
                 <li class="my-1">
                     <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('draft-phd.perda.*') ? 'active' : '' }}" 
                        href="{{ route('draft-phd.perda.index') }}">
-                        <i class="fas fa-file-alt mr-2"></i> PERDA
+                        <i class="fas fa-file-contract mr-2"></i> PERDA
                     </a>
                 </li>
                 <li class="my-1">
