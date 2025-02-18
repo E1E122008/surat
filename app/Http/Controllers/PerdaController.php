@@ -6,8 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Perda;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Excel;
+use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
+use App\Exports\PerdaExport;
 
 class PerdaController extends Controller
 {
@@ -128,7 +129,7 @@ class PerdaController extends Controller
 
     public function export()
     {
-        return Excel::download(new PerdaExport, 'perda.xlsx');
+        return Excel::download(new PerdaExport(), 'perda.xlsx');
     }
     
     
