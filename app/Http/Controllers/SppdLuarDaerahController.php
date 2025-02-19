@@ -10,9 +10,22 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class SppdLuarDaerahController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $sppd = SppdLuarDaerah::latest()->paginate(10);
+        $query = SppdLuarDaerah::query();
+        
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('no_agenda', 'LIKE', "%{$search}%")
+                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                  ->orWhere('tujuan', 'LIKE', "%{$search}%")
+                  ->orWhere('perihal', 'LIKE', "%{$search}%")
+                  ->orWhere('nama_petugas', 'LIKE', "%{$search}%");
+            });
+        }
+        
+        $sppd = $query->latest()->paginate(10);
         return view('sppd-luar-daerah.index', compact('sppd'));
     }
 

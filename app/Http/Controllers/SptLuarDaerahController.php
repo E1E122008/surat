@@ -9,9 +9,21 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class SptLuarDaerahController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $spt = SptLuarDaerah::latest()->paginate(10);
+        $query = SptLuarDaerah::query();
+        
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('no_agenda', 'LIKE', "%{$search}%")
+                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                  ->orWhere('perihal', 'LIKE', "%{$search}%")
+                  ->orWhere('nama_petugas', 'LIKE', "%{$search}%");
+            });
+        }
+        
+        $spt = $query->latest()->paginate(10);
         return view('spt-luar-daerah.index', compact('spt'));
     }
 

@@ -10,9 +10,21 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class PergubController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $pergubs = Pergub::latest()->paginate(10);
+        $query = Pergub::query();
+        
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('no_agenda', 'LIKE', "%{$search}%")
+                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                  ->orWhere('pengirim', 'LIKE', "%{$search}%")
+                  ->orWhere('perihal', 'LIKE', "%{$search}%");
+            });
+        }
+        
+        $pergubs = $query->latest()->paginate(10);
         return view('draft-phd.pergub.index', compact('pergubs'));
     }
 

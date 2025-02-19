@@ -93,32 +93,29 @@ class SKController extends Controller
             ->with('success', 'SK berhasil diperbarui');
     }
 
-    public function destroy(SK $sk)
+    public function destroy($id)
     {
         try {
-            \DB::beginTransaction();
+            $sk = SK::findOrFail($id);
             
             // Delete file if exists
-            if ($sk->lampiran && Storage::disk('public')->exists($sk->lampiran)) {
+            if ($sk->lampiran) {
                 Storage::disk('public')->delete($sk->lampiran);
             }
             
             // Delete the SK record
             $sk->delete();
-            
-            \DB::commit();
 
             return response()->json([
                 'success' => true,
                 'message' => 'SK berhasil dihapus'
             ]);
         } catch (\Exception $e) {
-            \DB::rollBack();
             \Log::error('Error deleting SK: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menghapus SK: ' . $e->getMessage()
+                'message' => 'Gagal menghapus SK'
             ], 500);
         }
     }

@@ -10,11 +10,20 @@
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-semibold">Peraturan Daerah</h2>
                     <div class="flex space-x-2">
+                        <form action="{{ route('draft-phd.perda.index') }}" method="GET" class="flex space-x-2">
+                            <input type="text" 
+                                   name="search" 
+                                   value="{{ request('search') }}"
+                                   placeholder="Cari..." 
+                                   class="form-control px-4 py-2 border rounded-lg">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Cari
+                            </button>
+                        </form>
                         <a href="{{ route('draft-phd.perda.create') }}" class="btn btn-primary">
                             <i class="fas fa-plus"></i> Tambah Perda
                         </a>
-                        <a href="{{ route('draft-phd.perda.export') }}" 
-                        class="btn btn-success">
+                        <a href="{{ route('draft-phd.perda.export') }}" class="btn btn-success">
                             <i class="fas fa-file-excel"></i> Export Excel
                         </a>
                     </div>  
