@@ -105,10 +105,20 @@
                 </li>
             </ul>
         </li>
+    </ul>
+
+    <h2 class="text-lg font-bold mb-2">Menu Tambahan</h2>
+    <ul class="list-none p-0">
         <li class="my-2">
             <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('buku-agenda.*') ? 'active' : '' }}" 
                href="{{ route('buku-agenda.index') }}">
                 <i class="fas fa-book mr-2"></i> Buku Agenda
+            </a>
+        </li>
+        <li class="my-2">
+            <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('disposisi.*') ? 'active' : '' }}" 
+               href="{{ route('disposisi.index') }}">
+                <i class="fas fa-file-alt mr-2"></i> Disposisi
             </a>
         </li>
     </ul>

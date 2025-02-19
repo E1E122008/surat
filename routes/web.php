@@ -15,7 +15,7 @@ use App\Http\Controllers\SKController;
 use App\Http\Controllers\PerdaController;
 use App\Http\Controllers\PergubController;
 use App\Http\Controllers\ProfileController;
-
+use App\Http\Controllers\DisposisiController;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -135,4 +135,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/draft-phd/pergub/export', [PergubController::class, 'export'])->name('draft-phd.pergub.export');
     Route::get('/pergub', [PergubController::class, 'index'])->name('pergub.index');
 
+
+    Route::get('/disposisi', [DisposisiController::class, 'index'])->name('disposisi.index');
+    Route::get('/disposisi/{id}', [DisposisiController::class, 'detail'])->name('disposisi.detail');
+    Route::put('/disposisi/{id}', [DisposisiController::class, 'update'])->name('disposisi.update');
 });
