@@ -99,7 +99,6 @@
                 <div class="mt-4">
                     {{ $perdas->links() }}
                 </div>
-
             </div>
         </div>
     </div>

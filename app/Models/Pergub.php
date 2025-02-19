@@ -4,14 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
-
-class Perda extends Model
+class Pergub extends Model
 {
     use HasFactory;
 
-    protected $table = 'perda';
-    
+    protected $table = 'pergub';
+
     protected $fillable = [
         'no_agenda',
         'no_surat',
@@ -21,10 +21,11 @@ class Perda extends Model
         'perihal',
         'lampiran',
         'catatan',
-    ];
+    ];  
 
-    protected $casts = [    
-        'tanggal_surat' => 'date',      
+    protected $casts = [
+        'tanggal_surat' => 'date',
         'tanggal_terima' => 'date',
-    ];   
+    ];
+    
 }

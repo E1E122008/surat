@@ -123,5 +123,16 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/draft-phd/perda/{id}/update-catatan', [PerdaController::class, 'updateCatatan']);
     Route::post('/draft-phd/perda', [PerdaController::class, 'store'])->name('draft-phd.perda.store');
     Route::get('/draft-phd/perda/export', [PerdaController::class, 'export'])->name('draft-phd.perda.export');
+
+    //Route pergub
+    Route::get('/draft-phd/pergub', [PergubController::class, 'index'])->name('draft-phd.pergub.index');
+    Route::get('/draft-phd/pergub/create', [PergubController::class, 'create'])->name('draft-phd.pergub.create');
+    Route::get('/draft-phd/pergub/{pergub}/edit', [PergubController::class, 'edit'])->name('draft-phd.pergub.edit');
+    Route::put('/draft-phd/pergub/{pergub}', [PergubController::class, 'update'])->name('draft-phd.pergub.update');
+    Route::delete('/draft-phd/pergub/{id}', [PergubController::class, 'destroy'])->name('draft-phd.pergub.destroy');
+    Route::post('/draft-phd/pergub/{id}/update-catatan', [PergubController::class, 'updateCatatan']);
+    Route::post('/draft-phd/pergub', [PergubController::class, 'store'])->name('draft-phd.pergub.store');   
     Route::get('/draft-phd/pergub/export', [PergubController::class, 'export'])->name('draft-phd.pergub.export');
+    Route::get('/pergub', [PergubController::class, 'index'])->name('pergub.index');
+
 });
