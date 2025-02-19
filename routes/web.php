@@ -139,4 +139,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/disposisi', [DisposisiController::class, 'index'])->name('disposisi.index');
     Route::get('/disposisi/{id}', [DisposisiController::class, 'detail'])->name('disposisi.detail');
     Route::put('/disposisi/{id}', [DisposisiController::class, 'update'])->name('disposisi.update');
+    Route::get('/disposisi/{id}/edit', [DisposisiController::class, 'edit'])->name('disposisi.edit');
 });

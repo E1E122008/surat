@@ -20,6 +20,8 @@ class SuratMasuk extends Model
         'perihal',
         'lampiran',
         'catatan',
+        'disposisi',
+        
     ];
 
     protected $casts = [

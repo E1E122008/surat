@@ -23,7 +23,7 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach ($suratMasuk as $index => $surat)
+                            @foreach ($surat as $index => $surat)
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $index + 1 }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $surat->no_agenda }}</td>
@@ -32,13 +32,9 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $surat->disposisi }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex justify-center items-center">
-                                            <form action="{{ route('disposisi.update', $surat->id) }}" method="POST" class="mr-2">
-                                                @csrf
-                                                @method('PUT')
-                                                <button type="submit" class="btn btn-warning btn-sm">
-                                                    <i class="fas fa-edit"></i> Update Disposisi
-                                                </button>
-                                            </form>
+                                            <a href="{{ route('disposisi.edit', $surat->id) }}" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-edit"></i> Update Disposisi
+                                            </a>
                                             <a href="{{ route('disposisi.detail', $surat->id) }}" class="btn btn-info btn-sm detail-btn">
                                                 <i class="fas fa-eye"></i> Detail
                                             </a>

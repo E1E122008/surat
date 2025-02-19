@@ -63,19 +63,7 @@
                                         </div>
                                     </td>
 
-                                    <td class="px-4 py-4 whitespace-nowrap text-center">
-                                        <select name="disposisi" onchange="showSubpoints(this)" class="disposisi-dropdown text-center" style="background-color: lightblue; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
-                                            <option value="">Pilih Disposisi</option>
-                                            <option value="kabag">Kabag Perancangan Per-UU Kab/Kota</option>
-                                            <option value="bankum">Kabag Bantuan Hukum dan HAM</option>
-                                            <option value="madya">Koord. Perancangan Per-UU Ahli Madya</option>
-                                            <option value="kasubag">Kasubag Tata Usaha</option>
-
-                                        </select>
-                                        <select name="subpoint" class="subpoint text center" style="display: none; margin-top: 5px; background-color: rgb(183, 223, 236); border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
-                                            <option value="">Pilih Subpoint</option>
-                                        </select>
-                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ $surat->disposisi }} </td>
 
                                     <td class="px-4 py-4 whitespace-nowrap text-center">
                                         <select name="status" class="status-dropdown text-center" style="background-color: lightgreen; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
