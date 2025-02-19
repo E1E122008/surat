@@ -7,12 +7,26 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Exports\SKExport; // Pastikan Anda memiliki export untuk SK
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\DB;
 
 class SKController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $sk = SK::latest()->paginate(10);
+        $query = SK::latest();
+        
+        // Add search functionality
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('no_agenda', 'LIKE', "%{$search}%")
+                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                  ->orWhere('pengirim', 'LIKE', "%{$search}%")
+                  ->orWhere('perihal', 'LIKE', "%{$search}%");
+            });
+        }
+        
+        $sk = $query->paginate(10);
         return view('draft-phd.sk.index', compact('sk'));
     }
 
@@ -79,24 +93,33 @@ class SKController extends Controller
             ->with('success', 'SK berhasil diperbarui');
     }
 
-    public function destroy($id)
+    public function destroy(SK $sk)
     {
         try {
-            $sk = SK::findOrFail($id);
+            \DB::beginTransaction();
             
-            // Jika ada lampiran, hapus dari storage
-            if ($sk->lampiran) {
+            // Delete file if exists
+            if ($sk->lampiran && Storage::disk('public')->exists($sk->lampiran)) {
                 Storage::disk('public')->delete($sk->lampiran);
             }
             
-            // Hapus data SK
+            // Delete the SK record
             $sk->delete();
+            
+            \DB::commit();
 
-            return redirect()->route('draft-phd.sk.index')
-                ->with('success', 'Data SK berhasil dihapus!');
+            return response()->json([
+                'success' => true,
+                'message' => 'SK berhasil dihapus'
+            ]);
         } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat menghapus data!');
+            \DB::rollBack();
+            \Log::error('Error deleting SK: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus SK: ' . $e->getMessage()
+            ], 500);
         }
     }
 

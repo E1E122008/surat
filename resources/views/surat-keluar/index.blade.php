@@ -2,6 +2,20 @@
 
 @section('content')
     <div>
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         <div class="container">
             <h2 class="header h2"><strong>📂 Surat Umum</strong> / <span style="color: gray;"> Surat Keluar</span></h2>
         </div>
@@ -11,6 +25,16 @@
                     <h2 class="text-2xl font-semibold">Surat Keluar</h2>
                     
                     <div class="flex space-x-2">
+                        <form action="{{ route('surat-keluar.index') }}" method="GET" class="flex items-center">
+                            <input type="text" 
+                                   name="search" 
+                                   placeholder="Cari surat keluar..." 
+                                   class="form-control"
+                                   value="{{ request('search') }}">
+                            <button type="submit" class="btn btn-primary ml-2">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
                         
                         <a href="{{ route('surat-keluar.create') }}" 
                             class="btn btn-primary">
@@ -78,6 +102,23 @@
     </div>
 
     <script>
+        // Auto-hide alerts after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
+        });
+
+        function confirmDelete(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus surat keluar ini?')) {
+                document.getElementById('delete-form-' + id).submit();
+            }
+        }
+
         function searchTable() {
             const input = document.getElementById('search');
             const filter = input.value.toLowerCase();

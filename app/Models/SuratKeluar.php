@@ -21,6 +21,8 @@ class SuratKeluar extends Model
 
     protected $casts = [
         'tanggal_surat' => 'date',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
     // Method untuk generate nomor surat otomatis
@@ -32,6 +34,6 @@ class SuratKeluar extends Model
             ->whereMonth('created_at', $bulan)
             ->count() + 1;
             
-        return "100.3.2/{$count}/{$bulan}/{$tahun}";
+        return sprintf("100.3.2/%03d/%02d/%d", $count, $bulan, $tahun);
     }
 } 

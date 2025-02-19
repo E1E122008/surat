@@ -9,13 +9,21 @@
                 <div class="p-6 bg-white border-b border-gray-200">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-semibold">Surat Keputusan</h2>
-                        <div class="flex space-x-2">
-                            <a href="{{ route('draft-phd.sk.create') }}" 
-                               class="btn btn-primary">
+                        <div class="flex items-center space-x-2">
+                            <form action="{{ route('draft-phd.sk.index') }}" method="GET" class="flex items-center">
+                                <input type="text" 
+                                       name="search" 
+                                       value="{{ request('search') }}"
+                                       placeholder="Cari SK..." 
+                                       class="form-control px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                                <button type="submit" class="btn btn-primary ml-2">
+                                    <i class="fas fa-search"></i> Cari
+                                </button>
+                            </form>
+                            <a href="{{ route('draft-phd.sk.create') }}" class="btn btn-primary">
                                 <i class="fas fa-plus"></i> Tambah SK
                             </a>
-                            <a href="{{ route('draft-phd.sk.export') }}" 
-                               class="btn btn-success">
+                            <a href="{{ route('draft-phd.sk.export') }}" class="btn btn-success">
                                 <i class="fas fa-file-excel"></i> Export Excel
                             </a>
                         </div>
@@ -204,26 +212,51 @@
         }
 
         function confirmDelete(id) {
-            if (confirm('Apakah Anda yakin ingin menghapus SK ini?')) {
-                $.ajax({
-                    url: '{{ route("draft-phd.sk.destroy", ":id") }}'.replace(':id', id),
-                    type: 'DELETE',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            alert('SK berhasil dihapus');
-                            $('#delete-form-' + id).closest('tr').remove(); // Hapus baris dari tabel
-                        } else {
-                            alert('Gagal menghapus SK: ' + response.message);
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "SK yang dihapus tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/draft-phd/sk/${id}`,
+                        type: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire(
+                                    'Terhapus!',
+                                    'SK berhasil dihapus.',
+                                    'success'
+                                ).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    response.message,
+                                    'error'
+                                );
+                            }
+                        },
+                        error: function(xhr) {
+                            console.error('Delete error:', xhr);
+                            Swal.fire(
+                                'Error!',
+                                'Terjadi kesalahan saat menghapus SK.',
+                                'error'
+                            );
                         }
-                    },
-                    error: function(xhr) {
-                        alert('Terjadi kesalahan saat menghapus SK');
-                    }
-                });
-            }
+                    });
+                }
+            });
         }
     </script>
 @endsection

@@ -10,9 +10,21 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class SuratKeluarController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $suratKeluar = SuratKeluar::latest()->paginate(10);
+        $query = SuratKeluar::latest();
+        
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('no_agenda', 'LIKE', "%{$search}%")
+                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                  ->orWhere('perihal', 'LIKE', "%{$search}%")
+                  ->orWhere('tujuan', 'LIKE', "%{$search}%");
+            });
+        }
+        
+        $suratKeluar = $query->paginate(10);
         return view('surat-keluar.index', compact('suratKeluar'));
     }
 
@@ -24,25 +36,42 @@ class SuratKeluarController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'no_agenda' => 'required|string|max:255',
-            'no_surat' => 'required|string|max:255',
-            'tanggal_surat' => 'required|date',
-            'tujuan' => 'required|string|max:255',
-            'perihal' => 'required|string|max:255',
-            'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
-        ]);
+        try {
+            $validated = $request->validate([
+                'no_agenda' => 'required|string|max:255',
+                'no_surat' => 'required|string|max:255',
+                'tanggal_surat' => 'required|date',
+                'perihal' => 'required|string|max:255',
+                'lampiran' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
+            ]);
 
-        if ($request->hasFile('lampiran')) {
-            $file = $request->file('lampiran');
-            $path = $file->store('lampiran/surat-keluar', 'public');
-            $validated['lampiran'] = $path;
+            // Handle file upload
+            if ($request->hasFile('lampiran')) {
+                $file = $request->file('lampiran');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('lampiran/surat-keluar', $fileName, 'public');
+                $validated['lampiran'] = $path;
+            }
+
+            // Create record
+            $suratKeluar = SuratKeluar::create($validated);
+
+            if (!$suratKeluar) {
+                throw new \Exception('Gagal menyimpan data surat keluar');
+            }
+
+            return redirect()->route('surat-keluar.index')
+                ->with('success', 'Surat keluar berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            // Jika terjadi error saat upload file, hapus file yang sudah terupload
+            if (isset($path) && Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+
+            return redirect()->back()
+                ->with('error', 'Gagal menambahkan surat keluar: ' . $e->getMessage())
+                ->withInput();
         }
-
-        SuratKeluar::create($validated);
-
-        return redirect()->route('surat-keluar.index')
-            ->with('success', 'Surat keluar berhasil ditambahkan');
     }
 
     public function edit($id)

@@ -106,7 +106,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/draft-phd/sk/export', [SKController::class, 'export'])->name('draft-phd.sk.export');
     Route::get('/draft-phd/sk/{sk}/edit', [SKController::class, 'edit'])->name('draft-phd.sk.edit');
     Route::put('/draft-phd/sk/{sk}', [SKController::class, 'update'])->name('draft-phd.sk.update');
-    Route::delete('/draft-phd/sk/{id}', [SKController::class, 'destroy'])->name('draft-phd.sk.destroy');
+    Route::delete('/draft-phd/sk/{sk}', [SKController::class, 'destroy'])->name('draft-phd.sk.destroy');
     Route::post('/draft-phd/sk/{id}/update-catatan', [SKController::class, 'updateCatatan']);
 
     Route::post('/update-disposisi/{id}', [SuratMasukController::class, 'updateDisposisi']);

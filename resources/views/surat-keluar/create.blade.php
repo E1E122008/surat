@@ -24,7 +24,7 @@
                     <label for="no_surat" class="form-label">Nomor Surat</label>
                     <input type="text" name="no_surat" id="no_surat" 
                         class="form-control @error('no_surat') is-invalid @enderror"
-                        value="{{ $nomorSurat }}" readonly>
+                        value="{{ old('no_surat', $nomorSurat) }}" required>
                     @error('no_surat')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -40,8 +40,7 @@
                     @enderror
                 </div>
 
-                
-
+              
                 <div class="form-group form-grid-full">
                     <label for="perihal" class="form-label">Perihal</label>
                     <textarea name="perihal" id="perihal" rows="3" 
@@ -55,8 +54,9 @@
                 <div class="form-group form-grid-full">
                     <label for="lampiran" class="form-label">Lampiran</label>
                     <input type="file" name="lampiran" id="lampiran" 
-                        class="form-control @error('lampiran') is-invalid @enderror">
-                    <div class="form-help">PDF, DOC, atau DOCX (Maksimal 2MB)</div>
+                        class="form-control @error('lampiran') is-invalid @enderror"
+                        required>
+                    <div class="form-help">PDF, DOC, DOCX, JPG, JPEG, PNG, atau GIF (Maksimal 2MB)</div>
                     @error('lampiran')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -64,9 +64,15 @@
             </div>
 
             <div class="form-actions">
-                <a href="{{ route('surat-keluar.index') }}" class="btn btn-cancel">Batal</a>
-                <button type="submit" class="btn btn-submit">Simpan</button>
+                <a href="{{ route('surat-keluar.index') }}" class="btn btn-secondary">Batal</a>
+                <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
         </form>
     </div>
+
+    @if(session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
 @endsection
