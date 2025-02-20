@@ -119,7 +119,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/draft-phd/perda/create', [PerdaController::class, 'create'])->name('draft-phd.perda.create');
     Route::get('/draft-phd/perda/{perda}/edit', [PerdaController::class, 'edit'])->name('draft-phd.perda.edit');
     Route::put('/draft-phd/perda/{perda}', [PerdaController::class, 'update'])->name('draft-phd.perda.update');
-    Route::delete('/draft-phd/perda/{id}', [PerdaController::class, 'destroy'])->name('draft-phd.perda.destroy');
+    Route::delete('/draft-phd/perda/{perda}', [PerdaController::class, 'destroy'])->name('draft-phd.perda.destroy');
     Route::post('/draft-phd/perda/{id}/update-catatan', [PerdaController::class, 'updateCatatan']);
     Route::post('/draft-phd/perda', [PerdaController::class, 'store'])->name('draft-phd.perda.store');
     Route::get('/draft-phd/perda/export', [PerdaController::class, 'export'])->name('draft-phd.perda.export');

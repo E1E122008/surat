@@ -92,7 +92,7 @@
                                         <a href="{{ route('draft-phd.perda.edit', $perda->id) }}" class="btn btn-info btn-sm edit-btn">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form class="inline-block" id="delete-form-{{ $perda->id }}">
+                                        <form class="inline-block" id="delete-form-{{ $perda->id }}" action="{{ route('draft-phd.perda.destroy', $perda->id) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
                                             <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $perda->id }})">
@@ -112,30 +112,34 @@
         </div>
     </div>
     <script>
-        function showSubpoints(select) {
-            let selectedValue = select.value;
-            let subpointSelect = select.parentElement.querySelector('.subpoint');
+        function searchTable() {
+            const input = document.getElementById('search');
+            const filter = input.value.toLowerCase();
+            const table = document.querySelector('table');
+            const tr = table.getElementsByTagName('tr');
             
-            let subpoints = {
-                'kabag': ['Perancangan perUU Kab/Kota 1', 'Perancangan perUU Kab/Kota 2', 'Perancangan perUU Kab/Kota 3'],
-                'bankum': ['Litigasi', 'Non-litigasi', 'Kasubag Tata Usaha'],
-                'madya': ['Subker Penetapan', 'Subker Pengaturan']
-            };
-
-            subpointSelect.innerHTML = '<option value="">Pilih Subpoint</option>';  
-
-            if (selectedValue && subpoints[selectedValue]) {
-                subpoints[selectedValue].forEach(sp => {
-                    let option = document.createElement("option");
-                    option.value = sp.toLowerCase().replace(/\s+/g, '_');
-                    option.textContent = sp;
-                    subpointSelect.appendChild(option);
-                });
+            for (let i = 1; i < tr.length; i++) {
+                const td = tr[i].getElementsByTagName('td');
+                let found = false;
+                for (let j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        const txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                tr[i].style.display = found ? "" : "none";
             }
-
-            subpointSelect.style.display = selectedValue ? 'block' : 'none';
         }
 
+        // Fungsi untuk menghapus surat Peraturan Daerah
+        function confirmDelete(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus surat Peraturan Daerah ini?')) {
+                document.getElementById('delete-form-' + id).submit();
+            }
+        }
         // Fungsi untuk menampilkan alert sukses
         function showSuccess(message) {
             Swal.fire({

@@ -12,9 +12,21 @@ use App\Exports\PerdaExport;
 
 class PerdaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $perdas = Perda::paginate(10);
+        $query = Perda::latest();
+        
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('no_agenda', 'LIKE', "%{$search}%")
+                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                  ->orWhere('perihal', 'LIKE', "%{$search}%")
+                  ->orWhere('pengirim', 'LIKE', "%{$search}%");
+            });
+        }
+        
+        $perdas = $query->paginate(10);
 
         return view('draft-phd.perda.index', compact('perdas'));
     }
@@ -26,36 +38,49 @@ class PerdaController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'no_agenda' => 'required|string|max:255',
-            'no_surat' => 'required|string|max:255',
-            'pengirim' => 'required|string|max:255',    
-            'tanggal_surat' => 'required|date',
-            'tanggal_terima' => 'required|date',
-            'perihal' => 'required|string|max:255',
-            'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
-        ]);
+        try {
+            $validated = $request->validate([
+                'no_agenda' => 'required|string|max:255',
+                'no_surat' => 'required|string|max:255',
+                'pengirim' => 'required|string|max:255',    
+                'tanggal_surat' => 'required|date',
+                'tanggal_terima' => 'required|date',
+                'perihal' => 'required|string|max:255',
+                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+            ]);
         
-        if ($request->hasFile('lampiran')) {
-            $file = $request->file('lampiran');
-            $path = $file->store('lampiran/perda', 'public');
-            $validated['lampiran'] = $path;
-        }
-        
-        Perda::create($validated);
+            if ($request->hasFile('lampiran')) {
+                $file = $request->file('lampiran');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('lampiran/perda', $fileName, 'public');
+                $validated['lampiran'] = $path;
+            }
+            
+            Perda::create($validated);
 
-        return redirect()->route('draft-phd.perda.index')
-            ->with('success', 'Perda berhasil ditambahkan');
+            return redirect()->route('draft-phd.perda.index')
+                ->with('success', 'Perda berhasil ditambahkan');
+        } catch (\Exception $e) {
+            if (isset($path) && Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat menambahkan data!' . $e->getMessage())
+                ->withInput();
+        }
     }
 
-    public function edit(Perda $perda)
-    {
+    public function edit($id)
+    {   
+        $perda = Perda::findOrFail($id);
         return view('draft-phd.perda.edit', compact('perda'));
     }
 
-    public function update(Request $request, Perda $perda)
+    public function update(Request $request, $id)
     {
         try {
+            $perda = Perda::findOrFail($id);
             $validated = $request->validate([
                 'no_agenda' => 'required|string|max:255',
                 'no_surat' => 'required|string|max:255',
@@ -108,23 +133,16 @@ class PerdaController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function destroy(Perda $perda)
     {
-        try {
-            $perda = Perda::findOrFail($id);
-            
-            if ($perda->lampiran) {
-                Storage::disk('public')->delete($perda->lampiran);
-            }
-
-            $perda->delete();
-
-            return redirect()->route('draft-phd.perda.index')   
-                ->with('success', 'Data perda berhasil dihapus!');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat menghapus data!');
+        if ($perda->lampiran) {
+            Storage::disk('public')->delete($perda->lampiran);
         }
+
+        $perda->delete();
+
+        return redirect()->route('draft-phd.perda.index')
+            ->with('success', 'Surat Peraturan Daerah berhasil dihapus');
     }
 
     public function export()
