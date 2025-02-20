@@ -72,7 +72,7 @@
                                                 class="btn btn-info btn-sm edit-btn">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form class="inline-block" action="{{ route('sppd-luar-daerah.destroy', $item->id) }}" method="POST">
+                                                <form class="inline-block" id="delete-form-{{ $item->id }}" action="{{ route('sppd-luar-daerah.destroy', $item->id) }}" method="POST">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $item->id }})">
@@ -94,4 +94,30 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function confirmDelete(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus SPPD Luar Daerah ini?')) {
+                document.getElementById('delete-form-' + id).submit();
+            }
+        }   
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script  src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.min-w-full').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": true,
+                "responsive": true,
+                "pageLength": 3,
+            });
+        });
+    </script>
 @endsection

@@ -36,25 +36,43 @@ class SppdLuarDaerahController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'no_agenda' => 'required|string|max:255',
-            'no_surat' => 'required|string|max:255',
-            'tanggal' => 'required|date',
-            'tujuan' => 'required|string|max:255',
-            'perihal' => 'required|string|max:255',
-            'nama_petugas' => 'required|string',
-            'lampiran' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx|max:2048',
-        ]);
+    {   
+        try {
+            $validated = $request->validate([
+                'no_agenda' => 'required|string|max:255',
+                'no_surat' => 'required|string|max:255',
+                'tanggal' => 'required|date',
+                'tujuan' => 'required|string|max:255',
+                'perihal' => 'required|string|max:255',
+                'nama_petugas' => 'required|string',
+                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx|max:2048',
+            ]);
 
-        SppdLuarDaerah::create($validated);
+            if ($request->hasFile('lampiran')) {
+                $file = $request->file('lampiran');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('lampiran/sppd-luar-daerah', $fileName, 'public');
+                $validated['lampiran'] = $path;
+            }
 
-        return redirect()->route('sppd-luar-daerah.index')
-            ->with('success', 'SPPD Luar Daerah berhasil ditambahkan');
+            SppdLuarDaerah::create($validated);
+
+            return redirect()->route('sppd-luar-daerah.index')
+                ->with('success', 'SPPD Luar Daerah berhasil ditambahkan');
+        } catch (\Exception $e) {
+            if (isset($path) && Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat menambahkan data!' . $e->getMessage())
+                ->withInput();
+        }
     }
 
-    public function edit(SppdLuarDaerah $sppdLuarDaerah)
+    public function edit($id)
     {
+        $sppdLuarDaerah = SppdLuarDaerah::findOrFail($id)   ;
         return view('sppd-luar-daerah.edit', compact('sppdLuarDaerah'));
     }
 
@@ -72,6 +90,11 @@ class SppdLuarDaerahController extends Controller
             ]);
 
             if ($request->hasFile('lampiran')) {
+                // Hapus file lama jika ada
+                if ($sppdLuarDaerah->lampiran) {
+                    Storage::disk('public')->delete($sppdLuarDaerah->lampiran);
+                }
+
                 $file = $request->file('lampiran');
                 $path = $file->store('lampiran/sppd-luar-daerah', 'public');
                 $validated['lampiran'] = $path;
@@ -88,7 +111,11 @@ class SppdLuarDaerahController extends Controller
     }
 
     public function destroy(SppdLuarDaerah $sppdLuarDaerah)
-    {
+    {   
+        if ($sppdLuarDaerah->lampiran) {
+            Storage::disk('public')->delete($sppdLuarDaerah->lampiran);
+        }
+
         $sppdLuarDaerah->delete();
 
         return redirect()->route('sppd-luar-daerah.index')

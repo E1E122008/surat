@@ -45,11 +45,12 @@
                     </div>
 
                     <div class="form-group col-span-2">
-                        <label for="perihal" class="form-label">Perihal</label>
+                        <label for="perihal" class="block text-sm font-medium text-gray-700">Perihal</label>
                         <textarea name="perihal" id="perihal" 
-                            class="form-control @error('perihal') is-invalid @enderror"
-                            value="{{ old('perihal', $suratKeluar->perihal) }}" required>
-                        </textarea>
+                            class="form-textarea" 
+                            placeholder="Masukkan perihal surat" 
+                            required
+                        >{{ old('perihal', $suratKeluar->perihal) }}</textarea>
                         @error('perihal')
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                         @enderror   

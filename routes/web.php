@@ -59,8 +59,12 @@ Route::middleware(['auth'])->group(function () {
         ->name('surat-keluar.export');
 
     Route::resource('sppd-dalam-daerah', SppdDalamDaerahController::class)->except(['show']);
+    Route::get('sppd-dalam-daerah/create', [SppdDalamDaerahController::class, 'create'])
+        ->name('sppd-dalam-daerah.create');
     Route::get('sppd-dalam-daerah/{id}/edit', [SppdDalamDaerahController::class, 'edit'])
         ->name('sppd-dalam-daerah.edit');
+    Route::put('sppd-dalam-daerah/{id}', [SppdDalamDaerahController::class, 'update'])
+        ->name('sppd-dalam-daerah.update');
     Route::delete('sppd-dalam-daerah/{id}', [SppdDalamDaerahController::class, 'destroy'])
         ->name('sppd-dalam-daerah.destroy');
     Route::get('sppd-dalam-daerah/{sppdDalamDaerah}/print', [SppdDalamDaerahController::class, 'print'])

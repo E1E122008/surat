@@ -10,6 +10,16 @@
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-semibold">SPPD Dalam Daerah</h2>
                         <div class="flex space-x-2">
+                            <form action="{{ route('sppd-dalam-daerah.index') }}" method="GET" class="flex items-center">
+                                <input type="text" 
+                                       name="search" 
+                                       value="{{ request('search') }}"
+                                       placeholder="Cari SPPD Dalam Daerah..." 
+                                       class="form-control"> 
+                                <button type="submit" class="btn btn-primary ml-2">
+                                    <i class="fas fa-search"></i> Cari
+                                </button>
+                            </form>
                             <a href="{{ route('sppd-dalam-daerah.create') }}" 
                                class="btn btn-primary">
                                 <i class="fas fa-plus"></i> SPPD Baru
@@ -55,18 +65,15 @@
                                     
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex justify-center items-center">
-                                                <a href="{{ route('sppd-dalam-daerah.print', $item->id) }}" 
-                                                class="btn btn-success btn-sm" title="Print">
-                                                    <i class="fas fa-print"></i>
-                                                </a>
+
                                                 <a href="{{ route('sppd-dalam-daerah.edit', $item->id) }}" 
-                                                class="btn btn-info btn-sm edit-btn">
+                                                class="btn btn-info btn-sm edit-btn" title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form class="inline-block" action="{{ route('sppd-dalam-daerah.destroy', $item->id) }}" method="POST">
+                                                <form class="d-inline" id="delete-form-{{ $item->id }}" action="{{ route('sppd-dalam-daerah.destroy', $item->id) }}" method="POST" >
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $item->id }})">
+                                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $item->id }})" title="Hapus">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
@@ -85,4 +92,45 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function confirmDelete(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus SPPD Dalam Daerah ini?')) {
+                document.getElementById('delete-form-' + id).submit();
+            }
+        }
+
+        function searchTable() {
+            const input = document.getElementById('search');
+            const filter = input.value.toLowerCase();
+            const table = document.querySelector('table');
+            const tr = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < tr.length; i++) {
+                const td = tr[i].getElementsByTagName('td');
+                let found = false;
+                for (let j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.min-w-full').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,   
+                "info": true,
+                "autoWidth": true,
+                "responsive": true,
+                "pageLength": 2,
+                
+            });
+        });
+    </script>
 @endsection 

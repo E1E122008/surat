@@ -24,6 +24,8 @@ class SppdDalamDaerah extends Model
 
     protected $casts = [
         'tanggal' => 'date',
+        'created_at' => 'date',
+        'updated_at' => 'date',
     ];
 
     // Method untuk generate nomor surat otomatis
