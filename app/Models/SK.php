@@ -25,5 +25,8 @@ class SK extends Model
     protected $casts = [
         'tanggal_surat' => 'date',
         'tanggal_terima' => 'date',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
+
 } 

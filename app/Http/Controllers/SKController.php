@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Exports\SKExport; // Pastikan Anda memiliki export untuk SK
 use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\DB;
 
 class SKController extends Controller
 {
@@ -36,27 +35,42 @@ class SKController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'no_agenda' => 'required|string|max:255',
-            'no_surat' => 'required|string|max:255|unique:sks,no_surat',
-            'pengirim' => 'required|string|max:255',
-            'tanggal_surat' => 'required|date',
-            'tanggal_terima' => 'required|date',
-            'perihal' => 'required|string|max:255',
-            'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
-        ]);
+    { 
+        try {
+            $validated = $request->validate([
+                'no_agenda' => 'required|string|max:255',
+                'no_surat' => 'required|string|max:255|unique:sks,no_surat',
+                'pengirim' => 'required|string|max:255',
+                'tanggal_surat' => 'required|date',
+                'tanggal_terima' => 'required|date',
+                'perihal' => 'required|string|max:255',
+                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+            ]);
 
-        if ($request->hasFile('lampiran')) {
-            $file = $request->file('lampiran');
-            $path = $file->store('lampiran/sk', 'public');
-            $validated['lampiran'] = $path;
+            if ($request->hasFile('lampiran')) {
+                $file = $request->file('lampiran');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('lampiran/sk', $fileName, 'public');
+                $validated['lampiran'] = $path;
+            }
+
+            $sk = SK::create($validated);
+
+            if (!$sk) {
+                throw new \Exception('Gagal menyimpan data surat keluar');
+            }
+
+            return redirect()->route('draft-phd.sk.index')
+                ->with('success', 'SK berhasil ditambahkan');
+        } catch (\Exception $e) {
+            // Jika terjadi error saat upload file, hapus file yang sudah terupload
+            if (isset($path) && Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+
+            return redirect()->route('draft-phd.sk.index')
+                ->with('error', 'Gagal menyimpan data surat keluar');
         }
-
-        SK::create($validated);
-
-        return redirect()->route('draft-phd.sk.index')
-            ->with('success', 'SK berhasil ditambahkan');
     }
 
     public function edit(SK $sk)
@@ -66,58 +80,52 @@ class SKController extends Controller
 
     public function update(Request $request, SK $sk)
     {
-        $validated = $request->validate([
-            'no_agenda' => 'required|string|max:255',
-            'no_surat' => 'required|string|max:255',
-            'pengirim' => 'required|string|max:255',
-            'tanggal_surat' => 'required|date',
-            'tanggal_terima' => 'required|date',
-            'perihal' => 'required|string|max:255',
-            'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
-        ]);
+        try {
+            $validated = $request->validate([
+                'no_agenda' => 'required|string|max:255',
+                'no_surat' => 'required|string|max:255',
+                'pengirim' => 'required|string|max:255',
+                'tanggal_surat' => 'required|date',
+                'tanggal_terima' => 'required|date',
+                'perihal' => 'required|string|max:255',
+                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+            ]);
 
-        if ($request->hasFile('lampiran')) {
-            // Hapus file lama jika ada
-            if ($sk->lampiran) {
-                Storage::disk('public')->delete($sk->lampiran);
+            if ($request->hasFile('lampiran')) {
+                // Hapus file lama jika ada
+                if ($sk->lampiran) {
+                    Storage::disk('public')->delete($sk->lampiran);
+                }
+                
+                $file = $request->file('lampiran');
+                $path = $file->store('lampiran/sk', 'public');
+                $validated['lampiran'] = $path;
             }
-            
-            $file = $request->file('lampiran');
-            $path = $file->store('lampiran/sk', 'public');
-            $validated['lampiran'] = $path;
+
+            $sk->update($validated);
+
+            return redirect()->route('draft-phd.sk.index')
+                ->with('success', 'SK berhasil diperbarui');
+        } catch (\Exception $e) {
+            return redirect()->route('draft-phd.sk.edit', $sk->id)
+                ->with('error', 'Gagal memperbarui SK: ' . $e->getMessage());
         }
-
-        $sk->update($validated);
-
-        return redirect()->route('draft-phd.sk.index')
-            ->with('success', 'SK berhasil diperbarui');
     }
 
-    public function destroy($id)
+    public function destroy(SK $sk)
     {
-        try {
-            $sk = SK::findOrFail($id);
-            
-            // Delete file if exists
-            if ($sk->lampiran) {
-                Storage::disk('public')->delete($sk->lampiran);
-            }
+
+        // Delete file if exists
+        if ($sk->lampiran) {
+            Storage::disk('public')->delete($sk->lampiran);
+        }
             
             // Delete the SK record
-            $sk->delete();
+        $sk->delete();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'SK berhasil dihapus'
-            ]);
-        } catch (\Exception $e) {
-            \Log::error('Error deleting SK: ' . $e->getMessage());
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal menghapus SK'
-            ], 500);
-        }
+            return redirect()->route('draft-phd.sk.index')
+                ->with('success', 'SK berhasil dihapus');
+        
     }
 
     public function export() 

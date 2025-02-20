@@ -79,8 +79,6 @@
                                             </select>
                                             <select name="subpoint" class="subpoint text center" style="display: none; margin-top: 5px; background-color: rgb(183, 223, 236); border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
                                                 <option value="">Pilih Subpoint</option>
-                                            </select>
-                                        </td>
                                         <td class="px-4 py-4 whitespace-nowrap text-center">
                                             <select name="status" class="status-dropdown text-center" style="background-color: lightgreen; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
                                                 <option value="">Pilih Status</option>
@@ -97,7 +95,7 @@
                                                 <a href="{{ route('draft-phd.sk.edit', $item->id) }}" class="btn btn-info btn-sm edit-btn">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form class="inline-block" id="delete-form-{{ $item->id }}">
+                                                <form class="d-inline" id="delete-form-{{ $item->id }}" action="{{ route('draft-phd.sk.destroy', $item->id) }}" method="POST">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $item->id }})">
@@ -123,36 +121,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <script>
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-
-    function showSubpoints(select) {
-        let selectedValue = select.value;
-        let subpointSelect = select.parentElement.querySelector('.subpoint');
-        
-        let subpoints = {
-            'kabag': ['Analisis Hukum 1', 'Analisis Hukum 2','Analisis Hukum 3'],
-            'bankum': ['Litigasi', 'Non-litigasi', 'Kasubag Tata Usaha'],
-            'madya': ['Subker Penetapan', 'Subker Pengaturan']
-        };
-
-        subpointSelect.innerHTML = '<option value="">Pilih Subpoint</option>';
-
-        if (selectedValue && subpoints[selectedValue]) {
-            subpoints[selectedValue].forEach(sp => {
-                let option = document.createElement("option");
-                option.value = sp.toLowerCase().replace(/\s+/g, '_');
-                option.textContent = sp;
-                subpointSelect.appendChild(option);
-            });
-        }
-
-        subpointSelect.style.display = selectedValue ? 'block' : 'none';
-    }
-
     // Fungsi untuk menampilkan alert sukses
     function showSuccess(message) {
         Swal.fire({
@@ -220,52 +188,10 @@
     }
 
     function confirmDelete(id) {
-        Swal.fire({
-            title: 'Apakah Anda yakin?',
-            text: "SK yang dihapus tidak dapat dikembalikan!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                deleteRecord(id);
-            }
-        });
+        if (confirm('Apakah Anda yakin ingin menghapus Surat Keputusan ini?')) {
+            document.getElementById('delete-form-' + id).submit();
+        }
     }
 
-    function deleteRecord(id) {
-        $.ajax({
-            url: '/draft-phd/sk/' + id,
-            type: 'DELETE',
-            success: function(result) {
-                if (result.success) {
-                    Swal.fire(
-                        'Terhapus!',
-                        'SK berhasil dihapus.',
-                        'success'
-                    ).then(() => {
-                        location.reload();
-                    });
-                } else {
-                    Swal.fire(
-                        'Error!',
-                        result.message,
-                        'error'
-                    );
-                }
-            },
-            error: function(xhr) {
-                console.error('Delete error:', xhr);
-                Swal.fire(
-                    'Error!',
-                    'Terjadi kesalahan saat menghapus SK.',
-                    'error'
-                );
-            }
-        });
-    }
     </script>
 @endsection
