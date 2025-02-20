@@ -6,7 +6,7 @@
             <h2>Tambah SPT Luar Daerah</h2>
         </div>
 
-        <form action="{{ route('spt-luar-daerah.store') }}" method="POST">
+        <form action="{{ route('spt-luar-daerah.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             
             <div class="form-grid">
@@ -23,7 +23,7 @@
                     <label for="no_surat" class="form-label">Nomor Surat</label>
                     <input type="text" name="no_surat" id="no_surat" 
                         class="form-control @error('no_surat') is-invalid @enderror"
-                        value="{{ $nomorSurat }}" readonly>
+                        value="{{ $nomorSurat }}" required>
                     @error('no_surat')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -35,6 +35,16 @@
                         class="form-control @error('tanggal') is-invalid @enderror"
                         value="{{ old('tanggal', date('Y-m-d')) }}" required>
                     @error('tanggal')
+                        <div class="form-error">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="tujuan" class="form-label">Tujuan</label>
+                    <input type="text" name="tujuan" id="tujuan" 
+                        class="form-control @error('tujuan') is-invalid @enderror"
+                        value="{{ old('tujuan') }}" required>
+                    @error('tujuan')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
                 </div>
@@ -63,8 +73,12 @@
                 <div class="form-group form-grid-full">
                     <label for="lampiran" class="form-label">Lampiran</label>
                     <input type="file" name="lampiran" id="lampiran" 
-                        class="form-control @error('lampiran') is-invalid @enderror">
+                        class="form-control @error('lampiran') is-invalid @enderror"
+                        required>
                     <div class="form-help">PDF, DOC, atau DOCX (Maksimal 2MB)</div>
+                    @error('lampiran')
+                        <div class="form-error">{{ $message }}</div>
+                    @enderror
                 </div>
             </div>
 

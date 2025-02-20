@@ -39,6 +39,7 @@
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tujuan</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Perihal</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Nama Petugas</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Lampiran</th>
@@ -52,27 +53,24 @@
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $item->no_agenda }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $item->no_surat }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $item->tanggal->format('d/m/Y') }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $item->tujuan }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $item->perihal }}</td>
                                         <td class="px-6 py-4 text-center">{{ $item->nama_petugas }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $item->lampiran }} 
+                                        <td class="px-6 py-4 whitespace-nowrap">
                                             <button onclick="window.location.href='{{ asset('storage/' . $item->lampiran) }}'" class="btn btn-primary">
                                                 <i class="fas fa-eye"></i> Lihat Lampiran
                                             </button>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex justify-center items-center">
-                                                <a href="{{ route('spt-luar-daerah.print', $item->id) }}" 
-                                                class="btn btn-success btn-sm" title="Print">
-                                                    <i class="fas fa-print"></i>
-                                                </a>
                                                 <a href="{{ route('spt-luar-daerah.edit', $item->id) }}" 
-                                                class="btn btn-info btn-sm edit-btn">
+                                                class="btn btn-info btn-sm edit-btn" title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form class="inline-block" action="{{ route('spt-luar-daerah.destroy', $item->id) }}" method="POST">
+                                                <form class="d-inline" id="delete-form-{{ $item->id }}" action="{{ route('spt-luar-daerah.destroy', $item->id) }}" method="POST" >
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $item->id }})">
+                                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $item->id }})" title="Hapus">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
@@ -91,4 +89,28 @@
             </div>
         </div>
     </div>
+    <script>
+        function confirmDelete(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus SPT Luar Daerah ini?')) {
+                document.getElementById('delete-form-' + id).submit();
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.min-w-full').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": true,
+                "responsive": true,
+                "pageLength":15 ,
+            });
+        });
+    </script>
 @endsection

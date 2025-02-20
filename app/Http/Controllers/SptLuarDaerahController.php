@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SptLuarDaerah;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Exports\SptLuarDaerahExport;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -18,6 +19,8 @@ class SptLuarDaerahController extends Controller
             $query->where(function($q) use ($search) {
                 $q->where('no_agenda', 'LIKE', "%{$search}%")
                   ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                  ->orWhere('tanggal', 'LIKE', "%{$search}%")
+                  ->orWhere('tujuan', 'LIKE', "%{$search}%")
                   ->orWhere('perihal', 'LIKE', "%{$search}%")
                   ->orWhere('nama_petugas', 'LIKE', "%{$search}%");
             });
@@ -35,50 +38,94 @@ class SptLuarDaerahController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'no_surat' => 'required|string|max:255',
-            'tanggal' => 'required|date',
-            'perihal' => 'required|string|max:255',
-            'nama_petugas' => 'required|string',
-        ]);
+        try {
+            $validated = $request->validate([
+                'no_agenda' => 'required|string',
+                'no_surat' => 'required|string|max:255',
+                'tanggal' => 'required|date',
+                'tujuan' => 'required|string|max:255',
+                'perihal' => 'required|string|max:255',
+                'nama_petugas' => 'required|string',
+                'lampiran' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
+            ]);
 
-        SptLuarDaerah::create($validated);
+            if ($request->hasFile('lampiran')) {
+                $file = $request->file('lampiran');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('lampiran/spt-luar-daerah', $fileName, 'public');
+                $validated['lampiran'] = $path;
+            }
 
-        return redirect()->route('spt-luar-daerah.index')
-            ->with('success', 'SPT Luar Daerah berhasil ditambahkan');
+            $sptLuarDaerah = SptLuarDaerah::create($validated);
+
+            if (!$sptLuarDaerah) {
+                throw new \Exception('Gagal menyimpan data spt luar daerah');
+            }
+
+            return redirect()->route('spt-luar-daerah.index')
+                ->with('success', 'SPT Luar Daerah berhasil ditambahkan');
+        } catch (\Exception $e) {
+            if (isset($path) && Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat menambahkan SPT Luar Daerah: ' . $e->getMessage())
+                ->withInput();  
+        }
     }
 
-    public function edit(SptLuarDaerah $sptLuarDaerah)
+    public function edit($id)
     {
+        $sptLuarDaerah = SptLuarDaerah::findOrFail($id);
         return view('spt-luar-daerah.edit', compact('sptLuarDaerah'));
     }
 
     public function update(Request $request, SptLuarDaerah $sptLuarDaerah)
-    {
-        $validated = $request->validate([
-            'no_surat' => 'required|string|max:255',
-            'tanggal' => 'required|date',
-            'perihal' => 'required|string|max:255',
-            'nama_petugas' => 'required|string',
-        ]);
+    {   
+        try {
+            $validated = $request->validate([
+                'no_agenda' => 'required|string',
+                'no_surat' => 'required|string|max:255',
+                'tanggal' => 'required|date',
+                'tujuan' => 'required|string|max:255',
+                'perihal' => 'required|string|max:255',
+                'nama_petugas' => 'required|string',
+                'lampiran' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
+            ]);
 
-        $sptLuarDaerah->update($validated);
+            if ($request->hasFile('lampiran')) {
+                if ($sptLuarDaerah->lampiran) {
+                    Storage::disk('public')->delete($sptLuarDaerah->lampiran);
+                }
+                $file = $request->file('lampiran');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('lampiran/spt-luar-daerah', $fileName, 'public');
+                $validated['lampiran'] = $path;
+            }
 
-        return redirect()->route('spt-luar-daerah.index')
-            ->with('success', 'SPT Luar Daerah berhasil diperbarui');
+            $sptLuarDaerah->update($validated);
+
+            return redirect()->route('spt-luar-daerah.index')
+                ->with('success', 'SPT Luar Daerah berhasil diperbarui');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat memperbarui SPT Luar Daerah: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     public function destroy(SptLuarDaerah $sptLuarDaerah)
     {
+        // Hapus file lampiran jika ada
+        if ($sptLuarDaerah->lampiran) {
+            Storage::disk('public')->delete($sptLuarDaerah->lampiran);
+        }
+
         $sptLuarDaerah->delete();
 
         return redirect()->route('spt-luar-daerah.index')
             ->with('success', 'SPT Luar Daerah berhasil dihapus');
-    }
-
-    public function print(SptLuarDaerah $sptLuarDaerah)
-    {
-        return view('spt-luar-daerah.print', compact('sptLuarDaerah'));
     }
 
     public function export()

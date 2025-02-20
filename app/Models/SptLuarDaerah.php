@@ -15,6 +15,7 @@ class SptLuarDaerah extends Model
         'no_agenda',
         'no_surat',
         'tanggal',
+        'tujuan',
         'perihal',
         'nama_petugas',
         'lampiran'
@@ -22,6 +23,8 @@ class SptLuarDaerah extends Model
 
     protected $casts = [
         'tanggal' => 'date',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
     // Method untuk generate nomor surat otomatis

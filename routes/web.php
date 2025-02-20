@@ -93,8 +93,12 @@ Route::middleware(['auth'])->group(function () {
         ->name('spt-dalam-daerah.export');
 
     Route::resource('spt-luar-daerah', SptLuarDaerahController::class);
-    Route::get('spt-luar-daerah/{sptLuarDaerah}/print', [SptLuarDaerahController::class, 'print'])
-        ->name('spt-luar-daerah.print');
+    Route::get('spt-luar-daerah/{sptLuarDaerah}/edit', [SptLuarDaerahController::class, 'edit'])
+        ->name('spt-luar-daerah.edit');
+    Route::put('spt-luar-daerah/{sptLuarDaerah}', [SptLuarDaerahController::class, 'update'])
+        ->name('spt-luar-daerah.update');
+    Route::delete('spt-luar-daerah/{sptLuarDaerah}', [SptLuarDaerahController::class, 'destroy'])
+        ->name('spt-luar-daerah.destroy');
     Route::get('spt-luar-daerah-export', [SptLuarDaerahController::class, 'export'])
         ->name('spt-luar-daerah.export');
 
