@@ -93,7 +93,7 @@
                                         <a href="{{ route('draft-phd.pergub.edit', $pergub->id) }}" class="btn btn-info btn-sm edit-btn">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form class="inline-block" id="delete-form-{{ $pergub->id }}">
+                                        <form class="inline-block" id="delete-form-{{ $pergub->id }}" action="{{ route('draft-phd.pergub.destroy', $pergub->id) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
                                             <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $pergub->id }})">
@@ -113,26 +113,9 @@
         </div>
     </div>
     <script>
-        function showSubpoints(select) {
-            let selectedValue = select.value;
-            let subpointSelect = select.parentElement.querySelector('.subpoint');
-            
-            let subpoints = {
-                kabag: ['Perancangan perUU Kab/Kota'],
-                bankum: ['Kabag Bantuan dan Hukum'],
-                madya: ['Perancangan PerUU Ahli Madya']
-            };
-            
-            if (subpoints[selectedValue]) { 
-                subpointSelect.innerHTML = '';
-                subpoints[selectedValue].forEach(subpoint => {
-                    let option = document.createElement('option');
-                    option.value = subpoint;
-                    option.textContent = subpoint;
-                    subpointSelect.appendChild(option); 
-                });
-            } else {
-                subpointSelect.innerHTML = '<option value="">Pilih Subpoint</option>';
+        function confirmDelete(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus peraturan gubernur ini?')) {
+                document.getElementById('delete-form-' + id).submit();
             }
         }
 

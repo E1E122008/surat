@@ -35,36 +35,54 @@ class PergubController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'no_agenda' => 'required|string|max:255',
-            'no_surat' => 'required|string|max:255|unique:pergub,no_surat',
-            'pengirim' => 'required|string|max:255',
-            'tanggal_surat' => 'required|date',
-            'tanggal_terima' => 'required|date',
-            'perihal' => 'required|string|max:255',
-            'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
-        ]);
+        try {
+            $validated = $request->validate([
+                'no_agenda' => 'required|string|max:255',
+                'no_surat' => 'required|string|max:255|unique:pergub,no_surat',
+                'pengirim' => 'required|string|max:255',
+                'tanggal_surat' => 'required|date',
+                'tanggal_terima' => 'required|date',
+                'perihal' => 'required|string|max:255',
+                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+            ]);
 
-        if ($request->hasFile('lampiran')) {
-            $file = $request->file('lampiran');
-            $path = $file->store('lampiran/pergub', 'public');
-            $validated['lampiran'] = $path;
+            if ($request->hasFile('lampiran')) {
+                $file = $request->file('lampiran');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('lampiran/pergub', $fileName, 'public');
+                $validated['lampiran'] = $path;
+            }
+
+            $pergub = Pergub::create($validated);
+
+            if (!$pergub) {
+                throw new \Exception('Gagal menyimpan data pergub');
+            }
+
+            return redirect()->route('draft-phd.pergub.index')
+                ->with('success', 'Pergub berhasil ditambahkan');
+        } catch (\Exception $e) {
+            if (isset($path) && Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat menambahkan data!')
+                ->withInput();
+
         }
-
-        Pergub::create($validated);
-
-        return redirect()->route('draft-phd.pergub.index')
-            ->with('success', 'Pergub berhasil ditambahkan');
     }
 
-    public function edit(Pergub $pergub)
-    {
+    public function edit($id)
+    {       
+        $pergub = Pergub::findOrFail($id);
         return view('draft-phd.pergub.edit', compact('pergub'));
     }   
 
-    public function update(Request $request, Pergub $pergub)
+    public function update(Request $request, $id)
     {
         try {
+            $pergub = Pergub::findOrFail($id);
             $validated = $request->validate([
                 'no_agenda' => 'required|string|max:255',
                 'no_surat' => 'required|string|max:255',
@@ -115,20 +133,17 @@ class PergubController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function destroy(Pergub $pergub)
     {   
-        try {
-            $pergub = Pergub::findOrFail($id);
+        if ($pergub->lampiran) {
             Storage::disk('public')->delete($pergub->lampiran);
-            $pergub->delete();
-
-            return redirect()->route('draft-phd.pergub.index')
-                    ->with('success', 'Pergub berhasil dihapus');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat menghapus data!');
         }
-    }   
+
+        $pergub->delete();
+
+        return redirect()->route('draft-phd.pergub.index')
+            ->with('success', 'Pergub berhasil dihapus');
+    }
 
     public function export()
     {

@@ -129,7 +129,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/draft-phd/pergub/create', [PergubController::class, 'create'])->name('draft-phd.pergub.create');
     Route::get('/draft-phd/pergub/{pergub}/edit', [PergubController::class, 'edit'])->name('draft-phd.pergub.edit');
     Route::put('/draft-phd/pergub/{pergub}', [PergubController::class, 'update'])->name('draft-phd.pergub.update');
-    Route::delete('/draft-phd/pergub/{id}', [PergubController::class, 'destroy'])->name('draft-phd.pergub.destroy');
+    Route::delete('/draft-phd/pergub/{pergub}', [PergubController::class, 'destroy'])->name('draft-phd.pergub.destroy');
     Route::post('/draft-phd/pergub/{id}/update-catatan', [PergubController::class, 'updateCatatan']);
     Route::post('/draft-phd/pergub', [PergubController::class, 'store'])->name('draft-phd.pergub.store');   
     Route::get('/draft-phd/pergub/export', [PergubController::class, 'export'])->name('draft-phd.pergub.export');

@@ -26,6 +26,8 @@ class Pergub extends Model
     protected $casts = [
         'tanggal_surat' => 'date',
         'tanggal_terima' => 'date',
+        'created_at' => 'date',
+        'updated_at' => 'date',
     ];
     
 }
