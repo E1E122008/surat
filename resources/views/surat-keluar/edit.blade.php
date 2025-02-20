@@ -12,41 +12,44 @@
                 @method('PUT')
 
                 <div class="form-grid grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="form-group">
-                        <label for="no_agenda" class="form-label">Nomor Agenda</label>
-                        <input type="text" name="no_agenda" id="no_agenda" 
-                            class="form-control @error('no_agenda') is-invalid @enderror"
-                            value="{{ old('no_agenda', $suratKeluar->no_agenda) }}" required>
-                        @error('no_agenda')
-                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                        @enderror   
+                    <div class="col-span-1 flex flex-col md:flex-row md:space-x-4">
+                        <div class="flex-1">
+                            <label for="no_agenda" class="form-label">Nomor Agenda</label>
+                            <input type="text" name="no_agenda" id="no_agenda" 
+                                class="form-control @error('no_agenda') is-invalid @enderror"
+                                value="{{ old('no_agenda', $suratKeluar->no_agenda) }}" required>
+                            @error('no_agenda')
+                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                            @enderror   
+                        </div>
+
+                        <div class="flex-1">
+                            <label for="no_surat" class="form-label">Nomor Surat</label>
+                            <input type="text" name="no_surat" id="no_surat" 
+                                class="form-control @error('no_surat') is-invalid @enderror"
+                                value="{{ old('no_surat', $suratKeluar->no_surat) }}" required>
+                            @error('no_surat')
+                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="no_surat" class="form-label">Nomor Surat</label>
-                        <input type="text" name="no_surat" id="no_surat" 
-                            class="form-control @error('no_surat') is-invalid @enderror"
-                            value="{{ old('no_surat', $suratKeluar->no_surat) }}" required>
-                        @error('no_surat')
-                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
+                    <div class="flex-1">
                         <label for="tanggal_surat" class="form-label">Tanggal Surat</label>
                         <input type="date" name="tanggal_surat" id="tanggal_surat" 
                             class="form-control @error('tanggal_surat') is-invalid @enderror"
-                            value="{{ old('tanggal_surat', $suratKeluar->tanggal_surat) }}" required>
+                            value="{{ old('tanggal_surat', $suratKeluar->tanggal_surat ? $suratKeluar->tanggal_surat->format('Y-m-d') : '') }}" required>
                         @error('tanggal_surat')
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                         @enderror
-                        </div>
+                    </div>
 
-                    <div class="form-group">
+                    <div class="form-group col-span-2">
                         <label for="perihal" class="form-label">Perihal</label>
-                        <input type="text" name="perihal" id="perihal" 
+                        <textarea name="perihal" id="perihal" 
                             class="form-control @error('perihal') is-invalid @enderror"
                             value="{{ old('perihal', $suratKeluar->perihal) }}" required>
+                        </textarea>
                         @error('perihal')
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                         @enderror   

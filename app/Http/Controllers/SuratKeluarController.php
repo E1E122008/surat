@@ -19,8 +19,7 @@ class SuratKeluarController extends Controller
             $query->where(function($q) use ($search) {
                 $q->where('no_agenda', 'LIKE', "%{$search}%")
                   ->orWhere('no_surat', 'LIKE', "%{$search}%")
-                  ->orWhere('perihal', 'LIKE', "%{$search}%")
-                  ->orWhere('tujuan', 'LIKE', "%{$search}%");
+                  ->orWhere('perihal', 'LIKE', "%{$search}%");
             });
         }
         
@@ -88,7 +87,6 @@ class SuratKeluarController extends Controller
                 'no_agenda' => 'required|string|max:255',
                 'no_surat' => 'required|string|max:255',
                 'tanggal_surat' => 'required|date',
-                'tujuan' => 'required|string|max:255',
                 'perihal' => 'required|string|max:255',
                 'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
             ]);

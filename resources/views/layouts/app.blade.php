@@ -138,6 +138,7 @@
             vertical-align: middle;
             border-bottom: 1px solid #dee2e6;
             color: #475569;
+            
         }
 
         .table tr:hover {
@@ -1123,6 +1124,18 @@
 
         .table-container table td {
             text-align: center; /* Rata tengah untuk semua sel */
+        }
+
+        #customSearch {
+            margin-bottom: 20px; /* Atur jarak sesuai kebutuhan */
+        }
+
+        .table-container th,
+        .table-container td {
+            max-width: 200px; /* Adjust the width as needed */
+            overflow: hidden; /* Hide overflow content */
+            text-overflow: ellipsis; /* Add ellipsis for overflow text */
+            white-space: normal; /* Allow text to wrap */
         }
     </style>
 
