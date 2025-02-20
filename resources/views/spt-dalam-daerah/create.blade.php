@@ -6,7 +6,7 @@
             <h2>Tambah SPT Dalam Daerah</h2>
         </div>
 
-        <form action="{{ route('spt-dalam-daerah.store') }}" method="POST">
+        <form action="{{ route('spt-dalam-daerah.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             
             <div class="form-grid">
@@ -39,6 +39,16 @@
                     @enderror
                 </div>
 
+                <div class="form-group">
+                    <label for="tujuan" class="form-label">Tujuan</label>
+                    <input type="text" name="tujuan" id="tujuan" 
+                        class="form-control @error('tujuan') is-invalid @enderror"
+                        value="{{ old('tujuan') }}" required>
+                    @error('tujuan')
+                        <div class="form-error">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 <div class="form-group form-grid-full">
                     <label for="perihal" class="form-label">Perihal</label>
                     <textarea name="perihal" id="perihal" rows="3" 
@@ -63,8 +73,12 @@
                 <div class="form-group form-grid-full">
                     <label for="lampiran" class="form-label">Lampiran</label>
                     <input type="file" name="lampiran" id="lampiran" 
-                        class="form-control @error('lampiran') is-invalid @enderror">
-                    <div class="form-help">PDF, DOC, atau DOCX (Maksimal 2MB)</div>
+                        class="form-control @error('lampiran') is-invalid @enderror"
+                        required>
+                    <div class="form-help">PDF, DOC, DOCX, JPG, JPEG, PNG, atau GIF (Maksimal 2MB)</div>
+                    @error('lampiran')
+                        <div class="form-error">{{ $message }}</div>
+                    @enderror
                 </div>
             </div>
 

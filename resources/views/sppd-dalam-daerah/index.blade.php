@@ -128,7 +128,7 @@
                 "info": true,
                 "autoWidth": true,
                 "responsive": true,
-                "pageLength": 2,
+                "pageLength": 10,
                 
             });
         });
