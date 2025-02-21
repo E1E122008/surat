@@ -21,21 +21,27 @@
 
                         <div class="space-y-3">
                             <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-100 transition">
-                                <input type="radio" name="disposisi" value="ktu" required class="mr-2">
+                                <input type="radio" name="disposisi" value="kab" required class="mr-2">
                                 <span class="text-blue-500 text-lg">📂</span>
-                                <span>Untuk KTU</span>
+                                <span>Kabag Perancangan Per-UU kab/kota</span>
                             </label>
 
                             <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-100 transition">
-                                <input type="radio" name="disposisi" value="kepala" required class="mr-2">
+                                <input type="radio" name="disposisi" value="bankum" required class="mr-2">
                                 <span class="text-green-500 text-lg">👨‍💼</span>
-                                <span>Untuk Kepala</span>
+                                <span>Kabag Bantuan Hukum dan HAM</span>
                             </label>
 
                             <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-100 transition">
-                                <input type="radio" name="disposisi" value="sekretaris" required class="mr-2">
+                                <input type="radio" name="disposisi" value="madya" required class="mr-2">
                                 <span class="text-purple-500 text-lg">📝</span>
-                                <span>Untuk Sekretaris</span>
+                                <span>Perancangan Per-UU Ahli Madya</span>
+                            </label>
+
+                            <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-100 transition">
+                                <input type="radio" name="disposisi" value="kasubag" required class="mr-2">
+                                <span class="text-purple-500 text-lg">📝</span>
+                                <span>Kasubag Tata Usaha</span>
                             </label>
                         </div>
                         
