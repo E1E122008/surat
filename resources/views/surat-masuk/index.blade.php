@@ -10,6 +10,16 @@
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-semibold">Surat Masuk</h2>
                     <div class="flex space-x-2">
+                        <form action="{{ route('surat-masuk.index') }}" method="GET" class="flex items-center">
+                            <input type="text" 
+                                   name="search" 
+                                   placeholder="Cari surat masuk..." 
+                                   class="form-control"
+                                   value="{{ request('search') }}"> 
+                            <button type="submit" class="btn btn-primary ml-2">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
                         <a href="{{ route('surat-masuk.create') }}" 
                            class="btn btn-primary">
                             <i class="fas fa-plus"></i> Surat Masuk
@@ -29,10 +39,7 @@
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Surat</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Terima</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Perihal</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Lampiran</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Catatan</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Status</th>
@@ -46,14 +53,8 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->no_agenda }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->no_surat }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->pengirim }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->tanggal_surat->format('d/m/Y') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->tanggal_terima->format('d/m/Y') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->perihal }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <button onclick="window.location.href='{{ asset('storage/' . $surat->lampiran) }}'" class="btn btn-primary">
-                                            <i class="fas fa-eye"></i> Lihat Lampiran
-                                        </button>
-                                    </td>
+                                    
                                     <td class="px-6 py-4 whitespace-nowrap catatan-col">
                                         <div class="flex items-center space-x-2" data-surat-id="{{ $surat->id }}">
                                             <textarea name="" id="" cols="10" rows="2" class="catatan-textarea" placeholder="Tulis catatan..." readonly>{{ $surat->catatan }}</textarea>
@@ -63,7 +64,17 @@
                                         </div>
                                     </td>
 
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ $surat->disposisi }} </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        @if($surat->disposisi == 'ktu')
+                                            <span class="bg-ktu">KTU</span>
+                                        @elseif($surat->disposisi == 'sekretaris')
+                                            <span class="bg-sekretaris">Sekretaris</span>
+                                        @elseif($surat->disposisi == 'kepala')
+                                            <span class="bg-kepala">Kepala</span>
+                                        @elseif($surat->disposisi == 'kasubag')
+                                            <span class="bg-kasubag">Kasubag</span>
+                                        @endif
+                                    </td>
 
                                     <td class="px-4 py-4 whitespace-nowrap text-center">
                                         <select name="status" class="status-dropdown text-center" style="background-color: lightgreen; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
@@ -78,6 +89,9 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex justify-center items-center">
+                                            <a href="{{ route('surat-masuk.detail', $surat->id) }}" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-eye"></i>
+                                            </a>    
                                             <a href="{{ route('surat-masuk.edit', $surat->id) }}" class="btn btn-info btn-sm edit-btn">
                                                 <i class="fas fa-edit"></i>
                                             </a>
@@ -129,7 +143,28 @@
             subpointSelect.style.display = selectedValue ? 'block' : 'none';
         }
 
-        
+        function searchTable() {
+            const input = document.getElementById('search');
+            const filter = input.value.toLowerCase();
+            const table = document.querySelector('table');
+            const tr = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < tr.length; i++) {
+                const td = tr[i].getElementsByTagName('td');
+                let found = false;
+                for (let j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        const txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                tr[i].style.display = found ? "" : "none";
+            }
+        }
+         
         // Fungsi untuk konfirmasi hapus dengan SweetAlert2
         function confirmDelete(deleteUrl) {
             Swal.fire({
@@ -295,4 +330,56 @@
     
 
     </script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            let table = $('.min-w-full').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": true,  
+                "responsive": true,
+                "pageLength": 10
+            });
+        });
+    </script>
+
+    <style>
+        tr:hover {
+            background-color: #f2f2f2;
+        }
+
+        .bg-ktu {
+            background-color: rgba(0, 255, 0, 0.2);
+            color: green;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }   
+
+        .bg-sekretaris {
+            background-color: rgba(0, 0, 255, 0.2);
+            color: blue;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }   
+
+        .bg-kepala {
+            background-color: rgba(255, 0, 0, 0.2);
+            color: red;
+            padding: 2px 5px;
+            border-radius: 3px; 
+        }   
+
+        .bg-kasubag {
+            background-color: rgba(255, 165, 0, 0.2);
+            color: orange;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+    
 @endsection

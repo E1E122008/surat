@@ -10,9 +10,20 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class SuratMasukController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $suratMasuk = SuratMasuk::latest()->paginate(10);
+        $query = SuratMasuk::latest();
+
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('no_agenda', 'LIKE', "%{$search}%")
+                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                  ->orWhere('pengirim', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $suratMasuk = $query->paginate(10);
         return view('surat-masuk.index', compact('suratMasuk'));
     }
 
@@ -43,6 +54,12 @@ class SuratMasukController extends Controller
 
         return redirect()->route('surat-masuk.index')
             ->with('success', 'Surat masuk berhasil ditambahkan');
+    }
+
+    public function detail($id)
+    {
+        $surat = SuratMasuk::findOrFail($id);
+        return view('surat-masuk.detail', compact('surat'));
     }
 
     public function edit(SuratMasuk $suratMasuk)
@@ -144,6 +161,15 @@ class SuratMasukController extends Controller
                 'message' => 'Gagal memperbarui catatan'
             ], 500);
         }
+    }
+
+    public function show($id)
+    {
+        $surat = SuratMasuk::find($id); // Ambil data surat berdasarkan ID
+        if (!$surat) {
+            return redirect()->route('surat.index')->with('error', 'Surat tidak ditemukan.');
+        }
+        return view('surat-masuk.detail', compact('surat')); // Kirim variabel ke view
     }
 }
 

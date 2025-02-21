@@ -48,6 +48,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::resource('surat-masuk', SuratMasukController::class);
+    Route::get('surat-masuk/{id}/detail', [SuratMasukController::class, 'detail'])->name('surat-masuk.detail'); 
     Route::get('surat-masuk-export', [SuratMasukController::class, 'export'])
         ->name('surat-masuk.export');
 
