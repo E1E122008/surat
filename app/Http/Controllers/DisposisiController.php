@@ -43,7 +43,7 @@ class DisposisiController extends Controller
         ]);
 
         // Redirect ke halaman edit disposisi
-        return redirect()->route('disposisi.index', $id)->with('success', 'Disposisi berhasil diperbarui!');
+        return redirect()->route('surat-masuk.index', $id)->with('success', 'Disposisi berhasil diperbarui!');
     }
 
     public function edit($id)

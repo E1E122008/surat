@@ -55,6 +55,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->pengirim }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->tanggal_terima->format('d/m/Y') }}</td>
                                     
+                                    
                                     <td class="px-6 py-4 whitespace-nowrap catatan-col">
                                         <div class="flex items-center space-x-2" data-surat-id="{{ $surat->id }}">
                                             <textarea name="" id="" cols="10" rows="2" class="catatan-textarea" placeholder="Tulis catatan..." readonly>{{ $surat->catatan }}</textarea>
@@ -64,16 +65,19 @@
                                         </div>
                                     </td>
 
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        @if($surat->disposisi == 'ktu')
-                                            <span class="bg-ktu">KTU</span>
-                                        @elseif($surat->disposisi == 'sekretaris')
-                                            <span class="bg-sekretaris">Sekretaris</span>
-                                        @elseif($surat->disposisi == 'kepala')
-                                            <span class="bg-kepala">Kepala</span>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center"  >
+                                        @if($surat->disposisi == 'kab')
+                                            <span class="bg-ktu">Kabag Perancangan Per-UU kab/kota</span>
+                                        @elseif($surat->disposisi == 'bankum')
+                                            <span class="bg-sekretaris">Kabag Bantuan Hukum dan HAM</span>
+                                        @elseif($surat->disposisi == 'madya')
+                                            <span class="bg-kepala">Perancangan Per-UU Ahli Madya</span>
                                         @elseif($surat->disposisi == 'kasubag')
-                                            <span class="bg-kasubag">Kasubag</span>
+                                            <span class="bg-kasubag">Kasubag Tata Usaha</span>
                                         @endif
+                                        <a href="{{ route('disposisi.edit', $surat->id) }}" >
+                                            <i class="fas fa-file-upload" style="color: rgb(0, 190, 0); font-size: 1.5em;"></i>
+                                        </a>
                                     </td>
 
                                     <td class="px-4 py-4 whitespace-nowrap text-center">
@@ -95,6 +99,8 @@
                                             <a href="{{ route('surat-masuk.edit', $surat->id) }}" class="btn btn-info btn-sm edit-btn">
                                                 <i class="fas fa-edit"></i>
                                             </a>
+                                            
+                                            
                                             <form id="delete-form-{{ $surat->id }}" action="{{ route('surat-masuk.destroy', $surat->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
@@ -117,6 +123,37 @@
         </div>
         </div>
     </div>
+
+    <style>
+        .bg-ktu {
+            background-color: rgba(0, 255, 0, 0.2);
+            color: green;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }   
+
+        .bg-sekretaris {
+            background-color: rgba(0, 0, 255, 0.2);
+            color: blue;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }       
+
+        .bg-kepala {
+            background-color: rgba(255, 0, 0, 0.2);
+            color: red;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }   
+
+        .bg-kasubag {
+            background-color: rgba(255, 165, 0, 0.2);
+            color: orange;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script>
         function showSubpoints(select) {

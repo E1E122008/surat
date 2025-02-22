@@ -46,7 +46,7 @@
                         </div>
                         
                         <div class="mt-4">
-                        <button type="button" onclick="window.location.href='{{ route('disposisi.index') }}'" class="w-full bg-gray-400 text-white p-3 rounded-lg hover:bg-gray-500 transition text-center">Batal</button>
+                        <button type="button" onclick="window.location.href='{{ route('surat-masuk.index') }}'" class="w-full bg-gray-400 text-white p-3 rounded-lg hover:bg-gray-500 transition text-center">Batal</button>
                         <button type="submit" class="mt-4 w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition">Simpan</button>
                         </div>
                     </form>
