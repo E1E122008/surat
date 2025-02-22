@@ -47,7 +47,7 @@ class DisposisiController extends Controller
 
     public function edit($id)
     {
-        $suratMasuk = SuratMasuk::findOrFail($id);
-        return view('disposisi.update', compact('suratMasuk'));
+        $surat = SuratMasuk::findOrFail($id);
+        return view('disposisi.update', compact('surat'));
     }
 }

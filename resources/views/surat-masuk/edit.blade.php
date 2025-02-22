@@ -54,7 +54,7 @@
                                 @enderror
                             </div>
 
-                            <div>
+                            <div class="form-group form-grid-full">
                                 <label for="tanggal_terima" class="block text-sm font-medium text-gray-700">Tanggal Terima</label>
                                 <input type="date" name="tanggal_terima" id="tanggal_terima" 
                                     class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"

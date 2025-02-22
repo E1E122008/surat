@@ -51,7 +51,7 @@
                     @enderror
                 </div>
 
-                <div class="form-group">
+                <div class="form-group form-grid-full">
                     <label for="tanggal_terima" class="form-label">Tanggal Terima</label>
                     <input type="date" name="tanggal_terima" id="tanggal_terima" 
                         class="form-control @error('tanggal_terima') is-invalid @enderror"

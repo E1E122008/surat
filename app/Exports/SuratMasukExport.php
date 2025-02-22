@@ -27,6 +27,7 @@ class SuratMasukExport implements FromCollection, WithHeadings, WithMapping
             'Lampiran',
             'Catatan',
             'Disposisi',
+            'Status',
             
             ];
     }
@@ -47,6 +48,7 @@ class SuratMasukExport implements FromCollection, WithHeadings, WithMapping
             $suratMasuk->lampiran,
             $suratMasuk->catatan,
             $suratMasuk->disposisi,
+            $suratMasuk->status,
         ];
     }
 } 

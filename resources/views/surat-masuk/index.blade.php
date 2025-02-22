@@ -66,13 +66,13 @@
                                     </td>
 
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center"  >
-                                        @if($surat->disposisi == 'kab')
+                                        @if($surat->disposisi == 'Kabag Perancangan Per-UU kab/kota')
                                             <span class="bg-kepala">Kabag Perancangan Per-UU kab/kota</span>
-                                        @elseif($surat->disposisi == 'bankum')
+                                        @elseif($surat->disposisi == 'Kabag Bantuan Hukum dan HAM')
                                             <span class="bg-sekretaris">Kabag Bantuan Hukum dan HAM</span>
-                                        @elseif($surat->disposisi == 'madya')
+                                        @elseif($surat->disposisi == 'Perancangan Per-UU Ahli Madya')
                                             <span class="bg-ktu">Perancangan Per-UU Ahli Madya</span>
-                                        @elseif($surat->disposisi == 'kasubag')
+                                        @elseif($surat->disposisi == 'Kasubag Tata Usaha')
                                             <span class="bg-kasubag">Kasubag Tata Usaha</span>
                                         @endif
                                         <a href="{{ route('disposisi.edit', $surat->id) }}" >
