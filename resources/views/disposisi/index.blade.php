@@ -98,7 +98,7 @@
             background-color: #f2f2f2;
         }
 
-        .bg-ktu {
+        .bg-kepala {
             background-color: rgba(0, 255, 0, 0.2);
             color: green;
             padding: 2px 5px;
@@ -112,7 +112,7 @@
             border-radius: 3px;
         }
 
-        .bg-kepala {
+        .bg-ktu {
             background-color: rgba(255, 0, 0, 0.2);
             color: red;
             padding: 2px 5px;

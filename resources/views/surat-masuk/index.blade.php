@@ -67,11 +67,11 @@
 
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center"  >
                                         @if($surat->disposisi == 'kab')
-                                            <span class="bg-ktu">Kabag Perancangan Per-UU kab/kota</span>
+                                            <span class="bg-kepala">Kabag Perancangan Per-UU kab/kota</span>
                                         @elseif($surat->disposisi == 'bankum')
                                             <span class="bg-sekretaris">Kabag Bantuan Hukum dan HAM</span>
                                         @elseif($surat->disposisi == 'madya')
-                                            <span class="bg-kepala">Perancangan Per-UU Ahli Madya</span>
+                                            <span class="bg-ktu">Perancangan Per-UU Ahli Madya</span>
                                         @elseif($surat->disposisi == 'kasubag')
                                             <span class="bg-kasubag">Kasubag Tata Usaha</span>
                                         @endif
@@ -80,16 +80,23 @@
                                         </a>
                                     </td>
 
-                                    <td class="px-4 py-4 whitespace-nowrap text-center">
-                                        <select name="status" class="status-dropdown text-center" style="background-color: lightgreen; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
-                                            <option value="">Pilih Status</option>
-                                            <option value="tercatat">Tercatat</option>
-                                            <option value="terdisposisi">Terdisposisi</option>
-                                            <option value="diproses">Diproses</option>
-                                            <option value="koreksi">Koreksi</option>
-                                            <option value="selesai">Selesai</option>
-                                            <option value="diambil">Diambil</option>
-                                        </select>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        @if($surat->status == 'tercatat')
+                                            <span class="bg-tercatat">Tercatat</span>
+                                        @elseif($surat->status == 'tersdisposisi')
+                                            <span class="bg-tersdisposisi">Ters Disposisi</span>
+                                        @elseif($surat->status == 'diproses')
+                                            <span class="bg-diproses">Diproses</span>
+                                        @elseif($surat->status == 'koreksi')
+                                            <span class="bg-koreksi">Koreksi</span>
+                                        @elseif($surat->status == 'diambil')
+                                            <span class="bg-diambil">Diambil</span>
+                                        @elseif($surat->status == 'selesai')
+                                            <span class="bg-selesai">Selesai</span>
+                                        @endif
+                                        <a href="{{ route('surat-masuk.status', $surat->id) }}" >
+                                            <i class="fas fa-file-upload" style="color: rgb(255, 238, 0); font-size: 1.5em;"></i>
+                                        </a>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex justify-center items-center">
@@ -126,8 +133,8 @@
 
     <style>
         .bg-ktu {
-            background-color: rgba(0, 255, 0, 0.2);
-            color: green;
+            background-color: rgba(255, 0, 0, 0.2);
+            color: red;
             padding: 2px 5px;
             border-radius: 3px;
         }   
@@ -140,10 +147,12 @@
         }       
 
         .bg-kepala {
-            background-color: rgba(255, 0, 0, 0.2);
-            color: red;
+            background-color: rgba(0, 255, 0, 0.2);
+            color: green;
             padding: 2px 5px;
             border-radius: 3px;
+
+            
         }   
 
         .bg-kasubag {
@@ -152,7 +161,49 @@
             padding: 2px 5px;
             border-radius: 3px;
         }
-    </style>
+
+        .bg-tercatat     {
+            background-color: #D1D5DB;
+            color: #374151;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-tersdisposisi {
+            background-color: rgba(0, 0, 255, 0.2);
+            color: blue;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-diproses {
+            background-color: #FEF08A;
+            color: #713F12;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-koreksi {
+            background-color: rgba(255, 165, 0, 0.2);
+            color: orange;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-diambil {
+            background-color: rgba(0, 255, 0, 0.2);
+            color: green;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-selesai {
+            background-color: #D8B4FE;
+            color: #4C1D95;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>                
 
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script>

@@ -171,5 +171,24 @@ class SuratMasukController extends Controller
         }
         return view('surat-masuk.detail', compact('surat')); // Kirim variabel ke view
     }
-}
 
+    public function status($id)
+    {
+        $surat = SuratMasuk::findOrFail($id);
+        return view('surat-masuk.status', compact('surat'));
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|string|max:255',
+        ]);
+
+        $surat = SuratMasuk::findOrFail($id);
+        $surat->status = $request->status;
+        $surat->save();
+
+        return redirect()->route('surat-masuk.index')->with('success', 'Status berhasil diperbarui.');
+    }
+
+}

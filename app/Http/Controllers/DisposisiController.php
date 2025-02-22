@@ -27,7 +27,6 @@ class DisposisiController extends Controller
 
     public function update(Request $request, $id)
     {
-        \Log::info('Update method called for ID: ' . $id);
         $request->validate([
             'disposisi' => 'required|string',
             
@@ -48,8 +47,7 @@ class DisposisiController extends Controller
 
     public function edit($id)
     {
-        \Log::info('Edit method called for ID: ' . $id);
-        $surat = SuratMasuk::findOrFail($id);
-        return view('disposisi.update', compact('surat'));
+        $suratMasuk = SuratMasuk::findOrFail($id);
+        return view('disposisi.update', compact('suratMasuk'));
     }
 }

@@ -21,6 +21,7 @@ class SuratMasuk extends Model
         'lampiran',
         'catatan',
         'disposisi',
+        'status',
         
     ];
 

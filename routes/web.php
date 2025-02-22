@@ -48,6 +48,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::resource('surat-masuk', SuratMasukController::class);
+    Route::get('surat-masuk/{id}/status', [SuratMasukController::class, 'status'])->name('surat-masuk.status');
     Route::get('surat-masuk/{id}/detail', [SuratMasukController::class, 'detail'])->name('surat-masuk.detail'); 
     Route::get('surat-masuk-export', [SuratMasukController::class, 'export'])
         ->name('surat-masuk.export');
@@ -154,4 +155,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/disposisi/{id}', [DisposisiController::class, 'detail'])->name('disposisi.detail');
     Route::put('/disposisi/{id}', [DisposisiController::class, 'update'])->name('disposisi.update');
     Route::get('/disposisi/{id}/edit', [DisposisiController::class, 'edit'])->name('disposisi.edit');
+
+    Route::get('/surat-masuk/{id}/status', [SuratMasukController::class, 'status'])->name('surat-masuk.status');
+    Route::put('/surat-masuk/{id}/update-status', [SuratMasukController::class, 'updateStatus'])->name('surat-masuk.update-status');
 });
