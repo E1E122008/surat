@@ -28,6 +28,11 @@ class SKController extends Controller
         $sk = $query->paginate(10);
         return view('draft-phd.sk.index', compact('sk'));
     }
+    public function detail($id)
+    {
+        $sk = SK::find($id);
+        return view('draft-phd.sk.detail', compact('sk'));
+    }
 
     public function create()
     {

@@ -116,6 +116,7 @@ Route::middleware(['auth'])->group(function () {
     // Rute untuk menampilkan form tambah SK
     Route::get('/draft-phd/sk/create', [SKController::class, 'create'])->name('draft-phd.sk.create');
     Route::post('/draft-phd/sk', [SKController::class, 'store'])->name('draft-phd.sk.store');
+    Route::get('/draft-phd/sk/{sk}/detail', [SKController::class, 'detail'])->name('draft-phd.sk.detail');
     Route::get('/draft-phd/sk/export', [SKController::class, 'export'])->name('draft-phd.sk.export');
     Route::get('/draft-phd/sk/{sk}/edit', [SKController::class, 'edit'])->name('draft-phd.sk.edit');
     Route::put('/draft-phd/sk/{sk}', [SKController::class, 'update'])->name('draft-phd.sk.update');

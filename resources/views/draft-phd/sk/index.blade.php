@@ -37,10 +37,7 @@
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal SK</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Terima</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Perihal</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Lampiran</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Catatan</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Status</th>
@@ -54,14 +51,8 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->no_agenda }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->no_surat }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->pengirim }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tanggal_surat->format('d/m/Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tanggal_terima->format('d/m/Y') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->perihal }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-center">
-                                            <button onclick="window.location.href='{{ asset('storage/' . $item->lampiran) }}'" class="btn btn-primary">
-                                                <i class="fas fa-eye"></i> Lihat Lampiran
-                                            </button>
-                                        </td>
+
                                         <td class="px-6 py-4 whitespace-nowrap catatan-col">
                                             <div class="flex items-center space-x-2" data-surat-id="{{ $item->id }}">
                                                 <textarea name="" id="" cols="10" rows="2" class="catatan-textarea" placeholder="Tulis catatan..." readonly>{{ $item->catatan }}</textarea>
@@ -92,6 +83,9 @@
                                         </td>   
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex justify-center items-center">
+                                                <a href="{{ route('draft-phd.sk.detail', $item->id) }}" class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
                                                 <a href="{{ route('draft-phd.sk.edit', $item->id) }}" class="btn btn-info btn-sm edit-btn">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
@@ -194,4 +188,25 @@
     }
 
     </script>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            let table = $('.min-w-full').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": true,
+                "responsive": true,
+                "pageLength": 10
+            });
+        });
+    </script>   
+
+    
+    
 @endsection
