@@ -13,7 +13,6 @@ class SppdDalamDaerah extends Model
     
     protected $fillable = [
         'no_surat',
-        'no_agenda',
         'tanggal',
         'tujuan',
         'perihal',

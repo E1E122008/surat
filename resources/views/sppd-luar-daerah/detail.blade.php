@@ -1,0 +1,63 @@
+@extends('layouts.app')
+
+@section('content')
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 bg-white border-b border-gray-200">
+                    <h2 class="text-2xl font-semibold">Detail SPPD Luar Daerah</h2>
+                </div>
+                <div class="p-6 bg-white border-b border-gray-200">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="form-group">
+                            <label for="no_surat">Nomor Surat</label>
+                            <input type="text" name="no_surat" id="no_surat" class="form-control border-effect" value="{{ $sppd->no_surat }}" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tanggal">Tanggal</label>
+                            <input type="text" name="tanggal" id="tanggal" class="form-control border-effect" value="{{ $sppd->tanggal->format('d/m/Y') }}" readonly>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tujuan">Tujuan</label>
+                            <input type="text" name="tujuan" id="tujuan" class="form-control border-effect" value="{{ $sppd->tujuan }}" readonly>
+                        </div>  
+                        
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-group">
+                            <label for="perihal">Perihal</label>
+                            <input type="text" name="perihal" id="perihal" class="form-control border-effect" value="{{ $sppd->perihal }}" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nama_petugas">Nama yang di Tugaskan</label>
+                            <input type="text" name="nama_petugas" id="nama_petugas" class="form-control border-effect" value="{{ $sppd->nama_petugas }}" readonly>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="lampiran">Lampiran</label>
+                            <button onclick="window.location.href='{{ asset('storage/' . $sppd->lampiran) }}'" class="btn btn-primary">
+                                <i class="fas fa-file-pdf"></i> {{ basename($sppd->lampiran) }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-6 bg-white border-b border-gray-200">
+                        <div class="button-container flex space-x-4">
+                            <a href="{{ route('sppd-luar-daerah.index') }}" class="btn-cancel flex items-center justify-center h-12 w-32 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-200">
+                                <i class="fas fa-arrow-left mr-2"></i> Kembali
+                            </a>
+                            <a href="{{ route('sppd-luar-daerah.edit', $sppd->id) }}" class="btn btn-info flex items-center justify-center h-12 w-32 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition duration-200">
+                                <i class="fas fa-edit mr-2"></i> Edit
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+@endsection

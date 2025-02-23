@@ -61,7 +61,7 @@
                     <div class="form-group mb-3">
                         <label for="lampiran">Lampiran</label>
                         <button onclick="window.location.href='{{ asset('storage/' . $surat->lampiran) }}'" class="btn btn-primary">
-                            <i class="fas fa-eye"></i> {{ basename($surat->lampiran) }}
+                            <i class="fas fa-file-pdf"></i> {{ basename($surat->lampiran) }}
                         </button>
                     </div>
                 </div>

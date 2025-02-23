@@ -13,34 +13,25 @@
                         @csrf
                         @method('PUT')
 
-                        <div class="form-grid grid grid-cols-1 md:grid-cols-2 gap-6 ">
-                            <div class="form-group">
-                                <label for="no_agenda" class="form-label">Nomor Agenda</label>
-                                <input type="text" name="no_agenda" id="no_agenda" 
-                                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                    value="{{ old('no_agenda', $sppdLuarDaerah->no_agenda) }}" required>
-                                @error('no_agenda')
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 ">
 
                             <div class="form-group">
                                 <label for="no_surat" class="form-label">Nomor Surat</label>
                                 <input type="text" name="no_surat" id="no_surat" 
-                                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                    class="form-control @error('no_surat') is-invalid @enderror"
                                     value="{{ old('no_surat', $sppdLuarDaerah->no_surat) }}" required>
                                 @error('no_surat')
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                    <p class="form-error">{{ $message }}</p>
                                 @enderror
                             </div>      
 
                             <div class="form-group">
                                 <label for="tanggal" class="form-label">Tanggal</label>
                                 <input type="date" name="tanggal" id="tanggal" 
-                                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                    class="form-control @error('tanggal') is-invalid @enderror"
                                     value="{{ old('tanggal', $sppdLuarDaerah->tanggal ? $sppdLuarDaerah->tanggal->format('Y-m-d') : '') }}" required>
                                 @error('tanggal')
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                    <p class="form-error">{{ $message }}</p>
                                 @enderror
                             </div>
 
@@ -50,13 +41,17 @@
                                     class="form-control @error('tujuan') is-invalid @enderror"
                                     value="{{ old('tujuan', $sppdLuarDaerah->tujuan) }}" required>
                                 @error('tujuan')
-                                    <div class="form-error">{{ $message }}</div>
+                                    <p class="form-error">{{ $message }}</p>
                                 @enderror
                             </div>
+                        </div>
 
-                            <div class="form-group md:col-span-2">
+                        <div class="mt-6"></div>
+
+                        <div class="form-grid grid grid-cols-1 md:grid-cols-2 gap-6 ">
+                            <div class="form-group">
                                 <label for="perihal" class="form-label">Perihal</label>
-                                <textarea name="perihal" id="perihal" 
+                                <textarea name="perihal" id="perihal" rows="2"
                                     class="form-textarea" 
                                     placeholder="Masukkan perihal surat" 
                                     required
@@ -66,9 +61,9 @@
                                 @enderror
                             </div>
 
-                            <div class="form-group md:col-span-2">
+                            <div class="form-group">
                                 <label for="nama_petugas" class="form-label">Nama Petugas</label>
-                                <textarea name="nama_petugas" id="nama_petugas" 
+                                <textarea name="nama_petugas" id="nama_petugas" rows="2"
                                     class="form-textarea" 
                                     placeholder="Masukkan nama petugas" 
                                     required
@@ -95,13 +90,13 @@
                                     accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
                                 <p class="mt-1 text-sm text-gray-500">Biarkan kosong jika tidak ingin mengubah file</p>     
                                 @error('lampiran')
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                    <p class="form-error">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
 
                         <div class="button-container">
-                            <a href="{{ route('sppd-luar-daerah.index') }}" 
+                            <a href="{{ route('sppd-luar-daerah.detail', $sppdLuarDaerah->id) }}" 
                                 class="btn-cancel">
                                 Batal
                             </a>

@@ -100,7 +100,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex justify-center items-center">
-                                            <a href="{{ route('surat-masuk.detail', $surat->id) }}" class="btn btn-primary btn-sm">
+                                            <a href="{{ route('surat-masuk.detail', $surat->id) }}" class="btn btn-success btn-sm">
                                                 <i class="fas fa-eye"></i>
                                             </a>    
                                             

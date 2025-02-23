@@ -9,17 +9,7 @@
         <form action="{{ route('sppd-luar-daerah.store') }}" method="POST">
             @csrf
             
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="no_agenda" class="form-label">Nomor Agenda</label>
-                    <input type="text" name="no_agenda" id="no_agenda" 
-                        class="form-control @error('no_agenda') is-invalid @enderror"
-                        value="{{ old('no_agenda') }}" required>
-                    @error('no_agenda')
-                        <div class="form-error">{{ $message }}</div>
-                    @enderror
-                </div>
-
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="form-group">
                     <label for="no_surat" class="form-label">Nomor Surat</label>
                     <input type="text" name="no_surat" id="no_surat" 
@@ -46,10 +36,12 @@
                         class="form-control @error('tujuan') is-invalid @enderror"
                         value="{{ old('tujuan') }}" required>
                 </div>
+            </div>  
 
-                <div class="form-group form-grid-full">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-group">
                     <label for="perihal" class="form-label">Perihal</label>
-                    <textarea name="perihal" id="perihal" rows="3"
+                    <textarea name="perihal" id="perihal" rows="2"
                         class="form-control @error('perihal') is-invalid @enderror"
                         required>{{ old('perihal') }}</textarea>
                     @error('perihal')
@@ -57,9 +49,9 @@
                     @enderror
                 </div>
 
-                <div class="form-group form-grid-full">
+                <div class="form-group">
                     <label for="nama_petugas" class="form-label">Nama Petugas</label>
-                    <textarea name="nama_petugas" id="nama_petugas" rows="4"
+                    <textarea name="nama_petugas" id="nama_petugas" rows="2"
                         class="form-control @error('nama_petugas') is-invalid @enderror"
                         required>{{ old('nama_petugas') }}</textarea>
                     @error('nama_petugas')

@@ -12,16 +12,8 @@
                         @csrf
                         @method('PUT')
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>   
-                                <label for="no_agenda" class="block text-sm font-medium text-gray-700">Nomor Agenda</label>
-                                <input type="text" name="no_agenda" id="no_agenda" 
-                                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                    value="{{ old('no_agenda', $sppdDalamDaerah->no_agenda) }}" required>
-                                @error('no_agenda')
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            
                             <div>
                                 <label for="no_surat" class="block text-sm font-medium text-gray-700">Nomor Surat</label>
                                 <input type="text" name="no_surat" id="no_surat" 
@@ -49,7 +41,12 @@
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p> 
                                 @enderror
                             </div>
-                            <div class="form-group md:col-span-2">
+                        </div>
+
+                        <div class="mt-6"></div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-group mb-3">
                                 <label for="perihal" class="block text-sm font-medium text-gray-700 mb-2">Perihal</label>
                                 <textarea 
                                     name="perihal" 
@@ -62,8 +59,8 @@
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
-                            <div class="form-group md:col-span-2">
-                                <label for="nama_petugas" class="block text-sm font-medium text-gray-700">Nama Petugas</label>
+                            <div class="form-group mb-3">
+                                <label for="nama_petugas">Nama Petugas</label>
                                 <textarea name="nama_petugas" id="nama_petugas" rows="4"    
                                     class="form-textarea" 
                                     placeholder="Masukkan nama petugas" 
@@ -96,7 +93,7 @@
                         </div>
 
                         <div class="button-container">
-                            <a href="{{ route('sppd-dalam-daerah.index') }}" 
+                            <a href="{{ route('sppd-dalam-daerah.detail', $sppdDalamDaerah->id) }}" 
                                 class="btn-cancel">
                                 Batal
                             </a>
