@@ -73,6 +73,12 @@ class PergubController extends Controller
         }
     }
 
+    public function detail($id)
+    {
+        $pergub = Pergub::findOrFail($id);
+        return view('draft-phd.pergub.detail', compact('pergub'));
+    }
+
     public function edit($id)
     {       
         $pergub = Pergub::findOrFail($id);

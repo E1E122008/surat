@@ -71,6 +71,12 @@ class PerdaController extends Controller
         }
     }
 
+    public function detail($id)
+    {
+        $perda = Perda::findOrFail($id);
+        return view('draft-phd.perda.detail', compact('perda'));
+    }
+
     public function edit($id)
     {   
         $perda = Perda::findOrFail($id);

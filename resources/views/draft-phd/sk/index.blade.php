@@ -86,9 +86,7 @@
                                                 <a href="{{ route('draft-phd.sk.detail', $item->id) }}" class="btn btn-primary btn-sm">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <a href="{{ route('draft-phd.sk.edit', $item->id) }}" class="btn btn-info btn-sm edit-btn">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
+                                                
                                                 <form class="d-inline" id="delete-form-{{ $item->id }}" action="{{ route('draft-phd.sk.destroy', $item->id) }}" method="POST">
                                                     @csrf
                                                     @method('DELETE')

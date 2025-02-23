@@ -13,7 +13,7 @@
                         @csrf
                         @method('PUT')
 
-                        <div class="form-grid">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="form-group">
                                 <label for="no_agenda" class="form-label">Nomor Agenda</label>
                                 <input type="text" name="no_agenda" id="no_agenda" 
@@ -43,7 +43,9 @@
                                     <div class="form-error">{{ $message }}</div>
                                 @enderror
                             </div>
+                        </div>
 
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="form-group">
                                 <label for="tanggal_surat" class="form-label">Tanggal Surat</label>
                                 <input type="date" name="tanggal_surat" id="tanggal_surat" 
@@ -54,7 +56,7 @@
                                 @enderror
                             </div>
 
-                            <div class="form-group form-grid-full">
+                            <div class="form-group ">
                                 <label for="tanggal_terima" class="form-label">Tanggal Terima</label>   
                                 <input type="date" name="tanggal_terima" id="tanggal_terima" 
                                     class="form-control @error('tanggal_terima') is-invalid @enderror"
@@ -99,7 +101,7 @@
                         </div>
 
                         <div class="form-actions">
-                            <a href="{{ route('draft-phd.pergub.index') }}" class="btn btn-cancel">Batal</a>
+                            <a href="{{ route('draft-phd.pergub.detail', $pergub->id) }}" class="btn btn-cancel">Batal</a>
                             <button type="submit" class="btn btn-submit">Simpan</button>
                         </div>
                     </form>

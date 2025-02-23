@@ -13,7 +13,7 @@
                         @csrf
                         @method('PUT')
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
                                 <label for="no_agenda" class="block text-sm font-medium text-gray-700">Nomor Agenda</label>
                                 <input type="text" name="no_agenda" id="no_agenda" 
@@ -43,7 +43,11 @@
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
+                        </div>
 
+                        <div class="mt-6"></div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label for="tanggal_surat" class="block text-sm font-medium text-gray-700">Tanggal Surat</label>
                                 <input type="date" name="tanggal_surat" id="tanggal_surat" 
@@ -54,7 +58,7 @@
                                 @enderror
                             </div>
 
-                            <div class="form-group form-grid-full">
+                            <div>
                                 <label for="tanggal_terima" class="block text-sm font-medium text-gray-700">Tanggal Terima</label>
                                 <input type="date" name="tanggal_terima" id="tanggal_terima" 
                                     class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -101,7 +105,7 @@
                         </div>
 
                         <div class="button-container">
-                            <a href="{{ route('surat-masuk.index') }}" 
+                            <a href="{{ route('surat-masuk.detail', $suratMasuk->id) }}" 
                                 class="btn-cancel">
                                 Batal
                             </a>

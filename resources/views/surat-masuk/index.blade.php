@@ -103,9 +103,7 @@
                                             <a href="{{ route('surat-masuk.detail', $surat->id) }}" class="btn btn-primary btn-sm">
                                                 <i class="fas fa-eye"></i>
                                             </a>    
-                                            <a href="{{ route('surat-masuk.edit', $surat->id) }}" class="btn btn-info btn-sm edit-btn">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
+                                            
                                             
                                             
                                             <form id="delete-form-{{ $surat->id }}" action="{{ route('surat-masuk.destroy', $surat->id) }}" method="POST" class="d-inline">

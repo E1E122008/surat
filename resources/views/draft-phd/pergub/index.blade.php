@@ -37,10 +37,7 @@
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Surat</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Terima</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Perihal</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Lampiran</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Catatan</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Status</th>
@@ -54,14 +51,8 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $pergub->no_agenda }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $pergub->no_surat }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $pergub->pengirim }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{($pergub->tanggal_surat)->format('d/m/Y') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{($pergub->tanggal_terima)->format('d/m/Y') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $pergub->perihal }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <button onclick="window.location.href='{{ asset('storage/' . $pergub->lampiran) }}'" class="btn btn-primary">
-                                            <i class="fas fa-eye"></i> Lihat Lampiran
-                                        </button>
-                                    </td>
+
                                     <td class="px-6 py-4 whitespace-nowrap catatan-col">
                                         <div class="flex items-center space-x-2" data-surat-id="{{ $pergub->id }}">
                                             <textarea name="" id="" cols="10" rows="2" class="catatan-textarea" placeholder="Tulis catatan..." readonly>{{ $pergub->catatan }}</textarea>
@@ -90,9 +81,10 @@
                                         </select>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <a href="{{ route('draft-phd.pergub.edit', $pergub->id) }}" class="btn btn-info btn-sm edit-btn">
-                                            <i class="fas fa-edit"></i>
+                                        <a href="{{ route('draft-phd.pergub.detail', $pergub->id) }}" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-eye"></i>
                                         </a>
+                                        
                                         <form class="inline-block" id="delete-form-{{ $pergub->id }}" action="{{ route('draft-phd.pergub.destroy', $pergub->id) }}" method="POST">
                                             @csrf
                                             @method('DELETE')

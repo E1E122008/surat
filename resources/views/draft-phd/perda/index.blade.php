@@ -36,10 +36,7 @@
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Surat</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Terima</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Perihal</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Lampiran</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Catatan</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Status</th>
@@ -53,14 +50,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $perda->no_agenda }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $perda->no_surat }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $perda->pengirim }}</td> 
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{($perda->tanggal_surat)->format('d/m/Y') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{($perda->tanggal_terima)->format('d/m/Y') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $perda->perihal }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <button onclick="window.location.href='{{ asset('storage/' . $perda->lampiran) }}'" class="btn btn-primary">
-                                            <i class="fas fa-eye"></i> Lihat Lampiran
-                                        </button>
-                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap catatan-col">
                                         <div class="flex items-center space-x-2" data-surat-id="{{ $perda->id }}">
                                             <textarea name="" id="" cols="10" rows="2" class="catatan-textarea" placeholder="Tulis catatan..." readonly>{{ $perda->catatan }}</textarea>
@@ -89,9 +79,10 @@
                                         </select>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <a href="{{ route('draft-phd.perda.edit', $perda->id) }}" class="btn btn-info btn-sm edit-btn">
-                                            <i class="fas fa-edit"></i>
+                                        <a href="{{ route('draft-phd.perda.detail', $perda->id) }}" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-eye"></i>
                                         </a>
+                                        
                                         <form class="inline-block" id="delete-form-{{ $perda->id }}" action="{{ route('draft-phd.perda.destroy', $perda->id) }}" method="POST">
                                             @csrf
                                             @method('DELETE')

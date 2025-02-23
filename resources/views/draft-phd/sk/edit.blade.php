@@ -6,15 +6,15 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
                     <div class="mb-6">
-                        <h2 class="text-2xl font-semibold">Edit SK</h2>
+                        <h2 class="text-2xl font-semibold">Edit Surat Keputusan</h2>
                     </div>
 
                     <form action="{{ route('draft-phd.sk.update', $sk->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="form-group">
                                 <label for="no_agenda" class="block text-sm font-medium text-gray-700">Nomor Agenda</label>
                                 <input type="text" name="no_agenda" id="no_agenda" 
                                     class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -24,7 +24,7 @@
                                 @enderror
                             </div>
 
-                            <div>
+                            <div class="form-group">
                                 <label for="no_surat" class="block text-sm font-medium text-gray-700">Nomor SK</label>
                                 <input type="text" name="no_surat" id="no_surat" 
                                     class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -34,7 +34,7 @@
                                 @enderror
                             </div>
 
-                            <div>
+                            <div class="form-group">
                                 <label for="pengirim" class="block text-sm font-medium text-gray-700">Pengirim</label>
                                 <input type="text" name="pengirim" id="pengirim" 
                                     class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -43,8 +43,12 @@
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
+                        </div>
 
-                            <div>
+                        <div class="mt-6"></div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6"> 
+                            <div class="form-group">
                                 <label for="tanggal_surat" class="block text-sm font-medium text-gray-700">Tanggal SK</label>
                                 <input type="date" name="tanggal_surat" id="tanggal_surat" 
                                     class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -54,7 +58,7 @@
                                 @enderror
                             </div>
 
-                            <div>
+                            <div class="form-group">
                                 <label for="tanggal_terima" class="block text-sm font-medium text-gray-700">Tanggal Terima</label>
                                 <input type="date" name="tanggal_terima" id="tanggal_terima" 
                                     class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -101,7 +105,7 @@
                         </div>
 
                         <div class="mt-6 flex items-center justify-end">
-                            <a href="{{ route('draft-phd.sk.index') }}" 
+                            <a href="{{ route('draft-phd.sk.detail', $sk->id) }}" 
                                 class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-2">
                                 Batal
                             </a>

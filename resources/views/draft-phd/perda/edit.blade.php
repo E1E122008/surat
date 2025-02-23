@@ -13,7 +13,7 @@
                         @csrf
                         @method('PUT')  
 
-                        <div class="form-grid">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="form-group">
                                 <label for="no_agenda" class="form-label">Nomor Agenda</label>
                                 <input type="text" name="no_agenda" id="no_agenda" 
@@ -43,7 +43,11 @@
                                     <div class="form-error">{{ $message }}</div>
                                 @enderror
                             </div> 
+                        </div>
 
+                        <div class="mt-6"></div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="form-group">
                                 <label for="tanggal_surat" class="form-label">Tanggal Surat</label>
                                 <input type="date" name="tanggal_surat" id="tanggal_surat" 
@@ -76,7 +80,7 @@
                                 @enderror
                             </div>  
 
-                            <div class="f md:col-span-2">
+                            <div class="md:col-span-2">
                                 <label for="lampiran" class="block text-sm font-medium text-gray-700">Lampiran (PDF, DOC, DOCX, Gambar)</label>
                                 @if($perda->lampiran)
                                     <div class="mt-2">
@@ -99,7 +103,7 @@
                         </div>
 
                         <div class="button-container"></div>
-                            <a href="{{ route('draft-phd.perda.index') }}" 
+                            <a href="{{ route('draft-phd.perda.detail', $perda->id) }}" 
                                 class="btn-cancel">
                                 Batal
                             </a>
