@@ -37,36 +37,26 @@
                             <thead class="table-bordered">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tujuan</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Perihal</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Nama Petugas</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Lampiran</th>
                                     <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($spt as $index => $item)
+                                @foreach($sptDalamDaerah as $index => $item)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $index + 1 }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->no_agenda }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->no_surat }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tanggal->format('d/m/Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tujuan }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->perihal }}</td>
-                                        <td class="px-6 py-4 text-center">{{ $item->nama_petugas }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-center">
-                                            <button onclick="window.location.href='{{ asset('storage/' . $item->lampiran) }}'" class="btn btn-primary">
-                                                <i class="fas fa-eye"></i> Lihat Lampiran
-                                            </button>
+
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex justify-center items-center">
-                                                <a href="{{ route('spt-dalam-daerah.edit', $item->id) }}" 
-                                                class="btn btn-info btn-sm edit-btn" title="Edit">
-                                                    <i class="fas fa-edit"></i>
+                                                <a href="{{ route('spt-dalam-daerah.detail', $item->id) }}" 
+                                                class="btn btn-success btn-sm edit-btn" title="Detail">
+                                                    <i class="fas fa-eye"></i>
                                                 </a>
                                                 <form class="d-inline" id="delete-form-{{ $item->id }}" action="{{ route('spt-dalam-daerah.destroy', $item->id) }}" method="POST" >
                                                     @csrf
@@ -84,7 +74,7 @@
                     </div>
 
                     <div class="mt-4">
-                        {{ $spt->links() }}
+                        {{ $sptDalamDaerah->links() }}
                     </div>
                 </div>
             </div>

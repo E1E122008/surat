@@ -90,6 +90,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('sppd-luar-daerah.export');
 
     Route::resource('spt-dalam-daerah', SptDalamDaerahController::class);
+    Route::get('spt-dalam-daerah/{id}/detail', [SptDalamDaerahController::class, 'detail'])
+        ->name('spt-dalam-daerah.detail');
     Route::get('spt-dalam-daerah/{sptDalamDaerah}/edit', [SptDalamDaerahController::class, 'edit'])
         ->name('spt-dalam-daerah.edit');
     Route::put('spt-dalam-daerah/{sptDalamDaerah}', [SptDalamDaerahController::class, 'update'])

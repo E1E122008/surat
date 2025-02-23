@@ -49,7 +49,7 @@
                         <a href="{{ route('sppd-dalam-daerah.index') }}" class="btn-cancel flex items-center justify-center h-12 w-32 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-200">
                             <i class="fas fa-arrow-left mr-2"></i> Kembali
                         </a>    
-                        <a href="{{ route('sppd-dalam-daerah.edit', $sppd->id) }}" class="btn btn-info flex items-center justify-center h-12 w-32 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition duration-200">
+                        <a href="{{ route('sppd-dalam-daerah.edit', $sppd->id) }}" class="btn-edit flex items-center justify-center h-12 w-32 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200">
                             <i class="fas fa-edit mr-2"></i> Edit
                         </a>
                         

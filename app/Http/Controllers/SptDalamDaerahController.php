@@ -17,16 +17,16 @@ class SptDalamDaerahController extends Controller
         if ($request->has('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('no_agenda', 'LIKE', "%{$search}%")
-                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                $q->where('no_surat', 'LIKE', "%{$search}%")
+                  ->orWhere('tanggal', 'LIKE', "%{$search}%")
                   ->orWhere('tujuan', 'LIKE', "%{$search}%")
                   ->orWhere('perihal', 'LIKE', "%{$search}%")
                   ->orWhere('nama_petugas', 'LIKE', "%{$search}%");
             });
         }
 
-        $spt = $query->paginate(10);
-        return view('spt-dalam-daerah.index', compact('spt'));
+        $sptDalamDaerah = $query->paginate(10);
+        return view('spt-dalam-daerah.index', compact('sptDalamDaerah'));
     }
 
     public function create()
@@ -37,44 +37,30 @@ class SptDalamDaerahController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'lampiran' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048', // Sesuaikan dengan tipe file yang diizinkan
+        $validated = $request->validate([
+            'no_surat' => 'required|string|max:255',
+            'tanggal' => 'required|date',
+            'tujuan' => 'required|string|max:255',
+            'perihal' => 'required|string|max:255',
+            'nama_petugas' => 'required|string',
+            'lampiran' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
         ]);
 
-        try {
-            $validated = $request->validate([
-                'no_agenda' => 'required|string|max:255',
-                'no_surat' => 'required|string|max:255',
-                'tanggal' => 'required|date',
-                'tujuan' => 'required|string|max:255',
-                'perihal' => 'required|string|max:255',
-                'nama_petugas' => 'required|string',
-                'lampiran' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
-            ]);
-
-            if ($request->hasFile('lampiran')) {
-                $file = $request->file('lampiran');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $path = $file->storeAs('lampiran/spt-dalam-daerah', $fileName, 'public');
-                $validated['lampiran'] = $path;
-            }
-
-            $sptDalamDaerah = SptDalamDaerah::create($validated);
-
-            if (!$sptDalamDaerah) {
-                throw new \Exception('Gagal menyimpan data spt dalam daerah');
-            }
-
-            return redirect()->route('spt-dalam-daerah.index')
-                ->with('success', 'SPT Dalam Daerah berhasil ditambahkan');
-        } catch (\Exception $e) {
-            if (isset($path) && Storage::disk('public')->exists($path)) {
-                Storage::disk('public')->delete($path);
-            }
-            return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat menambahkan SPT Dalam Daerah: ' . $e->getMessage())
-                ->withInput();  
+        if ($request->hasFile('lampiran')) {
+            $file = $request->file('lampiran');
+            $path = $file->store('lampiran/spt-dalam-daerah', 'public');                
+            $validated['lampiran'] = $path;
         }
+        SptDalamDaerah::create($validated);
+        return redirect()->route('spt-dalam-daerah.index')
+            ->with('success', 'SPT Dalam Daerah berhasil ditambahkan');
+
+    }
+
+    public function detail($id)
+    {
+        $spt = SptDalamDaerah::findOrFail($id);
+        return view('spt-dalam-daerah.detail', compact('spt'));
     }
 
     public function edit($id)
@@ -88,7 +74,6 @@ class SptDalamDaerahController extends Controller
         try {
             $sptDalamDaerah = SptDalamDaerah::findOrFail($id);
             $validated = $request->validate([
-                'no_agenda' => 'required|string|max:255',
                 'no_surat' => 'required|string|max:255',
                 'tanggal' => 'required|date',
                 'tujuan' => 'required|string|max:255',
@@ -102,8 +87,7 @@ class SptDalamDaerahController extends Controller
                     Storage::disk('public')->delete($sptDalamDaerah->lampiran);
                 }
                 $file = $request->file('lampiran');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $path = $file->storeAs('lampiran/spt-dalam-daerah', $fileName, 'public');
+                $path = $file->store('lampiran/spt-dalam-daerah', 'public');
                 $validated['lampiran'] = $path;
             }
 
@@ -113,8 +97,7 @@ class SptDalamDaerahController extends Controller
                 ->with('success', 'SPT Dalam Daerah berhasil diperbarui');
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat memperbarui SPT Dalam Daerah: ' . $e->getMessage())
-                ->withInput();
+                ->with('error', 'Terjadi kesalahan saat memperbarui SPT Dalam Daerah');
         }
     }
 
