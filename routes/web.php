@@ -80,7 +80,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('sppd-luar-daerah/create', [SppdLuarDaerahController::class, 'create'])
         ->name('sppd-luar-daerah.create');
     Route::get('/sppd-luar-daerah/{id}/detail', [SppdLuarDaerahController::class, 'detail'])->name('sppd-luar-daerah.detail');
-    Route::get('/sppd-luar-daerah/{id}/edit', [SppdLuarDaerahController::class, 'edit'])
+    Route::get('/sppd-luar-daerah/{sppdLuarDaerah}/edit', [SppdLuarDaerahController::class, 'edit'])
         ->name('sppd-luar-daerah.edit');
     Route::put('sppd-luar-daerah/{id}', [SppdLuarDaerahController::class, 'update'])
         ->name('sppd-luar-daerah.update');
@@ -102,7 +102,9 @@ Route::middleware(['auth'])->group(function () {
         ->name('spt-dalam-daerah.export');
 
     Route::resource('spt-luar-daerah', SptLuarDaerahController::class);
-    Route::get('spt-luar-daerah/{sptLuarDaerah}/edit', [SptLuarDaerahController::class, 'edit'])
+    Route::get('spt-luar-daerah/{id}/detail', [SptLuarDaerahController::class, 'detail'])
+        ->name('spt-luar-daerah.detail');
+    Route::get('spt-luar-daerah/{id}/edit', [SptLuarDaerahController::class, 'edit'])
         ->name('spt-luar-daerah.edit');
     Route::put('spt-luar-daerah/{sptLuarDaerah}', [SptLuarDaerahController::class, 'update'])
         ->name('spt-luar-daerah.update');

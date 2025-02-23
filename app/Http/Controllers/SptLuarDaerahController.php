@@ -12,7 +12,7 @@ class SptLuarDaerahController extends Controller
 {
     public function index(Request $request)
     {
-        $query = SptLuarDaerah::query();
+        $query = SptLuarDaerah::latest();
         
         if ($request->has('search')) {
             $search = $request->search;
@@ -26,8 +26,8 @@ class SptLuarDaerahController extends Controller
             });
         }
         
-        $spt = $query->latest()->paginate(10);
-        return view('spt-luar-daerah.index', compact('spt'));
+        $sptLuarDaerah = $query->paginate(10);
+        return view('spt-luar-daerah.index', compact('sptLuarDaerah'));
     }
 
     public function create()
@@ -38,41 +38,32 @@ class SptLuarDaerahController extends Controller
 
     public function store(Request $request)
     {
-        try {
-            $validated = $request->validate([
-                'no_agenda' => 'required|string',
-                'no_surat' => 'required|string|max:255',
-                'tanggal' => 'required|date',
-                'tujuan' => 'required|string|max:255',
-                'perihal' => 'required|string|max:255',
-                'nama_petugas' => 'required|string',
-                'lampiran' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
-            ]);
+        $validated = $request->validate([
+            'no_surat' => 'required|string|max:255',
+            'tanggal' => 'required|date',
+            'tujuan' => 'required|string|max:255',
+            'perihal' => 'required|string|max:255',
+            'nama_petugas' => 'required|string',
+            'lampiran' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
+        ]);
 
-            if ($request->hasFile('lampiran')) {
-                $file = $request->file('lampiran');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $path = $file->storeAs('lampiran/spt-luar-daerah', $fileName, 'public');
-                $validated['lampiran'] = $path;
-            }
-
-            $sptLuarDaerah = SptLuarDaerah::create($validated);
-
-            if (!$sptLuarDaerah) {
-                throw new \Exception('Gagal menyimpan data spt luar daerah');
-            }
-
-            return redirect()->route('spt-luar-daerah.index')
-                ->with('success', 'SPT Luar Daerah berhasil ditambahkan');
-        } catch (\Exception $e) {
-            if (isset($path) && Storage::disk('public')->exists($path)) {
-                Storage::disk('public')->delete($path);
-            }
-
-            return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat menambahkan SPT Luar Daerah: ' . $e->getMessage())
-                ->withInput();  
+        if ($request->hasFile('lampiran')) {
+            $file = $request->file('lampiran');
+            $path = $file->store('lampiran/spt-luar-daerah', 'public');
+            $validated['lampiran'] = $path;
         }
+
+        SptLuarDaerah::create($validated);
+
+
+        return redirect()->route('spt-luar-daerah.index')
+            ->with('success', 'SPT Luar Daerah berhasil ditambahkan');
+    }
+
+    public function detail($id)
+    {
+        $spt = SptLuarDaerah::findOrFail($id);
+        return view('spt-luar-daerah.detail', compact('spt'));
     }
 
     public function edit($id)
@@ -81,11 +72,11 @@ class SptLuarDaerahController extends Controller
         return view('spt-luar-daerah.edit', compact('sptLuarDaerah'));
     }
 
-    public function update(Request $request, SptLuarDaerah $sptLuarDaerah)
+    public function update(Request $request, $id)
     {   
         try {
+            $sptLuarDaerah = SptLuarDaerah::findOrFail($id);
             $validated = $request->validate([
-                'no_agenda' => 'required|string',
                 'no_surat' => 'required|string|max:255',
                 'tanggal' => 'required|date',
                 'tujuan' => 'required|string|max:255',
@@ -99,8 +90,7 @@ class SptLuarDaerahController extends Controller
                     Storage::disk('public')->delete($sptLuarDaerah->lampiran);
                 }
                 $file = $request->file('lampiran');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $path = $file->storeAs('lampiran/spt-luar-daerah', $fileName, 'public');
+                $path = $file->store('lampiran/spt-luar-daerah', 'public');
                 $validated['lampiran'] = $path;
             }
 
@@ -110,8 +100,7 @@ class SptLuarDaerahController extends Controller
                 ->with('success', 'SPT Luar Daerah berhasil diperbarui');
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat memperbarui SPT Luar Daerah: ' . $e->getMessage())
-                ->withInput();
+                ->with('error', 'Terjadi kesalahan saat memperbarui SPT Luar Daerah');
         }
     }
 

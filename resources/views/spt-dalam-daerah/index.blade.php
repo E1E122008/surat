@@ -50,8 +50,6 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->no_surat }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tanggal->format('d/m/Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tujuan }}</td>
-
-                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex justify-center items-center">
                                                 <a href="{{ route('spt-dalam-daerah.detail', $item->id) }}" 

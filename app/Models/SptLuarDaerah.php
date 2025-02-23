@@ -12,7 +12,6 @@ class SptLuarDaerah extends Model
     protected $table = 'spt_luar_daerah';
     
     protected $fillable = [
-        'no_agenda',
         'no_surat',
         'tanggal',
         'tujuan',
