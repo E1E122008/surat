@@ -6,6 +6,8 @@ use App\Models\SuratKeluar;
 use Illuminate\Http\Request;
 use App\Models\SppdDalamDaerah;
 use App\Models\SppdLuarDaerah;
+use App\Models\sptDalamDaerah;
+use App\Models\sptLuarDaerah;
 use Carbon\Carbon;
 
 class KategoriKeluarController extends Controller
@@ -18,11 +20,17 @@ class KategoriKeluarController extends Controller
         $filterWaktuSuratKeluar = $request->input('waktuSuratKeluar', 'bulan');
         $filterWaktuSppdDalamDaerah = $request->input('waktuSppdDalamDaerah', 'bulan');
         $filterWaktuSppdLuarDaerah = $request->input('waktuSppdLuarDaerah', 'bulan');
+        $filterWaktuSptDalamDaerah = $request->input('waktuSptDalamDaerah', 'bulan');
+        $filterWaktuSptLuarDaerah = $request->input('waktuSptLuarDaerah', 'bulan');
+
 
         // Query data
         $querySuratKeluar = SuratKeluar::query();
         $querySppdDalamDaerah = SppdDalamDaerah::query();
         $querySppdLuarDaerah = SppdLuarDaerah::query();
+        $querySptDalamDaerah = sptDalamDaerah::query();
+        $querySptLuarDaerah = sptLuarDaerah::query();
+
 
         // Filter waktu untuk Surat Keluar
         if ($filterWaktuSuratKeluar == 'minggu') {
@@ -54,14 +62,37 @@ class KategoriKeluarController extends Controller
             $querySppdLuarDaerah->whereYear('tanggal', Carbon::now()->year);
         }
 
+        // Filter waktu untuk SPT Dalam Daerah
+        if ($filterWaktuSptDalamDaerah == 'minggu') {
+            $querySptDalamDaerah->whereBetween('tanggal', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+        } elseif ($filterWaktuSptDalamDaerah == 'bulan') {
+            $querySptDalamDaerah->whereMonth('tanggal', Carbon::now()->month)
+                                ->whereYear('tanggal', Carbon::now()->year);
+        } elseif ($filterWaktuSptDalamDaerah == 'tahun') {
+            $querySptDalamDaerah->whereYear('tanggal', Carbon::now()->year);
+        }
+
+        // Filter waktu untuk SPT Luar Daerah
+        if ($filterWaktuSptLuarDaerah == 'minggu') {
+            $querySptLuarDaerah->whereBetween('tanggal', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+        } elseif ($filterWaktuSptLuarDaerah == 'bulan') {
+            $querySptLuarDaerah->whereMonth('tanggal', Carbon::now()->month)
+                                ->whereYear('tanggal', Carbon::now()->year);
+        } elseif ($filterWaktuSptLuarDaerah == 'tahun') {
+            $querySptLuarDaerah->whereYear('tanggal', Carbon::now()->year);
+        }
+        
+
         // Eksekusi query
         $suratKeluar = $querySuratKeluar->get();
         $sppdDalamDaerah = $querySppdDalamDaerah->get();
         $sppdLuarDaerah = $querySppdLuarDaerah->get();
+        $sptDalamDaerah = $querySptDalamDaerah->get();
+        $sptLuarDaerah = $querySptLuarDaerah->get();
 
         // Kirim data ke view
         return view('layouts.buku-agenda.kategori-keluar.index', compact(
-            'suratKeluar', 'activeTab', 'sppdDalamDaerah', 'sppdLuarDaerah'
+            'suratKeluar', 'activeTab', 'sppdDalamDaerah', 'sppdLuarDaerah', 'sptDalamDaerah', 'sptLuarDaerah'
         ));
     }
 }

@@ -117,13 +117,13 @@
              </a>
              <ul class="list-none pl-4 hidden">
                 <li class="my-1">
-                    <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('buku-agenda.*') ? 'active' : '' }}" 
+                    <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('buku-agenda.index') ? 'active' : '' }}" 
                        href="{{ route('buku-agenda.index') }}">
                         <i class="fas fa-book mr-2"></i> Kategori Masuk
                     </a>
                 </li>
                 <li class="my-1">
-                    <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('buku-agenda.*') ? 'active' : '' }}" 
+                    <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('buku-agenda.kategori-keluar.index') ? 'active' : '' }}" 
                        href="{{ route('buku-agenda.kategori-keluar.index') }}">
                         <i class="fas fa-book mr-2"></i> Kategori Keluar
                     </a>
