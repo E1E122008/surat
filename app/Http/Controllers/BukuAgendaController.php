@@ -55,4 +55,5 @@ class BukuAgendaController extends Controller
         // Kirim data ke view
         return view('layouts.buku-agenda.index', compact('suratMasuk', 'activeTab', 'sk'));
     }
+    
 }

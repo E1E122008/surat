@@ -16,6 +16,8 @@ use App\Http\Controllers\PerdaController;
 use App\Http\Controllers\PergubController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DisposisiController;
+use App\Http\Controllers\KategoriKeluarController;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -114,6 +116,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('spt-luar-daerah.export');
 
     Route::get('/buku-agenda', [BukuAgendaController::class, 'index'])->name('buku-agenda.index');
+    Route::get('/buku-agenda/kategori-masuk', [BukuAgendaController::class, 'kategoriMasuk'])->name('buku-agenda.kategori-masuk.index');
+    Route::get('/buku-agenda/kategori-keluar', [KategoriKeluarController::class, 'index'])->name('buku-agenda.kategori-keluar.index');
 
     Route::get('/profile', [UserProfileController::class, 'index'])->name('profile');
 
