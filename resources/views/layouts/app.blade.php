@@ -438,7 +438,7 @@
 
         .sidebar {
             width: 250px;
-            background: rgba(30, 58, 138, 0.85); /* Navy Blue dengan transparansi */
+            background: rgba(30, 59, 138, 0.678); /* Navy Blue dengan transparansi */
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             padding: 20px;
