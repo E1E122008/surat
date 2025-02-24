@@ -119,6 +119,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/buku-agenda/kategori-keluar', [KategoriKeluarController::class, 'index'])->name('buku-agenda.kategori-keluar.index');
 
     Route::get('/profile', [UserProfileController::class, 'index'])->name('profile');
+    Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [UserProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('/profile/avatar', [UserProfileController::class, 'updateAvatar'])->name('profile.avatar');
+
+    Route::get('/profile/history', [UserProfileController::class, 'history'])->name('profile.history');
+    Route::get('/profile/activity', [UserProfileController::class, 'activity'])->name('profile.activity');
+    Route::get('/profile/login-history', [UserProfileController::class, 'loginHistory'])->name('profile.login-history');
+    Route::get('/profile/logout-history', [UserProfileController::class, 'logoutHistory'])->name('profile.logout-history');
+    Route::get('/profile/avatar', [UserProfileController::class, 'avatar'])->name('profile.avatar');
+    Route::post('/profile/avatar', [UserProfileController::class, 'updateAvatar'])->name('profile.update-avatar');
+    Route::get('/profile/password', [UserProfileController::class, 'password'])->name('profile.password');
+    Route::post('/profile/password', [UserProfileController::class, 'updatePassword'])->name('profile.update-password');
 
     Route::get('/draft-phd/sk', [SKController::class, 'index'])->name('draft-phd.sk.index');
 

@@ -1204,30 +1204,36 @@
                 <div class="navbar-nav">
                     <span class="nav-item text-white me-3 d-flex align-items-center">
                         <span class="date-display">{{ now()->format('d F Y') }}</span>
+                        <i class="fas fa-calendar-alt ms-2"></i>
                     </span>
                     
                     <!-- Profil Pengguna dengan Custom Dropdown Icon -->
                     <div class="nav-item dropdown profile-container">
                         <a class="nav-link d-flex align-items-center profile-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-chevron-down ms-2 dropdown-icon"></i>
                             <span class="ms-2 d-none d-lg-inline text-white profile-name">{{ Auth::user()->name }}</span>
-                        
-                            <div class="position-relative">
-                                @if(Auth::user()->profile_photo_url)
-                                    <img src="{{ Auth::user()->profile_photo_url }}" alt="User Avatar" class="profile-image">
-                                @else
-                                    <div class="profile-initial">
-                                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                                    </div>
-                                @endif
-                                <div class="status-indicator"></div>
+                            <div class="position-relative ms-2">
+                                <div class="rounded-circle bg-white d-flex align-items-center justify-content-center transition-transform duration-300 hover:scale-110" 
+                                     style="width: 43px; height: 43px; overflow: hidden;">
+                                    @if(Auth::user()->avatar)
+                                        <img src="{{ Storage::url(Auth::user()->avatar) }}" 
+                                             alt="Profile"
+                                             class="transition-opacity duration-300 hover:opacity-80"
+                                             style="width: 100%; height: 100%; object-fit: cover;">
+                                    @else
+                                        <span class="text-primary fw-bold">
+                                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
-                            
+                            <i class="fas fa-chevron-down ms-2 dropdown-icon"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow">
                             <li class="dropdown-header d-flex align-items-center">
-                                @if(Auth::user()->profile_photo_url)
-                                    <img src="{{ Auth::user()->profile_photo_url }}" alt="User Avatar" class="profile-image">
+                                @if(Auth::user()->avatar)
+                                    <img src="{{ asset('storage/' . Auth::user()->avatar) }}" 
+                                         alt="User Avatar" 
+                                         class="profile-image">
                                 @else
                                     <div class="profile-initial">
                                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
