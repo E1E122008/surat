@@ -18,6 +18,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DisposisiController;
 use App\Http\Controllers\KategoriKeluarController;
 
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -41,9 +42,7 @@ Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/', function () {
         return redirect()->route('dashboard');
@@ -173,4 +172,14 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/surat-masuk/{id}/status', [SuratMasukController::class, 'status'])->name('surat-masuk.status');
     Route::put('/surat-masuk/{id}/update-status', [SuratMasukController::class, 'updateStatus'])->name('surat-masuk.update-status');
+
+    Route::get('/disposisi', [DisposisiController::class, 'index'])->name('disposisi.index');
+    Route::get('/disposisi/{id}', [DisposisiController::class, 'detail'])->name('disposisi.detail');
+    Route::put('/disposisi/{id}', [DisposisiController::class, 'update'])->name('disposisi.update');
+    Route::get('/disposisi/{id}/edit', [DisposisiController::class, 'edit'])->name('disposisi.edit');
+
+    Route::get('/surat-masuk/{id}/status', [SuratMasukController::class, 'status'])->name('surat-masuk.status');
+    Route::put('/surat-masuk/{id}/update-status', [SuratMasukController::class, 'updateStatus'])->name('surat-masuk.update-status');
+
+    Route::get('/dashboard/chart-data', [DashboardController::class, 'getChartData'])->name('dashboard.chart-data');
 });

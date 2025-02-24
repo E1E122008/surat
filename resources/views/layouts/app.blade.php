@@ -793,22 +793,27 @@
 
         /* Dashboard Card Colors */
         .dashboard-card.surat-masuk {
-            background: linear-gradient(135deg, #6B46C1, #9F7AEA);
+            background: linear-gradient(135deg,#4C1D95, #D8B4FE);
             color: white;
         }
 
         .dashboard-card.surat-keluar {
-            background: linear-gradient(135deg, #10B981, #34D399);
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.2), green);
+            color: white;
+        }
+
+        .dashboard-card.draft-phd {
+            background: linear-gradient(135deg, #713F12, #FEF08A);
             color: white;
         }
 
         .dashboard-card.sppd {
-            background: linear-gradient(135deg, #3B82F6, #60A5FA);
+            background: linear-gradient(135deg, rgba(0, 0, 255, 0.2), blue);
             color: white;
         }
 
         .dashboard-card.spt {
-            background: linear-gradient(135deg, #F97316, #FB923C);
+            background: linear-gradient(135deg, orange, rgba(255, 165, 0, 0.2));
             color: white;
         }
 
