@@ -1182,8 +1182,8 @@
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-100">
         <!-- Navigation -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary" style="margin: 0; padding: 1rem 0; width: 100%;">
+            <div class="container-fluid">
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-image mx-auto mb-2">
                 <a class="navbar-brand fw-bold"   href="{{ route('dashboard') }}">SIAP BRO!</a>
                 <button class="btn btn-outline-light" onclick="toggleSidebar()">
@@ -1289,7 +1289,7 @@
         @include('layouts.sidebar')
         
         <!-- Page Content -->
-        <main class="container py-4">
+        <main class="container py-4" style="margin-top: 0;">
             @yield('content')
         </main>
     </div>

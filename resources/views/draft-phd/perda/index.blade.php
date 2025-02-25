@@ -89,7 +89,7 @@
                                         </button>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <a href="{{ route('draft-phd.perda.detail', $perda->id) }}" class="btn btn-primary btn-sm">
+                                        <a href="{{ route('draft-phd.perda.detail', $perda->id) }}" class="btn btn-success btn-sm">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                         
@@ -132,7 +132,6 @@
                                 <option value="koreksi">Koreksi</option>
                                 <option value="diambil">Diambil</option>
                                 <option value="selesai">Selesai</option>
-                                <option value="ditolak">Ditolak</option>
                             </select>
                         </div>
                     </div>
@@ -207,25 +206,7 @@
 
         document.getElementById('statusForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            fetch(this.action, {
-                method: 'POST',
-                body: new FormData(this),
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.reload();
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Gagal mengupdate status');
-            });
+            this.submit(); // Submit form secara normal
         });
 
         function editCatatan(suratId, currentCatatan) { 

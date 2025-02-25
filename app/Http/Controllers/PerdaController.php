@@ -156,25 +156,11 @@ class PerdaController extends Controller
             $perda->status = $request->status;
             $perda->save();
 
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Status berhasil diupdate',
-                    'new_status' => $perda->status
-                ]);
-            }
-
-            return redirect()->route('draft-phd.perda.index')
+            // Gunakan redirect dengan flash message
+            return redirect()->back()
                             ->with('success', 'Status berhasil diupdate');
 
         } catch (\Exception $e) {
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Gagal mengupdate status: ' . $e->getMessage()
-                ], 500);
-            }
-
             return redirect()->back()
                             ->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
         }
