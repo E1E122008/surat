@@ -25,7 +25,7 @@ class PergubExport implements FromCollection, WithHeadings, WithMapping
             'Tanggal Terima',
             'Perihal',
             'Lampiran',
-            'Catatan',
+            'Disposisi',
         ];
     }   
 
@@ -40,7 +40,7 @@ class PergubExport implements FromCollection, WithHeadings, WithMapping
             $pergub->tanggal_terima->format('d/m/Y'),
             $pergub->perihal,
             $pergub->lampiran,  
-            $pergub->catatan,
+            $pergub->disposisi,
         ];
     }
 }

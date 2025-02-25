@@ -25,7 +25,6 @@ class SuratMasukExport implements FromCollection, WithHeadings, WithMapping
             'Tanggal Terima',
             'Perihal',
             'Lampiran',
-            'Catatan',
             'Disposisi',
             'Status',
             
@@ -46,7 +45,6 @@ class SuratMasukExport implements FromCollection, WithHeadings, WithMapping
             $suratMasuk->tanggal_terima->format('d/m/Y'),
             $suratMasuk->perihal,
             $suratMasuk->lampiran,
-            $suratMasuk->catatan,
             $suratMasuk->disposisi,
             $suratMasuk->status,
         ];

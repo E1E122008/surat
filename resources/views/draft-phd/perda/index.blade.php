@@ -37,7 +37,6 @@
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Terima</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Catatan</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Status</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
@@ -51,14 +50,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $perda->no_surat }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $perda->pengirim }}</td> 
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{($perda->tanggal_terima)->format('d/m/Y') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap catatan-col">
-                                        <div class="flex items-center space-x-2" data-surat-id="{{ $perda->id }}">
-                                            <textarea name="" id="" cols="10" rows="2" class="catatan-textarea" placeholder="Tulis catatan..." readonly>{{ $perda->catatan }}</textarea>
-                                            <button class="btn btn-sm btn-success" onclick="editCatatan({{ $perda->id }}, '{{ $perda->catatan }}')">
-                                                <i class="fas fa-sync-alt"></i>
-                                            </button>
-                                        </div>
-                                    </td>
+                                    
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
                                         <select name="disposisi" onchange="showSubpoints(this)" class="disposisi-dropdown text-center" style="background-color: lightblue; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
                                             <option value="">Pilih Disposisi</option>
@@ -84,12 +76,17 @@
                                         @elseif($perda->status == 'selesai')
                                             <span class="bg-selesai">Selesai</span>
                                         @endif
-                                        <button onclick="openStatusModal({{ $perda->id }}, '{{ $perda->status }}')" class="btn btn-light btn-sm ms-2" style="background-color: white; border: 1px solid #dee2e6;">
-                                            <i class="fas fa-sync-alt" style="color: #29fd0d;"></i>
-                                        </button>
+                                        
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <a href="{{ route('draft-phd.perda.detail', $perda->id) }}" class="btn btn-success btn-sm">
+                                        <form onclick="openStatusModal({{ $perda->id }})" method="POST" class="inline" title="Update Status">
+                                            @csrf
+                                            @method('PUT')
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </form>
+                                        <a href="{{ route('draft-phd.perda.detail', $perda->id) }}" class="btn btn-primary btn-sm">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                         

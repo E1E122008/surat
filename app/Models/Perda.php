@@ -20,8 +20,8 @@ class Perda extends Model
         'tanggal_terima',
         'perihal',
         'lampiran',
-        'catatan',
-        'status'
+        'status',
+        'disposisi'
     ];
 
     protected $casts = [    

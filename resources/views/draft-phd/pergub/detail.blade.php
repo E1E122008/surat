@@ -35,18 +35,12 @@
                             <label for="perihal">Perihal</label>
                             <textarea name="perihal" id="perihal" class="form-control border-effect" readonly>{{ $pergub->perihal }}</textarea>
                         </div>  
-                        <div class="form-group">
-                            <label for="catatan">Catatan</label>
-                            <textarea name="catatan" id="catatan" class="form-control border-effect" readonly>{{ $pergub->catatan }}</textarea>
-                        </div>
+                        
                         <div class="form-group">
                             <label for="disposisi">Disposisi</label>    
-                            <input type="text" name="disposisi" id="disposisi" class="form-control border-effect" value="{{ $pergub->disposisi }}" readonly>
+                            <textarea type="text" name="disposisi" id="disposisi" class="form-control border-effect" value="{{ $pergub->disposisi }}" readonly>{{ $pergub->disposisi }}</textarea>
                         </div>
-                        <div class="form-group">
-                            <label for="status">Status</label>
-                            <input type="text" name="status" id="status" class="form-control border-effect" value="{{ $pergub->status }}" readonly>
-                        </div> 
+
                         <div class="form-group">
                             <label for="lampiran">Lampiran</label>
                             <button onclick="window.location.href='{{ asset('storage/' . $pergub->lampiran) }}'" class="btn btn-primary">

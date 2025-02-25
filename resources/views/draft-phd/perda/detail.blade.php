@@ -42,18 +42,12 @@
                             <label for="perihal">Perihal</label>
                             <textarea name="perihal" id="perihal" class="form-control border-effect" readonly>{{ $perda->perihal }}</textarea>
                         </div>    
-                        <div class="form-group mb-3">
-                            <label for="catatan">Catatan</label>
-                            <textarea name="catatan" id="catatan" class="form-control border-effect" readonly>{{ $perda->catatan }}</textarea>
-                        </div>
+
                         <div class="form-group mb-3">
                             <label for="disposisi">Disposisi</label>
-                            <input type="text" name="disposisi" id="disposisi" class="form-control border-effect" value="{{ $perda->disposisi }}" readonly>
+                            <textarea type="text" name="disposisi" id="disposisi" class="form-control border-effect" value="{{ $perda->disposisi }}" readonly>{{ $perda->disposisi }}</textarea>
                         </div>  
-                        <div class="form-group mb-3">
-                            <label for="status">Status</label>
-                            <input type="text" name="status" id="status" class="form-control border-effect" value="{{ $perda->status }}" readonly>
-                        </div>
+
                     </div>
 
                         
