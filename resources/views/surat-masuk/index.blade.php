@@ -94,9 +94,9 @@
                                         @elseif($surat->status == 'selesai')
                                             <span class="bg-selesai">Selesai</span>
                                         @endif
-                                        <a href="{{ route('surat-masuk.status', $surat->id) }}" >
+                                        <button onclick="openStatusModal({{ $surat->id }}, '{{ $surat->status }}')" class="btn btn-light btn-sm ms-2" style="background-color: white; border: 1px solid #dee2e6;">
                                             <i class="fas fa-file-upload" style="color: rgb(255, 238, 0); font-size: 1.5em;"></i>
-                                        </a>
+                                        </button>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex justify-center items-center">
@@ -126,6 +126,38 @@
                 </div>
             </div>
         </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="statusModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Status Surat Masuk</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="statusForm" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body">    
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="tercatat">Tercatat</option>
+                                <option value="tersdisposisi">Ters Disposisi</option>
+                                <option value="diproses">Diproses</option>
+                                <option value="koreksi">Koreksi</option>
+                                <option value="diambil">Diambil</option>
+                                <option value="selesai">Selesai</option>
+                            </select>
+                        </div>  
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Update Status</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -227,6 +259,12 @@
             }
 
             subpointSelect.style.display = selectedValue ? 'block' : 'none';
+        }
+
+        function openStatusModal(id, currentStatus) {
+            document.getElementById('statusForm').action = `/surat-masuk/${id}/update-status`;
+            document.getElementById('status').value = currentStatus;
+            new bootstrap.Modal(document.getElementById('statusModal')).show();
         }
 
         function searchTable() {

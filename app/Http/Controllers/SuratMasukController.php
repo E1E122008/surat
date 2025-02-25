@@ -61,6 +61,7 @@ class SuratMasukController extends Controller
         $surat = SuratMasuk::findOrFail($id);
         return view('surat-masuk.detail', compact('surat'));
     }
+    
 
     public function edit(SuratMasuk $suratMasuk)
     {
@@ -180,15 +181,19 @@ class SuratMasukController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        $request->validate([
-            'status' => 'required|string|max:255',
-        ]);
+        try {
+            $request->validate([
+                'status' => 'required|in:tercatat,tersdisposisi,diproses,koreksi,diambil,selesai',
+            ]);
 
-        $surat = SuratMasuk::findOrFail($id);
-        $surat->status = $request->status;
-        $surat->save();
+            $surat = SuratMasuk::findOrFail($id);
+            $surat->status = $request->status;
+            $surat->save();
 
-        return redirect()->route('surat-masuk.index')->with('success', 'Status berhasil diperbarui.');
+            return redirect()->route('surat-masuk.index')->with('success', 'Status berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
+        }
     }
 
 }

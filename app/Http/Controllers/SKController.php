@@ -97,9 +97,7 @@ class SKController extends Controller
             $sk->save();
 
             // Redirect langsung ke halaman index
-            return redirect()->route('draft-phd.sk.index')
-                            ->with('success', 'Status berhasil diupdate');
-
+            return redirect()->route('draft-phd.sk.index')->with('success', 'Status berhasil diupdate');
         } catch (\Exception $e) {
             return redirect()->back()
                             ->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
