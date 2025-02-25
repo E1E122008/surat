@@ -11,34 +11,34 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     
                         <div class="form-group">
-                            <label for="no_surat">Nomor Surat</label>
+                            <label for="no_surat" class="font-semibold">Nomor Surat</label>
                             <input type="text" name="no_surat" id="no_surat" class="form-control border-effect" value="{{ $sppd->no_surat }}" readonly>
                         </div>
                     
                         <div class="form-group">
-                            <label for="tanggal">Tanggal</label>
+                            <label for="tanggal" class="font-semibold">Tanggal</label>
                             <input type="text" name="tanggal" id="tanggal" class="form-control border-effect" value="{{ $sppd->tanggal->format('d/m/Y') }}" readonly>
                         </div>
                         
                         <div class="form-group">
-                            <label for="tujuan">Tujuan</label>
+                            <label for="tujuan" class="font-semibold">Tujuan</label>
                             <input type="text" name="tujuan" id="tujuan" class="form-control border-effect" value="{{ $sppd->tujuan }}" readonly>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="form-group">
-                            <label for="perihal">Perihal</label>
+                            <label for="perihal" class="font-semibold">Perihal</label>
                             <input type="text" name="perihal" id="perihal" class="form-control border-effect" value="{{ $sppd->perihal }}" readonly>
                         </div>
                         
                         <div class="form-group">
-                            <label for="nama_petugas">Nama yang di Tugaskan</label>
+                            <label for="nama_petugas" class="font-semibold" >Nama yang di Tugaskan</label>
                             <input type="text" name="nama_petugas" id="nama_petugas" class="form-control border-effect" value="{{ $sppd->nama_petugas }}" readonly>
                         </div>      
                         
                         <div class="form-group mb-3">
-                            <label for="lampiran">Lampiran</label>
+                            <label for="lampiran" class="font-semibold">Lampiran</label>
                             <button onclick="window.location.href='{{ asset('storage/' . $sppd->lampiran) }}'" class="btn btn-primary">
                                 <i class="fas fa-file-pdf"></i> {{ basename($sppd->lampiran) }}
                             </button>

@@ -17,7 +17,7 @@
                             <div>
                                 <label for="no_agenda" class="block text-sm font-medium text-gray-700">Nomor Agenda</label>
                                 <input type="text" name="no_agenda" id="no_agenda" 
-                                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                    class="form-control"
                                     value="{{ old('no_agenda', $suratMasuk->no_agenda) }}" required>
                                 @error('no_agenda')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
@@ -27,7 +27,7 @@
                             <div>
                                 <label for="no_surat" class="block text-sm font-medium text-gray-700">Nomor Surat</label>
                                 <input type="text" name="no_surat" id="no_surat" 
-                                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                    class="form-control"
                                     value="{{ old('no_surat', $suratMasuk->no_surat) }}" required>
                                 @error('no_surat')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
@@ -37,7 +37,7 @@
                             <div>
                                 <label for="pengirim" class="block text-sm font-medium text-gray-700">Pengirim</label>
                                 <input type="text" name="pengirim" id="pengirim" 
-                                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                    class="form-control"
                                     value="{{ old('pengirim', $suratMasuk->pengirim) }}" required>
                                 @error('pengirim')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
@@ -51,7 +51,7 @@
                             <div>
                                 <label for="tanggal_surat" class="block text-sm font-medium text-gray-700">Tanggal Surat</label>
                                 <input type="date" name="tanggal_surat" id="tanggal_surat" 
-                                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                    class="form-control"
                                     value="{{ old('tanggal_surat', $suratMasuk->tanggal_surat ? $suratMasuk->tanggal_surat->format('Y-m-d') : '') }}" required>
                                 @error('tanggal_surat')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
@@ -61,7 +61,7 @@
                             <div>
                                 <label for="tanggal_terima" class="block text-sm font-medium text-gray-700">Tanggal Terima</label>
                                 <input type="date" name="tanggal_terima" id="tanggal_terima" 
-                                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                    class="form-control"
                                     value="{{ old('tanggal_terima', $suratMasuk->tanggal_terima ? $suratMasuk->tanggal_terima->format('Y-m-d') : '') }}" required>
                                 @error('tanggal_terima')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
