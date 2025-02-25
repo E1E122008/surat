@@ -42,6 +42,12 @@ class SuratMasukController extends Controller
             'tanggal_terima' => 'required|date',
             'perihal' => 'required|string|max:255',
             'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
+            'status' => 'required|string|max:255',
+            'catatan' => 'nullable|string|max:255',
+            'disposisi' => 'nullable|string|max:255',
+            'sub_disposisi' => 'nullable|string|max:255',
+            'tanggal_disposisi' => 'nullable|date',
+            'catatan' => 'nullable|string|max:255',
         ]);
 
         if ($request->hasFile('lampiran')) {
@@ -81,6 +87,12 @@ class SuratMasukController extends Controller
                 'tanggal_terima' => 'required|date',
                 'perihal' => 'required|string|max:255',
                 'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
+                'status' => 'required|string|max:255',
+                'catatan' => 'nullable|string|max:255',
+                'disposisi' => 'nullable|string|max:255',
+                'sub_disposisi' => 'nullable|string|max:255',
+                'tanggal_disposisi' => 'nullable|date',
+                'catatan' => 'nullable|string|max:255',
             ]);
 
             if ($request->hasFile('lampiran')) {
@@ -193,6 +205,44 @@ class SuratMasukController extends Controller
             return redirect()->route('surat-masuk.index')->with('success', 'Status berhasil diperbarui.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
+        }
+    }
+
+    public function disposisi(Request $request, $id)
+    {
+        try {
+            // Validasi input
+            $request->validate([
+                'disposisi' => 'required',
+                'sub_disposisi' => 'required_unless:disposisi,Kasubag Tata Usaha',
+                'tanggal_disposisi' => 'required|date',
+                'catatan' => 'nullable'
+            ]);
+
+            // Ambil data surat masuk
+            $suratMasuk = SuratMasuk::findOrFail($id);
+
+            // Gabungkan data disposisi dalam satu string
+            $disposisiText = $request->disposisi;
+            if ($request->sub_disposisi) {
+                $disposisiText .= ' | Diteruskan ke: ' . $request->sub_disposisi;
+            }
+            $disposisiText .= ' | Tanggal: ' . $request->tanggal_disposisi;
+            if ($request->catatan) {
+                $disposisiText .= ' | Catatan: ' . $request->catatan;
+            }
+
+            // Update kolom disposisi
+            $suratMasuk->update([
+                'disposisi' => $disposisiText
+            ]);
+
+            return redirect()->back()
+                            ->with('success', 'Disposisi berhasil ditambahkan');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                            ->with('error', 'Gagal menambahkan disposisi: ' . $e->getMessage());
         }
     }
 

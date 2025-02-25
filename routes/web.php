@@ -203,5 +203,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard/chart-data', [DashboardController::class, 'getChartData'])->name('dashboard.chart-data');
 
+    Route::post('/surat-masuk/{id}/disposisi', [SuratMasukController::class, 'disposisi'])
+        ->name('surat-masuk.disposisi');
 
 });

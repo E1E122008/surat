@@ -377,7 +377,7 @@
         .form-control {
             width: 100%;
             padding: 0.75rem;
-            border: 1px solid #e2e8f0;
+            border: 1px solid rgba(165, 165, 165, 0.712);
             border-radius: 0.375rem;
             transition: all 0.3s ease;
         }
@@ -909,9 +909,11 @@
 
         /* Style untuk dropdown Disposisi */
         select[name="disposisi"] {
-            background-color: #5b7ef1 !important;  /* Light blue */
+            background-color: #ffffff !important;  /* Light blue */
             color: #1e3a8a !important;
-            border: none !important;
+            border: 1px solid #D1D5DB !important; /* Added grey border */
+            border-radius: 8px;
+            padding: 8px 16px;
         }
 
         /* Style untuk dropdown Subpoint */
@@ -925,8 +927,9 @@
         select[name="status"] {
             background-color: #ffffff !important;  /* Light green */
             color: #166534 !important;
-            border: 2px solid #4B5563 !important; /* Added border effect */
-            border-radius: 8px; /* Maintain border-radius */
+            border: 1px solid #D1D5DB !important; /* Added grey border */
+            border-radius: 8px;
+            padding: 8px 16px; /* Maintain border-radius */
         }
 
         /* Hover effect untuk kedua dropdown */

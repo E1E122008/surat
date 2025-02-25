@@ -22,11 +22,17 @@ class SuratMasuk extends Model
         'catatan',
         'disposisi',
         'status',
-        
+        'sub_disposisi',
+        'tanggal_disposisi',
     ];
 
     protected $casts = [
         'tanggal_surat' => 'date',
         'tanggal_terima' => 'date',
     ];
+
+    public function disposisi()
+    {
+        return $this->hasOne(DisposisiSuratMasuk::class);
+    }
 } 

@@ -40,7 +40,6 @@
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Terima</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Catatan</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Status</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
@@ -56,28 +55,28 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->tanggal_terima->format('d/m/Y') }}</td>
                                     
                                     
-                                    <td class="px-6 py-4 whitespace-nowrap catatan-col">
-                                        <div class="flex items-center space-x-2" data-surat-id="{{ $surat->id }}">
-                                            <textarea name="" id="" cols="10" rows="2" class="catatan-textarea" placeholder="Tulis catatan..." readonly>{{ $surat->catatan }}</textarea>
-                                            <button class="btn btn-sm btn-success" onclick="editCatatan({{ $surat->id }}, '{{ $surat->catatan }}')">
-                                                <i class="fas fa-sync-alt"></i>
-                                            </button>
-                                        </div>
-                                    </td>
+                                    
 
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center"  >
-                                        @if($surat->disposisi == 'Kabag Perancangan Per-UU kab/kota')
-                                            <span class="bg-kepala">Kabag Perancangan Per-UU kab/kota</span>
-                                        @elseif($surat->disposisi == 'Kabag Bantuan Hukum dan HAM')
-                                            <span class="bg-sekretaris">Kabag Bantuan Hukum dan HAM</span>
-                                        @elseif($surat->disposisi == 'Perancangan Per-UU Ahli Madya')
-                                            <span class="bg-ktu">Perancangan Per-UU Ahli Madya</span>
-                                        @elseif($surat->disposisi == 'Kasubag Tata Usaha')
-                                            <span class="bg-kasubag">Kasubag Tata Usaha</span>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        @if($surat->disposisi)
+                                            @php
+                                                $disposisiParts = explode('|', $surat->disposisi);
+                                                $mainDisposisi = trim($disposisiParts[0]);
+                                            @endphp
+                                            <span class="bg-{{ strtolower(str_replace(' ', '-', $mainDisposisi)) }}">
+                                                {{ $mainDisposisi }}
+                                            </span>
+                                            @if(count($disposisiParts) > 1)
+                                                <br>
+                                                <small class="text-muted">
+                                                    @foreach(array_slice($disposisiParts, 1) as $part)
+                                                        {{ trim($part) }}<br>
+                                                    @endforeach
+                                                </small>
+                                            @endif
+                                        @else
+                                            -
                                         @endif
-                                        <a href="{{ route('disposisi.edit', $surat->id) }}" >
-                                            <i class="fas fa-file-upload" style="color: rgb(0, 190, 0); font-size: 1.5em;"></i>
-                                        </a>
                                     </td>
 
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
@@ -94,22 +93,26 @@
                                         @elseif($surat->status == 'selesai')
                                             <span class="bg-selesai">Selesai</span>
                                         @endif
-                                        <button onclick="openStatusModal({{ $surat->id }}, '{{ $surat->status }}')" class="btn btn-light btn-sm ms-2" style="background-color: white; border: 1px solid #dee2e6;">
-                                            <i class="fas fa-sync-alt" style="color: #29fd0d;"></i>
-                                        </button>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <div class="flex justify-center items-center">
-                                            <a href="{{ route('surat-masuk.detail', $surat->id) }}" class="btn btn-success btn-sm">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        <div class="flex justify-center gap-2">
+                                            <button type="button" class="btn btn-light btn-sm" onclick="openDisposisiModal({{ $surat->id }})" title="Disposisi">
+                                                <i class="fas fa-sync-alt" style="color: #29fd0d;"></i>
+                                            </button>
+                                            <form onclick="openStatusModal({{ $surat->id }})" method="POST" class="inline" title="Update Status">
+                                                @csrf
+                                                @method('PUT')
+                                                <button type="submit" class="btn btn-success btn-sm">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </form>
+                                            <a href="{{ route('surat-masuk.detail', $surat->id) }}" class="btn btn-primary btn-sm" title="Detail">
                                                 <i class="fas fa-eye"></i>
-                                            </a>    
-                                            
-                                            
-                                            
-                                            <form id="delete-form-{{ $surat->id }}" action="{{ route('surat-masuk.destroy', $surat->id) }}" method="POST" class="d-inline">
+                                            </a>
+                                            <form action="{{ route('surat-masuk.destroy', $surat->id) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $surat->id }})">
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $surat->id }})" title="Hapus">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
@@ -155,6 +158,53 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-primary">Update Status</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="disposisiModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Disposisi Surat</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="disposisiForm" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="disposisi" class="form-label">Tujuan Disposisi</label>
+                            <select class="form-select" id="disposisi" name="disposisi" required>
+                                <option value="">Pilih Tujuan Disposisi</option>
+                                <option value="Kabag Perancangan Per-UU kab/kota">Kabag Perancangan Per-UU kab/kota</option>
+                                <option value="Kabag Bantuan Hukum dan HAM">Kabag Bantuan Hukum dan HAM</option>
+                                <option value="Perancangan Per-UU Ahli Madya">Perancangan Per-UU Ahli Madya</option>
+                                <option value="Kasubag Tata Usaha">Kasubag Tata Usaha</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="subDisposisiContainer" style="display: none;">
+                            <label for="sub_disposisi" class="form-label">Diteruskan Kepada</label>
+                            <select class="form-select" id="sub_disposisi" name="sub_disposisi">
+                                <option value="">Pilih Tujuan</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="catatan" class="form-label">Catatan</label>
+                            <textarea class="form-control" id="catatan" name="catatan" rows="3"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="tanggal_disposisi" class="form-label">Tanggal Disposisi</label>
+                            <input type="date" class="form-control" id="tanggal_disposisi" name="tanggal_disposisi" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -451,8 +501,67 @@
                 });
             }
         }
-    
 
+        const subDisposisiOptions = {
+            'Kabag Perancangan Per-UU kab/kota': [
+                'Belum/Tidak diteruskan',
+                'Analisis Hukum Wilayah 1',
+                'Analisis Hukum Wilayah 2',
+                'Analisis Hukum Wilayah 3'
+            ],
+            'Kabag Bantuan Hukum dan HAM': [
+                'Belum/Tidak diteruskan',
+                'Analisis Hukum Litigasi',
+                'Analisis Hukum Non-Litigasi',
+                'Kasubag Tata Usaha'
+            ],
+            'Perancangan Per-UU Ahli Madya': [
+                'Belum/Tidak diteruskan',
+                'Subker Penetapan',
+                'Subker Pengaturan'
+            ]
+        };
+
+        document.getElementById('disposisi').addEventListener('change', function() {
+            const subDisposisiContainer = document.getElementById('subDisposisiContainer');
+            const subDisposisiSelect = document.getElementById('sub_disposisi');
+            const selectedDisposisi = this.value;
+
+            // Reset sub disposisi
+            subDisposisiSelect.innerHTML = '<option value="">Pilih Tujuan</option>';
+
+            if (subDisposisiOptions[selectedDisposisi]) {
+                // Tampilkan dan isi opsi sub disposisi
+                subDisposisiContainer.style.display = 'block';
+                subDisposisiOptions[selectedDisposisi].forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    subDisposisiSelect.appendChild(optionElement);
+                });
+                subDisposisiSelect.required = true;
+            } else {
+                // Sembunyikan sub disposisi jika tidak ada opsi
+                subDisposisiContainer.style.display = 'none';
+                subDisposisiSelect.required = false;
+            }
+        });
+
+        function openDisposisiModal(id) {
+            const form = document.getElementById('disposisiForm');
+            form.action = `/surat-masuk/${id}/disposisi`;
+            
+            // Reset form dan sub disposisi
+            form.reset();
+            document.getElementById('subDisposisiContainer').style.display = 'none';
+            
+            new bootstrap.Modal(document.getElementById('disposisiModal')).show();
+        }
+
+        document.getElementById('disposisiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            this.submit();
+        });
     </script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
