@@ -351,6 +351,29 @@
             margin-bottom: 0.5rem;
         }
 
+        .form-select {
+        background-color: white !important;
+        border: 1px solid #e5e7eb !important;  /* Warna border abu-abu sangat terang */
+        border-radius: 6px !important;
+        padding: 8px 12px !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        }
+
+        .form-select:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+            outline: none !important;
+        }
+
+        .form-select:hover {
+            border-color: #d1d5db !important;  /* Warna hover abu-abu medium */
+        }
+
+        /* Tambahan untuk memastikan border benar-benar abu-abu */
+        select.form-select {
+            border-color: #e5e7eb !important;
+        }
+
         .form-control {
             width: 100%;
             padding: 0.75rem;
@@ -900,9 +923,10 @@
 
         /* Style untuk dropdown Status */
         select[name="status"] {
-            background-color: #5fdb17 !important;  /* Light green */
+            background-color: #ffffff !important;  /* Light green */
             color: #166534 !important;
-            border: none !important;
+            border: 2px solid #4B5563 !important; /* Added border effect */
+            border-radius: 8px; /* Maintain border-radius */
         }
 
         /* Hover effect untuk kedua dropdown */

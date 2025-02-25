@@ -18,8 +18,10 @@ class SK extends Model
         'tanggal_surat',
         'tanggal_terima',
         'perihal',
-        'lampiran',
-        'catatan'
+        'disposisi',
+        'status',
+        'catatan',
+        'lampiran'
     ];
 
     protected $casts = [

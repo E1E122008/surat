@@ -45,7 +45,7 @@
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($sk as $index => $item)
+                                @foreach($sks as $index => $item)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $index + 1 }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->no_agenda }}</td>
@@ -70,17 +70,26 @@
                                             </select>
                                             <select name="subpoint" class="subpoint text center" style="display: none; margin-top: 5px; background-color: rgb(183, 223, 236); border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
                                                 <option value="">Pilih Subpoint</option>
-                                        <td class="px-4 py-4 whitespace-nowrap text-center">
-                                            <select name="status" class="status-dropdown text-center" style="background-color: lightgreen; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
-                                                <option value="">Pilih Status</option>
-                                                <option value="tercatat">Tercatat</option>
-                                                <option value="terdisposisi">Terdisposisi</option>
-                                                <option value="diproses">Diproses</option>
-                                                <option value="koreksi">Koreksi</option>
-                                                <option value="selesai">Selesai</option>
-                                                <option value="diambil">Diambil</option>
                                             </select>
-                                        </td>   
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                            @if($item->status == 'tercatat')
+                                                <span class="bg-tercatat">Tercatat</span>
+                                            @elseif($item->status == 'tersdisposisi')
+                                                <span class="bg-tersdisposisi">Ters Disposisi</span>
+                                            @elseif($item->status == 'diproses')
+                                                <span class="bg-diproses">Diproses</span>
+                                            @elseif($item->status == 'koreksi')
+                                                <span class="bg-koreksi">Koreksi</span>
+                                            @elseif($item->status == 'diambil')
+                                                <span class="bg-diambil">Diambil</span>
+                                            @elseif($item->status == 'selesai')
+                                                <span class="bg-selesai">Selesai</span>
+                                            @endif
+                                            <button onclick="openStatusModal({{ $item->id }}, '{{ $item->status }}')" class="btn btn-light btn-sm ms-2" style="background-color: white; border: 1px solid #dee2e6;">
+                                                <i class="fas fa-file-upload" style="color: #0d6efd;"></i>
+                                            </button>
+                                        </td>  
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex justify-center items-center">
                                                 <a href="{{ route('draft-phd.sk.detail', $item->id) }}" class="btn btn-primary btn-sm">
@@ -103,7 +112,7 @@
                     </div>
 
                     <div class="mt-4">
-                        {{ $sk->links() }}
+                        {{ $sks->links() }}
                     </div>
                 </div>
             </div>
@@ -185,6 +194,45 @@
         }
     }
 
+    function openStatusModal(id, currentStatus) {
+        document.getElementById('statusForm').action = `/draft-phd/sk/${id}/update-status`;
+        document.getElementById('status').value = currentStatus;
+        new bootstrap.Modal(document.getElementById('statusModal')).show();
+    }
+
+    document.getElementById('statusForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        fetch(this.action, {
+            method: 'POST',
+            body: new FormData(this),
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Tutup modal
+                bootstrap.Modal.getInstance(document.getElementById('statusModal')).hide();
+                
+                // Reload halaman setelah sukses
+                window.location.href = "{{ route('draft-phd.sk.index') }}";
+            } else {
+                throw new Error(data.message || 'Gagal mengupdate status');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                title: 'Error!',
+                text: error.message || 'Gagal mengupdate status',
+                icon: 'error'
+            });
+        });
+    });
+
     </script>
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
@@ -204,6 +252,94 @@
             });
         });
     </script>   
+
+    <div class="modal fade" id="statusModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Status SK</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="statusForm" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="tercatat">Tercatat</option>
+                                <option value="tersdisposisi">Ters Disposisi</option>
+                                <option value="diproses">Diproses</option>
+                                <option value="koreksi">Koreksi</option>
+                                <option value="diambil">Diambil</option>
+                                <option value="selesai">Selesai</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Update Status</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .bg-tercatat {
+            background-color: #D1D5DB;
+            color: #374151;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-tersdisposisi {
+            background-color: rgba(0, 0, 255, 0.2);
+            color: blue;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-diproses {
+            background-color: #FEF08A;
+            color: #713F12;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-koreksi {
+            background-color: rgba(255, 165, 0, 0.2);
+            color: orange;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-diambil {
+            background-color: rgba(0, 255, 0, 0.2);
+            color: green;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-selesai {
+            background-color: #D8B4FE;
+            color: #4C1D95;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-ditolak {
+            background-color: #FCA5A5;
+            color: #7F1D1D;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .form-select {
+            background-color: white !important;
+            border: 1px solid #ced4da !important;
+        }
+    </style>
 
     
     

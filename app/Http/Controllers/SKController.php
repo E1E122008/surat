@@ -12,21 +12,22 @@ class SKController extends Controller
 {
     public function index(Request $request)
     {
-        $query = SK::latest();
-        
-        // Add search functionality
+        $query = SK::query();  // Mulai dengan query builder
+
+        // Tambahkan kondisi pencarian jika ada
         if ($request->has('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('no_agenda', 'LIKE', "%{$search}%")
                   ->orWhere('no_surat', 'LIKE', "%{$search}%")
-                  ->orWhere('pengirim', 'LIKE', "%{$search}%")
-                  ->orWhere('perihal', 'LIKE', "%{$search}%");
+                  ->orWhere('pengirim', 'LIKE', "%{$search}%");
             });
         }
-        
-        $sk = $query->paginate(10);
-        return view('draft-phd.sk.index', compact('sk'));
+
+        // Ambil data dengan pagination
+        $sks = $query->latest()->paginate(10);
+
+        return view('draft-phd.sk.index', compact('sks'));
     }
     public function detail($id)
     {
@@ -75,6 +76,33 @@ class SKController extends Controller
 
             return redirect()->route('draft-phd.sk.index')
                 ->with('error', 'Gagal menyimpan data surat keluar');
+        }
+    }
+
+    public function status($id)
+    {
+        $sk = SK::findOrFail($id);
+        return view('draft-phd.sk.status', compact('sk'));
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'status' => 'required|in:tercatat,tersdisposisi,diproses,koreksi,diambil,selesai'
+            ]);
+
+            $sk = SK::findOrFail($id);
+            $sk->status = $request->status;
+            $sk->save();
+
+            // Redirect langsung ke halaman index
+            return redirect()->route('draft-phd.sk.index')
+                            ->with('success', 'Status berhasil diupdate');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                            ->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
         }
     }
 
