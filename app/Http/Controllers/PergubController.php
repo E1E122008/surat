@@ -139,6 +139,32 @@ class PergubController extends Controller
         }
     }
 
+    public function status($id)
+    {
+        $pergub = Pergub::findOrFail($id);
+        return view('draft-phd.pergub.status', compact('pergub'));
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'status' => 'required|in:tercatat,tersdisposisi,diproses,koreksi,diambil,selesai,ditolak'
+            ]);
+
+            $pergub = Pergub::findOrFail($id);
+            $pergub->status = $request->status;
+            $pergub->save();
+
+            return redirect()->back()
+                            ->with('success', 'Status berhasil diupdate');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                            ->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
+        }
+    }
+
     public function destroy(Pergub $pergub)
     {   
         if ($pergub->lampiran) {
