@@ -14,7 +14,7 @@ class PerdaController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Perda::latest();
+        $query = Perda::query();
         
         if ($request->has('search')) {
             $search = $request->search;
@@ -26,7 +26,7 @@ class PerdaController extends Controller
             });
         }
         
-        $perdas = $query->paginate(10);
+        $perdas = $query->latest()->paginate(10);
 
         return view('draft-phd.perda.index', compact('perdas'));
     }
@@ -136,6 +136,47 @@ class PerdaController extends Controller
                 'success' => false,
                 'message' => 'Gagal memperbarui catatan'
             ], 500);
+        }
+    }
+
+    public function status($id)
+    {
+        $perda = Perda::findOrFail($id);
+        return view('draft-phd.perda.status', compact('perda'));
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'status' => 'required|in:tercatat,terdisposisi,diproses,koreksi,diambil,selesai',
+            ]);
+
+            $perda = Perda::findOrFail($id);
+            $perda->status = $request->status;
+            $perda->save();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Status berhasil diupdate',
+                    'new_status' => $perda->status
+                ]);
+            }
+
+            return redirect()->route('draft-phd.perda.index')
+                            ->with('success', 'Status berhasil diupdate');
+
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal mengupdate status: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()->back()
+                            ->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
         }
     }
 

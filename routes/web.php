@@ -135,7 +135,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/draft-phd/sk', [SKController::class, 'index'])->name('draft-phd.sk.index');
 
     Route::get('/draft-phd/perda', [PerdaController::class, 'perdaIndex'])->name('draft-phd.perda.index');
-
+    Route::get('/draft-phd/perda/{perda}/status', [PerdaController::class, 'status'])->name('draft-phd.perda.status');
+    Route::put('/draft-phd/perda/{perda}/update-status', [PerdaController::class, 'updateStatus'])->name('draft-phd.perda.update-status');
     Route::get('/draft-phd/pergub', [PergubController::class, 'pergubIndex'])->name('draft-phd.pergub.index');
 
     // Rute untuk menampilkan form tambah SK
@@ -165,6 +166,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/draft-phd/perda/{id}/update-catatan', [PerdaController::class, 'updateCatatan']);
     Route::post('/draft-phd/perda', [PerdaController::class, 'store'])->name('draft-phd.perda.store');
     Route::get('/draft-phd/perda/export', [PerdaController::class, 'export'])->name('draft-phd.perda.export');
+    Route::put('/draft-phd/perda/{id}/update-status', [PerdaController::class, 'updateStatus'])
+        ->name('draft-phd.perda.update-status');
 
     //Route pergub
     Route::get('/draft-phd/pergub', [PergubController::class, 'index'])->name('draft-phd.pergub.index');

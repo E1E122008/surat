@@ -87,7 +87,7 @@
                                                 <span class="bg-selesai">Selesai</span>
                                             @endif
                                             <button onclick="openStatusModal({{ $item->id }}, '{{ $item->status }}')" class="btn btn-light btn-sm ms-2" style="background-color: white; border: 1px solid #dee2e6;">
-                                                <i class="fas fa-file-upload" style="color: #0d6efd;"></i>
+                                                <i class="fas fa-sync-alt" style="color: #29fd0d;"></i>
                                             </button>
                                         </td>  
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
