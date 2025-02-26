@@ -156,13 +156,9 @@ class PerdaController extends Controller
             $perda->status = $request->status;
             $perda->save();
 
-            // Gunakan redirect dengan flash message
-            return redirect()->back()
-                            ->with('success', 'Status berhasil diupdate');
-
+            return redirect()->back()->with('success', 'Status berhasil diperbarui.');
         } catch (\Exception $e) {
-            return redirect()->back()
-                            ->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
         }
     }
 

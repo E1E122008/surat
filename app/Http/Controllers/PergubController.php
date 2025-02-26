@@ -149,19 +149,16 @@ class PergubController extends Controller
     {
         try {
             $request->validate([
-                'status' => 'required|in:tercatat,tersdisposisi,diproses,koreksi,diambil,selesai,ditolak'
+                'status' => 'required|in:tercatat,terdisposisi,diproses,koreksi,diambil,selesai',
             ]);
 
             $pergub = Pergub::findOrFail($id);
             $pergub->status = $request->status;
             $pergub->save();
 
-            return redirect()->back()
-                            ->with('success', 'Status berhasil diupdate');
-
+            return redirect()->back()->with('success', 'Status berhasil diperbarui.');
         } catch (\Exception $e) {
-            return redirect()->back()
-                            ->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
         }
     }
 

@@ -92,13 +92,9 @@
                                         <button type="button" class="btn btn-light btn-sm" onclick="openDisposisiModal({{ $perda->id }})" title="Disposisi">
                                             <i class="fas fa-sync-alt" style="color: #29fd0d;"></i>
                                         </button>
-                                        <form onclick="openStatusModal({{ $perda->id }})" method="POST" class="inline" title="Update Status">
-                                            @csrf
-                                            @method('PUT')
-                                            <button type="submit" class="btn btn-success btn-sm">
-                                                <i class="fas fa-check"></i>
-                                            </button>
-                                        </form>
+                                        <button type="button" class="btn btn-success btn-sm" onclick="openStatusModal({{ $perda->id }}, '{{ $perda->status }}')" title="Update Status">
+                                            <i class="fas fa-check"></i>
+                                        </button>
                                         <a href="{{ route('draft-phd.perda.detail', $perda->id) }}" class="btn btn-primary btn-sm">
                                             <i class="fas fa-eye"></i>
                                         </a>
