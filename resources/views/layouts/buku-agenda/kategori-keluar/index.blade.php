@@ -1,6 +1,59 @@
 @extends('layouts.app')
 
 @section('content')
+    <style>
+        .alert-info {
+            border-left: 5px solid #0dcaf0;
+        }
+
+        .filter-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .filter-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stats-badge {
+            background: linear-gradient(45deg, #0d6efd, #0dcaf0);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stats-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        .clear-filter {
+            color: #dc3545;
+            text-decoration: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .clear-filter:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .filter-icon {
+            color: #0dcaf0;
+            margin-right: 0.5rem;
+        }
+    </style>
+
     <div class="container">
         <div class="row">
             <div class="col-md-12">
@@ -58,15 +111,20 @@
                     <!-- Tab Surat Masuk -->
                     <div class="tab-pane fade {{ request('tab', 'surat-keluar') == 'surat-keluar' ? 'show active' : '' }}" id="surat-keluar">
                         <h4>📤  Surat Keluar</h4>
+                        
                         <div class="mb-3">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
+                            <span class="stats-badge">
+                                <i class="fas fa-envelope me-1"></i>
+                                Jumlah Surat: {{ $totalSurat['surat_keluar'] }}
+                            </span>
                         </div>
                         
                         <div class="overflow-x-auto">
-                            <table class="table table-bordered mt-4">
-                                <thead class="thead-dark">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="table-bordered">
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
                                         <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No. Surat</th>
@@ -99,8 +157,11 @@
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
+                            <span class="stats-badge">
+                                <i class="fas fa-file-alt me-1"></i>
+                                Jumlah SPPD: {{ $totalSurat['sppd_dalam'] }}
+                            </span>
                         </div>
-                       
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="table-bordered">
@@ -139,6 +200,10 @@
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
+                            <span class="stats-badge">
+                                <i class="fas fa-file-alt me-1"></i>
+                                Jumlah SPPD: {{ $totalSurat['sppd_luar'] }}
+                            </span>
                         </div>
                         
                         <div class="overflow-x-auto">
@@ -178,6 +243,10 @@
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
+                            <span class="stats-badge">
+                                <i class="fas fa-file-alt me-1"></i>
+                                Jumlah SPT: {{ $totalSurat['spt_dalam'] }}
+                            </span>
                         </div>
                         
                         <div class="overflow-x-auto">
@@ -216,7 +285,11 @@
                         <div class="mb-3">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
-                            </button>
+                            </button>  
+                            <span class="stats-badge">
+                                <i class="fas fa-file-alt me-1"></i>
+                                Jumlah SPT: {{ $totalSurat['spt_luar'] }}
+                            </span>
                         </div>
                         
                         <div class="overflow-x-auto">

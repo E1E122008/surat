@@ -117,6 +117,15 @@ class KategoriKeluarController extends Controller
         $sptDalamDaerah = $querySptDalamDaerah->get();
         $sptLuarDaerah = $querySptLuarDaerah->get();
 
+        // Hitung total surat
+        $totalSurat = [
+            'surat_keluar' => $suratKeluar->count(),
+            'sppd_dalam' => $sppdDalamDaerah->count(),
+            'sppd_luar' => $sppdLuarDaerah->count(),
+            'spt_dalam' => $sptDalamDaerah->count(),
+            'spt_luar' => $sptLuarDaerah->count()
+        ];
+
         // Kirim data ke view
         return view('layouts.buku-agenda.kategori-keluar.index', compact(
             'suratKeluar',
@@ -125,7 +134,8 @@ class KategoriKeluarController extends Controller
             'sptDalamDaerah',
             'sptLuarDaerah',
             'activeTab',
-            'filterInfo'
+            'filterInfo',
+            'totalSurat'
         ));
     }
 }
