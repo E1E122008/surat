@@ -202,9 +202,17 @@ class SuratMasukController extends Controller
             $surat->status = $request->status;
             $surat->save();
 
-            return redirect()->route('surat-masuk.index')->with('success', 'Status berhasil diperbarui.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Status berhasil diperbarui'
+            ]);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengupdate status: ' . $e->getMessage()
+            ], 500);
+
+            return redirect()->route('surat-masuk.index')->with('success', 'Status berhasil diperbarui.');
         }
     }
 

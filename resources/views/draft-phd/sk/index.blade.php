@@ -80,13 +80,9 @@
                                         </td>  
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex justify-center items-center">
-                                                <form onclick="openStatusModal({{ $item->id }})" method="POST" class="inline" title="Update Status">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <button type="submit" class="btn btn-success btn-sm">
-                                                        <i class="fas fa-check"></i>
-                                                    </button>
-                                                </form>
+                                                <button onclick="openStatusModal({{ $item->id }}, '{{ $item->status }}')" class="btn btn-success btn-sm" title="Update Status">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
                                                 <a href="{{ route('draft-phd.sk.detail', $item->id) }}" class="btn btn-primary btn-sm">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
@@ -198,22 +194,36 @@
     document.getElementById('statusForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
+        const formData = new FormData(this);
+        
         fetch(this.action, {
             method: 'POST',
-            body: new FormData(this),
+            body: formData,
             headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
-                // Tutup modal
+                // Close modal
                 bootstrap.Modal.getInstance(document.getElementById('statusModal')).hide();
                 
-                // Reload halaman setelah sukses
-                window.location.href = "{{ route('draft-phd.sk.index') }}";
+                // Show success message and reload
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: data.message,
+                    icon: 'success',
+                    timer: 1500
+                }).then(() => {
+                    window.location.reload();
+                });
             } else {
                 throw new Error(data.message || 'Gagal mengupdate status');
             }
@@ -257,7 +267,6 @@
                 </div>
                 <form id="statusForm" method="POST">
                     @csrf
-                    @method('PUT')
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>

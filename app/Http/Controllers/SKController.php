@@ -63,8 +63,9 @@ class SKController extends Controller
             $sk = SK::create($validated);
 
             if (!$sk) {
-                throw new \Exception('Gagal menyimpan data surat keluar');
+                throw new \Exception('Gagal menyimpan SK');
             }
+
 
             return redirect()->route('draft-phd.sk.index')
                 ->with('success', 'SK berhasil ditambahkan');
@@ -75,7 +76,7 @@ class SKController extends Controller
             }
 
             return redirect()->route('draft-phd.sk.index')
-                ->with('error', 'Gagal menyimpan data surat keluar');
+                ->with('error', 'Gagal menyimpan SK');
         }
     }
 
@@ -87,6 +88,8 @@ class SKController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
+        \Log::info('Update Status Request:', $request->all());
+        
         try {
             $request->validate([
                 'status' => 'required|in:tercatat,tersdisposisi,diproses,koreksi,diambil,selesai'
@@ -96,11 +99,30 @@ class SKController extends Controller
             $sk->status = $request->status;
             $sk->save();
 
-            // Redirect langsung ke halaman index
-            return redirect()->route('draft-phd.sk.index')->with('success', 'Status berhasil diupdate');
+            \Log::info('Status updated successfully for SK ID: ' . $id);
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Status berhasil diupdate'
+                ]);
+            }
+
+            return redirect()->route('draft-phd.sk.index')
+                ->with('success', 'Status berhasil diupdate');
+
         } catch (\Exception $e) {
-            return redirect()->back()
-                            ->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
+            \Log::error('Error updating status: ' . $e->getMessage());
+            
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'Gagal mengupdate status: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()->route('draft-phd.sk.index')
+                ->with('error', 'Gagal mengupdate status');
         }
     }
 

@@ -143,7 +143,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/draft-phd/sk/create', [SKController::class, 'create'])->name('draft-phd.sk.create');
     Route::post('/draft-phd/sk', [SKController::class, 'store'])->name('draft-phd.sk.store');
     Route::get('/draft-phd/sk/{sk}/status', [SKController::class, 'status'])->name('draft-phd.sk.status');
-    Route::put('/draft-phd/sk/{sk}/update-status', [SKController::class, 'updateStatus'])->name('draft-phd.sk.update-status');
+    Route::post('/draft-phd/sk/{id}/update-status', [SKController::class, 'updateStatus'])
+        ->name('draft-phd.sk.update-status');
     Route::get('/draft-phd/sk/{sk}/detail', [SKController::class, 'detail'])->name('draft-phd.sk.detail');
     Route::get('/draft-phd/sk/export', [SKController::class, 'export'])->name('draft-phd.sk.export');
     Route::get('/draft-phd/sk/{sk}/edit', [SKController::class, 'edit'])->name('draft-phd.sk.edit');
@@ -191,7 +192,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/disposisi/{id}/edit', [DisposisiController::class, 'edit'])->name('disposisi.edit');
 
     Route::get('/surat-masuk/{id}/status', [SuratMasukController::class, 'status'])->name('surat-masuk.status');
-    Route::put('/surat-masuk/{id}/update-status', [SuratMasukController::class, 'updateStatus'])->name('surat-masuk.update-status');
+    Route::post('/surat-masuk/{id}/update-status', [SuratMasukController::class, 'updateStatus'])->name('surat-masuk.update-status');
 
     Route::get('/disposisi', [DisposisiController::class, 'index'])->name('disposisi.index');
     Route::get('/disposisi/{id}', [DisposisiController::class, 'detail'])->name('disposisi.detail');
@@ -199,7 +200,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/disposisi/{id}/edit', [DisposisiController::class, 'edit'])->name('disposisi.edit');
 
     Route::get('/surat-masuk/{id}/status', [SuratMasukController::class, 'status'])->name('surat-masuk.status');
-    Route::put('/surat-masuk/{id}/update-status', [SuratMasukController::class, 'updateStatus'])->name('surat-masuk.update-status');
+    Route::post('/surat-masuk/{id}/update-status', [SuratMasukController::class, 'updateStatus'])->name('surat-masuk.update-status');
 
     Route::get('/dashboard/chart-data', [DashboardController::class, 'getChartData'])->name('dashboard.chart-data');
 

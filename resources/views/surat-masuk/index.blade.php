@@ -99,13 +99,9 @@
                                             <button type="button" class="btn btn-light btn-sm" onclick="openDisposisiModal({{ $surat->id }})" title="Disposisi">
                                                 <i class="fas fa-sync-alt" style="color: #29fd0d;"></i>
                                             </button>
-                                            <form onclick="openStatusModal({{ $surat->id }})" method="POST" class="inline" title="Update Status">
-                                                @csrf
-                                                @method('PUT')
-                                                <button type="submit" class="btn btn-success btn-sm">
-                                                    <i class="fas fa-check"></i>
-                                                </button>
-                                            </form>
+                                            <button onclick="openStatusModal({{ $surat->id }}, '{{ $surat->status }}')" class="btn btn-success btn-sm" title="Update Status">
+                                                <i class="fas fa-check"></i>
+                                            </button>
                                             <a href="{{ route('surat-masuk.detail', $surat->id) }}" class="btn btn-primary btn-sm" title="Detail">
                                                 <i class="fas fa-eye"></i>
                                             </a>
@@ -136,13 +132,12 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Update Status Surat Masuk</h5>
+                    <h5 class="modal-title">Update Status Surat</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="statusForm" method="POST">
                     @csrf
-                    @method('PUT')
-                    <div class="modal-body">    
+                    <div class="modal-body">
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
                             <select class="form-select" id="status" name="status">
@@ -153,7 +148,7 @@
                                 <option value="diambil">Diambil</option>
                                 <option value="selesai">Selesai</option>
                             </select>
-                        </div>  
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -561,6 +556,53 @@
         document.getElementById('disposisiForm').addEventListener('submit', function(e) {
             e.preventDefault();
             this.submit();
+        });
+
+        document.getElementById('statusForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Close modal
+                    bootstrap.Modal.getInstance(document.getElementById('statusModal')).hide();
+                    
+                    // Show success message and reload
+                    Swal.fire({
+                        title: 'Berhasil!',
+                        text: data.message,
+                        icon: 'success',
+                        timer: 1500
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(data.message || 'Gagal mengupdate status');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: error.message || 'Gagal mengupdate status',
+                    icon: 'error'
+                });
+            });
         });
     </script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
