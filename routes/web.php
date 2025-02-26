@@ -207,4 +207,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/surat-masuk/{id}/disposisi', [SuratMasukController::class, 'disposisi'])
         ->name('surat-masuk.disposisi');
 
+    Route::post('/draft-phd/sk/{id}/disposisi', [SKController::class, 'disposisi'])
+        ->name('draft-phd.sk.disposisi');
+
 });

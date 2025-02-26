@@ -31,4 +31,5 @@ class SK extends Model
         'updated_at' => 'datetime'
     ];
 
+
 } 

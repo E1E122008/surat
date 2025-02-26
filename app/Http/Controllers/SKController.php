@@ -99,30 +99,9 @@ class SKController extends Controller
             $sk->status = $request->status;
             $sk->save();
 
-            \Log::info('Status updated successfully for SK ID: ' . $id);
-
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Status berhasil diupdate'
-                ]);
-            }
-
-            return redirect()->route('draft-phd.sk.index')
-                ->with('success', 'Status berhasil diupdate');
-
+            return redirect()->back()->with('success', 'Status berhasil diupdate');
         } catch (\Exception $e) {
-            \Log::error('Error updating status: ' . $e->getMessage());
-            
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'success' => false, 
-                    'message' => 'Gagal mengupdate status: ' . $e->getMessage()
-                ], 500);
-            }
-
-            return redirect()->route('draft-phd.sk.index')
-                ->with('error', 'Gagal mengupdate status');
+            return redirect()->back()->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
         }
     }
 
@@ -207,6 +186,40 @@ class SKController extends Controller
                 'success' => false,
                 'message' => 'Gagal memperbarui catatan'
             ], 500);
+        }
+    }
+
+    public function disposisi(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'disposisi' => 'required',
+                'sub_disposisi' => 'required_unless:disposisi,Kasubag Tata Usaha',
+                'tanggal_disposisi' => 'required|date',
+                'catatan' => 'nullable'
+            ]);
+
+            $sk = SK::findOrFail($id);
+
+            $disposisiText = $request->disposisi;
+            if ($request->sub_disposisi) {
+                $disposisiText .= ' | Diteruskan ke: ' . $request->sub_disposisi;
+            }
+            $disposisiText .= ' | Tanggal: ' . $request->tanggal_disposisi;
+            if ($request->catatan) {
+                $disposisiText .= ' | Catatan: ' . $request->catatan;
+            }
+
+            $sk->update([
+                'disposisi' => $disposisiText
+            ]);
+
+            return redirect()->back()
+                            ->with('success', 'Disposisi berhasil ditambahkan');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                            ->with('error', 'Gagal menambahkan disposisi: ' . $e->getMessage());
         }
     }
 } 
