@@ -17,13 +17,12 @@
                             <div class="form-group">
                                 <label for="no_agenda" class="form-label">Nomor Agenda</label>
                                 <input type="text" name="no_agenda" id="no_agenda" 
-                                    class="form-control @error('no_agenda') is-invalid @enderror"
+                                    class="form-control @error('no_agenda') is-invalid @enderror"   
                                     value="{{ old('no_agenda', $perda->no_agenda) }}" required>
                                 @error('no_agenda')
                                     <div class="form-error">{{ $message }}</div>
                                 @enderror
-                            </div>  
-
+                            </div>
                             <div class="form-group">
                                 <label for="no_surat" class="form-label">Nomor Surat</label>
                                 <input type="text" name="no_surat" id="no_surat" 

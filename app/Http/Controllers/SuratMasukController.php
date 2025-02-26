@@ -33,34 +33,41 @@ class SuratMasukController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'no_agenda' => 'required|string|max:255',
-            'no_surat' => 'required|string|max:255',
-            'pengirim' => 'required|string|max:255',
-            'tanggal_surat' => 'required|date',
-            'tanggal_terima' => 'required|date',
-            'perihal' => 'required|string|max:255',
-            'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
-            'status' => 'required|string|max:255',
-            'catatan' => 'nullable|string|max:255',
-            'disposisi' => 'nullable|string|max:255',
-            'sub_disposisi' => 'nullable|string|max:255',
-            'tanggal_disposisi' => 'nullable|date',
-            'catatan' => 'nullable|string|max:255',
-        ]);
+    { 
+        try {
+            $validated = $request->validate([
+                'no_agenda' => 'required|string|max:255',
+                'no_surat' => 'required|string|max:255',
+                'pengirim' => 'required|string|max:255',
+                'tanggal_surat' => 'required|date',
+                'tanggal_terima' => 'required|date',
+                'perihal' => 'required|string|max:255',
+                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
+                
+            ]);
 
-        if ($request->hasFile('lampiran')) {
-            $file = $request->file('lampiran');
-            $path = $file->store('lampiran/surat-masuk', 'public');
-            $validated['lampiran'] = $path;
+            if ($request->hasFile('lampiran')) {
+                $file = $request->file('lampiran');
+                $path = $file->store('lampiran/surat-masuk', 'public');
+                $validated['lampiran'] = $path;
+            }
+
+            SuratMasuk::create($validated);
+
+            return redirect()->route('surat-masuk.index')
+                ->with('success', 'Surat masuk berhasil ditambahkan');
+
+        } catch (\Exception $e) {
+            if (isset($path) && Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+
+            return redirect()->back()
+                            ->with('error', 'Terjadi kesalahan saat menambahkan surat masuk: ' . $e->getMessage())
+                            ->withInput();
         }
-
-        SuratMasuk::create($validated);
-
-        return redirect()->route('surat-masuk.index')
-            ->with('success', 'Surat masuk berhasil ditambahkan');
     }
+
 
     public function detail($id)
     {
@@ -87,12 +94,7 @@ class SuratMasukController extends Controller
                 'tanggal_terima' => 'required|date',
                 'perihal' => 'required|string|max:255',
                 'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
-                'status' => 'required|string|max:255',
-                'catatan' => 'nullable|string|max:255',
-                'disposisi' => 'nullable|string|max:255',
-                'sub_disposisi' => 'nullable|string|max:255',
-                'tanggal_disposisi' => 'nullable|date',
-                'catatan' => 'nullable|string|max:255',
+                
             ]);
 
             if ($request->hasFile('lampiran')) {
@@ -116,22 +118,17 @@ class SuratMasukController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function destroy(SuratMasuk $suratMasuk)
     {
-        try {
-            $suratMasuk = SuratMasuk::findOrFail($id);
-            if ($suratMasuk->lampiran) {
-                Storage::disk('public')->delete($suratMasuk->lampiran);
-            }
-            
-            $suratMasuk->delete();
-
-            return redirect()->route('surat-masuk.index')
-                ->with('success', 'Data surat masuk berhasil dihapus!');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat menghapus data!');
+        if ($suratMasuk->lampiran) {
+            Storage::disk('public')->delete($suratMasuk->lampiran);
         }
+
+
+        $suratMasuk->delete();
+
+        return redirect()->route('surat-masuk.index')
+                ->with('success', 'Data surat masuk berhasil dihapus!');
     }
 
     public function export() 

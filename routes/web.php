@@ -51,6 +51,11 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('surat-masuk', SuratMasukController::class);
     Route::get('surat-masuk/{id}/status', [SuratMasukController::class, 'status'])->name('surat-masuk.status');
     Route::get('surat-masuk/{id}/detail', [SuratMasukController::class, 'detail'])->name('surat-masuk.detail'); 
+    Route::get('surat-masuk/{id}/edit', [SuratMasukController::class, 'edit'])->name('surat-masuk.edit');
+    Route::put('surat-masuk/{id}', [SuratMasukController::class, 'update'])
+        ->name('surat-masuk.update');
+    Route::delete('surat-masuk/{suratMasuk}', [SuratMasukController::class, 'destroy'])
+        ->name('surat-masuk.destroy');
     Route::get('surat-masuk-export', [SuratMasukController::class, 'export'])
         ->name('surat-masuk.export');
 
@@ -169,6 +174,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/draft-phd/perda/export', [PerdaController::class, 'export'])->name('draft-phd.perda.export');
     Route::put('/draft-phd/perda/{id}/update-status', [PerdaController::class, 'updateStatus'])
         ->name('draft-phd.perda.update-status');
+    Route::post('/draft-phd/perda/{id}/disposisi', [PerdaController::class, 'disposisi'])
+        ->name('draft-phd.perda.disposisi');
+    Route::post('/draft-phd/perda/{id}/update-disposisi', [PerdaController::class, 'updateDisposisi'])
+        ->name('draft-phd.perda.update-disposisi');
 
     //Route pergub
     Route::get('/draft-phd/pergub', [PergubController::class, 'index'])->name('draft-phd.pergub.index');

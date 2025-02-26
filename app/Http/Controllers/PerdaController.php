@@ -182,10 +182,57 @@ class PerdaController extends Controller
     {
         return Excel::download(new PerdaExport(), 'perda.xlsx');
     }
-    
-    
-    
-    
-    
 
+    public function disposisi(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'disposisi' => 'required',
+                'sub_disposisi' => 'required_unless:disposisi,Kasubag Tata Usaha',
+                'tanggal_disposisi' => 'required|date',
+                'catatan' => 'nullable'
+            ]);
+
+            $perda = Perda::findOrFail($id);
+
+            $disposisiText = $request->disposisi;
+            if ($request->sub_disposisi) {
+                $disposisiText .= ' | Diteruskan ke: ' . $request->sub_disposisi;
+            }
+            $disposisiText .= ' | Tanggal: ' . $request->tanggal_disposisi;
+            if ($request->catatan) {
+                $disposisiText .= ' | Catatan: ' . $request->catatan;
+            }
+
+            $perda->update([
+                'disposisi' => $disposisiText
+            ]);
+
+            return redirect()->back()
+                            ->with('success', 'Disposisi berhasil ditambahkan');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                            ->with('error', 'Gagal menambahkan disposisi: ' . $e->getMessage());
+        }
+    }
+
+    public function updateDisposisi(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'disposisi' => 'required|string|max:255',
+            ]);
+
+            $perda = Perda::findOrFail($id);
+            $perda->disposisi = $request->disposisi;
+            $perda->save();
+
+            return redirect()->back()
+                            ->with('success', 'Disposisi berhasil diperbarui');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                            ->with('error', 'Gagal mengupdate disposisi: ' . $e->getMessage());
+        }
+    }
 }

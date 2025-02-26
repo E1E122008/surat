@@ -51,16 +51,26 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $perda->pengirim }}</td> 
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{($perda->tanggal_terima)->format('d/m/Y') }}</td>
                                     
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <select name="disposisi" onchange="showSubpoints(this)" class="disposisi-dropdown text-center" style="background-color: lightblue; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
-                                            <option value="">Pilih Disposisi</option>
-                                            <option value="kabag">Perancangan perUU Kab/Kota</option>
-                                            <option value="bankum">Kabag Bantuan dan Hukum</option>
-                                            <option value="madya">Perancangan PerUU Ahli Madya</option>
-                                        </select>
-                                        <select name="subpoint" class="subpoint text center" style="display: none; margin-top: 5px; background-color: rgb(183, 223, 236); border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);">
-                                            <option value="">Pilih Subpoint</option>
-                                        </select>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        @if($perda->disposisi)
+                                            @php
+                                                $disposisiParts = explode('|', $perda->disposisi);
+                                                $mainDisposisi = trim($disposisiParts[0]);
+                                            @endphp
+                                            <span class="bg-{{ strtolower(str_replace(' ', '-', $mainDisposisi)) }}">
+                                                {{ $mainDisposisi }}
+                                            </span>
+                                            @if(count($disposisiParts) > 1)
+                                                <br>
+                                                <small class="text-muted">
+                                                    @foreach(array_slice($disposisiParts, 1) as $part)
+                                                        {{ trim($part) }}<br>
+                                                    @endforeach
+                                                </small>
+                                            @endif
+                                        @else
+                                            -
+                                        @endif
                                     </td>   
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                         @if($perda->status == 'tercatat')
@@ -79,6 +89,9 @@
                                         
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <button type="button" class="btn btn-light btn-sm" onclick="openDisposisiModal({{ $perda->id }})" title="Disposisi">
+                                            <i class="fas fa-sync-alt" style="color: #29fd0d;"></i>
+                                        </button>
                                         <form onclick="openStatusModal({{ $perda->id }})" method="POST" class="inline" title="Update Status">
                                             @csrf
                                             @method('PUT')
@@ -135,6 +148,52 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-primary">Update Status</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="disposisiModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Disposisi Perda</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="disposisiForm" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="disposisi" class="form-label">Tujuan Disposisi</label>
+                            <select class="form-select" id="disposisi" name="disposisi" required>
+                                <option value="">Pilih Tujuan Disposisi</option>
+                                <option value="Kabag Perancangan Per-UU kab/kota">Kabag Perancangan Per-UU kab/kota</option>
+                                <option value="Kabag Bantuan Hukum dan HAM">Kabag Bantuan Hukum dan HAM</option>
+                                <option value="Perancangan Per-UU Ahli Madya">Perancangan Per-UU Ahli Madya</option>
+                                <option value="Kasubag Tata Usaha">Kasubag Tata Usaha</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="subDisposisiContainer" style="display: none;">
+                            <label for="sub_disposisi" class="form-label">Diteruskan Kepada</label>
+                            <select class="form-select" id="sub_disposisi" name="sub_disposisi">
+                                <option value="">Pilih Tujuan</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="catatan" class="form-label">Catatan</label>
+                            <textarea class="form-control" id="catatan" name="catatan" rows="3"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="tanggal_disposisi" class="form-label">Tanggal Disposisi</label>
+                            <input type="date" class="form-control" id="tanggal_disposisi" name="tanggal_disposisi" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -272,6 +331,90 @@
         @if(session('success'))
             showSuccess('{{ session('success') }}');
         @endif
+
+        const subDisposisiOptions = {
+            'Kabag Perancangan Per-UU kab/kota': [
+                'Belum/Tidak diteruskan',
+                'Analisis Hukum Wilayah 1',
+                'Analisis Hukum Wilayah 2',
+                'Analisis Hukum Wilayah 3'
+            ],
+            'Kabag Bantuan Hukum dan HAM': [
+                'Belum/Tidak diteruskan',
+                'Analisis Hukum Litigasi',
+                'Analisis Hukum Non-Litigasi',
+                'Kasubag Tata Usaha'
+            ],
+            'Perancangan Per-UU Ahli Madya': [
+                'Belum/Tidak diteruskan',
+                'Subker Penetapan',
+                'Subker Pengaturan'
+            ],
+            'Kasubag Tata Usaha': [
+                'Belum/Tidak diteruskan'
+            ]
+        };
+
+        function openDisposisiModal(id) {
+            const form = document.getElementById('disposisiForm');
+            form.action = `/draft-phd/perda/${id}/disposisi`;
+            form.reset();
+            document.getElementById('subDisposisiContainer').style.display = 'none';
+            new bootstrap.Modal(document.getElementById('disposisiModal')).show();
+        }
+
+        // Event listener untuk perubahan disposisi
+        document.getElementById('disposisi').addEventListener('change', function() {
+            const selectedDisposisi = this.value;
+            const subDisposisiContainer = document.getElementById('subDisposisiContainer');
+            const subDisposisiSelect = document.getElementById('sub_disposisi');
+            
+            subDisposisiSelect.innerHTML = '<option value="">Pilih Tujuan</option>';
+            
+            if (selectedDisposisi && subDisposisiOptions[selectedDisposisi]) {
+                subDisposisiContainer.style.display = 'block';
+                
+                subDisposisiOptions[selectedDisposisi].forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    subDisposisiSelect.appendChild(optionElement);
+                });
+                
+                subDisposisiSelect.required = (selectedDisposisi !== 'Kasubag Tata Usaha');
+            } else {
+                subDisposisiContainer.style.display = 'none';
+                subDisposisiSelect.required = false;
+            }
+        });
+
+        // Perbaikan pada form submit handler
+        document.getElementById('disposisiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const disposisi = document.getElementById('disposisi').value;
+            const subDisposisi = document.getElementById('sub_disposisi').value;
+            const tanggalDisposisi = document.getElementById('tanggal_disposisi').value;
+            
+            // Validasi form
+            if (!disposisi) {
+                alert('Silakan pilih tujuan disposisi');
+                return;
+            }
+            
+            if (disposisi !== 'Kasubag Tata Usaha' && !subDisposisi) {
+                alert('Silakan pilih sub disposisi');
+                return;
+            }
+            
+            if (!tanggalDisposisi) {
+                alert('Silakan isi tanggal disposisi');
+                return;
+            }
+            
+            // Jika semua validasi passed, submit form
+            this.submit();
+        });
     </script>  
     
     <style>

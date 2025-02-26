@@ -105,7 +105,7 @@
                                             <a href="{{ route('surat-masuk.detail', $surat->id) }}" class="btn btn-primary btn-sm" title="Detail">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <form action="{{ route('surat-masuk.destroy', $surat->id) }}" method="POST" class="inline">
+                                            <form id="delete-form-{{ $surat->id }}" action="{{ route('surat-masuk.destroy', $surat->id) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $surat->id }})" title="Hapus">

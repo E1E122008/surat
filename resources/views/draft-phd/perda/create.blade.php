@@ -9,7 +9,8 @@
         <form action="{{ route('draft-phd.perda.store') }}" method="POST" enctype="multipart/form-data">
             @csrf   
 
-            <div class="form-grid">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
                 <div class="form-group">
                     <label for="no_agenda" class="form-label">Nomor Agenda</label>
                     <input type="text" name="no_agenda" id="no_agenda" 
@@ -18,7 +19,7 @@
                     @error('no_agenda')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
-                </div>  
+                </div>
 
                 <div class="form-group">
                     <label for="no_surat" class="form-label">Nomor Surat</label>
@@ -30,6 +31,18 @@
                     @enderror
                 </div>
 
+                <div class="form-group">
+                    <label for="pengirim" class="form-label">Pengirim</label>
+                    <input type="text" name="pengirim" id="pengirim" 
+                        class="form-control @error('pengirim') is-invalid @enderror"    
+                        value="{{ old('pengirim') }}" required>
+                    @error('pengirim')
+                        <div class="form-error">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="form-group">
                     <label for="tanggal_surat" class="form-label">Tanggal Surat</label>
                     <input type="date" name="tanggal_surat" id="tanggal_surat" 
@@ -49,28 +62,18 @@
                         <div class="form-error">{{ $message }}</div>
                     @enderror
                 </div>  
-
-                <div class="form-group">
-                    <label for="pengirim" class="form-label">Pengirim</label>
-                    <input type="text" name="pengirim" id="pengirim" 
-                        class="form-control @error('pengirim') is-invalid @enderror"    
-                        value="{{ old('pengirim') }}" required>
-                    @error('pengirim')
-                        <div class="form-error">{{ $message }}</div>
-                    @enderror
-                </div>
-
                 <div class="form-group form-grid-full">    
                     <label for="perihal" class="form-label">Perihal</label>
-                    <input type="text" name="perihal" id="perihal" 
+                    <textarea type="text" name="perihal" id="perihal" 
                         class="form-control @error('perihal') is-invalid @enderror"
                         value="{{ old('perihal') }}" required>
+                    </textarea>
                     @error('perihal')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <div class="form-group">
+                <div class="form-group form-grid-full">
                     <label for="lampiran" class="form-label">Lampiran</label>
                     <input type="file" name="lampiran" id="lampiran" 
                         class="form-control @error('lampiran') is-invalid @enderror">   
