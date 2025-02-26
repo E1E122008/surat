@@ -17,7 +17,7 @@
                             <div>
                                 <label for="no_surat" class="block text-sm font-medium text-gray-700">Nomor Surat</label>
                                 <input type="text" name="no_surat" id="no_surat" 
-                                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" 
+                                    class="form-control @error('no_surat') is-invalid @enderror" 
                                     value="{{ old('no_surat', $sppdDalamDaerah->no_surat) }}" readonly>
                                 @error('no_surat')  
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>         
@@ -26,7 +26,7 @@
                             <div>
                                 <label for="tanggal" class="block text-sm font-medium text-gray-700">Tanggal</label>
                                 <input type="date" name="tanggal" id="tanggal" 
-                                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" 
+                                    class="form-control @error('tanggal') is-invalid @enderror" 
                                     value="{{ old('tanggal', $sppdDalamDaerah->tanggal->format('Y-m-d')) }}" required>
                                 @error('tanggal')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
@@ -35,7 +35,7 @@
                             <div>
                                 <label for="tujuan" class="block text-sm font-medium text-gray-700">Tujuan</label>
                                 <input type="text" name="tujuan" id="tujuan" 
-                                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" 
+                                    class="form-control @error('tujuan') is-invalid @enderror" 
                                     value="{{ old('tujuan', $sppdDalamDaerah->tujuan) }}" required>
                                 @error('tujuan')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p> 

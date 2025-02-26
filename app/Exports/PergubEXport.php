@@ -24,8 +24,8 @@ class PergubExport implements FromCollection, WithHeadings, WithMapping
             'Tanggal Surat',
             'Tanggal Terima',
             'Perihal',
-            'Lampiran',
             'Disposisi',
+            'Lampiran',
         ];
     }   
 
@@ -39,8 +39,8 @@ class PergubExport implements FromCollection, WithHeadings, WithMapping
             $pergub->tanggal_surat->format('d/m/Y'),
             $pergub->tanggal_terima->format('d/m/Y'),
             $pergub->perihal,
-            $pergub->lampiran,  
             $pergub->disposisi,
+            $pergub->lampiran,  
         ];
     }
 }

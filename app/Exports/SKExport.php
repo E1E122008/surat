@@ -24,8 +24,8 @@ class SKExport implements FromCollection, WithHeadings, WithMapping
             'Tanggal SK',
             'Tanggal Terima',
             'Perihal',
-            'Lampiran',
             'Disposisi',
+            'Lampiran',
         ];
     }
 
@@ -42,8 +42,8 @@ class SKExport implements FromCollection, WithHeadings, WithMapping
             $sk->tanggal_surat->format('d/m/Y'),
             $sk->tanggal_terima->format('d/m/Y'),
             $sk->perihal,
-            $sk->lampiran,
             $sk->disposisi,
+            $sk->lampiran,
         ];
     }
 }

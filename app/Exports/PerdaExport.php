@@ -24,8 +24,9 @@ class PerdaExport implements FromCollection, WithHeadings, WithMapping
             'Tanggal Surat',
             'Tanggal Terima',
             'Perihal',
-            'Lampiran',
             'Disposisi',
+            'Lampiran',
+            
         ];
     }
 
@@ -39,8 +40,8 @@ class PerdaExport implements FromCollection, WithHeadings, WithMapping
             $perda->tanggal_surat->format('d/m/Y'),
             $perda->tanggal_terima->format('d/m/Y'),
             $perda->perihal,
-            $perda->lampiran,
             $perda->disposisi,
+            $perda->lampiran,
         ];
     }
     
