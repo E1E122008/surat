@@ -112,6 +112,14 @@ class BukuAgendaController extends Controller
         $perda = $queryPerda->get();
         $pergub = $queryPergub->get();
 
+        // Tambahkan perhitungan total surat
+        $totalSurat = [
+            'surat_masuk' => $suratMasuk->count(),
+            'sk' => $sk->count(),
+            'perda' => $perda->count(),
+            'pergub' => $pergub->count()
+        ];
+
         // Kirim data ke view
         return view('layouts.buku-agenda.index', compact(
             'suratMasuk', 
@@ -119,7 +127,8 @@ class BukuAgendaController extends Controller
             'sk', 
             'perda', 
             'pergub',
-            'filterInfo'
+            'filterInfo',
+            'totalSurat'
         ));
     }
     

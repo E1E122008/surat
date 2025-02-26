@@ -1,6 +1,25 @@
 @extends('layouts.app')
 
 @section('content')
+    <style>
+        .stats-badge {
+            background: linear-gradient(45deg, #0d6efd, #0dcaf0);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            margin-left: 10px;
+            display: inline-block;
+        }
+
+        .stats-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+    </style>
+
     <div class="container">
         <div class="row">
             <div class="col-md-9">
@@ -59,6 +78,10 @@
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
+                            <span class="stats-badge">
+                                <i class="fas fa-envelope me-1"></i>
+                                Jumlah Surat: {{ $totalSurat['surat_masuk'] }}
+                            </span>
                         </div>
                         
                         <div class="overflow-x-auto">
@@ -102,6 +125,10 @@
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
+                            <span class="stats-badge">
+                                <i class="fas fa-file-alt me-1"></i>
+                                Jumlah SK: {{ $totalSurat['sk'] }}
+                            </span>
                         </div>
                         
                         <div class="overflow-x-auto">
@@ -143,6 +170,10 @@
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
+                            <span class="stats-badge">
+                                <i class="fas fa-book me-1"></i>
+                                Jumlah Perda: {{ $totalSurat['perda'] }}
+                            </span>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200"> 
@@ -183,6 +214,10 @@
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
+                            <span class="stats-badge">
+                                <i class="fas fa-scroll me-1"></i>
+                                Jumlah Pergub: {{ $totalSurat['pergub'] }}
+                            </span>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
