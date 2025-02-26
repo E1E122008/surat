@@ -49,13 +49,12 @@
                             <form action="{{ route('buku-agenda.index') }}" method="GET" class="col-md-3 d-flex align-items-center">
                                 <input type="hidden" name="tab" value="surat-masuk">
                                 <label for="waktuSuratMasuk" class="me-2">Filter Waktu:</label>
-                                <select name="waktuSuratMasuk" id="waktuSuratMasuk" class="form-select me-3" style="width: auto;">
+                                <select name="waktuSuratMasuk" id="waktuSuratMasuk" class="form-select me-3" style="min-width: 100px; width: auto;">
                                     <option value="bulan" {{ request('waktuSuratMasuk') == 'bulan' ? 'selected' : '' }}>Bulan</option>
                                     <option value="minggu" {{ request('waktuSuratMasuk') == 'minggu' ? 'selected' : '' }}>Minggu</option>
                                     <option value="tahun" {{ request('waktuSuratMasuk') == 'tahun' ? 'selected' : '' }}>Tahun</option>
                                 </select>
                                 <button class="btn btn-primary me-2" type="submit" style="width: 120px;">Terapkan</button>
-                                
                             </form>
                         </div>
                         <div class="overflow-x-auto">
@@ -99,7 +98,7 @@
                             <form action="{{ route('buku-agenda.index') }}" method="GET" class="col-md-3 d-flex align-items-center">
                                 <input type="hidden" name="tab" value="surat-keputusan">
                                 <label for="waktuSuratKeputusan" class="me-2">Filter Waktu:</label>
-                                <select name="waktuSuratKeputusan" id="waktuSuratKeputusan" class="form-select me-3" style="width: auto;">
+                                <select name="waktuSuratKeputusan" id="waktuSuratKeputusan" class="form-select me-3" style="min-width: 100px; width: auto;">
                                     <option value="bulan" {{ request('waktuSuratKeputusan') == 'bulan' ? 'selected' : '' }}>Bulan</option>
                                     <option value="minggu" {{ request('waktuSuratKeputusan') == 'minggu' ? 'selected' : '' }}>Minggu</option>
                                     <option value="tahun" {{ request('waktuSuratKeputusan') == 'tahun' ? 'selected' : '' }}>Tahun</option>
@@ -146,7 +145,7 @@
                             <form action="{{ route('buku-agenda.index') }}" method="GET" class="col-md-3 d-flex align-items-center">
                                 <input type="hidden" name="tab" value="perda">
                                 <label for="waktuPerda" class="me-2">Filter Waktu:</label>
-                                <select name="waktuPerda" id="waktuPerda" class="form-select me-3" style="width: auto;">
+                                <select name="waktuPerda" id="waktuPerda" class="form-select me-3" style="min-width: 100px; width: auto;">
                                     <option value="bulan" {{ request('waktuPerda') == 'bulan' ? 'selected' : '' }}>Bulan</option>
                                     <option value="minggu" {{ request('waktuPerda') == 'minggu' ? 'selected' : '' }}>Minggu</option>
                                     <option value="tahun" {{ request('waktuPerda') == 'tahun' ? 'selected' : '' }}>Tahun</option>   
@@ -193,7 +192,7 @@
                             <form action="{{ route('buku-agenda.index') }}" method="GET" class="col-md-3 d-flex align-items-center">
                                 <input type="hidden" name="tab" value="pergub">
                                 <label for="waktuPergub" class="me-2">Filter Waktu:</label>
-                                <select name="waktuPergub" id="waktuPergub" class="form-select me-3" style="width: auto;">
+                                <select name="waktuPergub" id="waktuPergub" class="form-select me-3" style="min-width: 100px; width: auto;">
                                     <option value="bulan" {{ request('waktuPergub') == 'bulan' ? 'selected' : '' }}>Bulan</option>
                                     <option value="minggu" {{ request('waktuPergub') == 'minggu' ? 'selected' : '' }}>Minggu</option>
                                     <option value="tahun" {{ request('waktuPergub') == 'tahun' ? 'selected' : '' }}>Tahun</option>

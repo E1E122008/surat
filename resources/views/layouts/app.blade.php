@@ -356,6 +356,7 @@
         border: 1px solid #e5e7eb !important;  /* Warna border abu-abu sangat terang */
         border-radius: 6px !important;
         padding: 8px 12px !important;
+        width: 200px !important;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
         }
 

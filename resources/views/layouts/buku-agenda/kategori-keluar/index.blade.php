@@ -55,7 +55,7 @@
                             <form action="{{ route('buku-agenda.kategori-keluar.index') }}" method="GET" class="col-md-3 d-flex align-items-center">
                                 <input type="hidden" name="tab" value="surat-keluar">
                                 <label for="waktuSuratKeluar" class="me-2">Filter Waktu:</label>
-                                <select name="waktuSuratKeluar" id="waktuSuratKeluar" class="form-select me-3" style="width: auto;">
+                                <select name="waktuSuratKeluar" id="waktuSuratKeluar" class="form-select me-3" style="min-width: 100px; width: auto;">
                                     <option value="bulan" {{ request('waktuSuratKeluar', 'bulan') == 'bulan' ? 'selected' : '' }}>Bulan</option>
                                     <option value="minggu" {{ request('waktuSuratKeluar') == 'minggu' ? 'selected' : '' }}>Minggu</option>
                                     <option value="tahun" {{ request('waktuSuratKeluar') == 'tahun' ? 'selected' : '' }}>Tahun</option>
@@ -100,7 +100,7 @@
                             <form action="{{ route('buku-agenda.kategori-keluar.index') }}" method="GET" class="col-md-3 d-flex align-items-center">
                                 <input type="hidden" name="tab" value="sppd-dalam-daerah">
                                 <label for="waktuSppdDalamDaerah" class="me-2">Filter Waktu:</label>
-                                <select name="waktuSppdDalamDaerah" id="waktuSppdDalamDaerah" class="form-select me-3" style="width: auto;">
+                                <select name="waktuSppdDalamDaerah" id="waktuSppdDalamDaerah" class="form-select me-3" style="min-width: 100px; width: auto;">
                                     <option value="bulan" {{ request('waktuSppdDalamDaerah') == 'bulan' ? 'selected' : '' }}>Bulan</option>
                                     <option value="minggu" {{ request('waktuSppdDalamDaerah') == 'minggu' ? 'selected' : '' }}>Minggu</option>
                                     <option value="tahun" {{ request('waktuSppdDalamDaerah') == 'tahun' ? 'selected' : '' }}>Tahun</option>
@@ -148,7 +148,7 @@
                             <form action="{{ route('buku-agenda.kategori-keluar.index') }}" method="GET" class="col-md-3 d-flex align-items-center">
                                 <input type="hidden" name="tab" value="sppd-luar-daerah">
                                 <label for="waktuSppdLuarDaerah" class="me-2">Filter Waktu:</label>
-                                <select name="waktuSppdLuarDaerah" id="waktuSppdLuarDaerah" class="form-select me-3" style="width: auto;">
+                                <select name="waktuSppdLuarDaerah" id="waktuSppdLuarDaerah" class="form-select me-3" style="min-width: 100px; width: auto;">
                                     <option value="bulan" {{ request('waktuSppdLuarDaerah') == 'bulan' ? 'selected' : '' }}>Bulan</option>
                                     <option value="minggu" {{ request('waktuSppdLuarDaerah') == 'minggu' ? 'selected' : '' }}>Minggu</option>
                                     <option value="tahun" {{ request('waktuSppdLuarDaerah') == 'tahun' ? 'selected' : '' }}>Tahun</option>
@@ -195,7 +195,7 @@
                             <form action="{{ route('buku-agenda.kategori-keluar.index') }}" method="GET" class="col-md-3 d-flex align-items-center">
                                 <input type="hidden" name="tab" value="spt-dalam-daerah">
                                 <label for="waktuSptDalamDaerah" class="me-2">Filter Waktu:</label>
-                                <select name="waktuSptDalamDaerah" id="waktuSptDalamDaerah" class="form-select me-3" style="width: auto;">
+                                <select name="waktuSptDalamDaerah" id="waktuSptDalamDaerah" class="form-select me-3" style="min-width: 100px; width: auto;">
                                     <option value="bulan" {{ request('waktuSptDalamDaerah') == 'bulan' ? 'selected' : '' }}>Bulan</option>
                                     <option value="minggu" {{ request('waktuSptDalamDaerah') == 'minggu' ? 'selected' : '' }}>Minggu</option>
                                     <option value="tahun" {{ request('waktuSptDalamDaerah') == 'tahun' ? 'selected' : '' }}>Tahun</option>
@@ -242,7 +242,7 @@
                             <form action="{{ route('buku-agenda.kategori-keluar.index') }}" method="GET" class="col-md-3 d-flex align-items-center">
                                 <input type="hidden" name="tab" value="spt-luar-daerah">
                                 <label for="waktuSptLuarDaerah" class="me-2">Filter Waktu:</label>
-                                <select name="waktuSptLuarDaerah" id="waktuSptLuarDaerah" class="form-select me-3" style="width: auto;">
+                                <select name="waktuSptLuarDaerah" id="waktuSptLuarDaerah" class="form-select me-3" style="min-width: 100px; width: auto;">
                                     <option value="bulan" {{ request('waktuSptLuarDaerah') == 'bulan' ? 'selected' : '' }}>Bulan</option>
                                     <option value="minggu" {{ request('waktuSptLuarDaerah') == 'minggu' ? 'selected' : '' }}>Minggu</option>
                                     <option value="tahun" {{ request('waktuSptLuarDaerah') == 'tahun' ? 'selected' : '' }}>Tahun Ini</option>
