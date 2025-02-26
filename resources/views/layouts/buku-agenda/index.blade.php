@@ -214,6 +214,8 @@
                         </div>
                     </div>
                 </div> <!-- End tab-content -->
+            </div>
+        </div>
     </div>
 
     <!-- Filter Modal -->

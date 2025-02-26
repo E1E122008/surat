@@ -54,7 +54,7 @@
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $index + 1 }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->no_surat }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->tanggal_surat ? $surat->tanggal_surat->format('d/m/Y') : '-' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->tanggal->format('d/m/Y') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->perihal }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">
                                             <button onclick="window.location.href='{{ asset('storage/' . $surat->lampiran) }}'" class="btn btn-primary">

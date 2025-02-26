@@ -23,11 +23,11 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="tanggal_surat" class="form-label">Tanggal Surat</label>
-                        <input type="date" name="tanggal_surat" id="tanggal_surat" 
-                            class="form-control @error('tanggal_surat') is-invalid @enderror"
-                            value="{{ old('tanggal_surat', $suratKeluar->tanggal_surat ? $suratKeluar->tanggal_surat->format('Y-m-d') : '') }}" required>
-                        @error('tanggal_surat')
+                        <label for="tanggal" class="form-label">Tanggal Surat</label>
+                        <input type="date" name="tanggal" id="tanggal" 
+                            class="form-control @error('tanggal') is-invalid @enderror"
+                            value="{{ old('tanggal', $suratKeluar->tanggal ? $suratKeluar->tanggal->format('Y-m-d') : '') }}" required>
+                        @error('tanggal')
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                         @enderror
                     </div>

@@ -64,8 +64,8 @@ class DashboardController extends Controller
 
         // Data untuk grafik surat keluar
         $suratKeluarData = $months->map(function($month) {
-            return SuratKeluar::whereYear('tanggal_surat', $month->year)
-                ->whereMonth('tanggal_surat', $month->month)
+            return SuratKeluar::whereYear('tanggal', $month->year)
+                ->whereMonth('tanggal', $month->month)
                 ->count();
         });
 
@@ -177,10 +177,10 @@ class DashboardController extends Controller
         $suratKeluarData = $months->map(function($date) use ($period) {
             $query = SuratKeluar::query();
             if ($period === 'minggu') {
-                return $query->whereDate('tanggal_surat', $date->format('Y-m-d'))->count();
+                return $query->whereDate('tanggal', $date->format('Y-m-d'))->count();
             } else {
-                return $query->whereYear('tanggal_surat', $date->year)
-                            ->whereMonth('tanggal_surat', $date->month)
+                return $query->whereYear('tanggal', $date->year)
+                            ->whereMonth('tanggal', $date->month)
                             ->count();
             }
         });

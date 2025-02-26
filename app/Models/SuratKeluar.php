@@ -13,13 +13,13 @@ class SuratKeluar extends Model
     
     protected $fillable = [
         'no_surat',
-        'tanggal_surat',
+        'tanggal',
         'perihal',
         'lampiran'
     ];
 
     protected $casts = [
-        'tanggal_surat' => 'date',
+        'tanggal' => 'date',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];

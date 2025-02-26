@@ -14,6 +14,11 @@ class BukuAgendaController extends Controller
 {
     public function index(Request $request)
     {
+        // Jika tidak ada parameter tab, redirect ke tab default
+        if (!$request->has('tab')) {
+            return redirect()->route('buku-agenda.index', ['tab' => 'surat-masuk']);
+        }
+
         // Ambil tab aktif dari request, default ke 'surat-masuk'
         $activeTab = $request->input('tab', 'surat-masuk');
 

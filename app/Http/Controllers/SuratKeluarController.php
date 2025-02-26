@@ -37,7 +37,7 @@ class SuratKeluarController extends Controller
         try {
             $validated = $request->validate([
                 'no_surat' => 'required|string|max:255',
-                'tanggal_surat' => 'required|date',
+                'tanggal' => 'required|date',
                 'perihal' => 'required|string|max:255',
                 'lampiran' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
             ]);
@@ -83,7 +83,7 @@ class SuratKeluarController extends Controller
             $suratKeluar = SuratKeluar::findOrFail($id);
             $validated = $request->validate([
                 'no_surat' => 'required|string|max:255',
-                'tanggal_surat' => 'required|date',
+                'tanggal' => 'required|date',
                 'perihal' => 'required|string|max:255',
                 'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
             ]);

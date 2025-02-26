@@ -11,7 +11,6 @@
         <div class="bg-white overflow-x-auto w-full shadow-sm sm:rounded-lg">
             <div class="p-6 bg-white border-b border-gray-200">
                 <div class="flex justify-between items-center mb-6">
-                    <!-- Nav tabs -->
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
                             <a class="nav-link {{ request('tab', 'surat-keluar') == 'surat-keluar' ? 'active' : '' }}"
@@ -43,26 +42,28 @@
                                 SPT Luar Daerah
                             </a>
                         </li>
-
                     </ul>
                 </div>
+
+                @if($filterInfo)
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-filter"></i> Filter Aktif: {{ $filterInfo }}
+                    <a href="{{ request()->url() }}?tab={{ request('tab', 'surat-keluar') }}" class="float-end text-decoration-none">
+                        <i class="fas fa-times"></i> Hapus Filter
+                    </a>
+                </div>
+                @endif
 
                 <div class="tab-content">
                     <!-- Tab Surat Masuk -->
                     <div class="tab-pane fade {{ request('tab', 'surat-keluar') == 'surat-keluar' ? 'show active' : '' }}" id="surat-keluar">
                         <h4>📤  Surat Keluar</h4>
-                        <div class="mb-3 d-flex align-items-center">
-                            <form action="{{ route('buku-agenda.kategori-keluar.index') }}" method="GET" class="col-md-3 d-flex align-items-center">
-                                <input type="hidden" name="tab" value="surat-keluar">
-                                <label for="waktuSuratKeluar" class="me-2">Filter Waktu:</label>
-                                <select name="waktuSuratKeluar" id="waktuSuratKeluar" class="form-select me-3" style="min-width: 100px; width: auto;">
-                                    <option value="bulan" {{ request('waktuSuratKeluar', 'bulan') == 'bulan' ? 'selected' : '' }}>Bulan</option>
-                                    <option value="minggu" {{ request('waktuSuratKeluar') == 'minggu' ? 'selected' : '' }}>Minggu</option>
-                                    <option value="tahun" {{ request('waktuSuratKeluar') == 'tahun' ? 'selected' : '' }}>Tahun</option>
-                                </select>
-                                <button type="submit" class="btn btn-primary">Terapkan</button>
-                            </form>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
                         </div>
+                        
                         <div class="overflow-x-auto">
                             <table class="table table-bordered mt-4">
                                 <thead class="thead-dark">
@@ -79,9 +80,7 @@
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_surat }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                                {{ $surat->tanggal_surat }}
-                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->tanggal->format('d/m/Y') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap break-words text-sm text-gray-500 text-center">{{ $surat->perihal }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-500 text-center">
                                                 <a href="{{ asset('storage/' . $surat->lampiran) }}" class="text-blue-500 hover:underline">{{ $surat->lampiran }}</a>
@@ -96,18 +95,12 @@
                     <!-- Tab Sppd Dalam Daerah -->
                     <div class="tab-pane fade {{ request('tab') == 'sppd-dalam-daerah' ? 'show active' : '' }}" id="sppd-dalam-daerah">
                         <h4>📤 SPPD Dalam Daerah</h4>
-                        <div class="mb-3 d-flex align-items-center">
-                            <form action="{{ route('buku-agenda.kategori-keluar.index') }}" method="GET" class="col-md-3 d-flex align-items-center">
-                                <input type="hidden" name="tab" value="sppd-dalam-daerah">
-                                <label for="waktuSppdDalamDaerah" class="me-2">Filter Waktu:</label>
-                                <select name="waktuSppdDalamDaerah" id="waktuSppdDalamDaerah" class="form-select me-3" style="min-width: 100px; width: auto;">
-                                    <option value="bulan" {{ request('waktuSppdDalamDaerah') == 'bulan' ? 'selected' : '' }}>Bulan</option>
-                                    <option value="minggu" {{ request('waktuSppdDalamDaerah') == 'minggu' ? 'selected' : '' }}>Minggu</option>
-                                    <option value="tahun" {{ request('waktuSppdDalamDaerah') == 'tahun' ? 'selected' : '' }}>Tahun</option>
-                                </select>
-                                <button type="submit" class="btn btn-primary">Terapkan</button>
-                            </form>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
                         </div>
+                       
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="table-bordered">
@@ -126,9 +119,7 @@
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_surat }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                                {{ $surat->tanggal ? $surat->tanggal->format('d/m/Y') : 'Tanggal tidak tersedia' }}
-                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->tanggal->format('d/m/Y') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->tujuan }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->nama_petugas }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap break-words text-sm text-gray-500 text-center">{{ $surat->perihal }}</td>
@@ -144,18 +135,12 @@
                 
                     <div class="tab-pane fade {{ request('tab') == 'sppd-luar-daerah' ? 'show active' : '' }}" id="sppd-luar-daerah">
                         <h4>📤 SPPD Luar Daerah</h4>
-                        <div class="mb-3 d-flex align-items-center">
-                            <form action="{{ route('buku-agenda.kategori-keluar.index') }}" method="GET" class="col-md-3 d-flex align-items-center">
-                                <input type="hidden" name="tab" value="sppd-luar-daerah">
-                                <label for="waktuSppdLuarDaerah" class="me-2">Filter Waktu:</label>
-                                <select name="waktuSppdLuarDaerah" id="waktuSppdLuarDaerah" class="form-select me-3" style="min-width: 100px; width: auto;">
-                                    <option value="bulan" {{ request('waktuSppdLuarDaerah') == 'bulan' ? 'selected' : '' }}>Bulan</option>
-                                    <option value="minggu" {{ request('waktuSppdLuarDaerah') == 'minggu' ? 'selected' : '' }}>Minggu</option>
-                                    <option value="tahun" {{ request('waktuSppdLuarDaerah') == 'tahun' ? 'selected' : '' }}>Tahun</option>
-                                </select>
-                                <button type="submit" class="btn btn-primary">Terapkan</button>
-                            </form>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
                         </div>
+                        
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="table-bordered">
@@ -174,9 +159,7 @@
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_surat }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                                {{ $surat->tanggal ? $surat->tanggal->format('d/m/Y') : 'Tanggal tidak tersedia' }}
-                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->tanggal->format('d/m/Y') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->tujuan }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->nama_petugas }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap break-words text-sm text-gray-500 text-center">{{ $surat->perihal }}</td>
@@ -191,18 +174,12 @@
                     </div>
                     <div class="tab-pane fade {{ request('tab') == 'spt-dalam-daerah' ? 'show active' : '' }}" id="spt-dalam-daerah">
                         <h4>📤 SPT Dalam Daerah</h4>
-                        <div class="mb-3 d-flex align-items-center">
-                            <form action="{{ route('buku-agenda.kategori-keluar.index') }}" method="GET" class="col-md-3 d-flex align-items-center">
-                                <input type="hidden" name="tab" value="spt-dalam-daerah">
-                                <label for="waktuSptDalamDaerah" class="me-2">Filter Waktu:</label>
-                                <select name="waktuSptDalamDaerah" id="waktuSptDalamDaerah" class="form-select me-3" style="min-width: 100px; width: auto;">
-                                    <option value="bulan" {{ request('waktuSptDalamDaerah') == 'bulan' ? 'selected' : '' }}>Bulan</option>
-                                    <option value="minggu" {{ request('waktuSptDalamDaerah') == 'minggu' ? 'selected' : '' }}>Minggu</option>
-                                    <option value="tahun" {{ request('waktuSptDalamDaerah') == 'tahun' ? 'selected' : '' }}>Tahun</option>
-                                </select>
-                                <button type="submit" class="btn btn-primary">Terapkan</button>
-                            </form>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
                         </div>
+                        
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="table-bordered">
@@ -221,9 +198,7 @@
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_surat }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                                {{ $surat->tanggal ? $surat->tanggal->format('d/m/Y') : 'Tanggal tidak tersedia' }}
-                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->tanggal->format('d/m/Y') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->tujuan }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->nama_petugas }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap break-words text-sm text-gray-500 text-center">{{ $surat->perihal }}</td>
@@ -238,18 +213,12 @@
                     </div>
                     <div class="tab-pane fade {{ request('tab') == 'spt-luar-daerah' ? 'show active' : '' }}" id="spt-luar-daerah">
                         <h4>📤 SPT Luar Daerah</h4>
-                        <div class="mb-3 d-flex align-items-center">
-                            <form action="{{ route('buku-agenda.kategori-keluar.index') }}" method="GET" class="col-md-3 d-flex align-items-center">
-                                <input type="hidden" name="tab" value="spt-luar-daerah">
-                                <label for="waktuSptLuarDaerah" class="me-2">Filter Waktu:</label>
-                                <select name="waktuSptLuarDaerah" id="waktuSptLuarDaerah" class="form-select me-3" style="min-width: 100px; width: auto;">
-                                    <option value="bulan" {{ request('waktuSptLuarDaerah') == 'bulan' ? 'selected' : '' }}>Bulan</option>
-                                    <option value="minggu" {{ request('waktuSptLuarDaerah') == 'minggu' ? 'selected' : '' }}>Minggu</option>
-                                    <option value="tahun" {{ request('waktuSptLuarDaerah') == 'tahun' ? 'selected' : '' }}>Tahun Ini</option>
-                                </select>
-                                <button type="submit" class="btn btn-primary">Terapkan</button>
-                            </form>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
                         </div>
+                        
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="table-bordered">
@@ -268,9 +237,7 @@
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_surat }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                                {{ $surat->tanggal ? $surat->tanggal->format('d/m/Y') : 'Tanggal tidak tersedia' }}
-                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->tanggal->format('d/m/Y') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->tujuan }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->nama_petugas }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap break-words text-sm text-gray-500 text-center">{{ $surat->perihal }}</td>
@@ -287,4 +254,121 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="filterModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Filter Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="filterForm" method="GET">
+                    <input type="hidden" name="tab" value="{{ request('tab', 'surat-keluar') }}">
+                    
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="filterType" class="form-label">Filter Berdasarkan</label>
+                            <select class="form-select" id="filterType" name="filterType" required>
+                                <option value="minggu">Minggu</option>
+                                <option value="bulan">Bulan</option>
+                                <option value="tahun">Tahun</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="mingguSubpoint">
+                            <label for="mingguKe" class="form-label">Pilih Minggu</label>
+                            <select class="form-select mb-2" name="mingguKe">
+                                <option value="1">Minggu ke 1</option>
+                                <option value="2">Minggu ke 2</option>
+                                <option value="3">Minggu ke 3</option>
+                                <option value="4">Minggu ke 4</option>
+                            </select>
+                        </div>
+                        <div class="mb-3" id="bulanSubpoint" style="display: none;">
+                            <label for="bulan" class="form-label">Pilih Bulan</label>
+                            <select class="form-select mb-2" name="bulan">
+                                <option value="1">Januari</option>
+                                <option value="2">Februari</option>
+                                <option value="3">Maret</option>
+                                <option value="4">April</option>
+                                <option value="5">Mei</option>
+                                <option value="6">Juni</option>
+                                <option value="7">Juli</option>
+                                <option value="8">Agustus</option>
+                                <option value="9">September</option>
+                                <option value="10">Oktober</option>
+                                <option value="11">November</option>
+                                <option value="12">Desember</option>
+                            </select>
+                            
+                            <label for="tahun" class="form-label">Tahun</label>
+                            <input type="number" class="form-control" name="tahun" 
+                                   min="2000" max="2099" value="{{ date('Y') }}">
+                        </div>
+
+                        <!-- Subpoint Tahun -->
+                        <div class="mb-3" id="tahunSubpoint" style="display: none;">
+                            <label for="tahun" class="form-label">Masukkan Tahun</label>
+                            <input type="number" class="form-control" name="tahun" min="2000" max="2099" 
+                                   value="{{ date('Y') }}">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <a href="{{ route('buku-agenda.kategori-keluar.index', ['tab' => request('tab')]) }}" 
+                           class="btn btn-warning">Tampilkan Semua</a>
+                        <button type="submit" class="btn btn-primary">Terapkan Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterType = document.getElementById('filterType');
+        const mingguSubpoint = document.getElementById('mingguSubpoint');
+        const bulanSubpoint = document.getElementById('bulanSubpoint');
+        const tahunSubpoint = document.getElementById('tahunSubpoint');
+
+        function showDefaultSubpoint() {
+            mingguSubpoint.style.display = 'none';
+            bulanSubpoint.style.display = 'none';
+            tahunSubpoint.style.display = 'none';
+
+            switch(filterType.value) {
+                case 'minggu':
+                    mingguSubpoint.style.display = 'block';
+                    break;
+                case 'bulan':
+                    bulanSubpoint.style.display = 'block';
+                    break;
+                case 'tahun':
+                    tahunSubpoint.style.display = 'block';
+                    break;
+            }
+        }
+
+        showDefaultSubpoint();
+        filterType.addEventListener('change', showDefaultSubpoint);
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('filterType')) {
+            filterType.value = urlParams.get('filterType');
+            showDefaultSubpoint();
+
+            if (urlParams.has('mingguKe')) {
+                document.querySelector('[name="mingguKe"]').value = urlParams.get('mingguKe');
+            }
+
+            if (urlParams.has('bulan')) {
+                document.querySelector('[name="bulan"]').value = urlParams.get('bulan');
+            }   
+
+            if (urlParams.has('tahun')) {
+                document.querySelector('[name="tahun"]').value = urlParams.get('tahun');
+            }
+        }
+    });
+    </script>
 @endsection
