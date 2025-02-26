@@ -9,7 +9,7 @@
         <form action="{{ route('draft-phd.pergub.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
-            <div class="form-grid">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="form-group">
                     <label for="no_agenda" class="form-label">Nomor Agenda</label>
                     <input type="text" name="no_agenda" id="no_agenda" 
@@ -39,6 +39,9 @@
                         <div class="form-error">{{ $message }}</div>
                     @enderror
                 </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                 <div class="form-group">
                     <label for="tanggal_surat" class="form-label">Tanggal Surat</label>
@@ -50,7 +53,7 @@
                     @enderror
                 </div>
 
-                <div class="form-group form-grid-full">
+                <div class="form-group">
                     <label for="tanggal_terima" class="form-label">Tanggal Terima</label>
                     <input type="date" name="tanggal_terima" id="tanggal_terima" 
                         class="form-control @error('tanggal_terima') is-invalid @enderror"  

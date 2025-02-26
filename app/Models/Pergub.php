@@ -21,6 +21,7 @@ class Pergub extends Model
         'perihal',
         'lampiran',
         'catatan',
+        'disposisi',
         'status'
     ];  
 

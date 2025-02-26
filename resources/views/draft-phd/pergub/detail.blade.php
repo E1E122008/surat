@@ -44,7 +44,7 @@
                         <div class="form-group">
                             <label for="lampiran">Lampiran</label>
                             <button onclick="window.location.href='{{ asset('storage/' . $pergub->lampiran) }}'" class="btn btn-primary">
-                                <i class="fas fa-eye"></i>
+                                <i class="fas fa-eye"></i></i> {{ basename($pergub->lampiran) }}
                             </button>
                         </div>
                     </div>

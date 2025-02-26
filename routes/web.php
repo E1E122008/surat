@@ -192,6 +192,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/draft-phd/pergub/{id}/update-catatan', [PergubController::class, 'updateCatatan']);
     Route::post('/draft-phd/pergub', [PergubController::class, 'store'])->name('draft-phd.pergub.store');   
     Route::get('/draft-phd/pergub/export', [PergubController::class, 'export'])->name('draft-phd.pergub.export');
+    Route::post('/draft-phd/pergub/{id}/disposisi', [PergubController::class, 'disposisi'])
+        ->name('draft-phd.pergub.disposisi');
     Route::get('/pergub', [PergubController::class, 'index'])->name('pergub.index');
 
 
