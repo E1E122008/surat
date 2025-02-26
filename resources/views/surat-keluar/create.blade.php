@@ -9,17 +9,7 @@
         <form action="{{ route('surat-keluar.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="no_agenda" class="form-label">Nomor Agenda</label>
-                    <input type="text" name="no_agenda" id="no_agenda" 
-                        class="form-control @error('no_agenda') is-invalid @enderror"
-                        value="{{ old('no_agenda') }}" required>
-                    @error('no_agenda')
-                        <div class="form-error">{{ $message }}</div>
-                    @enderror
-                </div>
-
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="form-group">
                     <label for="no_surat" class="form-label">Nomor Surat</label>
                     <input type="text" name="no_surat" id="no_surat" 

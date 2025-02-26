@@ -17,8 +17,7 @@ class SuratKeluarController extends Controller
         if ($request->has('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('no_agenda', 'LIKE', "%{$search}%")
-                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                $q->where('no_surat', 'LIKE', "%{$search}%")
                   ->orWhere('perihal', 'LIKE', "%{$search}%");
             });
         }
@@ -37,7 +36,6 @@ class SuratKeluarController extends Controller
     {
         try {
             $validated = $request->validate([
-                'no_agenda' => 'required|string|max:255',
                 'no_surat' => 'required|string|max:255',
                 'tanggal_surat' => 'required|date',
                 'perihal' => 'required|string|max:255',
@@ -84,7 +82,6 @@ class SuratKeluarController extends Controller
         try {
             $suratKeluar = SuratKeluar::findOrFail($id);
             $validated = $request->validate([
-                'no_agenda' => 'required|string|max:255',
                 'no_surat' => 'required|string|max:255',
                 'tanggal_surat' => 'required|date',
                 'perihal' => 'required|string|max:255',

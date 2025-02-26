@@ -19,7 +19,6 @@ class SuratKeluarExport implements FromCollection, WithHeadings, WithMapping
     {
         return [
             'No',
-            'No Agenda',
             'Nomor Surat',
             'Tanggal Surat',
             'Perihal',
@@ -36,7 +35,6 @@ class SuratKeluarExport implements FromCollection, WithHeadings, WithMapping
 
         return [
             $no,
-            $suratKeluar->no_agenda,
             $suratKeluar->no_surat,
             $suratKeluar->tanggal_surat ? $suratKeluar->tanggal_surat->format('d/m/Y') : 'N/A',
             $suratKeluar->perihal,
