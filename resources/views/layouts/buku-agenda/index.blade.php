@@ -72,12 +72,21 @@
 
                 <div class="tab-content mt-3">
                     <!-- Tab Surat Masuk -->
-                    <div class="tab-pane fade {{ request('tab') == 'surat-masuk' ? 'show active' : '' }}" id="surat-masuk">
+                    <div class="tab-pane fade {{ request('tab', 'surat-masuk') == 'surat-masuk' ? 'show active' : '' }}" id="surat-masuk">
                         <h4>📥 Surat Masuk</h4>
                         <div class="mb-3">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
+                            <a href="{{ route('buku-agenda.export', [
+                                'filterType' => request('filterType'),
+                                'mingguKe' => request('mingguKe'),
+                                'bulan' => request('bulan'),
+                                'tahun' => request('tahun'),
+                                'tab' => 'surat-masuk'
+                            ]) }}" class="btn btn-success">
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </a>
                             <span class="stats-badge">
                                 <i class="fas fa-envelope me-1"></i>
                                 Jumlah Surat: {{ $totalSurat['surat_masuk'] }}
@@ -125,6 +134,15 @@
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
+                            <a href="{{ route('buku-agenda.export', [
+                                'filterType' => request('filterType'),
+                                'mingguKe' => request('mingguKe'),
+                                'bulan' => request('bulan'),
+                                'tahun' => request('tahun'),
+                                'tab' => 'surat-keputusan'
+                            ]) }}" class="btn btn-success">
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </a>
                             <span class="stats-badge">
                                 <i class="fas fa-file-alt me-1"></i>
                                 Jumlah SK: {{ $totalSurat['sk'] }}
@@ -165,11 +183,20 @@
 
                     <!-- Tab Perda -->
                     <div class="tab-pane fade {{ request('tab') == 'perda' ? 'show active' : '' }}" id="perda">
-                        <h4>📝 Peraturan Daerah</h4>
+                        <h4>📋 Peraturan Daerah</h4>
                         <div class="mb-3">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
+                            <a href="{{ route('buku-agenda.export', [
+                                'filterType' => request('filterType'),
+                                'mingguKe' => request('mingguKe'),
+                                'bulan' => request('bulan'),
+                                'tahun' => request('tahun'),
+                                'tab' => 'perda'
+                            ]) }}" class="btn btn-success">
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </a>
                             <span class="stats-badge">
                                 <i class="fas fa-book me-1"></i>
                                 Jumlah Perda: {{ $totalSurat['perda'] }}
@@ -209,11 +236,20 @@
 
                     <!-- Tab Pergub -->
                     <div class="tab-pane fade {{ request('tab') == 'pergub' ? 'show active' : '' }}" id="pergub">
-                        <h4>📤 Peraturan Gubernur</h4>
+                        <h4>📋 Peraturan Gubernur</h4>
                         <div class="mb-3">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
+                            <a href="{{ route('buku-agenda.export', [
+                                'filterType' => request('filterType'),
+                                'mingguKe' => request('mingguKe'),
+                                'bulan' => request('bulan'),
+                                'tahun' => request('tahun'),
+                                'tab' => 'pergub'
+                            ]) }}" class="btn btn-success">
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </a>
                             <span class="stats-badge">
                                 <i class="fas fa-scroll me-1"></i>
                                 Jumlah Pergub: {{ $totalSurat['pergub'] }}

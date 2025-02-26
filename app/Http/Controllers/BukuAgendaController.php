@@ -7,8 +7,9 @@ use App\Models\SuratMasuk;
 use App\Models\Sk;
 use App\Models\Perda;
 use App\Models\Pergub;
-
 use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\AgendaMasukExport;
 
 class BukuAgendaController extends Controller
 {
@@ -132,4 +133,40 @@ class BukuAgendaController extends Controller
         ));
     }
     
+    public function export(Request $request)
+    {
+        $filterType = $request->filterType;
+        $tab = $request->tab ?? 'surat-masuk';
+        
+        // Tentukan nama file berdasarkan tab dan filter
+        $prefix = match($tab) {
+            'surat-masuk' => 'surat-masuk',
+            'surat-keputusan' => 'sk',
+            'perda' => 'perda',
+            'pergub' => 'pergub',
+            default => 'surat-masuk'
+        };
+        
+        // Tambahkan info filter ke nama file jika ada
+        $filterInfo = '';
+        if ($filterType) {
+            $filterInfo = match($filterType) {
+                'minggu' => "-minggu-{$request->mingguKe}-bulan-{$request->bulan}",
+                'bulan' => "-bulan-{$request->bulan}",
+                'tahun' => "-tahun-{$request->tahun}",
+                default => ''
+            };
+        }
+        
+        // Generate nama file
+        $fileName = $prefix . $filterInfo . '-' . date('Y-m-d-His') . '.xlsx';
+
+        return Excel::download(new AgendaMasukExport(
+            $filterType,
+            $request->mingguKe,
+            $request->bulan,
+            $request->tahun,
+            $tab
+        ), $fileName);
+    }
 }
