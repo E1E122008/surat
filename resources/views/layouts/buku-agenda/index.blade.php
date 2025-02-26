@@ -3,9 +3,10 @@
 @section('content')
     <div class="container">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-9">
                 <h2 class="mb-4"><strong>📂 Buku Agenda</strong> / <span style="color: gray;"> Kategori Surat Masuk</span></h2>
             </div>
+            
         </div>
 
         <div class="bg-white overflow-x-auto w-full shadow-sm sm:rounded-lg">
@@ -41,22 +42,25 @@
                     </ul>
                 </div>
 
-                <div class="tab-content">
+                @if($filterInfo)
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-filter"></i> Filter Aktif: {{ $filterInfo }}
+                    <a href="{{ request()->url() }}?tab={{ request('tab', 'surat-masuk') }}" class="float-end text-decoration-none">
+                        <i class="fas fa-times"></i> Hapus Filter
+                    </a>
+                </div>
+                @endif
+
+                <div class="tab-content mt-3">
                     <!-- Tab Surat Masuk -->
-                    <div class="tab-pane fade {{ request('tab', 'surat-masuk') == 'surat-masuk' ? 'show active' : '' }}" id="surat-masuk">
-                        <h4>📩 Surat Masuk</h4>
-                        <div class="mb-3 d-flex align-items-center">
-                            <form action="{{ route('buku-agenda.index') }}" method="GET" class="col-md-3 d-flex align-items-center">
-                                <input type="hidden" name="tab" value="surat-masuk">
-                                <label for="waktuSuratMasuk" class="me-2">Filter Waktu:</label>
-                                <select name="waktuSuratMasuk" id="waktuSuratMasuk" class="form-select me-3" style="min-width: 100px; width: auto;">
-                                    <option value="bulan" {{ request('waktuSuratMasuk') == 'bulan' ? 'selected' : '' }}>Bulan</option>
-                                    <option value="minggu" {{ request('waktuSuratMasuk') == 'minggu' ? 'selected' : '' }}>Minggu</option>
-                                    <option value="tahun" {{ request('waktuSuratMasuk') == 'tahun' ? 'selected' : '' }}>Tahun</option>
-                                </select>
-                                <button class="btn btn-primary me-2" type="submit" style="width: 120px;">Terapkan</button>
-                            </form>
+                    <div class="tab-pane fade {{ request('tab') == 'surat-masuk' ? 'show active' : '' }}" id="surat-masuk">
+                        <h4>📥 Surat Masuk</h4>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
                         </div>
+                        
                         <div class="overflow-x-auto">
                             <table class="table table-bordered mt-4">
                                 <thead class="thead-dark">
@@ -93,19 +97,13 @@
 
                     <!-- Tab Surat Keputusan -->
                     <div class="tab-pane fade {{ request('tab') == 'surat-keputusan' ? 'show active' : '' }}" id="surat-keputusan">
-                        <h4>📤 Surat Keputusan</h4>
-                        <div class="mb-3 d-flex align-items-center">
-                            <form action="{{ route('buku-agenda.index') }}" method="GET" class="col-md-3 d-flex align-items-center">
-                                <input type="hidden" name="tab" value="surat-keputusan">
-                                <label for="waktuSuratKeputusan" class="me-2">Filter Waktu:</label>
-                                <select name="waktuSuratKeputusan" id="waktuSuratKeputusan" class="form-select me-3" style="min-width: 100px; width: auto;">
-                                    <option value="bulan" {{ request('waktuSuratKeputusan') == 'bulan' ? 'selected' : '' }}>Bulan</option>
-                                    <option value="minggu" {{ request('waktuSuratKeputusan') == 'minggu' ? 'selected' : '' }}>Minggu</option>
-                                    <option value="tahun" {{ request('waktuSuratKeputusan') == 'tahun' ? 'selected' : '' }}>Tahun</option>
-                                </select>
-                                <button type="submit" class="btn btn-primary">Terapkan</button>
-                            </form>
+                        <h4>📄 Surat Keputusan</h4>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
                         </div>
+                        
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="table-bordered">
@@ -125,7 +123,7 @@
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_agenda }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_surat }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->tanggal_surat->format('d/m/Y') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->tanggal_terima->format('d/m/Y') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->pengirim }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap break-words text-sm text-gray-500 text-center">{{ $surat->perihal }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-500 text-center">
@@ -141,17 +139,10 @@
                     <!-- Tab Perda -->
                     <div class="tab-pane fade {{ request('tab') == 'perda' ? 'show active' : '' }}" id="perda">
                         <h4>📝 Peraturan Daerah</h4>
-                        <div class="mb-3 d-flex align-items-center">
-                            <form action="{{ route('buku-agenda.index') }}" method="GET" class="col-md-3 d-flex align-items-center">
-                                <input type="hidden" name="tab" value="perda">
-                                <label for="waktuPerda" class="me-2">Filter Waktu:</label>
-                                <select name="waktuPerda" id="waktuPerda" class="form-select me-3" style="min-width: 100px; width: auto;">
-                                    <option value="bulan" {{ request('waktuPerda') == 'bulan' ? 'selected' : '' }}>Bulan</option>
-                                    <option value="minggu" {{ request('waktuPerda') == 'minggu' ? 'selected' : '' }}>Minggu</option>
-                                    <option value="tahun" {{ request('waktuPerda') == 'tahun' ? 'selected' : '' }}>Tahun</option>   
-                                </select>
-                                <button type="submit" class="btn btn-primary">Terapkan</button>
-                            </form>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200"> 
@@ -188,17 +179,10 @@
                     <!-- Tab Pergub -->
                     <div class="tab-pane fade {{ request('tab') == 'pergub' ? 'show active' : '' }}" id="pergub">
                         <h4>📤 Peraturan Gubernur</h4>
-                        <div class="mb-3 d-flex align-items-center">
-                            <form action="{{ route('buku-agenda.index') }}" method="GET" class="col-md-3 d-flex align-items-center">
-                                <input type="hidden" name="tab" value="pergub">
-                                <label for="waktuPergub" class="me-2">Filter Waktu:</label>
-                                <select name="waktuPergub" id="waktuPergub" class="form-select me-3" style="min-width: 100px; width: auto;">
-                                    <option value="bulan" {{ request('waktuPergub') == 'bulan' ? 'selected' : '' }}>Bulan</option>
-                                    <option value="minggu" {{ request('waktuPergub') == 'minggu' ? 'selected' : '' }}>Minggu</option>
-                                    <option value="tahun" {{ request('waktuPergub') == 'tahun' ? 'selected' : '' }}>Tahun</option>
-                                </select>
-                                <button type="submit" class="btn btn-primary">Terapkan</button>
-                            </form>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
@@ -219,7 +203,7 @@
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_agenda }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_surat }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->tanggal_surat->format('d/m/Y') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->tanggal_terima->format('d/m/Y') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->pengirim }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap break-words text-sm text-gray-500 text-center">{{ $surat->perihal }}</td>
                                             
@@ -231,4 +215,134 @@
                     </div>
                 </div> <!-- End tab-content -->
     </div>
+
+    <!-- Filter Modal -->
+    <div class="modal fade" id="filterModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Filter Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="filterForm" method="GET">
+                    <!-- Hidden input untuk menyimpan tab yang sedang aktif -->
+                    <input type="hidden" name="tab" value="{{ request('tab', 'surat-masuk') }}">
+                    
+                    <div class="modal-body">
+                        <!-- Main Filter -->
+                        <div class="mb-3">
+                            <label for="filterType" class="form-label">Filter Berdasarkan</label>
+                            <select class="form-select" id="filterType" name="filterType" required>
+                                <option value="minggu">Minggu</option>
+                                <option value="bulan">Bulan</option>
+                                <option value="tahun">Tahun</option>
+                            </select>
+                        </div>
+
+                        <!-- Subpoint Minggu -->
+                        <div class="mb-3" id="mingguSubpoint" style="display: none;">
+                            <label for="mingguKe" class="form-label">Pilih Minggu</label>
+                            <select class="form-select mb-2" name="mingguKe">
+                                <option value="1">Minggu ke 1</option>
+                                <option value="2">Minggu ke 2</option>
+                                <option value="3">Minggu ke 3</option>
+                                <option value="4">Minggu ke 4</option>
+                            </select>
+
+                            
+                        </div>
+
+                        <!-- Subpoint Bulan -->
+                        <div class="mb-3" id="bulanSubpoint" style="display: none;">
+                            <label for="bulan" class="form-label">Pilih Bulan</label>
+                            <select class="form-select mb-2" name="bulan">
+                                <option value="1">Januari</option>
+                                <option value="2">Februari</option>
+                                <option value="3">Maret</option>
+                                <option value="4">April</option>
+                                <option value="5">Mei</option>
+                                <option value="6">Juni</option>
+                                <option value="7">Juli</option>
+                                <option value="8">Agustus</option>
+                                <option value="9">September</option>
+                                <option value="10">Oktober</option>
+                                <option value="11">November</option>
+                                <option value="12">Desember</option>
+                            </select>
+                            
+                            <label for="tahun" class="form-label">Tahun</label>
+                            <input type="number" class="form-control" name="tahun" 
+                                   min="2000" max="2099" value="{{ date('Y') }}">
+                        </div>
+
+                        <!-- Subpoint Tahun -->
+                        <div class="mb-3" id="tahunSubpoint" style="display: none;">
+                            <label for="tahun" class="form-label">Masukkan Tahun</label>
+                            <input type="number" class="form-control" name="tahun" min="2000" max="2099" 
+                                   value="{{ date('Y') }}">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <a href="{{ route('buku-agenda.index', ['tab' => request('tab')]) }}" 
+                           class="btn btn-warning">Tampilkan Semua</a>
+                        <button type="submit" class="btn btn-primary">Terapkan Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterType = document.getElementById('filterType');
+        const mingguSubpoint = document.getElementById('mingguSubpoint');
+        const bulanSubpoint = document.getElementById('bulanSubpoint');
+        const tahunSubpoint = document.getElementById('tahunSubpoint');
+
+        const showDefaultSubpoint = () => {
+            // Sembunyikan semua subpoint terlebih dahulu
+            mingguSubpoint.style.display = 'none';
+            bulanSubpoint.style.display = 'none';
+            tahunSubpoint.style.display = 'none';
+
+            // Tampilkan subpoint yang dipilih
+            switch(filterType.value) {
+                case 'minggu':
+                    mingguSubpoint.style.display = 'block';
+                    break;
+                case 'bulan':
+                    bulanSubpoint.style.display = 'block';
+                    break;
+                case 'tahun':
+                    tahunSubpoint.style.display = 'block';
+                    break;
+            }
+        };
+
+        // Tampilkan subpoint default saat halaman dimuat
+        showDefaultSubpoint();
+
+        // Handler untuk perubahan filter
+        filterType.addEventListener('change', showDefaultSubpoint);
+
+        // Set nilai awal dari URL jika ada
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('filterType')) {
+            filterType.value = urlParams.get('filterType');
+            showDefaultSubpoint();
+            
+            // Set nilai subpoint
+            if (urlParams.has('mingguKe')) {
+                document.querySelector('select[name="mingguKe"]').value = urlParams.get('mingguKe');
+            }
+            if (urlParams.has('bulan')) {
+                document.querySelector('select[name="bulan"]').value = urlParams.get('bulan');
+            }
+            if (urlParams.has('tahun')) {
+                document.querySelector('input[name="tahun"]').value = urlParams.get('tahun');
+            }
+        }
+    });
+    </script>
 @endsection

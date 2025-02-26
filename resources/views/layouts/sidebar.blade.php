@@ -130,12 +130,7 @@
                 </li>
             </ul>
         </li>
-        <li class="my-2">
-            <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('disposisi.*') ? 'active' : '' }}" 
-               href="{{ route('disposisi.index') }}">
-                <i class="fas fa-file-alt mr-2"></i> Disposisi
-            </a>
-        </li>
+
     </ul>
 </div>
 

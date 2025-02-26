@@ -17,73 +17,89 @@ class BukuAgendaController extends Controller
         // Ambil tab aktif dari request, default ke 'surat-masuk'
         $activeTab = $request->input('tab', 'surat-masuk');
 
-        // Ambil filter waktu dari request (default: bulan ini)
-        $filterWaktuSuratMasuk = $request->input('waktuSuratMasuk', 'bulan');
-        $filterWaktuKeputusan = $request->input('waktuSuratKeputusan', 'bulan');
-        $filterWaktuPerda = $request->input('waktuPerda', 'bulan');
-        $filterWaktuPergub = $request->input('waktuPergub', 'bulan');   
+        // Ambil informasi filter
+        $filterInfo = null;
+        if ($request->has('filterType')) {
+            switch ($request->filterType) {
+                case 'minggu':
+                    $bulan = Carbon::create(null, $request->input('bulan', now()->month))->format('F');
+                    $tahun = $request->input('tahun', now()->year);
+                    $filterInfo = "Minggu ke-{$request->mingguKe} {$bulan} {$tahun}";
+                    break;
+                case 'bulan':
+                    $bulan = Carbon::create(null, $request->bulan)->format('F');
+                    $tahun = $request->input('tahun', now()->year);
+                    $filterInfo = "Bulan {$bulan} {$tahun}";
+                    break;
+                case 'tahun':
+                    $filterInfo = "Tahun {$request->tahun}";
+                    break;
+            }
+        }
 
-        // Inisialisasi query untuk Surat Masuk
+        // Inisialisasi query
         $querySuratMasuk = SuratMasuk::query();
         $querySk = Sk::query();
         $queryPerda = Perda::query();
         $queryPergub = Pergub::query();
 
-        // Filter waktu Surat Masuk
-        if ($filterWaktuSuratMasuk == 'minggu') {
-            $querySuratMasuk->whereBetween('tanggal_terima', [
-                Carbon::now()->startOfWeek()->format('Y-m-d'), 
-                Carbon::now()->endOfWeek()->format('Y-m-d')
-            ]);
-        } elseif ($filterWaktuSuratMasuk == 'bulan') {
-            $querySuratMasuk->whereMonth('tanggal_terima', Carbon::now()->format('m'))
-                            ->whereYear('tanggal_terima', Carbon::now()->format('Y'));
-        } elseif ($filterWaktuSuratMasuk == 'tahun') {
-            $querySuratMasuk->whereYear('tanggal_terima', Carbon::now()->format('Y'));
-        }
+        // Handle filter dari modal
+        if ($request->has('filterType')) {
+            switch ($request->filterType) {
+                case 'minggu':
+                    $weekNumber = $request->mingguKe;
+                    $currentMonth = now()->startOfMonth();
+                    
+                    switch($weekNumber) {
+                        case 1:
+                            $startDate = $currentMonth->copy(); // Tanggal 1-7
+                            $endDate = $currentMonth->copy()->addDays(6);
+                            break;
+                        case 2:
+                            $startDate = $currentMonth->copy()->addDays(7); // Tanggal 8-14
+                            $endDate = $currentMonth->copy()->addDays(13);
+                            break;
+                        case 3:
+                            $startDate = $currentMonth->copy()->addDays(14); // Tanggal 15-21
+                            $endDate = $currentMonth->copy()->addDays(20);
+                            break;
+                        case 4:
+                            $startDate = $currentMonth->copy()->addDays(21); // Tanggal 22-akhir bulan
+                            $endDate = $currentMonth->copy()->endOfMonth();
+                            break;
+                    }
+                    
+                    $querySuratMasuk->whereBetween('tanggal_terima', [$startDate, $endDate]);
+                    $querySk->whereBetween('tanggal_terima', [$startDate, $endDate]);
+                    $queryPerda->whereBetween('tanggal_terima', [$startDate, $endDate]);
+                    $queryPergub->whereBetween('tanggal_terima', [$startDate, $endDate]);
+                    break;
 
-        // Filter waktu untuk Surat Keputusan
-        if ($filterWaktuKeputusan == 'minggu') {
-            $querySk->whereBetween('tanggal_surat', [
-                Carbon::now()->startOfWeek()->format('Y-m-d'), 
-                Carbon::now()->endOfWeek()->format('Y-m-d')
-            ]);
-        } elseif ($filterWaktuKeputusan == 'bulan') {
-            $querySk->whereMonth('tanggal_surat', Carbon::now()->format('m'))
-                    ->whereYear('tanggal_surat', Carbon::now()->format('Y'));
-        } elseif ($filterWaktuKeputusan == 'tahun') {
-            $querySk->whereYear('tanggal_surat', Carbon::now()->format('Y'));
-        }
+                case 'bulan':
+                    $month = $request->bulan;
+                    $querySuratMasuk->whereMonth('tanggal_terima', $month)
+                                    ->whereYear('tanggal_terima', now()->year);
+                    $querySk->whereMonth('tanggal_terima', $month)
+                            ->whereYear('tanggal_terima', now()->year);
+                    $queryPerda->whereMonth('tanggal_terima', $month)
+                              ->whereYear('tanggal_terima', now()->year);
+                    $queryPergub->whereMonth('tanggal_terima', $month)
+                              ->whereYear('tanggal_terima', now()->year);
+                    break;
 
-        // Filter waktu untuk Perda
-        if ($filterWaktuPerda == 'minggu') {
-            $queryPerda->whereBetween('tanggal_terima', [
-                Carbon::now()->startOfWeek()->format('Y-m-d'), 
-                Carbon::now()->endOfWeek()->format('Y-m-d')
-            ]);
-        } elseif ($filterWaktuPerda == 'bulan') {
-            $queryPerda->whereMonth('tanggal_terima', Carbon::now()->format('m'))
-                    ->whereYear('tanggal_terima', Carbon::now()->format('Y'));
-        } elseif ($filterWaktuPerda == 'tahun') {
-            $queryPerda->whereYear('tanggal_terima', Carbon::now()->format('Y'));
-        }
+                case 'tahun':
+                    $year = $request->tahun;
+                    $querySuratMasuk->whereYear('tanggal_terima', $year);
+                    $querySk->whereYear('tanggal_terima', $year);
+                    $queryPerda->whereYear('tanggal_terima', $year);
+                    $queryPergub->whereYear('tanggal_terima', $year);
+                    break;
 
-        // Filter waktu untuk Pergub
-        if ($filterWaktuPergub == 'minggu') {
-            $queryPergub->whereBetween('tanggal_terima', [
-                Carbon::now()->startOfWeek()->format('Y-m-d'), 
-                Carbon::now()->endOfWeek()->format('Y-m-d')
-            ]);
-        } elseif ($filterWaktuPergub == 'bulan') {
-            $queryPergub->whereMonth('tanggal_terima', Carbon::now()->format('m'))
-                    ->whereYear('tanggal_terima', Carbon::now()->format('Y'));
-        } elseif ($filterWaktuPergub == 'tahun') {
-            $queryPergub->whereYear('tanggal_terima', Carbon::now()->format('Y'));
+                default:
+                    // Jika tidak ada filter atau "Tampilkan Semua" dipilih
+                    break;
+            }
         }
-        
-        
-        
-        
 
         // Eksekusi query
         $suratMasuk = $querySuratMasuk->get();
@@ -92,7 +108,14 @@ class BukuAgendaController extends Controller
         $pergub = $queryPergub->get();
 
         // Kirim data ke view
-        return view('layouts.buku-agenda.index', compact('suratMasuk', 'activeTab', 'sk', 'perda', 'pergub'));
+        return view('layouts.buku-agenda.index', compact(
+            'suratMasuk', 
+            'activeTab', 
+            'sk', 
+            'perda', 
+            'pergub',
+            'filterInfo'
+        ));
     }
     
 }
