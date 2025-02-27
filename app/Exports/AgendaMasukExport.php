@@ -109,16 +109,51 @@ class AgendaMasukExport implements FromCollection, WithHeadings, WithMapping
         static $no = 0;
         $no++;
         
-        return [
-            $no,
-            $row->no_agenda ?? '-',
-            $row->no_surat ?? '-',
-            $row->pengirim ?? '-',
-            $row->tanggal_surat ? $row->tanggal_surat->format('d/m/Y') : '-',
-            $row->tanggal_terima ? $row->tanggal_terima->format('d/m/Y') : '-',
-            $row->perihal ?? '-',
-            $row->disposisi ?? '-',
-            $row->lampiran ?? '-',
-        ];
+        return match($this->tab) {
+            'surat-masuk' => [
+                $no,
+                $row->no_agenda ?? '-',
+                $row->no_surat ?? '-',
+                $row->pengirim ?? '-',
+                $row->tanggal_surat ? $row->tanggal_surat->format('d/m/Y') : '-',
+                $row->tanggal_terima ? $row->tanggal_terima->format('d/m/Y') : '-',
+                $row->perihal ?? '-',
+                $row->disposisi ?? '-',
+                $row->lampiran ?? '-',
+            ],
+            'surat-keputusan' => [
+                $no,
+                $row->no_agenda ?? '-',
+                $row->no_surat ?? '-',
+                $row->pengirim ?? '-',
+                $row->tanggal_surat ? $row->tanggal_surat->format('d/m/Y') : '-',
+                $row->tanggal_terima ? $row->tanggal_terima->format('d/m/Y') : '-',
+                $row->perihal ?? '-',
+                $row->disposisi ?? '-',
+                $row->lampiran ?? '-',
+            ],
+            'perda', 'pergub' => [
+                $no,
+                $row->no_agenda ?? '-',
+                $row->no_surat ?? '-',
+                $row->pengirim ?? '-',
+                $row->tanggal_surat ? $row->tanggal_surat->format('d/m/Y') : '-',
+                $row->tanggal_terima ? $row->tanggal_terima->format('d/m/Y') : '-',
+                $row->perihal ?? '-',
+                $row->disposisi ?? '-',
+                $row->lampiran ?? '-',
+            ],
+            default => [
+                $no,
+                $row->no_agenda ?? '-',
+                $row->no_surat ?? '-',
+                $row->pengirim ?? '-',
+                $row->tanggal_surat ? $row->tanggal_surat->format('d/m/Y') : '-',
+                $row->tanggal_terima ? $row->tanggal_terima->format('d/m/Y') : '-',
+                $row->perihal ?? '-',
+                $row->disposisi ?? '-',
+                $row->lampiran ?? '-',
+            ],
+        };
     }
 } 

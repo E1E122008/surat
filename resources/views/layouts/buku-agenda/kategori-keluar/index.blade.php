@@ -72,26 +72,26 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request('tab') == 'sppd-dalam-daerah' ? 'active' : '' }}"
-                               href="{{ route('buku-agenda.kategori-keluar.index', ['tab' => 'sppd-dalam-daerah']) }}">
+                            <a class="nav-link {{ request('tab') == 'sppd-dalam' ? 'active' : '' }}"
+                               href="{{ route('buku-agenda.kategori-keluar.index', ['tab' => 'sppd-dalam']) }}">
                                 SPPD Dalam Daerah
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request('tab') == 'sppd-luar-daerah' ? 'active' : '' }}"
-                               href="{{ route('buku-agenda.kategori-keluar.index', ['tab' => 'sppd-luar-daerah']) }}">
+                            <a class="nav-link {{ request('tab') == 'sppd-luar' ? 'active' : '' }}"
+                               href="{{ route('buku-agenda.kategori-keluar.index', ['tab' => 'sppd-luar']) }}">
                                 SPPD Luar Daerah
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request('tab') == 'spt-dalam-daerah' ? 'active' : '' }}"
-                               href="{{ route('buku-agenda.kategori-keluar.index', ['tab' => 'spt-dalam-daerah']) }}">
+                            <a class="nav-link {{ request('tab') == 'spt-dalam' ? 'active' : '' }}"
+                               href="{{ route('buku-agenda.kategori-keluar.index', ['tab' => 'spt-dalam']) }}">
                                 SPT Dalam Daerah
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request('tab') == 'spt-luar-daerah' ? 'active' : '' }}"
-                               href="{{ route('buku-agenda.kategori-keluar.index', ['tab' => 'spt-luar-daerah']) }}">
+                            <a class="nav-link {{ request('tab') == 'spt-luar' ? 'active' : '' }}"
+                               href="{{ route('buku-agenda.kategori-keluar.index', ['tab' => 'spt-luar']) }}">
                                 SPT Luar Daerah
                             </a>
                         </li>
@@ -116,6 +116,15 @@
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
+                            <a href="{{ route('buku-agenda.kategori-keluar.export', [
+                                'filterType' => request('filterType'),
+                                'mingguKe' => request('mingguKe'),
+                                'bulan' => request('bulan'),
+                                'tahun' => request('tahun'),
+                                'tab' => request('tab', 'surat-keluar')
+                            ]) }}" class="btn btn-success">
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </a>
                             <span class="stats-badge">
                                 <i class="fas fa-envelope me-1"></i>
                                 Jumlah Surat: {{ $totalSurat['surat_keluar'] }}
@@ -150,16 +159,25 @@
                         </div>
                     </div>
 
-                    <!-- Tab Sppd Dalam Daerah -->
-                    <div class="tab-pane fade {{ request('tab') == 'sppd-dalam-daerah' ? 'show active' : '' }}" id="sppd-dalam-daerah">
-                        <h4>📤 SPPD Dalam Daerah</h4>
+                    <!-- Tab SPPD Dalam Daerah -->
+                    <div class="tab-pane fade {{ request('tab') == 'sppd-dalam' ? 'show active' : '' }}" id="sppd-dalam">
+                        <h4>📄 SPPD Dalam Daerah</h4>
                         <div class="mb-3">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
+                            <a href="{{ route('buku-agenda.kategori-keluar.export', [
+                                'filterType' => request('filterType'),
+                                'mingguKe' => request('mingguKe'),
+                                'bulan' => request('bulan'),
+                                'tahun' => request('tahun'),
+                                'tab' => 'sppd-dalam'
+                            ]) }}" class="btn btn-success">
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </a>
                             <span class="stats-badge">
                                 <i class="fas fa-file-alt me-1"></i>
-                                Jumlah SPPD: {{ $totalSurat['sppd_dalam'] }}
+                                Jumlah SPPD: {{ $totalSurat['sppd_dalam'] ?? 0 }}
                             </span>
                         </div>
                         <div class="overflow-x-auto">
@@ -194,15 +212,24 @@
                         </div>
                     </div>
                 
-                    <div class="tab-pane fade {{ request('tab') == 'sppd-luar-daerah' ? 'show active' : '' }}" id="sppd-luar-daerah">
-                        <h4>📤 SPPD Luar Daerah</h4>
+                    <div class="tab-pane fade {{ request('tab') == 'sppd-luar' ? 'show active' : '' }}" id="sppd-luar">
+                        <h4>📄 SPPD Luar Daerah</h4>
                         <div class="mb-3">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
+                            <a href="{{ route('buku-agenda.kategori-keluar.export', [
+                                'filterType' => request('filterType'),
+                                'mingguKe' => request('mingguKe'),
+                                'bulan' => request('bulan'),
+                                'tahun' => request('tahun'),
+                                'tab' => 'sppd-luar'
+                            ]) }}" class="btn btn-success">
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </a>
                             <span class="stats-badge">
                                 <i class="fas fa-file-alt me-1"></i>
-                                Jumlah SPPD: {{ $totalSurat['sppd_luar'] }}
+                                Jumlah SPPD: {{ $totalSurat['sppd_luar'] ?? 0 }}
                             </span>
                         </div>
                         
@@ -237,12 +264,21 @@
                             </table>
                         </div>
                     </div>
-                    <div class="tab-pane fade {{ request('tab') == 'spt-dalam-daerah' ? 'show active' : '' }}" id="spt-dalam-daerah">
+                    <div class="tab-pane fade {{ request('tab') == 'spt-dalam' ? 'show active' : '' }}" id="spt-dalam">
                         <h4>📤 SPT Dalam Daerah</h4>
                         <div class="mb-3">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
+                            <a href="{{ route('buku-agenda.kategori-keluar.export', [
+                                'filterType' => request('filterType'),
+                                'mingguKe' => request('mingguKe'),
+                                'bulan' => request('bulan'),
+                                'tahun' => request('tahun'),
+                                'tab' => 'spt-dalam'
+                            ]) }}" class="btn btn-success">
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </a>
                             <span class="stats-badge">
                                 <i class="fas fa-file-alt me-1"></i>
                                 Jumlah SPT: {{ $totalSurat['spt_dalam'] }}
@@ -280,12 +316,21 @@
                             </table>
                         </div> 
                     </div>
-                    <div class="tab-pane fade {{ request('tab') == 'spt-luar-daerah' ? 'show active' : '' }}" id="spt-luar-daerah">
+                    <div class="tab-pane fade {{ request('tab') == 'spt-luar' ? 'show active' : '' }}" id="spt-luar">
                         <h4>📤 SPT Luar Daerah</h4>
                         <div class="mb-3">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>  
+                            <a href="{{ route('buku-agenda.kategori-keluar.export', [
+                                'filterType' => request('filterType'),
+                                'mingguKe' => request('mingguKe'),
+                                'bulan' => request('bulan'),
+                                'tahun' => request('tahun'),
+                                'tab' => 'spt-luar'
+                            ]) }}" class="btn btn-success">
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </a>
                             <span class="stats-badge">
                                 <i class="fas fa-file-alt me-1"></i>
                                 Jumlah SPT: {{ $totalSurat['spt_luar'] }}

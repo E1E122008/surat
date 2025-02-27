@@ -56,31 +56,7 @@
                 </div>
             </div>
 
-            <!-- Kartu Aktivitas Terbaru -->
-            <div class="card shadow-sm mt-4">
-                <div class="card-header bg-transparent">
-                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Aktivitas Terbaru</h5>
-                </div>
-                <div class="card-body">
-                    <div class="timeline">
-                        @foreach($recentActivities as $activity)
-                        <div class="timeline-item pb-3">
-                            <div class="d-flex">
-                                <div class="flex-shrink-0">
-                                    <div class="timeline-icon bg-light rounded-circle p-2">
-                                        <i class="fas fa-file-alt text-primary"></i>
-                                    </div>
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <p class="mb-0 fw-bold">{{ $activity->description }}</p>
-                                    <small class="text-muted">{{ $activity->created_at->diffForHumans() }}</small>
-                                </div>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
+            
         </div>
 
         <!-- Informasi Detail dan Pengaturan -->
@@ -133,38 +109,7 @@
                 </div>
             </div>
 
-            <!-- Riwayat Login -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-transparent">
-                    <h5 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Riwayat Login</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Waktu</th>
-                                    <th>IP Address</th>
-                                    <th>Perangkat</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($loginHistory as $login)
-                                <tr>
-                                    <td>{{ $login->created_at->format('d M Y H:i') }}</td>
-                                    <td>{{ $login->ip_address }}</td>
-                                    <td>{{ $login->user_agent }}</td>
-                                    <td>
-                                        <span class="badge bg-success">Berhasil</span>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+            
         </div>
     </div>
 </div>

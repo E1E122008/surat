@@ -9,6 +9,8 @@ use App\Models\SppdLuarDaerah;
 use App\Models\sptDalamDaerah;
 use App\Models\sptLuarDaerah;
 use Carbon\Carbon;
+use App\Exports\AgendaKeluarExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class KategoriKeluarController extends Controller
 {
@@ -137,5 +139,54 @@ class KategoriKeluarController extends Controller
             'filterInfo',
             'totalSurat'
         ));
+    }
+
+    public function export(Request $request)
+    {
+        $filterType = $request->filterType;
+        $tab = $request->tab ?? 'surat-keluar';
+        
+        // Debug untuk melihat parameter yang diterima
+        \Log::info('Export Parameters:', [
+            'tab' => $tab,
+            'filterType' => $filterType,
+            'mingguKe' => $request->mingguKe,
+            'bulan' => $request->bulan,
+            'tahun' => $request->tahun
+        ]);
+
+        // Validasi tab yang valid
+        if (!in_array($tab, ['surat-keluar', 'sppd-dalam', 'sppd-luar', 'spt-dalam', 'spt-luar'])) {
+            $tab = 'surat-keluar';
+        }
+        
+        $prefix = match($tab) {
+            'surat-keluar' => 'surat-keluar',
+            'sppd-dalam' => 'sppd-dalam-daerah',
+            'sppd-luar' => 'sppd-luar-daerah',
+            'spt-dalam' => 'spt-dalam-daerah',
+            'spt-luar' => 'spt-luar-daerah',
+            default => 'surat-keluar'
+        };
+        
+        $filterInfo = '';
+        if ($filterType) {
+            $filterInfo = match($filterType) {
+                'minggu' => "-minggu-{$request->mingguKe}-bulan-{$request->bulan}",
+                'bulan' => "-bulan-{$request->bulan}",
+                'tahun' => "-tahun-{$request->tahun}",
+                default => ''
+            };
+        }
+        
+        $fileName = $prefix . $filterInfo . '-' . date('Y-m-d-His') . '.xlsx';
+
+        return Excel::download(new AgendaKeluarExport(
+            $filterType,
+            $request->mingguKe,
+            $request->bulan,
+            $request->tahun,
+            $tab
+        ), $fileName);
     }
 }

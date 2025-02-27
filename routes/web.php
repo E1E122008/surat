@@ -123,6 +123,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/buku-agenda/export', [BukuAgendaController::class, 'export'])->name('buku-agenda.export');
     Route::get('/buku-agenda/kategori-masuk', [BukuAgendaController::class, 'kategoriMasuk'])->name('buku-agenda.kategori-masuk.index');
     Route::get('/buku-agenda/kategori-keluar', [KategoriKeluarController::class, 'index'])->name('buku-agenda.kategori-keluar.index');
+    Route::get('/buku-agenda/kategori-keluar/export', [KategoriKeluarController::class, 'export'])
+        ->name('buku-agenda.kategori-keluar.export');
     Route::get('/profile', [UserProfileController::class, 'index'])->name('profile');
     Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [UserProfileController::class, 'updatePassword'])->name('profile.password');
