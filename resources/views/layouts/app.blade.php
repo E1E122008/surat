@@ -356,7 +356,7 @@
         border: 1px solid #e5e7eb !important;  /* Warna border abu-abu sangat terang */
         border-radius: 6px !important;
         padding: 8px 12px !important;
-        width: 200px !important;
+        width: 100% !important;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
         }
 
@@ -1243,7 +1243,7 @@
                                 <div class="rounded-circle bg-white d-flex align-items-center justify-content-center transition-transform duration-300 hover:scale-110" 
                                      style="width: 43px; height: 43px; overflow: hidden;">
                                     @if(Auth::user()->avatar)
-                                        <img src="{{ Storage::url(Auth::user()->avatar) }}" 
+                                        <img src="{{ asset('storage/' . Auth::user()->avatar) }}" 
                                              alt="Profile"
                                              class="transition-opacity duration-300 hover:opacity-80"
                                              style="width: 100%; height: 100%; object-fit: cover;">

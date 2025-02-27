@@ -344,8 +344,8 @@
         ],
         'Perancangan Per-UU Ahli Madya': [
             'Belum/Tidak diteruskan',
-            'Subker Penetapan',
-            'Subker Pengaturan'
+            'Subkor Penetapan',
+            'Subkor Pengaturan'
         ],
         'Kasubag Tata Usaha': [
             'Belum/Tidak diteruskan'
