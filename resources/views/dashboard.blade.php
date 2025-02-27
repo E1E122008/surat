@@ -2,15 +2,33 @@
 
 @section('content')
     <!-- Welcome Section -->
-    <div class="dashboard-welcome mb-4">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <h2>Selamat Datang di Sistem Informasi Administrasi Persuratan Biro hukum</h2>
-                <p class="text-muted">Pemerintah Sulawesi Tenggara</p>
+    <div class="dashboard-welcome p-4 bg-white rounded-lg shadow-sm">
+        <div class="row">
+            <!-- Header Section -->
+            <div class="col-12 border-bottom pb-4 mb-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h3 class="h4 fw-bold text-primary mb-0">
+                            Selamat Datang di Sistem Informasi Administrasi Persuratan Biro Hukum
+                            <span class="d-block small text-secondary mt-1">Pemerintah Sulawesi Tenggara</span>
+                        </h3>
+                    </div>
+                    <div class="text-secondary">
+                        <span class="small">{{ now()->format('d F Y') }}</span>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-4 text-end">
-                <div class="current-date">
-                    <h4>{{ now()->format('d F Y') }}</h4>
+
+            <!-- Main Content -->
+            <div class="col-12">
+                <!-- Description Block -->
+                <div class="description-block mb-5 p-4 bg-light rounded-3">
+                    <div class="d-flex">
+                        <i class="fas fa-balance-scale fs-4 text-primary me-3 mt-1"></i>
+                        <p class="text-muted mb-0 fs-6 lh-base">
+                            Biro hukum mempunyai tugas membantu asisten pemerintahan dan kesejahteraan rakyat dalam penyiapan perumusan kebijakan daerah, pengoordinasian pelaksanaan tugas perangkat daerah, pemantauan dan evaluasi pelaksanaan kebijakan di bidang peraturan perundang-undangan provinsi, peraturan perundang-undangan kabupaten/kota dan bantuan hukum.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -57,12 +75,12 @@
                 </div>
                 <div class="dashboard-card sppd p-4">
                     <h2 class="card-value">{{ $sppdCount }}</h2>
-                    <p class="card-title">SPPD</p>
+                    <p class="card-title">Surat Perintah Perjalanan Dinas</p>
                     <i class="fas fa-plane fa-2x card-icon"></i>
                 </div>
                 <div class="dashboard-card spt p-4  ">
                     <h2 class="card-value">{{ $sptCount }}</h2>
-                    <p class="card-title">SPT</p>
+                    <p class="card-title">Surat Perintah Tugas</p>
                     <i class="fas fa-file-alt fa-2x card-icon"></i>
                 </div>
             </div> <!-- End Statistik Card -->
@@ -72,112 +90,7 @@
 
 
     <!-- Menu Cards -->
-    <div class="row">
-        <!-- Surat Masuk -->
-        <div class="col-md-4 mb-4">
-            <div class="dashboard-menu-card">
-                <div class="icon">
-                    <i class="fas fa-envelope"></i>
-                </div>
-                <h3>Surat Masuk</h3>
-                <p>Kelola dan pantau surat masuk organisasi</p>
-                <a href="{{ route('surat-masuk.index') }}" class="btn btn-primary">Lihat Data</a>
-            </div>
-        </div>
-
-        <!-- Surat Keluar -->
-        <div class="col-md-4 mb-4">
-            <div class="dashboard-menu-card">
-                <div class="icon">
-                    <i class="fas fa-paper-plane"></i>
-                </div>
-                <h3>Surat Keluar</h3>
-                <p>Kelola dan pantau surat keluar organisasi</p>
-                <a href="{{ route('surat-keluar.index') }}" class="btn btn-primary">Lihat Data</a>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-4">
-            <div class="dashboard-menu-card">
-                <div class="icon">
-                    <i class="fas fa-gavel"></i>
-                </div>
-                <h3>Surat Keputusan</h3>
-                <p>Kelola dan pantau surat keputusan organisasi</p>
-                <a href="{{ route('draft-phd.sk.index') }}" class="btn btn-primary">Lihat Data</a>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-4">
-            <div class="dashboard-menu-card">
-                <div class="icon">
-                    <i class="fas fa-file-contract"></i>
-                </div>
-                <h3>Peraturan Daerah</h3>
-                <p>Kelola dan pantau peraturan daerah</p>
-                <a href="{{ route('draft-phd.perda.index') }}" class="btn btn-primary">Lihat Data</a>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-4">
-            <div class="dashboard-menu-card">
-                <div class="icon">
-                    <i class="fas fa-file-alt"></i>
-                </div>
-                <h3>Peraturan Gubernur</h3>
-                <p>Kelola dan pantau peraturan gubernur</p>
-                <a href="{{ route('draft-phd.pergub.index') }}" class="btn btn-primary">Lihat Data</a>
-            </div>
-        </div>
-
-        <!-- SPPD Dalam -->
-        <div class="col-md-4 mb-4">
-            <div class="dashboard-menu-card">
-                <div class="icon">
-                    <i class="fas fa-car"></i>
-                </div>
-                <h3>SPPD Dalam Daerah</h3>
-                <p>Kelola surat perintah perjalanan dinas dalam daerah</p>
-                <a href="{{ route('sppd-dalam-daerah.index') }}" class="btn btn-primary">Lihat Data</a>
-            </div>
-        </div>
-
-        <!-- SPPD Luar -->
-        <div class="col-md-4 mb-4">
-            <div class="dashboard-menu-card">
-                <div class="icon">
-                    <i class="fas fa-plane"></i>
-                </div>
-                <h3>SPPD Luar Daerah</h3>
-                <p>Kelola surat perintah perjalanan dinas luar daerah</p>
-                <a href="{{ route('sppd-luar-daerah.index') }}" class="btn btn-primary">Lihat Data</a>
-            </div>
-        </div>
-
-        <!-- SPT Dalam -->
-        <div class="col-md-4 mb-4">
-            <div class="dashboard-menu-card">
-                <div class="icon">
-                    <i class="fas fa-file-signature"></i>
-                </div>
-                <h3>SPT Dalam Daerah</h3>
-                <p>Kelola surat perintah tugas dalam daerah</p>
-                <a href="{{ route('spt-dalam-daerah.index') }}" class="btn btn-primary">Lihat Data</a>
-            </div>
-        </div>
-
-        <!-- SPT Luar -->
-        <div class="col-md-4 mb-4">
-            <div class="dashboard-menu-card">
-                <div class="icon">
-                    <i class="fas fa-file-alt"></i>
-                </div>
-                <h3>SPT Luar Daerah</h3>
-                <p>Kelola surat perintah tugas luar daerah</p>
-                <a href="{{ route('spt-luar-daerah.index') }}" class="btn btn-primary">Lihat Data</a>
-            </div>
-        </div>
-    </div>
+    
 @endsection
 
 
@@ -347,3 +260,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
 @push('scripts')
 @endpush 
+
+<style>
+.dashboard-welcome {
+    background: linear-gradient(to right bottom, #ffffff, #f8f9fa);
+}
+
+.date-badge {
+    min-width: 120px;
+    border-left: 4px solid var(--bs-primary);
+}
+
+.function-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+    border-radius: 50%;
+}
+
+.list-group-item {
+    transition: transform 0.2s ease;
+}
+
+.list-group-item:hover {
+    transform: translateX(10px);
+}
+</style> 

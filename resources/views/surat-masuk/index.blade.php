@@ -512,8 +512,9 @@
             ],
             'Perancangan Per-UU Ahli Madya': [
                 'Belum/Tidak diteruskan',
-                'Subker Penetapan',
-                'Subker Pengaturan'
+                'Sub Kordinator Penetapan',
+                'Sub Kordinator Pengaturan',
+                'Sub Kordinator Dokumentasi NHL'
             ]
         };
 

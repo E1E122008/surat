@@ -23,7 +23,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-9">
-                <h2 class="mb-4"><strong>📂 Buku Agenda</strong> / <span style="color: gray;"> Kategori Surat Masuk</span></h2>
+                <h2 class="mb-4"><strong>📂 Arsip</strong> / <span style="color: gray;"> Arsip Surat Masuk</span></h2>
             </div>
             
         </div>
