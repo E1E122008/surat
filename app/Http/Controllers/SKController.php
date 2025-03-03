@@ -88,18 +88,16 @@ class SKController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        \Log::info('Update Status Request:', $request->all());
-        
         try {
             $request->validate([
-                'status' => 'required|in:tercatat,tersdisposisi,diproses,koreksi,diambil,selesai'
+                'status' => 'required|in:tercatat,terdisposisi,diproses,koreksi,diambil,selesai'
             ]);
 
             $sk = SK::findOrFail($id);
             $sk->status = $request->status;
             $sk->save();
 
-            return redirect()->back()->with('success', 'Status berhasil diupdate');
+            return redirect()->back()->with('success', 'Status berhasil diperbarui.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
         }

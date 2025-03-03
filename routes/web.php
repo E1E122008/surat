@@ -150,8 +150,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/draft-phd/sk/create', [SKController::class, 'create'])->name('draft-phd.sk.create');
     Route::post('/draft-phd/sk', [SKController::class, 'store'])->name('draft-phd.sk.store');
     Route::get('/draft-phd/sk/{sk}/status', [SKController::class, 'status'])->name('draft-phd.sk.status');
-    Route::post('/draft-phd/sk/{id}/update-status', [SKController::class, 'updateStatus'])
-        ->name('draft-phd.sk.update-status');
+    Route::post('/sk/update-status/{id}', [SKController::class, 'updateStatus'])
+        ->name('sk.update-status');
     Route::get('/draft-phd/sk/{sk}/detail', [SKController::class, 'detail'])->name('draft-phd.sk.detail');
     Route::get('/draft-phd/sk/export', [SKController::class, 'export'])->name('draft-phd.sk.export');
     Route::get('/draft-phd/sk/{sk}/edit', [SKController::class, 'edit'])->name('draft-phd.sk.edit');

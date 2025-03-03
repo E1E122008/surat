@@ -75,8 +75,8 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                         @if($perda->status == 'tercatat')
                                             <span class="bg-tercatat">Tercatat</span>
-                                        @elseif($perda->status == 'tersdisposisi')
-                                            <span class="bg-tersdisposisi">Ters Disposisi</span>
+                                        @elseif($perda->status == 'terdisposisi')
+                                            <span class="bg-terdisposisi">Terdisposisi</span>
                                         @elseif($perda->status == 'diproses')
                                             <span class="bg-diproses">Diproses</span>
                                         @elseif($perda->status == 'koreksi')
@@ -133,7 +133,7 @@
                             <label for="status" class="form-label">Status</label>
                             <select class="form-select" id="status" name="status" style="border: 1px solid #e5e7eb;">
                                 <option value="tercatat">Tercatat</option>
-                                <option value="tersdisposisi">Ters Disposisi</option>
+                                <option value="terdisposisi">Terdisposisi</option>
                                 <option value="diproses">Diproses</option>
                                 <option value="koreksi">Koreksi</option>
                                 <option value="diambil">Diambil</option>
@@ -422,7 +422,7 @@
             border-radius: 3px;
         }
 
-        .bg-tersdisposisi {
+        .bg-terdisposisi {
             background-color: rgba(0, 0, 255, 0.2);
             color: blue;
             padding: 2px 5px;

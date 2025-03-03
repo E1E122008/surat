@@ -76,8 +76,8 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                             @if($item->status == 'tercatat')
                                                 <span class="bg-tercatat">Tercatat</span>
-                                            @elseif($item->status == 'tersdisposisi')
-                                                <span class="bg-tersdisposisi">Ters Disposisi</span>
+                                            @elseif($item->status == 'terdisposisi')
+                                                <span class="bg-terdisposisi">Terdisposisi</span>
                                             @elseif($item->status == 'diproses')
                                                 <span class="bg-diproses">Diproses</span>
                                             @elseif($item->status == 'koreksi')
@@ -124,33 +124,34 @@
         </div>
     </div>
 
-    <div class="modal fade" id="statusModal" tabindex="-1">
+    <div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Update Status SK</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" id="updateStatusModalLabel">Update Status SK</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="statusForm" method="POST">
-                    @csrf
-                    <div class="modal-body">
+                <div class="modal-body">
+                    <form id="updateStatusForm">
+                        @csrf
+                        <input type="hidden" id="skId" name="id">
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
-                            <select class="form-select" id="status" name="status">
+                            <select class="form-control" id="status" name="status">
                                 <option value="tercatat">Tercatat</option>
-                                <option value="tersdisposisi">Ters Disposisi</option>
+                                <option value="terdisposisi">Terdisposisi</option>
                                 <option value="diproses">Diproses</option>
                                 <option value="koreksi">Koreksi</option>
                                 <option value="diambil">Diambil</option>
                                 <option value="selesai">Selesai</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Update Status</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="saveStatus">Update Status</button>
+                </div>
             </div>
         </div>
     </div>
@@ -276,56 +277,38 @@
     }
 
     function openStatusModal(id, currentStatus) {
-        document.getElementById('statusForm').action = `/draft-phd/sk/${id}/update-status`;
+        document.getElementById('updateStatusForm').action = `/sk/update-status/${id}`;
         document.getElementById('status').value = currentStatus;
-        new bootstrap.Modal(document.getElementById('statusModal')).show();
+        document.getElementById('skId').value = id;
+        new bootstrap.Modal(document.getElementById('updateStatusModal')).show();
     }
 
-    document.getElementById('statusForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+    document.getElementById('saveStatus').addEventListener('click', function() {
+        const id = document.getElementById('skId').value;
+        const status = document.getElementById('status').value;
+        const token = document.querySelector('meta[name="csrf-token"]').content;
+
+        // Create form and submit
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/sk/update-status/${id}`;
         
-        const formData = new FormData(this);
+        // Add CSRF token
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = token;
+        form.appendChild(csrfInput);
         
-        fetch(this.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                // Close modal
-                bootstrap.Modal.getInstance(document.getElementById('statusModal')).hide();
-                
-                // Show success message and reload
-                Swal.fire({
-                    title: 'Berhasil!',
-                    text: data.message,
-                    icon: 'success',
-                    timer: 1500
-                }).then(() => {
-                    window.location.reload();
-                });
-            } else {
-                throw new Error(data.message || 'Gagal mengupdate status');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire({
-                title: 'Error!',
-                text: error.message || 'Gagal mengupdate status',
-                icon: 'error'
-            });
-        });
+        // Add status
+        const statusInput = document.createElement('input');
+        statusInput.type = 'hidden';
+        statusInput.name = 'status';
+        statusInput.value = status;
+        form.appendChild(statusInput);
+        
+        document.body.appendChild(form);
+        form.submit();
     });
 
     // Definisikan subDisposisiOptions di luar event listener
@@ -433,7 +416,7 @@
             border-radius: 3px;
         }
 
-        .bg-tersdisposisi {
+        .bg-terdisposisi {
             background-color: rgba(0, 0, 255, 0.2);
             color: blue;
             padding: 2px 5px;
