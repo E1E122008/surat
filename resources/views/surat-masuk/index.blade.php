@@ -548,6 +548,13 @@
             }
         });
 
+        // Tambahkan fungsi untuk set tanggal otomatis
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tanggal_disposisi').value = today;
+        }
+
+        // Panggil fungsi saat modal disposisi dibuka
         function openDisposisiModal(id) {
             const form = document.getElementById('disposisiForm');
             form.action = `/surat-masuk/${id}/disposisi`;
@@ -555,6 +562,9 @@
             // Reset form dan sub disposisi
             form.reset();
             document.getElementById('subDisposisiContainer').style.display = 'none';
+            
+            // Set tanggal default
+            setDefaultDate();
             
             new bootstrap.Modal(document.getElementById('disposisiModal')).show();
         }

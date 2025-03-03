@@ -318,11 +318,17 @@
             ]
         };
 
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tanggal_disposisi').value = today;
+        }
+
         function openDisposisiModal(id) {
-            const form = document.getElementById('disposisiForm');
-            form.action = `/draft-phd/pergub/${id}/disposisi`;
-            form.reset();
+            document.getElementById('disposisiForm').action = `/draft-phd/pergub/${id}/disposisi`;
+            document.getElementById('disposisi').value = '';
+            document.getElementById('sub_disposisi').value = '';
             document.getElementById('subDisposisiContainer').style.display = 'none';
+            setDefaultDate();
             new bootstrap.Modal(document.getElementById('disposisiModal')).show();
         }
 

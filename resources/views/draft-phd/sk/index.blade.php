@@ -336,11 +336,18 @@
         ]
     };
 
+    // Tambahkan fungsi untuk set tanggal otomatis
+    function setDefaultDate() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('tanggal_disposisi').value = today;
+    }
+
     function openDisposisiModal(id) {
         document.getElementById('disposisiForm').action = `/draft-phd/sk/${id}/disposisi`;
         document.getElementById('disposisi').value = '';
         document.getElementById('sub_disposisi').value = '';
         document.getElementById('subDisposisiContainer').style.display = 'none';
+        setDefaultDate();
         new bootstrap.Modal(document.getElementById('disposisiModal')).show();
     }
 
