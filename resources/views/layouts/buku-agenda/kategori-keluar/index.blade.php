@@ -56,8 +56,22 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-9">
                 <h2 class="mb-4"><strong>📂 Arsip</strong> / <span style="color: gray;"> Arsip Surat Keluar</span></h2>
+            </div>
+            <div class="col-md-3">
+                <form action="{{ route('buku-agenda.kategori-keluar.index') }}" method="GET" class="d-flex">
+                    <input type="text" 
+                           name="search" 
+                           placeholder="Cari arsip..." 
+                           class="form-control me-2"
+                           value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <!-- Menyimpan tab yang aktif -->
+                    <input type="hidden" name="tab" value="{{ request('tab', 'surat-keluar') }}">
+                </form>
             </div>
         </div>
 

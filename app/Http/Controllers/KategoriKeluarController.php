@@ -47,8 +47,51 @@ class KategoriKeluarController extends Controller
         $querySuratKeluar = SuratKeluar::query();
         $querySppdDalamDaerah = SppdDalamDaerah::query();
         $querySppdLuarDaerah = SppdLuarDaerah::query();
-        $querySptDalamDaerah = SptDalamDaerah::query();
-        $querySptLuarDaerah = SptLuarDaerah::query();
+        $querySptDalamDaerah = sptDalamDaerah::query();
+        $querySptLuarDaerah = sptLuarDaerah::query();
+
+        // Logika pencarian
+        if ($request->has('search')) {
+            $search = $request->search;
+            
+            // Pencarian untuk Surat Keluar
+            $querySuratKeluar->where(function($q) use ($search) {
+                $q->where('no_surat', 'LIKE', "%{$search}%")
+                  ->orWhere('perihal', 'LIKE', "%{$search}%");
+            });
+
+            // Pencarian untuk SPPD Dalam Daerah
+            $querySppdDalamDaerah->where(function($q) use ($search) {
+                $q->where('no_surat', 'LIKE', "%{$search}%")
+                  ->orWhere('perihal', 'LIKE', "%{$search}%")
+                  ->orWhere('tujuan', 'LIKE', "%{$search}%")
+                  ->orWhere('nama_petugas', 'LIKE', "%{$search}%");
+            });
+
+            // Pencarian untuk SPPD Luar Daerah
+            $querySppdLuarDaerah->where(function($q) use ($search) {
+                $q->where('no_surat', 'LIKE', "%{$search}%")
+                  ->orWhere('perihal', 'LIKE', "%{$search}%")
+                  ->orWhere('tujuan', 'LIKE', "%{$search}%")
+                  ->orWhere('nama_petugas', 'LIKE', "%{$search}%");
+            });
+
+            // Pencarian untuk SPT Dalam Daerah
+            $querySptDalamDaerah->where(function($q) use ($search) {
+                $q->where('no_surat', 'LIKE', "%{$search}%")
+                  ->orWhere('perihal', 'LIKE', "%{$search}%")
+                  ->orWhere('tujuan', 'LIKE', "%{$search}%")
+                  ->orWhere('nama_petugas', 'LIKE', "%{$search}%");
+            });
+
+            // Pencarian untuk SPT Luar Daerah
+            $querySptLuarDaerah->where(function($q) use ($search) {
+                $q->where('no_surat', 'LIKE', "%{$search}%")
+                  ->orWhere('perihal', 'LIKE', "%{$search}%")
+                  ->orWhere('tujuan', 'LIKE', "%{$search}%")
+                  ->orWhere('nama_petugas', 'LIKE', "%{$search}%");
+            });
+        }
 
         // Handle filter dari modal
         if ($request->has('filterType')) {
