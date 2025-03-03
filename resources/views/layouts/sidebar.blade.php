@@ -64,27 +64,6 @@
             </ul>
         </li>
         <li class="my-2">
-            <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('sppd.*') ? 'active' : '' }}" 
-               href="#">
-                <i class="fas fa-car mr-2"></i> SPPD
-                <i class="fas fa-chevron-down ml-auto transform transition-transform duration-200" style="margin-left: auto;"></i>
-            </a>
-            <ul class="list-none pl-4 hidden">
-                <li class="my-1">
-                    <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('sppd-dalam-daerah.*') ? 'active' : '' }}" 
-                       href="{{ route('sppd-dalam-daerah.index') }}">
-                        <i class="fas fa-car mr-2"></i> SPPD DD
-                    </a>
-                </li>
-                <li class="my-1">
-                    <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('sppd-luar-daerah.*') ? 'active' : '' }}" 
-                       href="{{ route('sppd-luar-daerah.index') }}">
-                        <i class="fas fa-plane mr-2"></i> SPPD LD
-                    </a>
-                </li>
-            </ul>
-        </li>
-        <li class="my-2">
             <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('spt.*') ? 'active' : '' }}" 
                href="#">
                 <i class="fas fa-file-signature mr-2"></i> SPT
@@ -101,6 +80,27 @@
                     <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('spt-luar-daerah.*') ? 'active' : '' }}" 
                        href="{{ route('spt-luar-daerah.index') }}">
                         <i class="fas fa-file-alt mr-2"></i> SPT LD
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="my-2">
+            <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('sppd.*') ? 'active' : '' }}" 
+               href="#">
+                <i class="fas fa-car mr-2"></i> SPPD
+                <i class="fas fa-chevron-down ml-auto transform transition-transform duration-200" style="margin-left: auto;"></i>
+            </a>
+            <ul class="list-none pl-4 hidden">
+                <li class="my-1">
+                    <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('sppd-dalam-daerah.*') ? 'active' : '' }}" 
+                       href="{{ route('sppd-dalam-daerah.index') }}">
+                        <i class="fas fa-car mr-2"></i> SPPD DD
+                    </a>
+                </li>
+                <li class="my-1">
+                    <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('sppd-luar-daerah.*') ? 'active' : '' }}" 
+                       href="{{ route('sppd-luar-daerah.index') }}">
+                        <i class="fas fa-plane mr-2"></i> SPPD LD
                     </a>
                 </li>
             </ul>

@@ -7,6 +7,7 @@ use App\Models\SuratMasuk;
 use App\Models\Sk;
 use App\Models\Perda;
 use App\Models\Pergub;
+
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\AgendaMasukExport;
@@ -44,10 +45,44 @@ class BukuAgendaController extends Controller
         }
 
         // Inisialisasi query
-        $querySuratMasuk = SuratMasuk::query();
-        $querySk = Sk::query();
+        $query = SuratMasuk::query();
+        $querySK = Sk::query();
         $queryPerda = Perda::query();
         $queryPergub = Pergub::query();
+
+        // Logika pencarian
+        if ($request->has('search')) {
+            $search = $request->search;
+            
+            // Pencarian untuk setiap jenis surat
+            $query->where(function($q) use ($search) {
+                $q->where('no_agenda', 'LIKE', "%{$search}%")
+                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                  ->orWhere('pengirim', 'LIKE', "%{$search}%")
+                  ->orWhere('perihal', 'LIKE', "%{$search}%");
+            });
+
+            $querySK->where(function($q) use ($search) {
+                $q->where('no_agenda', 'LIKE', "%{$search}%")
+                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                  ->orWhere('pengirim', 'LIKE', "%{$search}%")
+                  ->orWhere('perihal', 'LIKE', "%{$search}%");
+            });
+
+            $queryPerda->where(function($q) use ($search) {
+                $q->where('no_agenda', 'LIKE', "%{$search}%")
+                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                  ->orWhere('pengirim', 'LIKE', "%{$search}%")
+                  ->orWhere('perihal', 'LIKE', "%{$search}%");
+            });
+
+            $queryPergub->where(function($q) use ($search) {
+                $q->where('no_agenda', 'LIKE', "%{$search}%")
+                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                  ->orWhere('pengirim', 'LIKE', "%{$search}%")
+                  ->orWhere('perihal', 'LIKE', "%{$search}%");
+            });
+        }
 
         // Handle filter dari modal
         if ($request->has('filterType')) {
@@ -75,17 +110,17 @@ class BukuAgendaController extends Controller
                             break;
                     }
                     
-                    $querySuratMasuk->whereBetween('tanggal_terima', [$startDate, $endDate]);
-                    $querySk->whereBetween('tanggal_terima', [$startDate, $endDate]);
+                    $query->whereBetween('tanggal_terima', [$startDate, $endDate]);
+                    $querySK->whereBetween('tanggal_terima', [$startDate, $endDate]);
                     $queryPerda->whereBetween('tanggal_terima', [$startDate, $endDate]);
                     $queryPergub->whereBetween('tanggal_terima', [$startDate, $endDate]);
                     break;
 
                 case 'bulan':
                     $month = $request->bulan;
-                    $querySuratMasuk->whereMonth('tanggal_terima', $month)
-                                    ->whereYear('tanggal_terima', now()->year);
-                    $querySk->whereMonth('tanggal_terima', $month)
+                    $query->whereMonth('tanggal_terima', $month)
+                          ->whereYear('tanggal_terima', now()->year);
+                    $querySK->whereMonth('tanggal_terima', $month)
                             ->whereYear('tanggal_terima', now()->year);
                     $queryPerda->whereMonth('tanggal_terima', $month)
                               ->whereYear('tanggal_terima', now()->year);
@@ -95,8 +130,8 @@ class BukuAgendaController extends Controller
 
                 case 'tahun':
                     $year = $request->tahun;
-                    $querySuratMasuk->whereYear('tanggal_terima', $year);
-                    $querySk->whereYear('tanggal_terima', $year);
+                    $query->whereYear('tanggal_terima', $year);
+                    $querySK->whereYear('tanggal_terima', $year);
                     $queryPerda->whereYear('tanggal_terima', $year);
                     $queryPergub->whereYear('tanggal_terima', $year);
                     break;
@@ -108,10 +143,10 @@ class BukuAgendaController extends Controller
         }
 
         // Eksekusi query
-        $suratMasuk = $querySuratMasuk->get();
-        $sk = $querySk->get();
-        $perda = $queryPerda->get();
-        $pergub = $queryPergub->get();
+        $suratMasuk = $query->orderBy('created_at', 'desc')->get();
+        $sk = $querySK->orderBy('created_at', 'desc')->get();
+        $perda = $queryPerda->orderBy('created_at', 'desc')->get();
+        $pergub = $queryPergub->orderBy('created_at', 'desc')->get();
 
         // Tambahkan perhitungan total surat
         $totalSurat = [
