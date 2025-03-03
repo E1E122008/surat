@@ -52,8 +52,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('surat-masuk/{id}/status', [SuratMasukController::class, 'status'])->name('surat-masuk.status');
     Route::get('surat-masuk/{id}/detail', [SuratMasukController::class, 'detail'])->name('surat-masuk.detail'); 
     Route::get('surat-masuk/{id}/edit', [SuratMasukController::class, 'edit'])->name('surat-masuk.edit');
-    Route::put('surat-masuk/{id}', [SuratMasukController::class, 'update'])
-        ->name('surat-masuk.update');
+    Route::post('/surat-masuk/{id}/update-status', [SuratMasukController::class, 'updateStatus'])
+        ->name('surat-masuk.update-status');
     Route::delete('surat-masuk/{suratMasuk}', [SuratMasukController::class, 'destroy'])
         ->name('surat-masuk.destroy');
     Route::get('surat-masuk-export', [SuratMasukController::class, 'export'])

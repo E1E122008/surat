@@ -192,7 +192,7 @@ class SuratMasukController extends Controller
     {
         try {
             $request->validate([
-                'status' => 'required|in:tercatat,tersdisposisi,diproses,koreksi,diambil,selesai',
+                'status' => 'required|in:tercatat,terdisposisi,diproses,koreksi,diambil,selesai'
             ]);
 
             $surat = SuratMasuk::findOrFail($id);
