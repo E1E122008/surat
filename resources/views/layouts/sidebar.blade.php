@@ -1,4 +1,9 @@
 <div class="sidebar bg-gray-50 shadow-md rounded-lg p-4 w-64 overflow-y-auto" id="sidebar">
+    <!-- Ikon Tutup Sidebar -->
+    <button class="close-sidebar" onclick="closeSidebar()" style="position: absolute; top: 10px; right: 10px; background: none; border: none; cursor: pointer;">
+        <i class="fas fa-times" style="font-size: 24px; color: #ffffff;"></i>
+    </button>
+    
     <!-- Logo Container -->
     <div class="logo-container text-center mb-6">
         <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-image mx-auto mb-2">
@@ -135,6 +140,14 @@
 </div>
 
 <script>
+    // Pastikan fungsi closeSidebar sudah terdefinisi di sini
+    function closeSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.remove('active');
+        // Tambahkan logika untuk menghapus overlay jika ada
+    }
+
+    // Event listener untuk menu dropdown
     document.querySelectorAll('.sidebar a[href="#"]').forEach(item => {
         item.addEventListener('click', event => {
             const submenu = item.nextElementSibling;
@@ -145,8 +158,6 @@
             iconChevron.classList.toggle('rotate-180');
         });
     });
-
-
 </script>
 
 <style>
