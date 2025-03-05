@@ -155,11 +155,20 @@
 
         /* Dashboard Specific Styles */
         .dashboard-card {
-            height: 100%;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: none;
-            border-radius: 10px;
-            overflow: hidden;
+            width: 100%; /* Atur lebar menjadi 100% dari kolom */
+            max-width: 300px; /* Atur lebar maksimum sesuai kebutuhan */
+            margin: 0 auto; /* Pusatkan kartu */
+            border-radius: 10px; /* Pastikan sudut kartu melengkung */
+            overflow: hidden; /* Sembunyikan konten yang melampaui batas */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Tambahkan bayangan untuk efek visual */
+        }
+
+        .dashboard-card h2 {
+            font-size: 2rem; /* Ukuran font untuk nilai kartu */
+        }
+
+        .dashboard-card p {
+            font-size: 1rem; /* Ukuran font untuk judul kartu */
         }
 
         .dashboard-card:hover {
@@ -597,6 +606,11 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
             background: linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.3) 100%);
+            white-space: nowrap; /* Mencegah teks membungkus ke baris berikutnya */
+            overflow: hidden; /* Sembunyikan teks yang melampaui batas */
+            text-overflow: ellipsis; /* Tambahkan ellipsis (...) untuk teks yang terpotong */
+            max-width: 150px; /* Atur lebar maksimum sesuai kebutuhan */
+            display: inline-block; /* Pastikan elemen bersifat inline-block */
         }
 
         .profile-initial {
@@ -617,6 +631,11 @@
         .profile-name {
             font-weight: 500;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            white-space: nowrap; /* Mencegah teks membungkus ke baris berikutnya */
+            overflow: hidden; /* Sembunyikan teks yang melampaui batas */
+            text-overflow: ellipsis; /* Tambahkan ellipsis (...) untuk teks yang terpotong */
+            max-width: 150px; /* Atur lebar maksimum sesuai kebutuhan */
+            display: inline-block; /* Pastikan elemen bersifat inline-block */
         }
 
         /* Hover Effects */
@@ -837,7 +856,7 @@
         }
 
         .dashboard-card.spt {
-            background: linear-gradient(135deg, orange, rgba(255, 165, 0, 0.2));
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.2), orange);
             color: white;
         }
 
@@ -1231,10 +1250,11 @@
 
                 <div class="navbar-nav">
                     <span class="nav-item text-white me-3 d-flex align-items-center">
-                        <span class="date-display">{{ now()->format('d F Y') }}</span>
+                        <span class="date-display">{{ now()->format('l, d F Y') }}</span>
                         <i class="fas fa-calendar-alt ms-2"></i>
                     </span>
-                    
+                </div>
+                <div class="navbar-nav">
                     <!-- Profil Pengguna dengan Custom Dropdown Icon -->
                     <div class="nav-item dropdown profile-container">
                         <a class="nav-link d-flex align-items-center profile-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">

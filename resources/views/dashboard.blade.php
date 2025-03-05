@@ -41,23 +41,19 @@
             <!-- Grafik Statistik -->
             <div class="col-lg-8">
                 <div class="card h-100">
-                    
                     <div class="card-body">
-                        
                         <h5 class="card-title mb-4">Statistik Surat yang diterima</h5>
                         <canvas id="incomingDocumentsChart"></canvas>
                     </div>
                     <div class="card-body">
-                    
                         <h5 class="card-title mb-4">Statistik Surat yang dikeluarkan</h5>
                         <canvas id="outgoingDocumentsChart"></canvas>
                     </div>
                 </div>
-                
             </div>
-    
+
             <!-- Statistik Card -->
-            <div class="col-lg-3 mx-2 d-flex flex-column gap-4">
+            <div class="col-lg-4 d-flex flex-column gap-4">
                 <div class="dashboard-card surat-masuk p-4">
                     <h2 class="card-value">{{ $jumlahSuratMasuk }}</h2>
                     <p class="card-title">Surat Masuk</p>
@@ -73,16 +69,17 @@
                     <p class="card-title">Registrasi Draft PHD</p>
                     <i class="fas fa-file-alt fa-2x card-icon"></i>
                 </div>
+                <div class="dashboard-card spt p-4">
+                    <h2 class="card-value">{{ $sptCount }}</h2>
+                    <p class="card-title">Surat Perintah Tugas</p>
+                    <i class="fas fa-file-signature fa-2x card-icon"></i>
+                </div>
                 <div class="dashboard-card sppd p-4">
                     <h2 class="card-value">{{ $sppdCount }}</h2>
                     <p class="card-title">Surat Perintah Perjalanan Dinas</p>
                     <i class="fas fa-plane fa-2x card-icon"></i>
                 </div>
-                <div class="dashboard-card spt p-4  ">
-                    <h2 class="card-value">{{ $sptCount }}</h2>
-                    <p class="card-title">Surat Perintah Tugas</p>
-                    <i class="fas fa-file-alt fa-2x card-icon"></i>
-                </div>
+                
             </div> <!-- End Statistik Card -->
         </div> <!-- End Grafik dan Statistik -->
     </div>
@@ -287,5 +284,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .list-group-item:hover {
     transform: translateX(10px);
+}
+
+.dashboard-card {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    border-radius: 10px;
+    overflow: hidden;
 }
 </style> 
