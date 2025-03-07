@@ -44,7 +44,7 @@
         <li class="my-2">
             <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('draft-phd.*') ? 'active' : '' }}" 
                href="#">
-                <i class="fas fa-file-alt mr-2"></i> Regis Draft PHD
+                <i class="fas fa-scroll mr-2"></i> Regis Draft PHD
                 <i class="fas fa-chevron-down ml-auto transform transition-transform duration-200" style="margin-left: auto;"></i>
             </a>
             <ul class="list-none pl-4 hidden">
@@ -57,13 +57,13 @@
                 <li class="my-1">
                     <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('draft-phd.perda.*') ? 'active' : '' }}" 
                        href="{{ route('draft-phd.perda.index') }}">
-                        <i class="fas fa-file-contract mr-2"></i> PERDA
+                        <i class="fas fa-scroll mr-2"></i> PERDA
                     </a>
                 </li>
                 <li class="my-1">
                     <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('draft-phd.pergub.*') ? 'active' : '' }}" 
                        href="{{ route('draft-phd.pergub.index') }}">
-                        <i class="fas fa-file-alt mr-2"></i> PERGUB
+                        <i class="fas fa-scroll mr-2"></i> PERGUB
                     </a>
                 </li>
             </ul>

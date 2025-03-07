@@ -139,6 +139,15 @@
                             ]) }}" class="btn btn-success">
                                 <i class="fas fa-file-excel"></i> Export Excel
                             </a>
+                            <a href="{{ route('buku-agenda.kategori-keluar.export-pdf', [
+                                'filterType' => request('filterType'),
+                                'mingguKe' => request('mingguKe'),
+                                'bulan' => request('bulan'),
+                                'tahun' => request('tahun'),
+                                'tab' => request('tab', 'surat-keluar')
+                            ]) }}" class="btn btn-danger">
+                                <i class="fas fa-file-pdf"></i> Export PDF
+                            </a>
                             <span class="stats-badge">
                                 <i class="fas fa-envelope me-1"></i>
                                 Jumlah Surat: {{ $totalSurat['surat_keluar'] }}
@@ -188,6 +197,15 @@
                                 'tab' => 'sppd-dalam'
                             ]) }}" class="btn btn-success">
                                 <i class="fas fa-file-excel"></i> Export Excel
+                            </a>
+                            <a href="{{ route('buku-agenda.kategori-keluar.export-pdf', [
+                                'filterType' => request('filterType'),
+                                'mingguKe' => request('mingguKe'),
+                                'bulan' => request('bulan'),
+                                'tahun' => request('tahun'),
+                                'tab' => 'sppd-dalam'
+                            ]) }}" class="btn btn-danger">
+                                <i class="fas fa-file-pdf"></i> Export PDF
                             </a>
                             <span class="stats-badge">
                                 <i class="fas fa-file-alt me-1"></i>
@@ -241,6 +259,15 @@
                             ]) }}" class="btn btn-success">
                                 <i class="fas fa-file-excel"></i> Export Excel
                             </a>
+                            <a href="{{ route('buku-agenda.kategori-keluar.export-pdf', [
+                                'filterType' => request('filterType'),
+                                'mingguKe' => request('mingguKe'),
+                                'bulan' => request('bulan'),
+                                'tahun' => request('tahun'),
+                                'tab' => 'sppd-luar'
+                            ]) }}" class="btn btn-danger">
+                                <i class="fas fa-file-pdf"></i> Export PDF
+                            </a>
                             <span class="stats-badge">
                                 <i class="fas fa-file-alt me-1"></i>
                                 Jumlah SPPD: {{ $totalSurat['sppd_luar'] ?? 0 }}
@@ -293,6 +320,15 @@
                             ]) }}" class="btn btn-success">
                                 <i class="fas fa-file-excel"></i> Export Excel
                             </a>
+                            <a href="{{ route('buku-agenda.kategori-keluar.export-pdf', [
+                                'filterType' => request('filterType'),
+                                'mingguKe' => request('mingguKe'),
+                                'bulan' => request('bulan'),
+                                'tahun' => request('tahun'),
+                                'tab' => 'spt-dalam'
+                            ]) }}" class="btn btn-danger">
+                                <i class="fas fa-file-pdf"></i> Export PDF
+                            </a>
                             <span class="stats-badge">
                                 <i class="fas fa-file-alt me-1"></i>
                                 Jumlah SPT: {{ $totalSurat['spt_dalam'] }}
@@ -344,6 +380,15 @@
                                 'tab' => 'spt-luar'
                             ]) }}" class="btn btn-success">
                                 <i class="fas fa-file-excel"></i> Export Excel
+                            </a>
+                            <a href="{{ route('buku-agenda.kategori-keluar.export-pdf', [
+                                'filterType' => request('filterType'),
+                                'mingguKe' => request('mingguKe'),
+                                'bulan' => request('bulan'),
+                                'tahun' => request('tahun'),
+                                'tab' => 'spt-luar'
+                            ]) }}" class="btn btn-danger">
+                                <i class="fas fa-file-pdf"></i> Export PDF
                             </a>
                             <span class="stats-badge">
                                 <i class="fas fa-file-alt me-1"></i>

@@ -126,24 +126,26 @@
         <thead>
             <tr>
                 <th style="width: 5%;">No</th>
-                <th style="width: 12%;">No. Agenda</th>
                 <th style="width: 15%;">No. Surat</th>
                 <th style="width: 12%;">Tanggal</th>
-                <th style="width: 18%;">Pengirim</th>
-                <th style="width: 25%;">Perihal</th>
-                <th style="width: 13%;">Disposisi</th>
+                @if(str_contains($title, 'SPPD') || str_contains($title, 'SPT'))
+                    <th style="width: 15%;">Tujuan</th>
+                    <th style="width: 18%;">Nama yang Ditugaskan</th>
+                @endif
+                <th style="{{ str_contains($title, 'SPPD') || str_contains($title, 'SPT') ? 'width: 25%;' : 'width: 58%;' }}">Perihal</th>
             </tr>
         </thead>
         <tbody>
             @foreach($data as $index => $item)
                 <tr>
                     <td style="text-align: center;">{{ $index + 1 }}</td>
-                    <td>{{ $item->no_agenda }}</td>
                     <td>{{ $item->no_surat }}</td>
-                    <td>{{ $item->tanggal_terima ? $item->tanggal_terima->isoFormat('D MMMM Y') : '-' }}</td>
-                    <td>{{ $item->pengirim }}</td>
+                    <td>{{ $item->tanggal ? $item->tanggal->isoFormat('D MMMM Y') : '-' }}</td>
+                    @if(str_contains($title, 'SPPD') || str_contains($title, 'SPT'))
+                        <td>{{ $item->tujuan }}</td>
+                        <td>{{ $item->nama_petugas }}</td>
+                    @endif
                     <td>{{ $item->perihal }}</td>
-                    <td>{{ $item->disposisi }}</td>
                 </tr>
             @endforeach
         </tbody>

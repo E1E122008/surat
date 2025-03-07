@@ -11,6 +11,7 @@ use App\Models\sptLuarDaerah;
 use Carbon\Carbon;
 use App\Exports\AgendaKeluarExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class KategoriKeluarController extends Controller
 {
@@ -231,5 +232,107 @@ class KategoriKeluarController extends Controller
             $request->tahun,
             $tab
         ), $fileName);
+    }
+
+    public function exportPDF(Request $request)
+    {
+        $tab = $request->tab ?? 'surat-keluar';
+        
+        // Inisialisasi query berdasarkan tab
+        switch($tab) {
+            case 'surat-keluar':
+                $query = SuratKeluar::query();
+                $title = 'Arsip Surat Keluar';
+                break;
+            case 'sppd-dalam':
+                $query = SppdDalamDaerah::query();
+                $title = 'Arsip SPPD Dalam Daerah';
+                break;
+            case 'sppd-luar':
+                $query = SppdLuarDaerah::query();
+                $title = 'Arsip SPPD Luar Daerah';
+                break;
+            case 'spt-dalam':
+                $query = sptDalamDaerah::query();
+                $title = 'Arsip SPT Dalam Daerah';
+                break;
+            case 'spt-luar':
+                $query = sptLuarDaerah::query();
+                $title = 'Arsip SPT Luar Daerah';
+                break;
+            default:
+                $query = SuratKeluar::query();
+                $title = 'Arsip Surat Keluar';
+        }
+
+        // Terapkan filter jika ada
+        if ($request->has('filterType')) {
+            switch ($request->filterType) {
+                case 'minggu':
+                    $weekNumber = $request->mingguKe;
+                    $currentMonth = Carbon::create(null, $request->bulan ?? now()->month);
+                    
+                    switch($weekNumber) {
+                        case 1:
+                            $startDate = $currentMonth->copy()->startOfMonth();
+                            $endDate = $currentMonth->copy()->startOfMonth()->addDays(6);
+                            break;
+                        case 2:
+                            $startDate = $currentMonth->copy()->startOfMonth()->addDays(7);
+                            $endDate = $currentMonth->copy()->startOfMonth()->addDays(13);
+                            break;
+                        case 3:
+                            $startDate = $currentMonth->copy()->startOfMonth()->addDays(14);
+                            $endDate = $currentMonth->copy()->startOfMonth()->addDays(20);
+                            break;
+                        case 4:
+                            $startDate = $currentMonth->copy()->startOfMonth()->addDays(21);
+                            $endDate = $currentMonth->copy()->endOfMonth();
+                            break;
+                        default:
+                            $startDate = $currentMonth->copy()->startOfMonth();
+                            $endDate = $currentMonth->copy()->endOfMonth();
+                    }
+                    
+                    $query->whereBetween('tanggal', [$startDate, $endDate]);
+                    $filterInfo = "Minggu ke-{$weekNumber} Bulan " . $currentMonth->format('F Y');
+                    break;
+
+                case 'bulan':
+                    $month = $request->bulan;
+                    $year = $request->tahun ?? now()->year;
+                    $query->whereMonth('tanggal', $month)
+                          ->whereYear('tanggal', $year);
+                    $filterInfo = "Bulan " . Carbon::create(null, $month, 1)->format('F') . " {$year}";
+                    break;
+
+                case 'tahun':
+                    $year = $request->tahun;
+                    $query->whereYear('tanggal', $year);
+                    $filterInfo = "Tahun {$year}";
+                    break;
+
+                default:
+                    $filterInfo = "Semua Data";
+            }
+        } else {
+            $filterInfo = "Semua Data";
+        }
+
+        // Ambil data
+        $data = $query->orderBy('tanggal', 'desc')->get();
+
+        // Generate PDF
+        $pdf = PDF::loadView('layouts.buku-agenda.pdf-keluar', [
+            'title' => $title,
+            'filterInfo' => $filterInfo,
+            'data' => $data
+        ]);
+
+        // Set paper ke A4
+        $pdf->setPaper('a4');
+
+        // Download PDF
+        return $pdf->download($title . ' - ' . $filterInfo . '.pdf');
     }
 }
