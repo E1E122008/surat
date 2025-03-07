@@ -11,6 +11,7 @@ use App\Models\Pergub;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\AgendaMasukExport;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BukuAgendaController extends Controller
 {
@@ -203,5 +204,103 @@ class BukuAgendaController extends Controller
             $request->tahun,
             $tab
         ), $fileName);
+    }
+
+    public function exportPDF(Request $request)
+    {
+        $tab = $request->tab ?? 'surat-masuk';
+        
+        // Inisialisasi query berdasarkan tab
+        switch($tab) {
+            case 'surat-masuk':
+                $query = SuratMasuk::query();
+                $title = 'Arsip Surat Masuk';
+                break;
+            case 'surat-keputusan':
+                $query = Sk::query();
+                $title = 'Arsip Surat Keputusan';
+                break;
+            case 'perda':
+                $query = Perda::query();
+                $title = 'Arsip Peraturan Daerah';
+                break;
+            case 'pergub':
+                $query = Pergub::query();
+                $title = 'Arsip Peraturan Gubernur';
+                break;
+            default:
+                $query = SuratMasuk::query();
+                $title = 'Arsip Surat Masuk';
+        }
+
+        // Terapkan filter jika ada
+        if ($request->has('filterType')) {
+            switch ($request->filterType) {
+                case 'minggu':
+                    $weekNumber = $request->mingguKe;
+                    $currentMonth = Carbon::create(null, $request->bulan ?? now()->month);
+                    
+                    switch($weekNumber) {
+                        case 1:
+                            $startDate = $currentMonth->copy()->startOfMonth();
+                            $endDate = $currentMonth->copy()->startOfMonth()->addDays(6);
+                            break;
+                        case 2:
+                            $startDate = $currentMonth->copy()->startOfMonth()->addDays(7);
+                            $endDate = $currentMonth->copy()->startOfMonth()->addDays(13);
+                            break;
+                        case 3:
+                            $startDate = $currentMonth->copy()->startOfMonth()->addDays(14);
+                            $endDate = $currentMonth->copy()->startOfMonth()->addDays(20);
+                            break;
+                        case 4:
+                            $startDate = $currentMonth->copy()->startOfMonth()->addDays(21);
+                            $endDate = $currentMonth->copy()->endOfMonth();
+                            break;
+                        default:
+                            $startDate = $currentMonth->copy()->startOfMonth();
+                            $endDate = $currentMonth->copy()->endOfMonth();
+                    }
+                    
+                    $query->whereBetween('tanggal_terima', [$startDate, $endDate]);
+                    $filterInfo = "Minggu ke-{$weekNumber} Bulan " . $currentMonth->format('F Y');
+                    break;
+
+                case 'bulan':
+                    $month = $request->bulan;
+                    $year = $request->tahun ?? now()->year;
+                    $query->whereMonth('tanggal_terima', $month)
+                          ->whereYear('tanggal_terima', $year);
+                    $filterInfo = "Bulan " . Carbon::create(null, $month, 1)->format('F') . " {$year}";
+                    break;
+
+                case 'tahun':
+                    $year = $request->tahun;
+                    $query->whereYear('tanggal_terima', $year);
+                    $filterInfo = "Tahun {$year}";
+                    break;
+
+                default:
+                    $filterInfo = "Semua Data";
+            }
+        } else {
+            $filterInfo = "Semua Data";
+        }
+
+        // Ambil data
+        $data = $query->orderBy('tanggal_terima', 'desc')->get();
+
+        // Generate PDF
+        $pdf = PDF::loadView('layouts.buku-agenda.pdf', [
+            'title' => $title,
+            'filterInfo' => $filterInfo,
+            'data' => $data
+        ]);
+
+        // Set paper ke landscape untuk data yang banyak
+        $pdf->setPaper('a4', 'landscape');
+
+        // Download PDF
+        return $pdf->download($title . ' - ' . $filterInfo . '.pdf');
     }
 }

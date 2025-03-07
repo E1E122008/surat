@@ -125,6 +125,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/buku-agenda/kategori-keluar', [KategoriKeluarController::class, 'index'])->name('buku-agenda.kategori-keluar.index');
     Route::get('/buku-agenda/kategori-keluar/export', [KategoriKeluarController::class, 'export'])
         ->name('buku-agenda.kategori-keluar.export');
+    Route::get('/buku-agenda/export-pdf', [BukuAgendaController::class, 'exportPDF'])->name('buku-agenda.export-pdf');
     Route::get('/profile', [UserProfileController::class, 'index'])->name('profile');
     Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [UserProfileController::class, 'updatePassword'])->name('profile.password');
