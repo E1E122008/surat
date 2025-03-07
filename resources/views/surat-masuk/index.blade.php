@@ -1,14 +1,18 @@
 @extends('layouts.app')
 
 @section('content')
-    <div>
-        <div class="container">
+    <div class="min-h-screen bg-gray-100" style="max-width: 1400px; margin: auto; padding: 20px;">
+        <div class="mb-4">
             <h2 class="header h2"><strong>📂 Surat Umum</strong> / <span style="color: gray;"> Surat Masuk</span></h2>
         </div>
-        <div class="bg-white overflow-x-auto w-full shadow-sm sm:rounded-lg">
-            <div class="p-6 bg-white border-b border-gray-200">
+        <div class="bg-white shadow-sm rounded-lg">
+            <div class="p-4">
+                
+                
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-semibold">Surat Masuk</h2>
+                    <h2 class="text-2xl font-semibold text-gray-800 tracking-wide">
+                        Surat Masuk
+                    </h2>
                     <div class="flex space-x-2">
                         <form action="{{ route('surat-masuk.index') }}" method="GET" class="flex items-center">
                             <input type="text" 
@@ -31,9 +35,9 @@
                     </div>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="table-bordered">
+                <div class="table-responsive" style="max-width: 1200px; margin: auto;">
+                    <table class="table" id="suratTable">
+                        <thead>
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>   
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
@@ -45,14 +49,14 @@
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody>
                             @foreach($suratMasuk as $index => $surat)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $index + 1 }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->no_agenda }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->no_surat }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->pengirim }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->tanggal_terima->format('d/m/Y') }}</td>
+                                    <td class="px-6 py-4 text-center">{{ $index + 1 }}</td>
+                                    <td class="px-6 py-4 text-center">{{ $surat->no_agenda }}</td>
+                                    <td class="px-6 py-4 text-center">{{ $surat->no_surat }}</td>
+                                    <td class="px-6 py-4 text-center">{{ $surat->pengirim }}</td>
+                                    <td class="px-6 py-4 text-center">{{ $surat->tanggal_terima->format('d/m/Y') }}</td>
                                     
                                     
                                     
@@ -124,7 +128,6 @@
                     {{ $suratMasuk->links() }}
                 </div>
             </div>
-        </div>
         </div>
     </div>
 
@@ -209,6 +212,29 @@
     </div>
 
     <style>
+        body {
+            background-color: #f3f4f6 !important;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1400px !important;
+            margin: auto;
+            padding: 20px;
+            background-color: #f3f4f6;
+        }
+
+        .table-responsive {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .bg-gray-100 {
+            background-color: #f3f4f6 !important;
+        }
+
         .bg-ktu {
             background-color: rgba(255, 0, 0, 0.2);
             color: red;
@@ -280,7 +306,115 @@
             padding: 2px 5px;
             border-radius: 3px;
         }
-    </style>                
+
+        /* Remove table borders */
+        .table {
+            border: none !important;
+        }
+
+        .table th,
+        .table td {
+            border: none !important;
+            border-bottom: 1px solid #f3f4f6 !important;
+        }
+
+        /* Hover effect */
+        .table tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        /* Header styling */
+        .table thead th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Remove DataTables default styling */
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter,
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_processing,
+        .dataTables_wrapper .dataTables_paginate {
+            margin: 10px 0;
+            color: #6b7280;
+        }
+
+        /* DataTables Styling */
+        .dataTables_wrapper {
+            margin-top: 20px;
+            padding: 0 10px;
+        }
+
+        .dataTables_info {
+            padding: 10px 0;
+            color: #6b7280;
+            font-size: 0.875rem;
+            float: left;
+        }
+
+        .dataTables_paginate {
+            padding: 10px 0;
+            float: right;
+        }
+
+        .dataTables_paginate .paginate_button {
+            box-sizing: border-box;
+            display: inline-block;
+            min-width: 1.5em;
+            padding: 0.4em 0.8em;
+            margin-left: 2px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+        }
+
+        .dataTables_paginate .paginate_button.current {
+            background: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+        }
+
+        .dataTables_paginate .paginate_button:hover {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .dataTables_paginate .paginate_button.disabled {
+            cursor: default;
+            color: #9ca3af;
+            border-color: #e5e7eb;
+            background: transparent;
+        }
+
+        /* Clear float after pagination */
+        .dataTables_wrapper:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        /* Remove table bottom border for last row */
+        .table tr:last-child td {
+            border-bottom: none !important;
+        }
+
+        /* Add space between table and pagination */
+        .table {
+            margin-bottom: 0 !important;
+        }
+
+        /* Container for pagination */
+        .dataTables_wrapper .row:last-child {
+            margin-top: 15px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 15px;
+        }
+    </style>
 
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script>
@@ -579,15 +713,25 @@
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
-            let table = $('.min-w-full').DataTable({
+            $('#suratTable').DataTable({
                 "paging": true,
                 "lengthChange": false,
                 "searching": false,
                 "ordering": true,
                 "info": true,
-                "autoWidth": true,  
+                "autoWidth": false,
                 "responsive": true,
-                "pageLength": 10
+                "pageLength": 10,
+                "dom": "<'row'<'col-sm-12'tr>>" +
+                       "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                "language": {
+                    "paginate": {
+                        "next": "Selanjutnya",
+                        "previous": "Sebelumnya"
+                    },
+                    "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                    "emptyTable": "Tidak ada data yang tersedia"
+                }
             });
         });
     </script>
