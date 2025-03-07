@@ -1,23 +1,25 @@
 @extends('layouts.app')
 
 @section('content')
-    <div>
-        <div class="container">
+    <div class="min-h-screen bg-gray-100" style="max-width: 1400px; margin: auto; padding: 20px;">
+        <div class="mb-4">
             <h2 class="header h2"><strong>📂 Registrasi Draft PHD </strong> / <span style="color: gray;"> Peraturan Daerah</span></h2>
         </div>
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 bg-white border-b border-gray-200">
+        <div class="bg-white shadow-sm rounded-lg">
+            <div class="p-4">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-semibold">Peraturan Daerah</h2>
+                    <h2 class="text-2xl font-semibold text-gray-800 tracking-wide">
+                        Peraturan Daerah
+                    </h2>
                     <div class="flex space-x-2">
-                        <form action="{{ route('draft-phd.perda.index') }}" method="GET" class="flex space-x-2">
+                        <form action="{{ route('draft-phd.perda.index') }}" method="GET" class="flex items-center">
                             <input type="text" 
                                    name="search" 
                                    value="{{ request('search') }}"
                                    placeholder="Cari..." 
-                                   class="form-control px-4 py-2 border rounded-lg">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-search"></i> Cari
+                                   class="form-control">
+                            <button type="submit" class="btn btn-primary ml-2">
+                                <i class="fas fa-search"></i>
                             </button>
                         </form>
                         <a href="{{ route('draft-phd.perda.create') }}" class="btn btn-primary">
@@ -28,9 +30,9 @@
                         </a>
                     </div>  
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="table-bordered">
+                <div class="table-responsive" style="max-width: 1200px; margin: auto;">
+                    <table class="table" id="suratTable">
+                        <thead>
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
@@ -42,14 +44,14 @@
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">   
+                        <tbody>   
                             @foreach($perdas as $index => $perda)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $index + 1 }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $perda->no_agenda }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $perda->no_surat }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $perda->pengirim }}</td> 
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{($perda->tanggal_terima)->format('d/m/Y') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $index + 1 }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $perda->no_agenda }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $perda->no_surat }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $perda->pengirim }}</td> 
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{($perda->tanggal_terima)->format('d/m/Y') }}</td>
                                     
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                         @if($perda->disposisi)
@@ -86,26 +88,26 @@
                                         @elseif($perda->status == 'selesai')
                                             <span class="bg-selesai">Selesai</span>
                                         @endif
-                                        
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <button type="button" class="btn btn-light btn-sm" onclick="openDisposisiModal({{ $perda->id }})" title="Disposisi">
-                                            <i class="fas fa-sync-alt" style="color: #29fd0d;"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-success btn-sm" onclick="openStatusModal({{ $perda->id }}, '{{ $perda->status }}')" title="Update Status">
-                                            <i class="fas fa-check"></i>
-                                        </button>
-                                        <a href="{{ route('draft-phd.perda.detail', $perda->id) }}" class="btn btn-primary btn-sm">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        
-                                        <form class="inline-block" id="delete-form-{{ $perda->id }}" action="{{ route('draft-phd.perda.destroy', $perda->id) }}" method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $perda->id }})">
-                                                <i class="fas fa-trash"></i>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        <div class="flex justify-center gap-2">
+                                            <button type="button" class="btn btn-light btn-sm" onclick="openDisposisiModal({{ $perda->id }})" title="Disposisi">
+                                                <i class="fas fa-sync-alt" style="color: #29fd0d;"></i>
                                             </button>
-                                        </form>
+                                            <button type="button" class="btn btn-success btn-sm" onclick="openStatusModal({{ $perda->id }}, '{{ $perda->status }}')" title="Update Status">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <a href="{{ route('draft-phd.perda.detail', $perda->id) }}" class="btn btn-primary btn-sm" title="Detail">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <form id="delete-form-{{ $perda->id }}" action="{{ route('draft-phd.perda.destroy', $perda->id) }}" method="POST" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $perda->id }})" title="Hapus">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach 
@@ -118,6 +120,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Update Status -->
     <div class="modal fade" id="statusModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -131,7 +135,7 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
-                            <select class="form-select" id="status" name="status" style="border: 1px solid #e5e7eb;">
+                            <select class="form-select" id="status" name="status">
                                 <option value="tercatat">Tercatat</option>
                                 <option value="terdisposisi">Terdisposisi</option>
                                 <option value="diproses">Diproses</option>
@@ -149,6 +153,7 @@
             </div>
         </div>
     </div>
+
     <div class="modal fade" id="disposisiModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -195,6 +200,187 @@
             </div>
         </div>
     </div>
+
+    <style>
+        body {
+            background-color: #f3f4f6 !important;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1400px !important;
+            margin: auto;
+            padding: 20px;
+            background-color: #f3f4f6;
+        }
+
+        .table-responsive {
+            background-color: white;
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .bg-gray-100 {
+            background-color: #f3f4f6 !important;
+        }
+
+        .bg-ktu {
+            background-color: rgba(255, 0, 0, 0.2);
+            color: red;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }   
+
+        .bg-sekretaris {
+            background-color: rgba(0, 0, 255, 0.2);
+            color: blue;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }       
+
+        .bg-kepala {
+            background-color: rgba(0, 255, 0, 0.2);
+            color: green;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }   
+
+        .bg-kasubag {
+            background-color: rgba(255, 165, 0, 0.2);
+            color: orange;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-tercatat {
+            background-color: #D1D5DB;
+            color: #374151;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-terdisposisi {
+            background-color: rgba(0, 0, 255, 0.2);
+            color: blue;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-diproses {
+            background-color: #FEF08A;
+            color: #713F12;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-koreksi {
+            background-color: rgba(255, 165, 0, 0.2);
+            color: orange;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-diambil {
+            background-color: rgba(0, 255, 0, 0.2);
+            color: green;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-selesai {
+            background-color: #D8B4FE;
+            color: #4C1D95;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        /* Remove table borders */
+        .table {
+            border: none !important;
+            margin-bottom: 0 !important;
+        }
+
+        .table thead tr {
+            background-color: #4a69bd !important;
+            color: white;
+        }
+
+        .table th {
+            border: none !important;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+        }
+
+        .table td {
+            border: none !important;
+            padding: 0.75rem;
+        }
+
+        .table tbody tr {
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .table tbody tr:last-child {
+            border-bottom: 2px solid #000;
+        }
+
+        /* Hover effect */
+        .table tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        /* Header styling */
+        .table thead th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Remove DataTables default styling */
+        .dataTables_wrapper {
+            margin-top: 1rem;
+        }
+
+        .dataTables_info {
+            font-size: 0.875rem;
+            color: #6b7280;
+            padding: 0.5rem 0;
+        }
+
+        .dataTables_paginate {
+            padding: 0.5rem 0;
+        }
+
+        .dataTables_paginate .paginate_button {
+            padding: 0.3rem 0.6rem;
+            margin: 0 0.2rem;
+            border: none;
+            background: #f3f4f6;
+            color: #374151;
+            border-radius: 0.25rem;
+        }
+
+        .dataTables_paginate .paginate_button.current {
+            background: #4a69bd;
+            color: white;
+        }
+
+        .btn-info {
+            background-color: #4a69bd;
+            color: white;
+            border: none;
+        }
+
+        .btn-info:hover {
+            background-color: #3c5aa8;
+        }
+    </style>
+
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script>
         function searchTable() {
             const input = document.getElementById('search');
@@ -218,13 +404,12 @@
             }
         }
 
-        // Fungsi untuk menghapus surat Peraturan Daerah
         function confirmDelete(id) {
             if (confirm('Apakah Anda yakin ingin menghapus surat Peraturan Daerah ini?')) {
                 document.getElementById('delete-form-' + id).submit();
             }
         }
-        // Fungsi untuk menampilkan alert sukses
+
         function showSuccess(message) {
             Swal.fire({
                 title: 'Berhasil!',
@@ -242,13 +427,12 @@
         }
 
         function openStatusModal(id, currentStatus) {
-            console.log('Opening modal for Perda ID:', id); // Debug log
+            console.log('Opening modal for Perda ID:', id);
             const modal = document.getElementById('statusModal');
             const form = document.getElementById('statusForm');
             form.action = `/draft-phd/perda/${id}/update-status`;
             document.getElementById('status').value = currentStatus;
             
-            // Pastikan Bootstrap Modal tersedia
             if (typeof bootstrap !== 'undefined') {
                 new bootstrap.Modal(modal).show();
             } else {
@@ -258,27 +442,23 @@
 
         document.getElementById('statusForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            this.submit(); // Submit form secara normal
+            this.submit();
         });
 
         function editCatatan(suratId, currentCatatan) { 
             const container = document.querySelector(`[data-surat-id="${suratId}"]`);
             const textarea = container.querySelector('.catatan-textarea');
             
-            // Toggle readonly state
             textarea.readOnly = !textarea.readOnly;     
             
             if (!textarea.readOnly) {
-                // Enter edit mode
                 textarea.focus();
                 container.querySelector('.btn-success i').classList.remove('fa-sync-alt');
                 container.querySelector('.btn-success i').classList.add('fa-save');
             } else {    
-                // Save mode
                 container.querySelector('.btn-success i').classList.remove('fa-save');
                 container.querySelector('.btn-success i').classList.add('fa-sync-alt');
                 
-                // Send AJAX request to update catatan
                 fetch(`/draft-phd/perda/${suratId}/update-catatan`, {
                     method: 'POST',
                     headers: {
@@ -289,23 +469,19 @@
                         catatan: textarea.value
                     })
                 })
-                .then(response => { 
-                    console.log('Response:', response); // Log the response for debugging
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
-                    console.log('Data:', data); // Log the data returned from the server
-                    if   (data.success) {
+                    if (data.success) {
                         showSuccess('Catatan berhasil diperbarui');
                     } else {
                         showError('Gagal memperbarui catatan');
-                        textarea.value = currentCatatan; // Revert to original value
+                        textarea.value = currentCatatan;
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error); // Log any errors
+                    console.error('Error:', error);
                     showError('Terjadi kesalahan sistem');
-                    textarea.value = currentCatatan; // Revert to original value
+                    textarea.value = currentCatatan;
                 });
             }
         }
@@ -366,7 +542,6 @@
             new bootstrap.Modal(document.getElementById('disposisiModal')).show();
         }
 
-        // Event listener untuk perubahan disposisi
         document.getElementById('disposisi').addEventListener('change', function() {
             const selectedDisposisi = this.value;
             const subDisposisiContainer = document.getElementById('subDisposisiContainer');
@@ -391,7 +566,6 @@
             }
         });
 
-        // Perbaikan pada form submit handler
         document.getElementById('disposisiForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -399,7 +573,6 @@
             const subDisposisi = document.getElementById('sub_disposisi').value;
             const tanggalDisposisi = document.getElementById('tanggal_disposisi').value;
             
-            // Validasi form
             if (!disposisi) {
                 alert('Silakan pilih tujuan disposisi');
                 return;
@@ -415,64 +588,35 @@
                 return;
             }
             
-            // Jika semua validasi passed, submit form
             this.submit();
         });
     </script>  
     
-    <style>
-        .bg-tercatat {
-            background-color: #D1D5DB;
-            color: #374151;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        .bg-terdisposisi {
-            background-color: rgba(0, 0, 255, 0.2);
-            color: blue;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        .bg-diproses {
-            background-color: #FEF08A;
-            color: #713F12;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        .bg-koreksi {
-            background-color: rgba(255, 165, 0, 0.2);
-            color: orange;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        .bg-diambil {
-            background-color: rgba(0, 255, 0, 0.2);
-            color: green;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        .bg-selesai {
-            background-color: #D8B4FE;
-            color: #4C1D95;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        .bg-ditolak {
-            background-color: #FCA5A5;
-            color: #7F1D1D;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        .form-select {
-            background-color: white !important;
-            border: 1px solid #ced4da !important;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#suratTable').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+                "pageLength": 10,
+                "dom": "<'row'<'col-sm-12'tr>>" +
+                       "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                "language": {
+                    "paginate": {
+                        "next": "Next",
+                        "previous": "Previous"
+                    },
+                    "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "emptyTable": "No data available"
+                }
+            });
+        });
+    </script>
 @endsection

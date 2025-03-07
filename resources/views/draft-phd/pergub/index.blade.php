@@ -1,36 +1,37 @@
 @extends('layouts.app')
 
 @section('content')
-    <div>
-        <div class="container">
+    <div class="min-h-screen bg-gray-100" style="max-width: 1400px; margin: auto; padding: 20px;">
+        <div class="mb-4">
             <h2 class="header h2"><strong>📂 Registrasi Draft PHD </strong> / <span style="color: gray;"> Peraturan Gubernur</span></h2>
         </div>
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 bg-white border-b border-gray-200">
+        <div class="bg-white shadow-sm rounded-lg">
+            <div class="p-4">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-semibold">Peraturan Gubernur</h2>
+                    <h2 class="text-2xl font-semibold text-gray-800 tracking-wide">
+                        Peraturan Gubernur
+                    </h2>
                     <div class="flex space-x-2">
-                        <form action="{{ route('draft-phd.pergub.index') }}" method="GET" class="flex space-x-2">
+                        <form action="{{ route('draft-phd.pergub.index') }}" method="GET" class="flex items-center">
                             <input type="text" 
                                    name="search" 
                                    value="{{ request('search') }}"
                                    placeholder="Cari..." 
-                                   class="form-control px-4 py-2 border rounded-lg">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-search"></i> Cari
+                                   class="form-control">
+                            <button type="submit" class="btn btn-primary ml-2">
+                                <i class="fas fa-search"></i>
                             </button>
                         </form>
                         <a href="{{ route('draft-phd.pergub.create') }}" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Tambah pergub
+                            <i class="fas fa-plus"></i> Tambah Pergub
                         </a>
-                        <a href="{{ route('draft-phd.pergub.export') }}" 
-                        class="btn btn-success">
+                        <a href="{{ route('draft-phd.pergub.export') }}" class="btn btn-success">
                             <i class="fas fa-file-excel"></i> Export Excel
                         </a>
                     </div>  
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
+                <div class="table-responsive" style="max-width: 1200px; margin: auto;">
+                    <table class="table" id="suratTable">
                         <thead class="table-bordered">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
@@ -46,12 +47,12 @@
                         <tbody class="bg-white divide-y divide-gray-200">   
                             @foreach($pergubs as $index => $pergub)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $index + 1 }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $pergub->no_agenda }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $pergub->no_surat }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $pergub->pengirim }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{($pergub->tanggal_terima)->format('d/m/Y') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $index + 1 }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $pergub->no_agenda }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $pergub->no_surat }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $pergub->pengirim }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{($pergub->tanggal_terima)->format('d/m/Y') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                         @if($pergub->disposisi)
                                             @php
                                                 $disposisiParts = explode('|', $pergub->disposisi);
@@ -138,7 +139,6 @@
                                 <option value="koreksi">Koreksi</option>
                                 <option value="diambil">Diambil</option>
                                 <option value="selesai">Selesai</option>
-                                <option value="ditolak">Ditolak</option>
                             </select>
                         </div>
                     </div>
@@ -198,7 +198,177 @@
         </div>
     </div>
     
+    <style>
+        body {
+            background-color: #f3f4f6 !important;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1400px !important;
+            margin: auto;
+            padding: 20px;
+            background-color: #f3f4f6;
+        }
+
+        .table-responsive {
+            background-color: white;
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .bg-gray-100 {
+            background-color: #f3f4f6 !important;
+        }
+
+        /* Status badges */
+        .bg-tercatat {
+            background-color: #D1D5DB;
+            color: #374151;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-terdisposisi {
+            background-color: rgba(0, 0, 255, 0.2);
+            color: blue;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-diproses {
+            background-color: #FEF08A;
+            color: #713F12;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-koreksi {
+            background-color: rgba(255, 165, 0, 0.2);
+            color: orange;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-diambil {
+            background-color: rgba(0, 255, 0, 0.2);
+            color: green;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-selesai {
+            background-color: #D8B4FE;
+            color: #4C1D95;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        /* Table styling */
+        .table {
+            border: none !important;
+            margin-bottom: 0 !important;
+        }
+
+        .table thead tr {
+            background-color: #4a69bd !important;
+            color: white;
+        }
+
+        .table th {
+            border: none !important;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+        }
+
+        .table td {
+            border: none !important;
+            padding: 0.75rem;
+        }
+
+        .table tbody tr {
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .table tbody tr:last-child {
+            border-bottom: 2px solid #000;
+        }
+
+        /* Hover effect */
+        .table tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        /* DataTables styling */
+        .dataTables_wrapper {
+            margin-top: 1rem;
+        }
+
+        .dataTables_info {
+            font-size: 0.875rem;
+            color: #6b7280;
+            padding: 0.5rem 0;
+        }
+
+        .dataTables_paginate {
+            padding: 0.5rem 0;
+        }
+
+        .dataTables_paginate .paginate_button {
+            padding: 0.3rem 0.6rem;
+            margin: 0 0.2rem;
+            border: none;
+            background: #f3f4f6;
+            color: #374151;
+            border-radius: 0.25rem;
+        }
+
+        .dataTables_paginate .paginate_button.current {
+            background: #4a69bd;
+            color: white;
+        }
+
+        .btn-info {
+            background-color: #4a69bd;
+            color: white;
+            border: none;
+        }
+
+        .btn-info:hover {
+            background-color: #3c5aa8;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     <script>
+        $(document).ready(function() {
+            $('#suratTable').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+                "pageLength": 10,
+                "dom": "<'row'<'col-sm-12'tr>>" +
+                       "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                "language": {
+                    "paginate": {
+                        "next": "Next",
+                        "previous": "Previous"
+                    },
+                    "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "emptyTable": "No data available"
+                }
+            });
+        });
+
         function confirmDelete(id) {
             if (confirm('Apakah Anda yakin ingin menghapus peraturan gubernur ini?')) {
                 document.getElementById('delete-form-' + id).submit();
@@ -381,64 +551,4 @@
             this.submit();
         });
     </script>
-
-    <style>
-        .bg-tercatat {
-            background-color: #D1D5DB;
-            color: #374151;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        .bg-terdisposisi {
-            background-color: rgba(0, 0, 255, 0.2);
-            color: blue;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        .bg-diproses {
-            background-color: #FEF08A;
-            color: #713F12;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        .bg-koreksi {
-            background-color: rgba(255, 165, 0, 0.2);
-            color: orange;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        .bg-diambil {
-            background-color: rgba(0, 255, 0, 0.2);
-            color: green;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        .bg-selesai {
-            background-color: #D8B4FE;
-            color: #4C1D95;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        .bg-ditolak {
-            background-color: #FCA5A5;
-            color: #7F1D1D;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        .form-select {
-            background-color: white !important;
-            border: 1px solid #ced4da !important;
-        }
-    </style>
-    
-    
-    
-    
 @endsection 
