@@ -227,8 +227,9 @@
 
         .table-responsive {
             background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: none;
+            margin: 0;
+            padding: 0;
         }
 
         .bg-gray-100 {
@@ -310,12 +311,32 @@
         /* Remove table borders */
         .table {
             border: none !important;
+            margin-bottom: 0 !important;
         }
 
-        .table th,
+        .table thead tr {
+            background-color: #4a69bd !important;
+            color: white;
+        }
+
+        .table th {
+            border: none !important;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+        }
+
         .table td {
             border: none !important;
-            border-bottom: 1px solid #f3f4f6 !important;
+            padding: 0.75rem;
+        }
+
+        .table tbody tr {
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .table tbody tr:last-child {
+            border-bottom: 2px solid #000;
         }
 
         /* Hover effect */
@@ -332,87 +353,42 @@
         }
 
         /* Remove DataTables default styling */
-        .dataTables_wrapper .dataTables_length,
-        .dataTables_wrapper .dataTables_filter,
-        .dataTables_wrapper .dataTables_info,
-        .dataTables_wrapper .dataTables_processing,
-        .dataTables_wrapper .dataTables_paginate {
-            margin: 10px 0;
-            color: #6b7280;
-        }
-
-        /* DataTables Styling */
         .dataTables_wrapper {
-            margin-top: 20px;
-            padding: 0 10px;
+            margin-top: 1rem;
         }
 
         .dataTables_info {
-            padding: 10px 0;
-            color: #6b7280;
             font-size: 0.875rem;
-            float: left;
+            color: #6b7280;
+            padding: 0.5rem 0;
         }
 
         .dataTables_paginate {
-            padding: 10px 0;
-            float: right;
+            padding: 0.5rem 0;
         }
 
         .dataTables_paginate .paginate_button {
-            box-sizing: border-box;
-            display: inline-block;
-            min-width: 1.5em;
-            padding: 0.4em 0.8em;
-            margin-left: 2px;
-            text-align: center;
-            text-decoration: none;
-            cursor: pointer;
+            padding: 0.3rem 0.6rem;
+            margin: 0 0.2rem;
+            border: none;
+            background: #f3f4f6;
             color: #374151;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
+            border-radius: 0.25rem;
         }
 
         .dataTables_paginate .paginate_button.current {
-            background: #4f46e5;
+            background: #4a69bd;
             color: white;
-            border-color: #4f46e5;
         }
 
-        .dataTables_paginate .paginate_button:hover {
-            background: #f3f4f6;
-            color: #1f2937;
+        .btn-info {
+            background-color: #4a69bd;
+            color: white;
+            border: none;
         }
 
-        .dataTables_paginate .paginate_button.disabled {
-            cursor: default;
-            color: #9ca3af;
-            border-color: #e5e7eb;
-            background: transparent;
-        }
-
-        /* Clear float after pagination */
-        .dataTables_wrapper:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-
-        /* Remove table bottom border for last row */
-        .table tr:last-child td {
-            border-bottom: none !important;
-        }
-
-        /* Add space between table and pagination */
-        .table {
-            margin-bottom: 0 !important;
-        }
-
-        /* Container for pagination */
-        .dataTables_wrapper .row:last-child {
-            margin-top: 15px;
-            border-top: 1px solid #e5e7eb;
-            padding-top: 15px;
+        .btn-info:hover {
+            background-color: #3c5aa8;
         }
     </style>
 
@@ -723,14 +699,14 @@
                 "responsive": true,
                 "pageLength": 10,
                 "dom": "<'row'<'col-sm-12'tr>>" +
-                       "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                       "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
                 "language": {
                     "paginate": {
-                        "next": "Selanjutnya",
-                        "previous": "Sebelumnya"
+                        "next": "Next",
+                        "previous": "Previous"
                     },
-                    "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-                    "emptyTable": "Tidak ada data yang tersedia"
+                    "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "emptyTable": "No data available"
                 }
             });
         });
