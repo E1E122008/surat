@@ -60,28 +60,32 @@ class BukuAgendaController extends Controller
                 $q->where('no_agenda', 'LIKE', "%{$search}%")
                   ->orWhere('no_surat', 'LIKE', "%{$search}%")
                   ->orWhere('pengirim', 'LIKE', "%{$search}%")
-                  ->orWhere('perihal', 'LIKE', "%{$search}%");
+                  ->orWhere('perihal', 'LIKE', "%{$search}%")
+                  ->orWhere('disposisi', 'LIKE', "%{$search}%");
             });
 
             $querySK->where(function($q) use ($search) {
                 $q->where('no_agenda', 'LIKE', "%{$search}%")
                   ->orWhere('no_surat', 'LIKE', "%{$search}%")
                   ->orWhere('pengirim', 'LIKE', "%{$search}%")
-                  ->orWhere('perihal', 'LIKE', "%{$search}%");
+                  ->orWhere('perihal', 'LIKE', "%{$search}%")
+                  ->orWhere('disposisi', 'LIKE', "%{$search}%");
             });
 
             $queryPerda->where(function($q) use ($search) {
                 $q->where('no_agenda', 'LIKE', "%{$search}%")
                   ->orWhere('no_surat', 'LIKE', "%{$search}%")
                   ->orWhere('pengirim', 'LIKE', "%{$search}%")
-                  ->orWhere('perihal', 'LIKE', "%{$search}%");
+                  ->orWhere('perihal', 'LIKE', "%{$search}%")
+                  ->orWhere('disposisi', 'LIKE', "%{$search}%");
             });
 
             $queryPergub->where(function($q) use ($search) {
                 $q->where('no_agenda', 'LIKE', "%{$search}%")
                   ->orWhere('no_surat', 'LIKE', "%{$search}%")
                   ->orWhere('pengirim', 'LIKE', "%{$search}%")
-                  ->orWhere('perihal', 'LIKE', "%{$search}%");
+                  ->orWhere('perihal', 'LIKE', "%{$search}%")
+                  ->orWhere('disposisi', 'LIKE', "%{$search}%");
             });
         }
 
