@@ -2,24 +2,13 @@
 
 @section('content')
     <style>
-        .stats-badge {
-            background: linear-gradient(45deg, #0d6efd, #0dcaf0);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            margin-left: 10px;
-            display: inline-block;
+        body {
+            background-color: #f3f4f6 !important;
+            margin: 0;
+            padding: 0;
         }
 
-        .stats-badge:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
-        }
-
-        /* Tambahkan style untuk batasan panjang teks */
+        /* Text truncation styles */
         .text-truncate-custom {
             max-width: 150px;
             white-space: nowrap;
@@ -44,7 +33,7 @@
             display: inline-block;
         }
 
-        /* Tambahkan tooltip pada hover */
+        /* Tooltip hover styles */
         .text-truncate-custom:hover, 
         .perihal-truncate:hover, 
         .disposisi-truncate:hover {
@@ -57,6 +46,82 @@
             padding: 4px 8px;
             border-radius: 4px;
             max-width: 400px;
+        }
+
+        .nav-tabs .nav-link {
+            color: #64748b;
+            font-weight: 500;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #4a69bd;
+            border-bottom: 2px solid #4a69bd;
+            background: none;
+        }
+
+        .table thead tr {
+            background-color: #4a69bd !important;
+            color: white;
+        }
+
+        .table th {
+            border: none !important;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 13px;
+            padding: 12px;
+            color: white;
+        }
+
+        .table td {
+            border: none !important;
+            padding: 12px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .table tbody tr {
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .table tbody tr:last-child {
+            border-bottom: 2px solid #000;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            border-radius: 0.375rem;
+        }
+
+        .stats-badge {
+            background: linear-gradient(45deg, #4a69bd, #6c8aee);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            margin-left: 10px;
+            display: inline-block;
+        }
+
+        .stats-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        .alert {
+            border-radius: 0.5rem;
+            border: none;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
     </style>
 
