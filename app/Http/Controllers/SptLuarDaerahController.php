@@ -17,8 +17,7 @@ class SptLuarDaerahController extends Controller
         if ($request->has('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('no_agenda', 'LIKE', "%{$search}%")
-                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                $q->where('no_surat', 'LIKE', "%{$search}%")
                   ->orWhere('tanggal', 'LIKE', "%{$search}%")
                   ->orWhere('tujuan', 'LIKE', "%{$search}%")
                   ->orWhere('perihal', 'LIKE', "%{$search}%")
