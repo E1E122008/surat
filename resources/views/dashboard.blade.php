@@ -35,53 +35,55 @@
     </div>
 
     <!-- Charts Section -->
-    <div class="row mb-5">
-        <!-- Grafik Statistik dan Statistik Card dalam satu baris -->
-        <div class="col-lg-12 d-flex gap-4">
-            <!-- Grafik Statistik -->
-            <div class="col-lg-8">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title mb-4">Statistik Surat yang diterima</h5>
-                        <canvas id="incomingDocumentsChart"></canvas>
+    <div class="row mb-5 mt-4">
+        <!-- Grafik Statistik -->
+        <div class="mb-4">
+            <div class="card h-100 bg-white shadow-sm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Statistik Surat yang diterima</h5>
+                            <canvas id="incomingDocumentsChart"></canvas>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <h5 class="card-title mb-4">Statistik Surat yang dikeluarkan</h5>
-                        <canvas id="outgoingDocumentsChart"></canvas>
+                    <div class="col-md-6">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Statistik Surat yang dikeluarkan</h5>
+                            <canvas id="outgoingDocumentsChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Statistik Card -->
-            <div class="col-lg-4 d-flex flex-column gap-4">
-                <div class="dashboard-card surat-masuk p-4">
-                    <h2 class="card-value">{{ $jumlahSuratMasuk }}</h2>
-                    <p class="card-title">Surat Masuk</p>
-                    <i class="fas fa-envelope fa-2x card-icon"></i>
-                </div>
-                <div class="dashboard-card surat-keluar p-4">
-                    <h2 class="card-value">{{ $jumlahSuratKeluar }}</h2>
-                    <p class="card-title">Surat Keluar</p>
-                    <i class="fas fa-paper-plane fa-2x card-icon"></i>
-                </div>
-                <div class="dashboard-card draft-phd p-4">
-                    <h2 class="card-value">{{ $draftphd }}</h2>
-                    <p class="card-title">Registrasi Draft PHD</p>
-                    <i class="fas fa-file-alt fa-2x card-icon"></i>
-                </div>
-                <div class="dashboard-card spt p-4">
-                    <h2 class="card-value">{{ $sptCount }}</h2>
-                    <p class="card-title">Surat Perintah Tugas</p>
-                    <i class="fas fa-file-signature fa-2x card-icon"></i>
-                </div>
-                <div class="dashboard-card sppd p-4">
-                    <h2 class="card-value">{{ $sppdCount }}</h2>
-                    <p class="card-title">Surat Perintah Perjalanan Dinas</p>
-                    <i class="fas fa-plane fa-2x card-icon"></i>
-                </div>
-                
-            </div> <!-- End Statistik Card -->
-        </div> <!-- End Grafik dan Statistik -->
+        <!-- Statistik Card -->
+        <div class="d-flex gap-4 overflow-x-auto pb-2">
+            <div class="dashboard-card surat-masuk p-4 bg-white shadow-sm" style="min-width: 240px;">
+                <h2 class="card-value">{{ $jumlahSuratMasuk }}</h2>
+                <p class="card-title">Surat Masuk</p>
+                <i class="fas fa-envelope fa-2x card-icon"></i>
+            </div>
+            <div class="dashboard-card surat-keluar p-4 bg-white shadow-sm" style="min-width: 240px;">
+                <h2 class="card-value">{{ $jumlahSuratKeluar }}</h2>
+                <p class="card-title">Surat Keluar</p>
+                <i class="fas fa-paper-plane fa-2x card-icon"></i>
+            </div>
+            <div class="dashboard-card draft-phd p-4 bg-white shadow-sm" style="min-width: 240px;">
+                <h2 class="card-value">{{ $draftphd }}</h2>
+                <p class="card-title">Registrasi Draft PHD</p>
+                <i class="fas fa-file-alt fa-2x card-icon"></i>
+            </div>
+            <div class="dashboard-card spt p-4 bg-white shadow-sm" style="min-width: 240px;">
+                <h2 class="card-value">{{ $sptCount }}</h2>
+                <p class="card-title">Surat Perintah Tugas</p>
+                <i class="fas fa-file-signature fa-2x card-icon"></i>
+            </div>
+            <div class="dashboard-card sppd p-4 bg-white shadow-sm" style="min-width: 240px;">
+                <h2 class="card-value">{{ $sppdCount }}</h2>
+                <p class="card-title">Surat Perintah Perjalanan Dinas</p>
+                <i class="fas fa-plane fa-2x card-icon"></i>
+            </div>
+        </div>
     </div>
     
 
@@ -287,10 +289,79 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .dashboard-card {
-    width: 100%;
-    max-width: 300px;
-    margin: 0 auto;
+    flex: 1;
+    min-width: 240px;
+    position: relative;
     border-radius: 10px;
     overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #ffffff;
+}
+
+.card-title {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-icon {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ffffff;
+    opacity: 0.2;
+}
+
+.bg-gray-100 {
+    background-color: #f3f4f6 !important;
+}
+
+.shadow-sm {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.card {
+    border: none !important;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Add styles for horizontal scrolling */
+.overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+.overflow-x-auto::-webkit-scrollbar {
+    height: 6px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 3px;
 }
 </style> 

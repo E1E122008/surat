@@ -7,68 +7,68 @@
         </div>
         <div class="bg-white shadow-sm rounded-lg">
             <div class="p-4">
-                <div class="flex justify-between items-center mb-6">
+                    <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-semibold text-gray-800 tracking-wide">
                         SPT Dalam Daerah
                     </h2>
-                    <div class="flex space-x-2">
-                        <form action="{{ route('spt-dalam-daerah.index') }}" method="GET" class="flex items-center">
-                            <input type="text" 
-                                   name="search" 
-                                   placeholder="Cari SPT Dalam Daerah..." 
-                                   class="form-control"
-                                   value="{{ request('search') }}">
-                            <button type="submit" class="btn btn-primary ml-2">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </form>
+                        <div class="flex space-x-2">
+                            <form action="{{ route('spt-dalam-daerah.index') }}" method="GET" class="flex items-center">
+                                <input type="text" 
+                                       name="search" 
+                                       placeholder="Cari SPT Dalam Daerah..." 
+                                       class="form-control"
+                                       value="{{ request('search') }}">
+                                <button type="submit" class="btn btn-primary ml-2">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </form>
                         <a href="{{ route('spt-dalam-daerah.create') }}" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> SPT Baru
-                        </a>
+                                <i class="fas fa-plus"></i> SPT Baru
+                            </a>
                         <a href="{{ route('spt-dalam-daerah.export') }}" class="btn btn-success">
-                            <i class="fas fa-file-excel"></i> Export Excel
-                        </a>
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </a>
+                        </div>
                     </div>
-                </div>
                 <div class="table-responsive" style="max-width: 1200px; margin: auto;">
                     <table class="table" id="suratTable">
                         <thead>
-                            <tr>
+                                <tr>
                                 <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">No</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">No Surat</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">Tanggal</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">Tujuan</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">Aksi</th>
-                            </tr>
-                        </thead>
+                                </tr>
+                            </thead>
                         <tbody>
-                            @foreach($sptDalamDaerah as $index => $item)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $index + 1 }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->no_surat }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tanggal->format('d/m/Y') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tujuan }}</td>
+                                @foreach($sptDalamDaerah as $index => $item)
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $index + 1 }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->no_surat }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tanggal->format('d/m/Y') }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tujuan }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
                                         <div class="flex justify-center items-center space-x-2">
                                             <a href="{{ route('spt-dalam-daerah.detail', $item->id) }}" class="btn btn-info btn-sm" title="Detail">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
                                             <form id="delete-form-{{ $item->id }}" action="{{ route('spt-dalam-daerah.destroy', $item->id) }}" method="POST" class="inline-block">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $item->id }})" title="Hapus">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-4">
-                    {{ $sptDalamDaerah->links() }}
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $item->id }})" title="Hapus">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-4">
+                        {{ $sptDalamDaerah->links() }}
                 </div>
             </div>
         </div>
