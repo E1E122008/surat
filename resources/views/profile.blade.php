@@ -1,115 +1,267 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-5">
-    <div class="row">
-        <!-- Kartu Profil Utama -->
-        <div class="col-lg-4">
-            <div class="card shadow-sm">
-                <div class="card-body text-center">
-                    <div class="position-relative mb-4 mx-auto" style="width: 150px;">
+<style>
+    .profile-page {
+        background-color: #f3f4f6;
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    
+    .profile-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .profile-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .avatar-container {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        margin: 0 auto;
+    }
+    
+    .avatar-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border: 4px solid white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .camera-btn {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 35px;
+        height: 35px;
+        background: #4a69bd;
+        border: none;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .camera-btn:hover {
+        background: #3d5aa1;
+        transform: scale(1.1);
+    }
+    
+    .online-badge {
+        background: linear-gradient(45deg, #28a745, #20c997);
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .profile-info-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    }
+    
+    .info-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .info-header h5 {
+        margin: 0;
+        color: #4a69bd;
+        font-weight: 600;
+    }
+    
+    .info-body {
+        padding: 1.5rem;
+    }
+    
+    .info-item {
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .info-label {
+        font-weight: 600;
+        color: #4b5563;
+        width: 150px;
+    }
+    
+    .info-value {
+        color: #6b7280;
+        flex: 1;
+    }
+    
+    .action-btn {
+        width: 100%;
+        padding: 0.75rem;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        margin-bottom: 0.75rem;
+    }
+    
+    .action-btn i {
+        margin-right: 0.5rem;
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .modal-content {
+        border-radius: 15px;
+        border: none;
+    }
+    
+    .modal-header {
+        background: #4a69bd;
+        color: white;
+        border-radius: 15px 15px 0 0;
+    }
+    
+    .modal-header .btn-close {
+        color: white;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 10px;
+        padding: 0.75rem;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #4a69bd;
+        box-shadow: 0 0 0 0.2rem rgba(74, 105, 189, 0.25);
+    }
+</style>
+
+<div class="profile-page">
+    <div class="container">
+        <div class="row">
+            <!-- Kartu Profil Utama -->
+            <div class="col-lg-4">
+                <div class="profile-card p-4">
+                    <div class="avatar-container mb-4">
                         @if(auth()->user()->avatar)
                             <img src="{{ asset('storage/' . auth()->user()->avatar) }}" 
-                                 class="rounded-circle img-thumbnail" 
-                                 style="width: 150px; height: 150px; object-fit: cover;">
+                                 class="rounded-circle">
                         @else
                             <img src="{{ asset('images/default-avatar.png') }}" 
-                                 class="rounded-circle img-thumbnail"
-                                 style="width: 150px; height: 150px; object-fit: cover;">
+                                 class="rounded-circle">
                         @endif
-                        <button class="btn btn-sm btn-primary position-absolute bottom-0 end-0 rounded-circle" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#avatarModal"
-                                style="width: 35px; height: 35px;">
+                        <button class="camera-btn" data-bs-toggle="modal" data-bs-target="#avatarModal">
                             <i class="fas fa-camera"></i>
                         </button>
                     </div>
                     
-                    <div class="online-status mb-2">
-                        <span class="badge bg-success"><i class="fas fa-circle me-1"></i> Online</span>
+                    <div class="text-center mb-4">
+                        <span class="online-badge">
+                            <i class="fas fa-circle me-1"></i> Online
+                        </span>
                     </div>
 
-                    <h4 class="mb-1">{{ auth()->user()->name }}</h4>
-                    <p class="text-muted mb-3">{{ auth()->user()->jabatan }}</p>
+                    <div class="text-center mb-4">
+                        <h4 class="mb-1">{{ auth()->user()->name }}</h4>
+                        <p class="text-muted">{{ auth()->user()->jabatan }}</p>
+                    </div>
 
                     <div class="d-grid gap-2">
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-                            <i class="fas fa-edit me-2"></i>Edit Profil
+                        <button class="action-btn btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                            <i class="fas fa-edit"></i>Edit Profil
                         </button>
-                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-                            <i class="fas fa-key me-2"></i>Ganti Password
+                        <button class="action-btn btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                            <i class="fas fa-key"></i>Ganti Password
                         </button>
-                        
-                        <!-- Tombol Kembali ke Dashboard -->
-                        <a href="{{ route('dashboard') }}" class="btn btn-info">
-                            <i class="fas fa-home me-2"></i>Kembali ke Beranda
+                        <a href="{{ route('dashboard') }}" class="action-btn btn btn-info">
+                            <i class="fas fa-home"></i>Kembali ke Beranda
                         </a>
-                        
-                        <!-- Tombol Logout -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="btn btn-danger w-100">
-                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            <button type="submit" class="action-btn btn btn-danger">
+                                <i class="fas fa-sign-out-alt"></i>Logout
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
 
-            
-        </div>
-
-        <!-- Informasi Detail dan Pengaturan -->
-        <div class="col-lg-8">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-transparent">
-                    <h5 class="mb-0"><i class="fas fa-user me-2"></i>Informasi Pribadi</h5>
+            <!-- Informasi Detail -->
+            <div class="col-lg-8">
+                <div class="profile-info-card">
+                    <div class="info-header">
+                        <h5><i class="fas fa-user me-2"></i>Informasi Pribadi</h5>
+                    </div>
+                    <div class="info-body">
+                        <div class="info-item">
+                            <div class="info-label">Nama Lengkap</div>
+                            <div class="info-value">{{ auth()->user()->name }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">{{ auth()->user()->email }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Nomor Telepon</div>
+                            <div class="info-value">{{ auth()->user()->phone ?? '-' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Jabatan</div>
+                            <div class="info-value">{{ auth()->user()->jabatan }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">NIP</div>
+                            <div class="info-value">{{ auth()->user()->nip ?? '-' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Bergabung Sejak</div>
+                            <div class="info-value">{{ auth()->user()->created_at->format('d F Y') }}</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-sm-3">
-                            <h6 class="mb-0">Nama Lengkap</h6>
-                        </div>
-                        <div class="col-sm-9 text-secondary">
-                            {{ auth()->user()->name }}
-                        </div>
+
+                <!-- Statistik Aktivitas -->
+                <div class="profile-info-card">
+                    <div class="info-header">
+                        <h5><i class="fas fa-chart-line me-2"></i>Statistik Aktivitas</h5>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-sm-3">
-                            <h6 class="mb-0">Email</h6>
-                        </div>
-                        <div class="col-sm-9 text-secondary">
-                            {{ auth()->user()->email }}
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-sm-3">
-                            <h6 class="mb-0">Nomor Telepon</h6>
-                        </div>
-                        <div class="col-sm-9 text-secondary">
-                            {{ auth()->user()->phone ?? '-' }}
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-sm-3">
-                            <h6 class="mb-0">Jabatan</h6>
-                        </div>
-                        <div class="col-sm-9 text-secondary">
-                            {{ auth()->user()->jabatan }}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <h6 class="mb-0">Bergabung Sejak</h6>
-                        </div>
-                        <div class="col-sm-9 text-secondary">
-                            {{ auth()->user()->created_at->format('d F Y') }}
+                    <div class="info-body">
+                        <div class="row text-center">
+                            <div class="col-md-4 mb-3">
+                                <div class="p-3 bg-light rounded">
+                                    <h3 class="text-primary mb-1">{{ $totalSuratMasuk ?? 0 }}</h3>
+                                    <p class="text-muted mb-0">Surat Masuk</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="p-3 bg-light rounded">
+                                    <h3 class="text-success mb-1">{{ $totalSuratKeluar ?? 0 }}</h3>
+                                    <p class="text-muted mb-0">Surat Keluar</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="p-3 bg-light rounded">
+                                    <h3 class="text-info mb-1">{{ $totalDisposisi ?? 0 }}</h3>
+                                    <p class="text-muted mb-0">Disposisi</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            
         </div>
     </div>
 </div>
