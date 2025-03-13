@@ -1258,6 +1258,7 @@
                     <!-- Profil Pengguna dengan Custom Dropdown Icon -->
                     <div class="nav-item dropdown profile-container">
                         <a class="nav-link d-flex align-items-center profile-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-chevron-down me-2 dropdown-icon"></i>
                             <span class="ms-2 d-none d-lg-inline text-white profile-name">{{ Auth::user()->name }}</span>
                             <div class="position-relative ms-2">
                                 <div class="rounded-circle bg-white d-flex align-items-center justify-content-center transition-transform duration-300 hover:scale-110" 
@@ -1274,7 +1275,6 @@
                                     @endif
                                 </div>
                             </div>
-                            <i class="fas fa-chevron-down ms-2 dropdown-icon"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow">
                             <li class="dropdown-header d-flex align-items-center">
@@ -1400,27 +1400,6 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Loading state
-                    Swal.fire({
-                        title: 'Menghapus data...',
-                        imageUrl: "https://cdn-icons-png.flaticon.com/512/4812/4812420.png",
-                        imageWidth: 80,
-                        imageHeight: 80,
-                        html: 'Tunggu sebentar, sedang diproses <b></b> detik.',
-                        timer: 2000,
-                        timerProgressBar: true,
-                        showConfirmButton: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                            const timer = Swal.getHtmlContainer().querySelector('b');
-                            let timeLeft = 2;
-                            const interval = setInterval(() => {
-                                timer.textContent = timeLeft;
-                                timeLeft--;
-                                if (timeLeft < 0) clearInterval(interval);
-                            }, 1000);
-                        }
-                    }).then(() => {
                         document.getElementById('delete-form-' + id).submit();
                     });
                 }

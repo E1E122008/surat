@@ -476,7 +476,7 @@
         }
          
         // Fungsi untuk konfirmasi hapus dengan SweetAlert2
-        function confirmDelete(deleteUrl) {
+        function confirmDelete(id) {
             Swal.fire({
                 title: 'Apakah Anda yakin?',
                 text: "Data ini akan dihapus secara permanen!",
@@ -494,26 +494,7 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Tampilkan loading state dengan progress bar
-                    Swal.fire({
-                        title: 'Menghapus data...',
-                        html: 'Tunggu sebentar, sedang diproses <b></b> detik.',
-                        timer: 2000,
-                        timerProgressBar: true,
-                        didOpen: () => {
-                            Swal.showLoading();
-                            const timer = Swal.getHtmlContainer().querySelector('b');
-                            let timeLeft = 2;
-                            const interval = setInterval(() => {
-                                timer.textContent = timeLeft;
-                                timeLeft--;
-                                if (timeLeft < 0) clearInterval(interval);
-                            }, 1000);
-                        }
-                    }).then(() => {
-                        // Setelah loading selesai, lakukan penghapusan
-                        window.location.href = deleteUrl;
-                    });
+                    document.getElementById('delete-form-' + id).submit();
                 }
             });
         }
