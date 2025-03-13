@@ -60,6 +60,9 @@ class SKController extends Controller
                 $validated['lampiran'] = $path;
             }
 
+            // Set status default to 'tercatat'
+            $validated['status'] = 'tercatat';
+
             $sk = SK::create($validated);
 
             if (!$sk) {

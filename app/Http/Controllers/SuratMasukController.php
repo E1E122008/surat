@@ -46,6 +46,9 @@ class SuratMasukController extends Controller
                 
             ]);
 
+            // Set status default to 'tercatat'
+            $validated['status'] = 'tercatat';
+
             if ($request->hasFile('lampiran')) {
                 $file = $request->file('lampiran');
                 $path = $file->store('lampiran/surat-masuk', 'public');

@@ -383,20 +383,74 @@
 
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script>
-    // Fungsi untuk menampilkan alert sukses
     function showSuccess(message) {
         Swal.fire({
-            title: 'Berhasil!',
+            title: "Berhasil!",
             text: message,
-            icon: 'success',
+            icon: "success",
+            showConfirmButton: false,
+            timer: 2000,
+            toast: true,
+            position: "top-end",
             showClass: {
-                popup: 'animate__animated animate__fadeInDown'
+                popup: 'animate__animated animate__fadeInRight'
             },
             hideClass: {
-                popup: 'animate__animated animate__fadeOutUp'
+                popup: 'animate__animated animate__fadeOutRight'
             },
-            timer: 2000,
-            timerProgressBar: true
+            background: '#10B981',
+            color: '#ffffff'
+        });
+    }
+
+    function showError(message) {
+        Swal.fire({
+            title: "Error!",
+            text: message,
+            icon: "error",
+            showConfirmButton: false,
+            timer: 3000,
+            toast: true,
+            position: "top-end",
+            showClass: {
+                popup: 'animate__animated animate__fadeInRight'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOutRight'
+            },
+            background: '#EF4444',
+            color: '#ffffff'
+        });
+    }
+
+    function confirmDelete(id) {
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: "Data ini akan dihapus secara permanen!",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#FF4757',
+            cancelButtonColor: '#747D8C',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal',
+            showClass: {
+                popup: 'animate__animated animate__bounceIn'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOut'
+            },
+            customClass: {
+                popup: 'rounded-lg shadow-lg',
+                confirmButton: 'rounded-md px-4 py-2',
+                cancelButton: 'rounded-md px-4 py-2'
+            },
+            background: '#FFFFFF',
+            backdrop: 'rgba(0,0,0,0.4)',
+            padding: '2em'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('delete-form-' + id).submit();
+            }
         });
     }
 
@@ -404,20 +458,16 @@
         const container = document.querySelector(`[data-surat-id="${suratId}"]`);
         const textarea = container.querySelector('.catatan-textarea');
         
-        // Toggle readonly state
         textarea.readOnly = !textarea.readOnly;
         
         if (!textarea.readOnly) {
-            // Enter edit mode
             textarea.focus();
             container.querySelector('.btn-success i').classList.remove('fa-sync-alt');
             container.querySelector('.btn-success i').classList.add('fa-save');
         } else {
-            // Save mode
             container.querySelector('.btn-success i').classList.remove('fa-save');
             container.querySelector('.btn-success i').classList.add('fa-sync-alt');
             
-            // Send AJAX request to update catatan
             fetch(`/draft-phd/sk/${suratId}/update-catatan`, {
                 method: 'POST',
                 headers: {
@@ -429,31 +479,33 @@
                 })
             })
             .then(response => {
-                console.log('Response:', response); // Log the response for debugging
+                console.log('Response:', response);
                 return response.json();
             })
             .then(data => {
-                console.log('Data:', data); // Log the data returned from the server
+                console.log('Data:', data);
                 if (data.success) {
                     showSuccess('Catatan berhasil diperbarui');
                 } else {
                     showError('Gagal memperbarui catatan');
-                    textarea.value = currentCatatan; // Revert to original value
+                    textarea.value = currentCatatan;
                 }
             })
             .catch(error => {
-                console.error('Error:', error); // Log any errors
+                console.error('Error:', error);
                 showError('Terjadi kesalahan sistem');
-                textarea.value = currentCatatan; // Revert to original value
+                textarea.value = currentCatatan;
             });
         }
     }
 
-    function confirmDelete(id) {
-        if (confirm('Apakah Anda yakin ingin menghapus Surat Keputusan ini?')) {
-            document.getElementById('delete-form-' + id).submit();
-        }
-    }
+    @if(session('success'))
+        showSuccess('{{ session('success') }}');
+    @endif
+
+    @if(session('error'))
+        showError('{{ session('error') }}');
+    @endif
 
     function openStatusModal(id, currentStatus) {
             document.getElementById('statusForm').action = `/sk/update-status/${id}`;

@@ -53,6 +53,9 @@ class PergubController extends Controller
                 $validated['lampiran'] = $path;
             }
 
+            // Set status default to 'tercatat'
+            $validated['status'] = 'tercatat';
+
             $pergub = Pergub::create($validated);
 
             if (!$pergub) {

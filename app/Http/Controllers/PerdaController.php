@@ -56,6 +56,9 @@ class PerdaController extends Controller
                 $validated['lampiran'] = $path;
             }
             
+            // Set status default to 'tercatat'
+            $validated['status'] = 'tercatat';
+            
             Perda::create($validated);
 
             return redirect()->route('draft-phd.perda.index')

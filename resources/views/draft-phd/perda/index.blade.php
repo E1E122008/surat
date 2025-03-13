@@ -405,24 +405,73 @@
         }
 
         function confirmDelete(id) {
-            if (confirm('Apakah Anda yakin ingin menghapus surat Peraturan Daerah ini?')) {
-                document.getElementById('delete-form-' + id).submit();
-            }
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data ini akan dihapus secara permanen!",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#FF4757', // Merah yang lebih cerah
+                cancelButtonColor: '#747D8C', // Abu-abu yang lebih kontras
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal',
+                showClass: {
+                    popup: 'animate__animated animate__bounceIn'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOut'
+                },
+                customClass: {
+                    popup: 'rounded-lg shadow-lg',
+                    confirmButton: 'rounded-md px-4 py-2',
+                    cancelButton: 'rounded-md px-4 py-2'
+                },
+                background: '#FFFFFF',
+                backdrop: 'rgba(0,0,0,0.4)',
+                padding: '2em'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-form-' + id).submit();
+                }
+            });
         }
 
         function showSuccess(message) {
             Swal.fire({
-                title: 'Berhasil!',
+                title: "Berhasil!",
                 text: message,
-                icon: 'success',
+                icon: "success",
+                showConfirmButton: false,
+                timer: 2000,
+                toast: true,
+                position: "top-end",
                 showClass: {
-                    popup: 'animate__animated animate__fadeInDown'
+                    popup: 'animate__animated animate__fadeInRight'
                 },
                 hideClass: {
-                    popup: 'animate__animated animate__fadeOutUp'
-                },  
-                timer: 2000,
-                timerProgressBar: true
+                    popup: 'animate__animated animate__fadeOutRight'
+                },
+                background: '#10B981',
+                color: '#ffffff'
+            });
+        }
+
+        function showError(message) {
+            Swal.fire({
+                title: "Error!",
+                text: message,
+                icon: "error",
+                showConfirmButton: false,
+                timer: 3000,
+                toast: true,
+                position: "top-end",
+                showClass: {
+                    popup: 'animate__animated animate__fadeInRight'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutRight'
+                },
+                background: '#EF4444',
+                color: '#ffffff'
             });
         }
 
@@ -486,22 +535,12 @@
             }
         }
 
-        function showError(message) {
-            Swal.fire({
-                title: 'Oops...',
-                text: message,
-                icon: 'error',
-                showClass: {
-                    popup: 'animate__animated animate__shakeX'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOut'
-                }
-            });
-        }
-
         @if(session('success'))
             showSuccess('{{ session('success') }}');
+        @endif
+
+        @if(session('error'))
+            showError('{{ session('error') }}');
         @endif
 
         const subDisposisiOptions = {

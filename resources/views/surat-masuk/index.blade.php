@@ -480,10 +480,10 @@
             Swal.fire({
                 title: 'Apakah Anda yakin?',
                 text: "Data ini akan dihapus secara permanen!",
-                icon: 'warning',
+                icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#6c757d',
+                confirmButtonColor: '#FF4757', // Merah yang lebih cerah
+                cancelButtonColor: '#747D8C', // Abu-abu yang lebih kontras
                 confirmButtonText: 'Ya, hapus!',
                 cancelButtonText: 'Batal',
                 showClass: {
@@ -491,7 +491,15 @@
                 },
                 hideClass: {
                     popup: 'animate__animated animate__fadeOut'
-                }
+                },
+                customClass: {
+                    popup: 'rounded-lg shadow-lg',
+                    confirmButton: 'rounded-md px-4 py-2',
+                    cancelButton: 'rounded-md px-4 py-2'
+                },
+                background: '#FFFFFF',
+                backdrop: 'rgba(0,0,0,0.4)',
+                padding: '2em'
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.getElementById('delete-form-' + id).submit();
