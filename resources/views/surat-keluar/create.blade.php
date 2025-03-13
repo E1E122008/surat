@@ -21,11 +21,11 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="tanggal_surat" class="form-label">Tanggal</label>
-                    <input type="date" name="tanggal_surat" id="tanggal_surat" 
-                        class="form-control @error('tanggal_surat') is-invalid @enderror"
-                        value="{{ old('tanggal_surat', date('Y-m-d')) }}" required>
-                    @error('tanggal_surat')
+                    <label for="tanggal" class="form-label">Tanggal</label>
+                    <input type="date" name="tanggal" id="tanggal" 
+                        class="form-control @error('tanggal') is-invalid @enderror"
+                        value="{{ old('tanggal', date('Y-m-d')) }}" required>
+                    @error('tanggal')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
                 </div>

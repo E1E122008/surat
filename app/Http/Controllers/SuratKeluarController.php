@@ -39,7 +39,7 @@ class SuratKeluarController extends Controller
                 'no_surat' => 'required|string|max:255',
                 'tanggal' => 'required|date',
                 'perihal' => 'required|string|max:255',
-                'lampiran' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
+                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
             ]);
 
             // Handle file upload
@@ -52,13 +52,8 @@ class SuratKeluarController extends Controller
 
             // Create record
             $suratKeluar = SuratKeluar::create($validated);
-
-            if (!$suratKeluar) {
-                throw new \Exception('Gagal menyimpan data surat keluar');
-            }
-
             return redirect()->route('surat-keluar.index')
-                ->with('success', 'Surat keluar berhasil ditambahkan!');
+                ->with('success', 'Surat keluar berhasil ditambahkan');
         } catch (\Exception $e) {
             // Jika terjadi error saat upload file, hapus file yang sudah terupload
             if (isset($path) && Storage::disk('public')->exists($path)) {
@@ -66,7 +61,7 @@ class SuratKeluarController extends Controller
             }
 
             return redirect()->back()
-                ->with('error', 'Gagal menambahkan surat keluar: ' . $e->getMessage())
+                ->with('error', 'Terjadi kesalahan saat menambahkan surat keluar: ' . $e->getMessage())
                 ->withInput();
         }
     }
