@@ -11,6 +11,8 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class AgendaKeluarExport implements FromCollection, WithHeadings, WithMapping
 {
@@ -124,13 +126,15 @@ class AgendaKeluarExport implements FromCollection, WithHeadings, WithMapping
         static $no = 0;
         $no++;
         
+        $lampiran = $row->lampiran ? asset('storage/' . $row->lampiran) : '-';
+        
         return match($this->tab) {
             'surat-keluar' => [
                 $no,
                 $row->no_surat ?? '-',
                 $row->perihal ?? '-',
                 $row->tanggal ? $row->tanggal->format('d/m/Y') : '-',
-                $row->lampiran ?? '-'
+                $lampiran
             ],
             'sppd-dalam', 'sppd-luar' => [
                 $no,
@@ -139,7 +143,7 @@ class AgendaKeluarExport implements FromCollection, WithHeadings, WithMapping
                 $row->tujuan ?? '-',
                 $row->nama_petugas ?? '-',
                 $row->perihal ?? '-',
-                $row->lampiran ?? '-'
+                $lampiran
             ],
             'spt-dalam', 'spt-luar' => [
                 $no,
@@ -148,14 +152,14 @@ class AgendaKeluarExport implements FromCollection, WithHeadings, WithMapping
                 $row->tujuan ?? '-',
                 $row->nama_petugas ?? '-',
                 $row->perihal ?? '-',
-                $row->lampiran ?? '-'
+                $lampiran
             ],
             default => [
                 $no,
                 $row->no_surat ?? '-',
                 $row->perihal ?? '-',
                 $row->tanggal ? $row->tanggal->format('d/m/Y') : '-',
-                $row->lampiran ?? '-'
+                $lampiran
             ],
         };
     }

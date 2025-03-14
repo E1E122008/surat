@@ -10,6 +10,8 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class AgendaMasukExport implements FromCollection, WithHeadings, WithMapping
 {
@@ -109,6 +111,8 @@ class AgendaMasukExport implements FromCollection, WithHeadings, WithMapping
         static $no = 0;
         $no++;
         
+        $lampiran = $row->lampiran ? asset('storage/' . $row->lampiran) : '-';
+        
         return match($this->tab) {
             'surat-masuk' => [
                 $no,
@@ -119,7 +123,7 @@ class AgendaMasukExport implements FromCollection, WithHeadings, WithMapping
                 $row->tanggal_terima ? $row->tanggal_terima->format('d/m/Y') : '-',
                 $row->perihal ?? '-',
                 $row->disposisi ?? '-',
-                $row->lampiran ?? '-',
+                $lampiran,
             ],
             'surat-keputusan' => [
                 $no,
@@ -130,7 +134,7 @@ class AgendaMasukExport implements FromCollection, WithHeadings, WithMapping
                 $row->tanggal_terima ? $row->tanggal_terima->format('d/m/Y') : '-',
                 $row->perihal ?? '-',
                 $row->disposisi ?? '-',
-                $row->lampiran ?? '-',
+                $lampiran,
             ],
             'perda', 'pergub' => [
                 $no,
@@ -141,7 +145,7 @@ class AgendaMasukExport implements FromCollection, WithHeadings, WithMapping
                 $row->tanggal_terima ? $row->tanggal_terima->format('d/m/Y') : '-',
                 $row->perihal ?? '-',
                 $row->disposisi ?? '-',
-                $row->lampiran ?? '-',
+                $lampiran,
             ],
             default => [
                 $no,
@@ -152,7 +156,7 @@ class AgendaMasukExport implements FromCollection, WithHeadings, WithMapping
                 $row->tanggal_terima ? $row->tanggal_terima->format('d/m/Y') : '-',
                 $row->perihal ?? '-',
                 $row->disposisi ?? '-',
-                $row->lampiran ?? '-',
+                $lampiran,
             ],
         };
     }

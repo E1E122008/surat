@@ -8,7 +8,7 @@
     <div class="logo-container text-center mb-6">
         <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-image mx-auto mb-2">
         <a class="navbar-brand fw-bold text-center text-xl text-primary hover:opacity-80 transition-opacity duration-200" style="color: #ffffff !important;" href="{{ route('dashboard') }}">
-            SIAP BRO!
+            SIAP BROH !!!
         </a>
     </div>
 

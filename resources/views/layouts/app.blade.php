@@ -1208,7 +1208,7 @@
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary" style="margin: 0; padding: 1rem 0; width: 100%;">
             <div class="container-fluid">
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-image mx-auto mb-2">
-                <a class="navbar-brand fw-bold"   href="{{ route('dashboard') }}">SIAP BRO!</a>
+                <a class="navbar-brand fw-bold"   href="{{ route('dashboard') }}">SIAP BROH !!!</a>
                 <button class="btn btn-outline-light" onclick="toggleSidebar()">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
