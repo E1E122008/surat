@@ -160,6 +160,7 @@
                 </li>
             </ul>
         </li>
+
         <li class="my-2">
             <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ Request::is('admin/approval-requests*') ? 'active' : '' }}" 
                href="{{ route('admin.approval-requests.index') }}">
