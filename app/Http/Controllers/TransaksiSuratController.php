@@ -151,7 +151,8 @@ class TransaksiSuratController extends Controller
         $admins = User::where('role', 'admin')->get();
         Notification::send($admins, new ApprovalRequestNotification($approvalRequest));
 
-        return redirect()->back()->with('success', 'Permintaan persetujuan telah dikirim. Anda akan mendapatkan notifikasi setelah diproses oleh admin.');
+        return redirect()->route('data-requests.index')
+            ->with('success', 'Permintaan persetujuan telah dikirim. Anda akan mendapatkan notifikasi setelah diproses oleh admin.');
     }
 
     public function approveRequest(Request $request, $id)
@@ -202,5 +203,10 @@ class TransaksiSuratController extends Controller
         }
 
         return view('transaksi-surat.create');
+    }
+
+    public function showRequestForm()
+    {
+        return view('transaksi-surat.request-form');
     }
 } 

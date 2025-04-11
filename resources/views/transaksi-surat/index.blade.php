@@ -19,9 +19,7 @@
                         </button>
                         <input type="hidden" name="tab" value="{{ request('tab', 'surat-masuk') }}">
                     </form>
-                    <button type="button" class="btn btn-warning text-white" data-bs-toggle="modal" data-bs-target="#requestModal">
-                        <i class="fas fa-paper-plane me-2"></i>Minta Persetujuan
-                    </button>
+                    
                 </div>
             </div>
         </div>
@@ -109,54 +107,5 @@
     </div>
 
     <!-- Modal Request Approval -->
-    <div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="requestModalLabel">Permintaan Persetujuan</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form action="{{ route('transaksi-surat.request-approval') }}" method="POST">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="letter_type" class="form-label">Jenis Surat</label>
-                            <select class="form-select" id="letter_type" name="letter_type" required>
-                                <option value="">Pilih Jenis Surat</option>
-                                <option value="surat_masuk">Surat Masuk</option>
-                                <option value="surat_keluar">Surat Keluar</option>
-                                <option value="sk">SK</option>
-                                <option value="perda">PERDA</option>
-                                <option value="pergub">PERGUB</option>
-                                <option value="sppd_dalam">SPPD Dalam Daerah</option>
-                                <option value="sppd_luar">SPPD Luar Daerah</option>
-                                <option value="spt_dalam">SPT Dalam Daerah</option>
-                                <option value="spt_luar">SPT Luar Daerah</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="sender" class="form-label">Pengirim</label>
-                            <input type="text" class="form-control" id="sender" name="sender" 
-                                placeholder="Masukkan nama pengirim/instansi pengirim" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="notes" class="form-label">Catatan</label>
-                            <textarea class="form-control" id="notes" name="notes" rows="3" 
-                                placeholder="Jelaskan alasan permintaan persetujuan..." required></textarea>
-                        </div>
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Permintaan persetujuan akan diproses oleh admin. Anda akan mendapatkan notifikasi setelah permintaan disetujui atau ditolak.
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-paper-plane me-2"></i>Kirim Permintaan
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    
 @endsection

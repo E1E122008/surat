@@ -19,6 +19,22 @@
                     <a class="nav-link {{ request()->routeIs('transaksi-surat.*') ? 'active' : '' }}" 
                        href="{{ route('transaksi-surat.index') }}">Transaksi Surat</a>
                 </li>
+                @if(auth()->user()->role === 'user')
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('data-requests.*') ? 'active' : '' }}" 
+                       href="{{ route('data-requests.index') }}">
+                        Permintaan Data
+                        @if(auth()->user()->role == 'admin')
+                            @php
+                                $pendingCount = \App\Models\DataRequest::where('status', 'pending')->count();
+                            @endphp
+                            @if($pendingCount > 0)
+                                <span class="badge bg-warning text-dark rounded-pill">{{ $pendingCount }}</span>
+                            @endif
+                        @endif
+                    </a>
+                </li>
+                @endif
             </ul>
         </div>
 
@@ -113,4 +129,14 @@
 </nav>
 
 <!-- Sidebar -->
-@include('layouts.sidebar') 
+@include('layouts.sidebar')
+
+<!-- Responsive Navigation Menu -->
+<div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
+    <div class="pt-2 pb-3 space-y-1">
+        <x-responsive-nav-link :href="route('data-requests.index')" :active="request()->routeIs('data-requests.*')">
+            <i class="fas fa-file-alt mr-2"></i>
+            {{ __('Permintaan Data') }}
+        </x-responsive-nav-link>
+    </div>
+</div> 

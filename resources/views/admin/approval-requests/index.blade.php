@@ -17,6 +17,9 @@
                             <tr>
                                 <th>No</th>
                                 <th>Nama User</th>
+                                <th>Pengirim</th>
+                                <th>Jenis Surat</th>
+                                <th>Deskripsi</th>
                                 <th>Tanggal Request</th>
                                 <th>Status</th>
                                 <th>Aksi</th>
@@ -27,6 +30,9 @@
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $request->user->name }}</td>
+                                    <td>{{ $request->sender }}</td>
+                                    <td>{{ $request->letter_type }}</td>
+                                    <td>{{ $request->notes }}</td>
                                     <td>{{ $request->created_at->format('d/m/Y H:i') }}</td>
                                     <td>
                                         @if($request->status === 'pending')

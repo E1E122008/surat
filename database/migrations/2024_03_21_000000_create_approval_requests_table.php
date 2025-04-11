@@ -12,6 +12,8 @@ return new class extends Migration
             Schema::create('approval_requests', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->string('letter_type');
+                $table->string('sender');
                 $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
                 $table->foreignId('approved_by')->nullable()->constrained('users')->onDelete('set null');
                 $table->timestamp('approved_at')->nullable();

@@ -21,6 +21,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TransaksiSuratController;
 use App\Http\Controllers\Admin\ApprovalRequestController;
+use App\Http\Controllers\DataRequestController;
 
 
 Route::get('/', function () {
@@ -236,17 +237,25 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/transaksi-surat', [TransaksiSuratController::class, 'index'])->name('transaksi-surat.index');
 
+    // Data Request Routes
+    Route::resource('data-requests', DataRequestController::class);
+
 });
 
 // User Routes
 Route::middleware(['auth', 'checkRole:user'])->group(function () {
-    
-    
     // Transaksi Surat routes
     Route::get('/transaksi-surat', [TransaksiSuratController::class, 'index'])->name('transaksi-surat.index');
+    
+    // Data Request Routes
+    Route::resource('data-requests', DataRequestController::class);
 });
 
 // Approval Request Routes
+Route::get('/transaksi-surat/request-approval', [TransaksiSuratController::class, 'showRequestForm'])
+    ->name('transaksi-surat.request-form')
+    ->middleware(['auth', 'checkRole:user']);
+
 Route::post('/transaksi-surat/request-approval', [TransaksiSuratController::class, 'requestApproval'])
     ->name('transaksi-surat.request-approval')
     ->middleware(['auth', 'checkRole:user']);

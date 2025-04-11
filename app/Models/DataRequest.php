@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ApprovalRequest extends Model
+class DataRequest extends Model
 {
     use HasFactory;
 
@@ -13,23 +13,17 @@ class ApprovalRequest extends Model
         'user_id',
         'letter_type',
         'sender',
+        'notes',
         'status',
-        'approved_by',
-        'approved_at',
-        'notes'
+        'admin_notes',
     ];
 
     protected $casts = [
-        'approved_at' => 'datetime'
+        'deadline' => 'date',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function approver()
-    {
-        return $this->belongsTo(User::class, 'approved_by');
     }
 } 
