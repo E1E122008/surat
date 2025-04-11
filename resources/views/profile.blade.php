@@ -176,7 +176,7 @@
 
                     <div class="text-center mb-4">
                         <h4 class="mb-1">{{ auth()->user()->name }}</h4>
-                        <p class="text-muted">{{ auth()->user()->jabatan }}</p>
+                        <p class="text-muted">{{ auth()->user()->role }}</p>
                     </div>
 
                     <div class="d-grid gap-2">
@@ -219,8 +219,8 @@
                             <div class="info-value">{{ auth()->user()->phone ?? '-' }}</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">Jabatan</div>
-                            <div class="info-value">{{ auth()->user()->jabatan }}</div>
+                            <div class="info-label">Role</div>
+                            <div class="info-value">{{ auth()->user()->role }}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">NIP</div>
@@ -291,11 +291,11 @@
                         <input type="text" class="form-control" name="phone" value="{{ auth()->user()->phone }}">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Jabatan</label>
-                        <select class="form-select" name="jabatan">
-                            <option value="">Pilih Jabatan</option>
-                            <option value="Admin" {{ auth()->user()->jabatan == 'Admin' ? 'selected' : '' }}>Admin</option>
-                            <option value="Staff" {{ auth()->user()->jabatan == 'Staff' ? 'selected' : '' }}>Staff</option>
+                        <label class="form-label">Role</label>
+                        <select class="form-select" name="role">
+                            <option value="">Pilih Role</option>
+                            <option value="Admin" {{ auth()->user()->role == 'Admin' ? 'selected' : '' }}>Admin</option>
+                            <option value="User" {{ auth()->user()->role == 'User' ? 'selected' : '' }}>User</option>
                             
                         </select>
                     </div>

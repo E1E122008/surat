@@ -17,6 +17,10 @@ use App\Http\Controllers\PergubController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DisposisiController;
 use App\Http\Controllers\KategoriKeluarController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\TransaksiSuratController;
+use App\Http\Controllers\Admin\ApprovalRequestController;
 
 
 Route::get('/', function () {
@@ -226,4 +230,43 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/draft-phd/sk/{id}/disposisi', [SKController::class, 'disposisi'])
         ->name('draft-phd.sk.disposisi');
 
+    // User Management Routes
+    Route::resource('users', UserController::class);
+    Route::resource('roles', RoleController::class);
+
+    Route::get('/transaksi-surat', [TransaksiSuratController::class, 'index'])->name('transaksi-surat.index');
+
+});
+
+// User Routes
+Route::middleware(['auth', 'checkRole:user'])->group(function () {
+    
+    
+    // Transaksi Surat routes
+    Route::get('/transaksi-surat', [TransaksiSuratController::class, 'index'])->name('transaksi-surat.index');
+});
+
+// Approval Request Routes
+Route::post('/transaksi-surat/request-approval', [TransaksiSuratController::class, 'requestApproval'])
+    ->name('transaksi-surat.request-approval')
+    ->middleware(['auth', 'checkRole:user']);
+
+Route::post('/transaksi-surat/approve/{id}', [TransaksiSuratController::class, 'approveRequest'])
+    ->name('transaksi-surat.approve')
+    ->middleware(['auth', 'checkRole:admin']);
+
+Route::post('/transaksi-surat/reject/{id}', [TransaksiSuratController::class, 'rejectRequest'])
+    ->name('transaksi-surat.reject')
+    ->middleware(['auth', 'checkRole:admin']);
+
+// Admin Routes
+Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Approval Requests
+    Route::get('/approval-requests', [ApprovalRequestController::class, 'index'])
+        ->name('approval-requests.index');
+    Route::post('/approval-requests/{id}/approve', [ApprovalRequestController::class, 'approve'])
+        ->name('approval-requests.approve');
+    Route::post('/approval-requests/{id}/reject', [ApprovalRequestController::class, 'reject'])
+        ->name('approval-requests.reject');
+    Route::post('/approval-requests', [ApprovalRequestController::class, 'store'])->name('approval-requests.store');
 });

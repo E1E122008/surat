@@ -34,6 +34,8 @@
         </div>
     </div>
 
+    @auth
+    @if(Auth::user()->role === 'admin')
     <!-- Charts Section -->
     <div class="row mb-5 mt-4">
         <!-- Grafik Statistik -->
@@ -85,6 +87,9 @@
             </div>
         </div>
     </div>
+    @endif
+    @endauth
+    
     
 
 
