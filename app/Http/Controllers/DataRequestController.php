@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\DataRequestNotification;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Log;
 
 class DataRequestController extends Controller
 {
@@ -51,14 +52,25 @@ class DataRequestController extends Controller
         $validated = $request->validate([
             'letter_type' => 'required|string|max:255',
             'sender' => 'required|string|max:255',
-            'notes' => 'required|string',
+            'tanggal_surat' => 'required|date',
+            'perihal' => 'required|string|max:255',
+            'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+            'notes' => 'nullable|string',
         ]);
+
+        $lampiranPath = null;
+        if ($request->hasFile('lampiran')) {
+            $lampiranPath = $request->file('lampiran')->store('public/lampiran');
+        }
 
         $dataRequest = ApprovalRequest::create([
             'user_id' => Auth::id(),
             'letter_type' => $validated['letter_type'],
             'sender' => $validated['sender'],
-            'notes' => $validated['notes'],
+            'tanggal_surat' => $validated['tanggal_surat'],
+            'perihal' => $validated['perihal'],
+            'lampiran' => $lampiranPath,
+            'notes' => $validated['notes'] ?? null,
             'status' => 'pending',
         ]);
 
@@ -69,7 +81,7 @@ class DataRequestController extends Controller
         }
 
         return redirect()->route('data-requests.index')
-            ->with('success', 'Permintaan berhasil dikirim. Menunggu persetujuan admin.');
+            ->with('success', 'Permintaan berhasil dikirim. Menunggu review admin.');
     }
 
     public function show(ApprovalRequest $dataRequest)

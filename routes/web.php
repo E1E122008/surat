@@ -31,6 +31,7 @@ Route::get('/', function () {
 Route::resource('surat-masuk', SuratMasukController::class);
 
 Route::get('surat-masuk/export', [SuratMasukController::class, 'export'])->name('surat-masuk.export');
+Route::post('surat-masuk/{id}/review', [SuratMasukController::class, 'review'])->name('surat-masuk.review')->middleware(['auth', 'checkRole:admin']);
 
 Route::get('surat-keluar/export', [SuratKeluarController::class, 'export'])->name('surat-keluar.export');
 

@@ -13,14 +13,19 @@ class ApprovalRequest extends Model
         'user_id',
         'letter_type',
         'sender',
+        'notes',
         'status',
+        'admin_notes',
+        'tanggal_surat',
+        'perihal',
+        'lampiran',
         'approved_by',
         'approved_at',
-        'notes'
     ];
 
     protected $casts = [
-        'approved_at' => 'datetime'
+        'approved_at' => 'datetime',
+        'tanggal_surat' => 'date',
     ];
 
     public function user()

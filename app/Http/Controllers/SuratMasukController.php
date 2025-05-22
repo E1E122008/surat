@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Exports\SuratMasukExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\ApprovalRequestNotification;
+use Illuminate\Support\Facades\Log;
 
 class SuratMasukController extends Controller
 {
@@ -36,18 +40,18 @@ class SuratMasukController extends Controller
     { 
         try {
             $validated = $request->validate([
-                'no_agenda' => 'required|string|max:255',
                 'no_surat' => 'required|string|max:255',
                 'pengirim' => 'required|string|max:255',
                 'tanggal_surat' => 'required|date',
-                'tanggal_terima' => 'required|date',
                 'perihal' => 'required|string|max:255',
                 'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
-                
+                'catatan' => 'nullable|string'
             ]);
 
-            // Set status default to 'tercatat'
-            $validated['status'] = 'tercatat';
+            // Set default values
+            $validated['status'] = 'pending_review';
+            $validated['submitted_by'] = auth()->id();
+            $validated['tanggal_terima'] = now();
 
             if ($request->hasFile('lampiran')) {
                 $file = $request->file('lampiran');
@@ -55,10 +59,10 @@ class SuratMasukController extends Controller
                 $validated['lampiran'] = $path;
             }
 
-            SuratMasuk::create($validated);
+            $suratMasuk = SuratMasuk::create($validated);
 
             return redirect()->route('surat-masuk.index')
-                ->with('success', 'Surat masuk berhasil ditambahkan');
+                ->with('success', 'Surat masuk berhasil diajukan dan menunggu review admin');
 
         } catch (\Exception $e) {
             if (isset($path) && Storage::disk('public')->exists($path)) {
@@ -66,11 +70,10 @@ class SuratMasukController extends Controller
             }
 
             return redirect()->back()
-                            ->with('error', 'Terjadi kesalahan saat menambahkan surat masuk: ' . $e->getMessage())
+                            ->with('error', 'Terjadi kesalahan saat mengajukan surat masuk: ' . $e->getMessage())
                             ->withInput();
         }
     }
-
 
     public function detail($id)
     {
@@ -244,6 +247,38 @@ class SuratMasukController extends Controller
             return redirect()->back()
                             ->with('error', 'Gagal menambahkan disposisi: ' . $e->getMessage());
         }
+    }
+
+    public function review(Request $request, $id)
+    {
+        if (!auth()->user()->role === 'admin') {
+            return redirect()->back()->with('error', 'Unauthorized access');
+        }
+
+        $suratMasuk = SuratMasuk::findOrFail($id);
+        
+        $validated = $request->validate([
+            'status' => 'required|in:approved,rejected',
+            'admin_notes' => 'nullable|string',
+            'no_agenda' => 'required_if:status,approved|string|max:255'
+        ]);
+
+        // Preserve existing data
+        $updateData = [
+            'status' => $validated['status'],
+            'admin_notes' => $validated['admin_notes']
+        ];
+
+        // Only update no_agenda if status is approved
+        if ($validated['status'] === 'approved' && !empty($validated['no_agenda'])) {
+            $updateData['no_agenda'] = $validated['no_agenda'];
+        }
+
+        $suratMasuk->update($updateData);
+
+        $status = $validated['status'] === 'approved' ? 'disetujui' : 'ditolak';
+        return redirect()->route('surat-masuk.index')
+            ->with('success', "Surat masuk telah {$status}");
     }
 
 }

@@ -24,11 +24,18 @@ class SuratMasuk extends Model
         'status',
         'sub_disposisi',
         'tanggal_disposisi',
+        'submitted_by',
+        'admin_notes'
     ];
 
     protected $casts = [
         'tanggal_surat' => 'date',
         'tanggal_terima' => 'date',
+        'tanggal_disposisi' => 'date'
+    ];
+
+    protected $attributes = [
+        'status' => 'pending_review'
     ];
 
     public function disposisi()
