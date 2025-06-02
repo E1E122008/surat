@@ -45,18 +45,19 @@
                         <table class="table table-bordered" width="100%" cellspacing="0">
                             <thead>
                                 <tr>
-                                    <th>No</th>
-                                    <th>Jenis Surat</th>
-                                    <th>Pengirim</th>
-                                    <th>Tanggal Surat</th>
-                                    <th>Progres</th>
+                                    <th class="text-center">No</th>
+                                    <th class="text-center">Jenis Surat</th>
+                                    <th class="text-center">Pengirim</th>
+                                    <th class="text-center">Tanggal Surat</th>
+                                    <th class="text-center">Progres</th>
+                                    <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($approvalRequests as $request)
                                     <tr class="request-row" data-status="{{ $request->status }}">
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>
+                                        <td class="text-center">{{ $loop->iteration }}</td>
+                                        <td class="text-center">
                                             @php
                                                 $letterTypes = [
                                                     'surat_masuk' => 'Surat Masuk',
@@ -67,16 +68,16 @@
                                             @endphp
                                             {{ $letterTypes[$request->letter_type] ?? $request->letter_type }}
                                         </td>
-                                        <td>{{ $request->sender }}</td>
-                                        <td>{{ $request->tanggal_surat ? $request->tanggal_surat->format('d M Y') : '-' }}</td>
-                                        <td>
+                                        <td class="text-center">{{ $request->sender }}</td>
+                                        <td class="text-center">{{ $request->tanggal_surat ? $request->tanggal_surat->format('d M Y') : '-' }}</td>
+                                        <td class="text-center">
                                             @if($request->status === 'pending')
                                                 <span class="badge bg-warning">
-                                                    <i class="fas fa-eye" data-bs-toggle="modal" data-bs-target="#detailModal{{ $request->id }}" title="Detail"></i>Menunggu Review
+                                                    Menunggu Review
                                                 </span>
                                             @elseif($request->status === 'approved')
                                                 <span class="badge bg-success">
-                                                    <i class="fas fa-eye" data-bs-toggle="modal" data-bs-target="#detailModal{{ $request->id }}" title="Detail"></i>Disetujui
+                                                    Disetujui
                                                 </span>
                                             @elseif($request->status === 'rejected')
                                                 <span class="badge bg-danger">
@@ -84,10 +85,24 @@
                                                 </span>
                                             @endif
                                         </td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-sm btn-info me-1" data-bs-toggle="modal" data-bs-target="#detailModal{{ $request->id }}" title="Detail">
+                                                <i class="fas fa-eye"></i> 
+                                            </button>
+                                            @if($request->status === 'pending')
+                                                <form action="{{ route('data-requests.cancel', $request->id) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="button" class="btn btn-sm btn-danger" onclick="confirmCancelRequest(this)" title="Batal Kirim">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="3" class="text-center">Tidak ada data surat</td>
+                                        <td colspan="6" class="text-center">Tidak ada data surat</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -223,7 +238,10 @@
                     <div class="mb-3">
                         <label for="lampiran" class="form-label">Lampiran</label>
                         <input type="file" class="form-control" id="lampiran" name="lampiran" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
-                        <small class="text-muted">Format yang didukung: PDF, DOC, DOCX, JPG, JPEG, PNG (Max: 2MB)</small>
+                        <small class="text-muted">Format yang didukung: PDF, DOC, DOCX, JPG, JPEG, PNG</small>
+                        @error('lampiran')
+                            <div class="text-danger mt-1">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="mb-3">
                         <label for="notes" class="form-label">Catatan</label>
@@ -271,6 +289,24 @@
             form.submit();
         }, 500));
     });
+
+    // SweetAlert for cancel request confirmation
+    function confirmCancelRequest(button) {
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: "Permintaan yang dibatalkan tidak dapat dikembalikan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, batalkan!',
+            cancelButtonText: 'Tidak, jangan batalkan'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                button.closest('form').submit();
+            }
+        })
+    }
 </script>
 @endpush
 @endsection

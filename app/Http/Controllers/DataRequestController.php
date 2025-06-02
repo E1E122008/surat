@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Notification;
 use App\Notifications\DataRequestNotification;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class DataRequestController extends Controller
 {
@@ -54,13 +55,20 @@ class DataRequestController extends Controller
             'sender' => 'required|string|max:255',
             'tanggal_surat' => 'required|date',
             'perihal' => 'required|string|max:255',
-            'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+            'lampiran' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
             'notes' => 'nullable|string',
+            'no_surat' => 'required|string|max:255',
         ]);
 
         $lampiranPath = null;
         if ($request->hasFile('lampiran')) {
-            $lampiranPath = $request->file('lampiran')->store('public/lampiran');
+            try {
+                $lampiranPath = $request->file('lampiran')->store('public/lampiran');
+            } catch (\Exception $e) {
+                Log::error('Failed to upload lampiran: ' . $e->getMessage());
+                return redirect()->back()
+                    ->with('error', 'Gagal mengunggah lampiran. Silakan coba lagi.');
+            }
         }
 
         $dataRequest = ApprovalRequest::create([
@@ -74,12 +82,15 @@ class DataRequestController extends Controller
             'status' => 'pending',
         ]);
 
+        Log::info('Data Request created:', $dataRequest->toArray());
+
         // Notify admin
         $admin = \App\Models\User::where('role', 'admin')->first();
         if ($admin) {
             $admin->notify(new DataRequestNotification($dataRequest));
         }
 
+        Log::info('Redirecting to data-requests.index');
         return redirect()->route('data-requests.index')
             ->with('success', 'Permintaan berhasil dikirim. Menunggu review admin.');
     }
@@ -126,5 +137,32 @@ class DataRequestController extends Controller
 
         return redirect()->route('data-requests.index')
             ->with('success', 'Status permintaan berhasil diperbarui.');
+    }
+
+    public function cancel(ApprovalRequest $dataRequest)
+    {
+        // You might want to add authorization here, e.g., using a policy
+        // $this->authorize('cancel', $dataRequest);
+
+        // Optional: Check if the request status is pending before canceling
+        if ($dataRequest->status !== 'pending') {
+            return redirect()->route('data-requests.index')
+                ->with('error', 'Permintaan hanya bisa dibatalkan jika statusnya masih Menunggu Review.');
+        }
+
+        try {
+            // If there's an uploaded file, delete it from storage
+            if ($dataRequest->lampiran) {
+                Storage::disk('public')->delete($dataRequest->lampiran);
+            }
+
+            $dataRequest->delete();
+            return redirect()->route('data-requests.index')
+                ->with('success', 'Permintaan berhasil dibatalkan.');
+        } catch (\Exception $e) {
+            Log::error('Failed to cancel data request: ' . $e->getMessage());
+            return redirect()->route('data-requests.index')
+                ->with('error', 'Gagal membatalkan permintaan. Silakan coba lagi.');
+        }
     }
 } 

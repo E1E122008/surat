@@ -240,6 +240,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Data Request Routes
     Route::resource('data-requests', DataRequestController::class);
+    Route::delete('/data-requests/{dataRequest}/cancel', [DataRequestController::class, 'cancel'])->name('data-requests.cancel');
 
 });
 

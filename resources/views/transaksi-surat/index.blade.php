@@ -23,7 +23,6 @@
                 </div>
             </div>
         </div>
-
         <div class="bg-white overflow-x-auto w-full shadow-sm sm:rounded-lg">
             <div class="p-6 bg-white border-b border-gray-200">
                 <div class="flex justify-between items-center mb-6">
@@ -36,51 +35,21 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request('tab') == 'surat-keluar' ? 'active' : '' }}"
-                               href="{{ route('transaksi-surat.index', ['tab' => 'surat-keluar']) }}">
-                                Surat Keluar
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link {{ request('tab') == 'sk' ? 'active' : '' }}"
                                href="{{ route('transaksi-surat.index', ['tab' => 'sk']) }}">
-                                SK
+                                Surat Keputusan
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request('tab') == 'perda' ? 'active' : '' }}"
                                href="{{ route('transaksi-surat.index', ['tab' => 'perda']) }}">
-                                PERDA
+                                Peraturan Daerah
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request('tab') == 'pergub' ? 'active' : '' }}"
                                href="{{ route('transaksi-surat.index', ['tab' => 'pergub']) }}">
-                                PERGUB
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request('tab') == 'sppd-dalam' ? 'active' : '' }}"
-                               href="{{ route('transaksi-surat.index', ['tab' => 'sppd-dalam']) }}">
-                                SPPD DD
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request('tab') == 'sppd-luar' ? 'active' : '' }}"
-                               href="{{ route('transaksi-surat.index', ['tab' => 'sppd-luar']) }}">
-                                SPPD LD
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request('tab') == 'spt-dalam' ? 'active' : '' }}"
-                               href="{{ route('transaksi-surat.index', ['tab' => 'spt-dalam']) }}">
-                                SPT DD
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request('tab') == 'spt-luar' ? 'active' : '' }}"
-                               href="{{ route('transaksi-surat.index', ['tab' => 'spt-luar']) }}">
-                                SPT LD
+                                Peraturan Gubernur
                             </a>
                         </li>
                     </ul>

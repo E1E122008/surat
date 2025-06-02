@@ -11,39 +11,39 @@
         <table class="table table-bordered mt-4">
             <thead class="thead-dark">
                 <tr>
-                    <th>No</th>
-                    <th>No. Agenda</th>
-                    <th>No. Surat</th>
-                    <th>Tanggal</th>
-                    <th>Pengirim</th>
-                    <th>Perihal</th>
-                    <th>Status</th>
-                    <th>Disposisi</th>
+                    <th class="text-center">No</th>
+                    <th class="text-center">No. Agenda</th>
+                    <th class="text-center">No. Surat</th>
+                    <th class="text-center">Tanggal</th>
+                    <th class="text-center">Pengirim</th>
+                    <th class="text-center">Perihal</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center">Disposisi</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($suratMasuk as $index => $surat)
                 <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $surat->no_agenda }}</td>
-                    <td>{{ $surat->no_surat }}</td>
-                    <td>{{ $surat->tanggal_terima ? $surat->tanggal_terima->format('d/m/Y') : '-' }}</td>
-                    <td>
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td class="text-center">{{ $surat->no_agenda }}</td>
+                    <td class="text-center">{{ $surat->no_surat }}</td>
+                    <td class="text-center">{{ $surat->tanggal_terima ? $surat->tanggal_terima->format('d/m/Y') : '-' }}</td>
+                    <td class="text-center">
                         <span class="text-truncate-custom" title="{{ $surat->pengirim }}">
                             {{ $surat->pengirim }}
                         </span>
                     </td>
-                    <td>
+                    <td class="text-center">
                         <span class="perihal-truncate" title="{{ $surat->perihal }}">
                             {{ $surat->perihal }}
                         </span>
                     </td>
-                    <td>
+                    <td class="text-center">
                         <span class="badge bg-{{ $surat->status === 'Selesai' ? 'success' : 'warning' }}">
                             {{ $surat->status }}
                         </span>
                     </td>
-                    <td>
+                    <td class="text-center">
                         <span class="disposisi-truncate" title="{{ $surat->disposisi }}">
                             {{ $surat->disposisi }}
                         </span>

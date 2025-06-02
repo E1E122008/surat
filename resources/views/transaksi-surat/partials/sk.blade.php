@@ -11,33 +11,33 @@
         <table class="table table-bordered mt-4">
             <thead class="thead-dark">
                 <tr>
-                    <th>No</th>
-                    <th>No. Agenda</th>
-                    <th>No. SK</th>
-                    <th>Tanggal</th>
-                    <th>Perihal</th>
-                    <th>Status</th>
-                    <th>Catatan</th>
+                    <th class="text-center">No</th>
+                    <th class="text-center">No. Agenda</th>
+                    <th class="text-center">No. SK</th>
+                    <th class="text-center">Tanggal</th>
+                    <th class="text-center">Perihal</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center">Catatan</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($sk as $index => $surat)
                 <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $surat->no_agenda }}</td>
-                    <td>{{ $surat->no_sk }}</td>
-                    <td>{{ $surat->tanggal ? $surat->tanggal->format('d/m/Y') : '-' }}</td>
-                    <td>
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td class="text-center">{{ $surat->no_agenda }}</td>
+                    <td class="text-center">{{ $surat->no_sk }}</td>
+                    <td class="text-center">{{ $surat->tanggal ? $surat->tanggal->format('d/m/Y') : '-' }}</td>
+                    <td class="text-center">
                         <span class="perihal-truncate" title="{{ $surat->perihal }}">
                             {{ $surat->perihal }}
                         </span>
                     </td>
-                    <td>
+                    <td class="text-center">
                         <span class="badge bg-{{ $surat->status === 'Selesai' ? 'success' : 'warning' }}">
                             {{ $surat->status }}
                         </span>
                     </td>
-                    <td>
+                    <td class="text-center">
                         <span class="text-truncate-custom" title="{{ $surat->catatan }}">
                             {{ $surat->catatan }}
                         </span>
