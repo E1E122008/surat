@@ -43,15 +43,25 @@ class SuratMasukController extends Controller
                 'no_surat' => 'required|string|max:255',
                 'pengirim' => 'required|string|max:255',
                 'tanggal_surat' => 'required|date',
+                'tanggal_terima' => 'required|date',
                 'perihal' => 'required|string|max:255',
-                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
-                'catatan' => 'nullable|string'
+                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:10240',
+                'catatan' => 'nullable|string',
+                'no_agenda' => 'nullable|string|max:255',
+                'disposisi' => 'nullable|string|max:255',
+                'status' => 'nullable|string|max:255',
+                'admin_notes' => 'nullable|string',
             ]);
 
-            // Set default values
-            $validated['status'] = 'pending_review';
-            $validated['submitted_by'] = auth()->id();
-            $validated['tanggal_terima'] = now();
+            $validated['submitted_by'] = Auth::id();
+
+            $validated['status'] = $request->input('status', 'tercatat');
+            $adminFields = ['no_agenda', 'disposisi', 'admin_notes'];
+            foreach ($adminFields as $field) {
+                if ($request->has($field)) {
+                    $validated[$field] = $request->input($field);
+                }
+            }
 
             if ($request->hasFile('lampiran')) {
                 $file = $request->file('lampiran');
@@ -61,13 +71,17 @@ class SuratMasukController extends Controller
 
             $suratMasuk = SuratMasuk::create($validated);
 
+            $successMessage = 'Surat masuk berhasil ditambahkan.';
+
             return redirect()->route('surat-masuk.index')
-                ->with('success', 'Surat masuk berhasil diajukan dan menunggu review admin');
+                ->with('success', $successMessage);
 
         } catch (\Exception $e) {
             if (isset($path) && Storage::disk('public')->exists($path)) {
                 Storage::disk('public')->delete($path);
             }
+
+            Log::error('Terjadi kesalahan saat mengajukan surat masuk: ' . $e->getMessage());
 
             return redirect()->back()
                             ->with('error', 'Terjadi kesalahan saat mengajukan surat masuk: ' . $e->getMessage())
@@ -77,6 +91,7 @@ class SuratMasukController extends Controller
 
     public function detail($id)
     {
+        $surat = SuratMasuk::find($id); // Ambil data surat berdasarkan ID
         $surat = SuratMasuk::findOrFail($id);
         return view('surat-masuk.detail', compact('surat'));
     }
@@ -93,14 +108,18 @@ class SuratMasukController extends Controller
             $suratMasuk = SuratMasuk::findOrFail($id);
             
             $validated = $request->validate([
-                'no_agenda' => 'required|string|max:255',
+                'no_agenda' => 'nullable|string|max:255',
                 'no_surat' => 'required|string|max:255',
                 'pengirim' => 'required|string|max:255',
                 'tanggal_surat' => 'required|date',
-                'tanggal_terima' => 'required|date',
+                'tanggal_terima' => 'nullable|date',
                 'perihal' => 'required|string|max:255',
-                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
-                
+                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:10240',
+                'disposisi' => 'nullable|string|max:255',
+                'status' => 'nullable|string|max:255',
+                'submitted_by' => 'nullable|exists:users,id',
+                'catatan' => 'nullable|string',
+                'admin_notes' => 'nullable|string',
             ]);
 
             if ($request->hasFile('lampiran')) {
@@ -120,7 +139,7 @@ class SuratMasukController extends Controller
                 ->with('success', 'Data surat masuk berhasil diperbarui!');
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat memperbarui data!');
+                ->with('error', 'Terjadi kesalahan saat memperbarui data: ' . $e->getMessage());
         }
     }
 
@@ -159,7 +178,7 @@ class SuratMasukController extends Controller
     {
         try {
             // Log the incoming request data
-            \Log::info('Updating catatan:', $request->all());
+            Log::info('Updating catatan:', $request->all());
 
             $suratMasuk = SuratMasuk::findOrFail($id);
             $suratMasuk->update([
@@ -171,7 +190,7 @@ class SuratMasukController extends Controller
                 'message' => 'Catatan berhasil diperbarui'
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error updating catatan:', ['error' => $e->getMessage()]);
+            Log::error('Error updating catatan:', ['error' => $e->getMessage()]);
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal memperbarui catatan'
@@ -217,7 +236,6 @@ class SuratMasukController extends Controller
             // Validasi input
             $request->validate([
                 'disposisi' => 'required',
-                'sub_disposisi' => 'required_unless:disposisi,Kasubag Tata Usaha',
                 'tanggal_disposisi' => 'required|date',
                 'catatan' => 'nullable'
             ]);
@@ -251,7 +269,7 @@ class SuratMasukController extends Controller
 
     public function review(Request $request, $id)
     {
-        if (!auth()->user()->role === 'admin') {
+        if (!Auth::user()->role === 'admin') {
             return redirect()->back()->with('error', 'Unauthorized access');
         }
 

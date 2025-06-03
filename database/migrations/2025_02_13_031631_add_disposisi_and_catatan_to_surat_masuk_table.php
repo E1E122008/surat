@@ -12,7 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('surat_masuk', function (Blueprint $table) {
-            //
+            $table->string('no_agenda')->nullable()->after('id');
+            $table->string('catatan')->nullable()->after('lampiran');
+            $table->string('disposisi')->nullable()->after('catatan');
+            $table->string('sub_disposisi')->nullable()->after('disposisi');
+            $table->date('tanggal_disposisi')->nullable()->after('sub_disposisi');
+            $table->string('status')->default('pending_review')->after('tanggal_disposisi');
+            $table->unsignedBigInteger('submitted_by')->nullable()->after('status');
+            $table->string('admin_notes')->nullable()->after('submitted_by');
+            
+            $table->foreign('submitted_by')->references('id')->on('users')->onDelete('set null');
         });
     }
 
@@ -22,7 +31,17 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('surat_masuk', function (Blueprint $table) {
-            //
+            $table->dropForeign(['submitted_by']);
+            $table->dropColumn([
+                'no_agenda',
+                'catatan',
+                'disposisi',
+                'sub_disposisi',
+                'tanggal_disposisi',
+                'status',
+                'submitted_by',
+                'admin_notes'
+            ]);
         });
     }
 };

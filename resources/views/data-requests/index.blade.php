@@ -152,7 +152,7 @@
                             <label class="form-label fw-bold">Lampiran</label>
                             @if($request->lampiran)
                                 <p>
-                                    <a href="{{ Storage::url($request->lampiran) }}" target="_blank" class="btn btn-sm btn-info">
+                                    <a href="{{ asset('storage/' . $request->lampiran) }}" target="_blank" class="btn btn-sm btn-info">
                                         <i class="fas fa-paperclip"></i> Lihat Lampiran
                                     </a>
                                 </p>

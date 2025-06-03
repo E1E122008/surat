@@ -10,52 +10,56 @@
                 <div class="p-6 bg-white border-b border-gray-200">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="form-group mb-3">
-                        <label for="no_agenda" class="text-sm font-medium"  >Nomor Agenda</label>
-                        <input type="text" name="no_agenda" id="no_agenda" class="form-control border-effect" value="{{ $surat->no_agenda }}" readonly>
+                        <label for="no_agenda" class="text-sm font-medium">Nomor Agenda</label>
+                        <input type="text" name="no_agenda" id="no_agenda" class="form-control border-effect" value="{{ $surat->no_agenda ?? '-' }}" readonly>
                     </div>
 
                     <div class="form-group mb-3">
-                        <label for="no_surat" class="text-sm font-medium"  >Nomor Surat</label>
-                        <input type="text" name="no_surat" id="no_surat" class="form-control border-effect" value="{{ $surat->no_surat }}" readonly>
+                        <label for="no_surat" class="text-sm font-medium">Nomor Surat</label>
+                        <input type="text" name="no_surat" id="no_surat" class="form-control border-effect" value="{{ $surat->no_surat ?? '-' }}" readonly>
                     </div>
 
                     <div class="form-group mb-3">
-                        <label for="pengirim" class="text-sm font-medium"  >Pengirim</label>
-                        <input type="text" name="pengirim" id="pengirim" class="form-control border-effect" value="{{ $surat->pengirim }}" readonly>
+                        <label for="pengirim" class="text-sm font-medium">Pengirim</label>
+                        <input type="text" name="pengirim" id="pengirim" class="form-control border-effect" value="{{ $surat->pengirim ?? '-' }}" readonly>
                     </div> 
                 </div> 
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="form-group mb-3">
-                        <label for="tanggal_surat" class="text-sm font-medium"  >Tanggal Surat</label>
-                        <input type="text" name="tanggal_surat" id="tanggal_surat" class="form-control border-effect" value="{{ $surat->tanggal_surat->format('d/m/Y') }}" readonly>
+                        <label for="tanggal_surat" class="text-sm font-medium">Tanggal Surat</label>
+                        <input type="text" name="tanggal_surat" id="tanggal_surat" class="form-control border-effect" value="{{ $surat->tanggal_surat ? $surat->tanggal_surat->format('d/m/Y') : '-' }}" readonly>
                     </div>
                         
                     <div class=" form-group mb-3">
-                        <label for="tanggal_terima" class="text-sm font-medium"  >Tanggal Terima</label>
-                        <input type="text" name="tanggal_terima" id="tanggal_terima" class="form-control border-effect" value="{{ $surat->tanggal_terima->format('d/m/Y') }}" readonly>
+                        <label for="tanggal_terima" class="text-sm font-medium">Tanggal Terima</label>
+                        <input type="text" name="tanggal_terima" id="tanggal_terima" class="form-control border-effect" value="{{ $surat->tanggal_terima ? $surat->tanggal_terima->format('d/m/Y') : '-' }}" readonly>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="form-group mb-3">
-                        <label for="perihal" class="text-sm font-medium"  >Perihal</label>
-                        <textarea name="perihal" id="perihal" class="form-control border-effect" readonly>{{ $surat->perihal }}</textarea>
+                        <label for="perihal" class="text-sm font-medium">Perihal</label>
+                        <textarea name="perihal" id="perihal" class="form-control border-effect" readonly>{{ $surat->perihal ?? '-' }}</textarea>
                     </div>
 
 
                     <div class="form-group mb-3">
-                        <label for="disposisi" class="text-sm font-medium"  >Disposisi</label>
-                        <textarea type="text" name="disposisi" id="disposisi" class="form-control border-effect" value="{{ $surat->disposisi }}" readonly>{{ $surat->disposisi }}</textarea>
+                        <label for="disposisi" class="text-sm font-medium">Disposisi</label>
+                        <textarea type="text" name="disposisi" id="disposisi" class="form-control border-effect" readonly>{{ $surat->disposisi ?? '-' }}</textarea>
                     </div>
                     
                     
 
                     <div class="form-group mb-3">
-                        <label for="lampiran" class="text-sm font-medium"  >Lampiran</label>
+                        <label for="lampiran" class="text-sm font-medium">Lampiran</label>
+                        @if($surat->lampiran)
                         <button onclick="window.location.href='{{ asset('storage/' . $surat->lampiran) }}'" class="btn btn-primary">
                             <i class="fas fa-file-pdf"></i> {{ basename($surat->lampiran) }}
                         </button>
+                        @else
+                        <p>-</p>
+                        @endif
                     </div>
                 </div>
 

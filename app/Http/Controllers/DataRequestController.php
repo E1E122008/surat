@@ -63,7 +63,7 @@ class DataRequestController extends Controller
         $lampiranPath = null;
         if ($request->hasFile('lampiran')) {
             try {
-                $lampiranPath = $request->file('lampiran')->store('public/lampiran');
+                $lampiranPath = $request->file('lampiran')->store('lampiran', 'public');
             } catch (\Exception $e) {
                 Log::error('Failed to upload lampiran: ' . $e->getMessage());
                 return redirect()->back()
@@ -80,6 +80,7 @@ class DataRequestController extends Controller
             'lampiran' => $lampiranPath,
             'notes' => $validated['notes'] ?? null,
             'status' => 'pending',
+            'no_surat' => $validated['no_surat'],
         ]);
 
         Log::info('Data Request created:', $dataRequest->toArray());

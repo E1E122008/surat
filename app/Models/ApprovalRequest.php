@@ -19,6 +19,7 @@ class ApprovalRequest extends Model
         'tanggal_surat',
         'perihal',
         'lampiran',
+        'no_surat',
         'approved_by',
         'approved_at',
     ];
