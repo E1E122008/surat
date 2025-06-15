@@ -37,19 +37,27 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="form-group mb-3">
-                            <label for="perihal">Perihal</label>
-                            <textarea name="perihal" id="perihal" class="form-control border-effect" readonly>{{ $sk->perihal }}</textarea>
-                        </div> 
+                    <div class="form-group mb-3">
+                        <label for="perihal">Perihal</label>
+                        <textarea name="perihal" id="perihal" class="form-control border-effect" readonly>{{ $sk->perihal }}</textarea>
+                    </div> 
 
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                         <div class="form-group mb-3">
+                            <label for="catatan">Catatan User</label>
+                            <textarea name="catatan" id="catatan" class="form-control border-effect" readonly>{{ $sk->catatan }}</textarea>
+                        </div>
 
                         <div class="form-group mb-3">
                             <label for="disposisi">Disposisi</label>
-                            <textarea type="text" name="disposisi" id="disposisi" class="form-control border-effect" value="{{ $sk->disposisi }}" readonly>{{ $sk->disposisi }}</textarea>
-                        </div> 
+                            <textarea type="text" name="disposisi" id="disposisi" class="form-control border-effect" readonly>{{ $sk->disposisi }}</textarea>
+                        </div>
                     </div>
 
+                    <div class="form-group mb-3">
+                        <label for="admin_notes">Catatan Admin</label>
+                        <textarea name="admin_notes" id="admin_notes" class="form-control border-effect" readonly>{{ $sk->admin_notes }}</textarea>
+                    </div>
 
                     <div class="form-group mb-3">
                         <label for="lampiran">Lampiran</label>

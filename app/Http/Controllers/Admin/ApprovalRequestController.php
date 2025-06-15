@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class ApprovalRequestController extends Controller
 {
@@ -38,19 +39,29 @@ class ApprovalRequestController extends Controller
         $request->validate([
             'no_agenda' => 'required|string|max:255',
             'tanggal_diterima' => 'required|date',
+            'admin_notes' => 'nullable|string',
+            'disposisi' => 'nullable|string',
         ]);
 
         try {
             DB::beginTransaction();
 
-            // Update approval request status
+            // Check for duplicate no_surat based on letter type
+            $duplicateCheck = $this->checkDuplicateNoSurat($approvalRequest->no_surat, $approvalRequest->letter_type);
+            
+            if ($duplicateCheck) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Nomor surat sudah ada dalam sistem. Silakan periksa kembali.');
+            }
+
+            // Update approval request status and save admin notes to 'notes' column
             $approvalRequest->update([
                 'status' => 'approved',
                 'approved_by' => Auth::id(),
                 'approved_at' => now(),
                 'no_agenda' => $request->no_agenda,
                 'tanggal_diterima' => $request->tanggal_diterima,
-                'notes' => null,
+                'notes' => $request->admin_notes,
             ]);
 
             // Create entry in the corresponding main table
@@ -63,7 +74,9 @@ class ApprovalRequestController extends Controller
                 'perihal' => $approvalRequest->perihal,
                 'lampiran' => $approvalRequest->lampiran,
                 'status' => 'tercatat',
-                'submitted_by' => $approvalRequest->user_id
+                'submitted_by' => $approvalRequest->user_id,
+                'catatan' => $approvalRequest->notes,
+                'disposisi' => $request->disposisi,
             ];
 
             switch ($approvalRequest->letter_type) {
@@ -92,6 +105,12 @@ class ApprovalRequestController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error approving request: ' . $e->getMessage());
+            
+            // Check if it's a duplicate key error
+            if (str_contains($e->getMessage(), 'Duplicate entry') || str_contains($e->getMessage(), 'UNIQUE constraint failed')) {
+                return redirect()->back()->with('error', 'Nomor surat sudah ada dalam sistem. Silakan periksa kembali.');
+            }
+            
             return redirect()->back()->with('error', 'Terjadi kesalahan saat memproses permintaan: ' . $e->getMessage());
         }
     }
@@ -111,9 +130,29 @@ class ApprovalRequestController extends Controller
             'notes' => $request->admin_notes,
         ]);
 
+        
         // Send notification to user
         $approvalRequest->user->notify(new ApprovalRequestNotification($approvalRequest));
 
         return redirect()->back()->with('success', 'Permintaan berhasil ditolak');
+    }
+
+    /**
+     * Check for duplicate no_surat in the corresponding table
+     */
+    private function checkDuplicateNoSurat($noSurat, $letterType)
+    {
+        switch ($letterType) {
+            case 'surat_masuk':
+                return SuratMasuk::where('no_surat', $noSurat)->exists();
+            case 'sk':
+                return SK::where('no_surat', $noSurat)->exists();
+            case 'perda':
+                return Perda::where('no_surat', $noSurat)->exists();
+            case 'pergub':
+                return Pergub::where('no_surat', $noSurat)->exists();
+            default:
+                return false;
+        }
     }
 } 

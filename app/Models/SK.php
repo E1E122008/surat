@@ -12,24 +12,26 @@ class SK extends Model
     protected $table = 'sks';
     
     protected $fillable = [
-        'no_agenda',
         'no_surat',
+        'no_agenda',
         'pengirim',
         'tanggal_surat',
         'tanggal_terima',
         'perihal',
+        'lampiran',
+        'catatan',
         'disposisi',
         'status',
-        'catatan',
-        'lampiran'
+        'submitted_by',
+        'admin_notes'
     ];
 
     protected $casts = [
         'tanggal_surat' => 'date',
         'tanggal_terima' => 'date',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime'
     ];
 
-
+    protected $attributes = [
+        'status' => 'pending_review'
+    ];
 } 

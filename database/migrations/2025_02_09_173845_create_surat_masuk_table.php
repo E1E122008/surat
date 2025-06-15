@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('surat_masuk', function (Blueprint $table) {
             $table->id();
-            $table->string('no_surat');
+            $table->string('no_surat')->unique();
             $table->string('pengirim');
             $table->date('tanggal_surat');
             $table->date('tanggal_terima');

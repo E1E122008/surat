@@ -4,17 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class Pergub extends Model
 {
     use HasFactory;
 
     protected $table = 'pergub';
-
+    
     protected $fillable = [
-        'no_agenda',
         'no_surat',
+        'no_agenda',
         'pengirim',
         'tanggal_surat',
         'tanggal_terima',
@@ -22,14 +21,17 @@ class Pergub extends Model
         'lampiran',
         'catatan',
         'disposisi',
-        'status'
-    ];  
+        'status',
+        'submitted_by',
+        'admin_notes'
+    ];
 
     protected $casts = [
         'tanggal_surat' => 'date',
         'tanggal_terima' => 'date',
-        'created_at' => 'date',
-        'updated_at' => 'date',
     ];
-    
+
+    protected $attributes = [
+        'status' => 'pending_review'
+    ];
 }

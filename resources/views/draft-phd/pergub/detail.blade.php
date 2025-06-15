@@ -31,22 +31,37 @@
                             <label for="tanggal_terima">Tanggal Terima</label>
                             <input type="text" name="tanggal_terima" id="tanggal_terima" class="form-control border-effect" value="{{ $pergub->tanggal_terima->format('d/m/Y')  }}" readonly>
                         </div>
-                        <div class="form-group">
-                            <label for="perihal">Perihal</label>
-                            <textarea name="perihal" id="perihal" class="form-control border-effect" readonly>{{ $pergub->perihal }}</textarea>
-                        </div>  
-                        
-                        <div class="form-group">
-                            <label for="disposisi">Disposisi</label>    
-                            <textarea type="text" name="disposisi" id="disposisi" class="form-control border-effect" value="{{ $pergub->disposisi }}" readonly>{{ $pergub->disposisi }}</textarea>
+                    </div>
+
+                     <div class="form-group mb-3">
+                        <label for="perihal">Perihal</label>
+                        <textarea name="perihal" id="perihal" class="form-control border-effect" readonly>{{ $pergub->perihal }}</textarea>
+                    </div> 
+
+                    {{-- New fields for catatan, disposisi, admin_notes --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                         <div class="form-group mb-3">
+                            <label for="catatan">Catatan User</label>
+                            <textarea name="catatan" id="catatan" class="form-control border-effect" readonly>{{ $pergub->catatan }}</textarea>
                         </div>
 
-                        <div class="form-group">
-                            <label for="lampiran">Lampiran</label>
-                            <button onclick="window.location.href='{{ asset('storage/' . $pergub->lampiran) }}'" class="btn btn-primary">
-                                <i class="fas fa-eye"></i></i> {{ basename($pergub->lampiran) }}
-                            </button>
+                        <div class="form-group mb-3">
+                            <label for="disposisi">Disposisi</label>
+                            <textarea type="text" name="disposisi" id="disposisi" class="form-control border-effect" readonly>{{ $pergub->disposisi }}</textarea>
                         </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="admin_notes">Catatan Admin</label>
+                        <textarea name="admin_notes" id="admin_notes" class="form-control border-effect" readonly>{{ $pergub->admin_notes }}</textarea>
+                    </div>
+                        
+                        
+                    <div class="form-group mb-3">
+                        <label for="lampiran">Lampiran</label>
+                        <button onclick="window.location.href='{{ asset('storage/' . $pergub->lampiran) }}'" class="btn btn-primary">
+                            <i class="fas fa-eye"></i></i> {{ basename($pergub->lampiran) }}
+                        </button>
                     </div>
                 </div>
                 <div class="p-6 bg-white border-b border-gray-200">

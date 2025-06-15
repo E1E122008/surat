@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Exports\SKExport; // Pastikan Anda memiliki export untuk SK
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class SKController extends Controller
 {
@@ -44,14 +46,21 @@ class SKController extends Controller
     { 
         try {
             $validated = $request->validate([
-                'no_agenda' => 'required|string|max:255',
+                'no_agenda' => 'nullable|string|max:255',
                 'no_surat' => 'required|string|max:255|unique:sks,no_surat',
                 'pengirim' => 'required|string|max:255',
                 'tanggal_surat' => 'required|date',
                 'tanggal_terima' => 'required|date',
                 'perihal' => 'required|string|max:255',
                 'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+                'catatan' => 'nullable|string',
+                'disposisi' => 'nullable|string',
+                'sub_disposisi' => 'nullable|string',
+                'tanggal_disposisi' => 'nullable|date',
+                'admin_notes' => 'nullable|string',
             ]);
+
+            $validated['submitted_by'] = Auth::id();
 
             if ($request->hasFile('lampiran')) {
                 $file = $request->file('lampiran');
@@ -60,8 +69,8 @@ class SKController extends Controller
                 $validated['lampiran'] = $path;
             }
 
-            // Set status default to 'tercatat'
-            $validated['status'] = 'tercatat';
+            // Set status default to 'tercatat' unless provided
+            $validated['status'] = $request->input('status', 'tercatat');
 
             $sk = SK::create($validated);
 
@@ -78,8 +87,11 @@ class SKController extends Controller
                 Storage::disk('public')->delete($path);
             }
 
-            return redirect()->route('draft-phd.sk.index')
-                ->with('error', 'Gagal menyimpan SK');
+            Log::error('Terjadi kesalahan saat menyimpan SK: ' . $e->getMessage());
+
+            return redirect()->back()
+                ->with('error', 'Gagal menyimpan SK: ' . $e->getMessage())
+                ->withInput();
         }
     }
 
@@ -115,13 +127,19 @@ class SKController extends Controller
     {
         try {
             $validated = $request->validate([
-                'no_agenda' => 'required|string|max:255',
+                'no_agenda' => 'nullable|string|max:255',
                 'no_surat' => 'required|string|max:255',
                 'pengirim' => 'required|string|max:255',
                 'tanggal_surat' => 'required|date',
                 'tanggal_terima' => 'required|date',
                 'perihal' => 'required|string|max:255',
                 'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+                'catatan' => 'nullable|string',
+                'disposisi' => 'nullable|string',
+                'sub_disposisi' => 'nullable|string',
+                'tanggal_disposisi' => 'nullable|date',
+                'admin_notes' => 'nullable|string',
+                'status' => 'nullable|string|max:255',
             ]);
 
             if ($request->hasFile('lampiran')) {
@@ -140,8 +158,10 @@ class SKController extends Controller
             return redirect()->route('draft-phd.sk.index')
                 ->with('success', 'SK berhasil diperbarui');
         } catch (\Exception $e) {
-            return redirect()->route('draft-phd.sk.edit', $sk->id)
-                ->with('error', 'Gagal memperbarui SK: ' . $e->getMessage());
+            Log::error('Terjadi kesalahan saat memperbarui SK: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Gagal memperbarui SK: ' . $e->getMessage())
+                ->withInput();
         }
     }
 
@@ -201,26 +221,23 @@ class SKController extends Controller
             ]);
 
             $sk = SK::findOrFail($id);
+            $sk->disposisi = $request->disposisi;
+            $sk->sub_disposisi = $request->sub_disposisi;
+            $sk->tanggal_disposisi = $request->tanggal_disposisi;
+            $sk->catatan = $request->catatan;
+            $sk->save();
 
-            $disposisiText = $request->disposisi;
-            if ($request->sub_disposisi) {
-                $disposisiText .= ' | Diteruskan ke: ' . $request->sub_disposisi;
-            }
-            $disposisiText .= ' | Tanggal: ' . $request->tanggal_disposisi;
-            if ($request->catatan) {
-                $disposisiText .= ' | Catatan: ' . $request->catatan;
-            }
-
-            $sk->update([
-                'disposisi' => $disposisiText
+            return response()->json([
+                'success' => true,
+                'message' => 'Disposisi berhasil ditambahkan'
             ]);
-
-            return redirect()->back()
-                            ->with('success', 'Disposisi berhasil ditambahkan');
-
         } catch (\Exception $e) {
-            return redirect()->back()
-                            ->with('error', 'Gagal menambahkan disposisi: ' . $e->getMessage());
+            Log::error('Error adding disposisi:', ['error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menambahkan disposisi'
+            ], 500);
         }
     }
+
 } 

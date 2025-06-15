@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Exports\PergubExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class PergubController extends Controller
 {
@@ -37,14 +39,19 @@ class PergubController extends Controller
     {
         try {
             $validated = $request->validate([
-                'no_agenda' => 'required|string|max:255',
+                'no_agenda' => 'nullable|string|max:255',
                 'no_surat' => 'required|string|max:255|unique:pergub,no_surat',
                 'pengirim' => 'required|string|max:255',
                 'tanggal_surat' => 'required|date',
                 'tanggal_terima' => 'required|date',
                 'perihal' => 'required|string|max:255',
                 'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+                'catatan' => 'nullable|string',
+                'disposisi' => 'nullable|string',
+                'admin_notes' => 'nullable|string',
             ]);
+
+            $validated['submitted_by'] = Auth::id();
 
             if ($request->hasFile('lampiran')) {
                 $file = $request->file('lampiran');
@@ -53,8 +60,8 @@ class PergubController extends Controller
                 $validated['lampiran'] = $path;
             }
 
-            // Set status default to 'tercatat'
-            $validated['status'] = 'tercatat';
+            // Set status default to 'tercatat' unless provided
+            $validated['status'] = $request->input('status', 'tercatat');
 
             $pergub = Pergub::create($validated);
 
@@ -69,10 +76,11 @@ class PergubController extends Controller
                 Storage::disk('public')->delete($path);
             }
 
-            return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat menambahkan data!')
-                ->withInput();
+            Log::error('Terjadi kesalahan saat menambahkan data pergub: ' . $e->getMessage());
 
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat menambahkan data pergub!')
+                ->withInput();
         }
     }
 
@@ -93,13 +101,17 @@ class PergubController extends Controller
         try {
             $pergub = Pergub::findOrFail($id);
             $validated = $request->validate([
-                'no_agenda' => 'required|string|max:255',
+                'no_agenda' => 'nullable|string|max:255',
                 'no_surat' => 'required|string|max:255',
                 'pengirim' => 'required|string|max:255',
                 'tanggal_surat' => 'required|date',
                 'tanggal_terima' => 'required|date',
                 'perihal' => 'required|string|max:255',
                 'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048', 
+                'catatan' => 'nullable|string',
+                'disposisi' => 'nullable|string',
+                'admin_notes' => 'nullable|string',
+                'status' => 'nullable|string|max:255',
             ]);
 
             if ($request->hasFile('lampiran')) {
@@ -117,8 +129,9 @@ class PergubController extends Controller
             return redirect()->route('draft-phd.pergub.index')
                 ->with('success', 'Pergub berhasil diperbarui');
         } catch (\Exception $e) {
+            Log::error('Terjadi kesalahan saat memperbarui data pergub! ' . $e->getMessage());
             return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat memperbarui data!');
+                ->with('error', 'Terjadi kesalahan saat memperbarui data pergub!');
         }
     }
 
@@ -135,9 +148,10 @@ class PergubController extends Controller
                 'message' => 'Catatan berhasil diperbarui'
             ]);
         } catch (\Exception $e) {
+            Log::error('Error updating catatan pergub: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal memperbarui catatan'
+                'message' => 'Gagal memperbarui catatan pergub'
             ], 500);
         }
     }
@@ -187,32 +201,29 @@ class PergubController extends Controller
         try {
             $request->validate([
                 'disposisi' => 'required',
-                'sub_disposisi' => 'required_unless:disposisi,Kasubag Tata Usaha',
-                'tanggal_disposisi' => 'required|date',
                 'catatan' => 'nullable'
             ]);
 
             $pergub = Pergub::findOrFail($id);
 
+            // Combine disposisi and catatan into the disposisi field for display/single storage
             $disposisiText = $request->disposisi;
-            if ($request->sub_disposisi) {
-                $disposisiText .= ' | Diteruskan ke: ' . $request->sub_disposisi;
-            }
-            $disposisiText .= ' | Tanggal: ' . $request->tanggal_disposisi;
             if ($request->catatan) {
                 $disposisiText .= ' | Catatan: ' . $request->catatan;
             }
 
             $pergub->update([
-                'disposisi' => $disposisiText
+                'disposisi' => $disposisiText,
+                'catatan' => $request->catatan // Still store catatan separately if needed
             ]);
 
             return redirect()->back()
                             ->with('success', 'Disposisi berhasil ditambahkan');
 
         } catch (\Exception $e) {
+            Log::error('Error adding disposisi pergub: ' . $e->getMessage());
             return redirect()->back()
-                            ->with('error', 'Gagal menambahkan disposisi: ' . $e->getMessage());
+                            ->with('error', 'Gagal menambahkan disposisi pergub: ' . $e->getMessage());
         }
     }
 
@@ -227,11 +238,16 @@ class PergubController extends Controller
             $pergub->disposisi = $request->disposisi;
             $pergub->save();
 
-            return redirect()->back()
-            ->with('success', 'Disposisi berhasil diperbarui');
+            return response()->json([
+                'success' => true,
+                'message' => 'Disposisi berhasil diperbarui'
+            ]);
         } catch (\Exception $e) {
-        return redirect()->back()
-                    ->with('error', 'Gagal mengupdate disposisi: ' . $e->getMessage());
+            Log::error('Error updating disposisi pergub: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memperbarui disposisi pergub'
+            ], 500);
         }
     }
 }

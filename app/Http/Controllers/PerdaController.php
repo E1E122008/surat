@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
 use App\Exports\PerdaExport;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class PerdaController extends Controller
 {
@@ -40,15 +42,20 @@ class PerdaController extends Controller
     {
         try {
             $validated = $request->validate([
-                'no_agenda' => 'required|string|max:255',
+                'no_agenda' => 'nullable|string|max:255',
                 'no_surat' => 'required|string|max:255',
                 'pengirim' => 'required|string|max:255',    
                 'tanggal_surat' => 'required|date',
                 'tanggal_terima' => 'required|date',
                 'perihal' => 'required|string|max:255',
                 'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+                'catatan' => 'nullable|string',
+                'disposisi' => 'nullable|string',
+                'admin_notes' => 'nullable|string',
             ]);
-        
+            
+            $validated['submitted_by'] = Auth::id();
+
             if ($request->hasFile('lampiran')) {
                 $file = $request->file('lampiran');
                 $fileName = time() . '_' . $file->getClientOriginalName();
@@ -56,10 +63,10 @@ class PerdaController extends Controller
                 $validated['lampiran'] = $path;
             }
             
-            // Set status default to 'tercatat'
-            $validated['status'] = 'tercatat';
+            // Set status default to 'tercatat' unless provided
+            $validated['status'] = $request->input('status', 'tercatat');
             
-            Perda::create($validated);
+            $perda = Perda::create($validated);
 
             return redirect()->route('draft-phd.perda.index')
                 ->with('success', 'Perda berhasil ditambahkan');
@@ -67,6 +74,8 @@ class PerdaController extends Controller
             if (isset($path) && Storage::disk('public')->exists($path)) {
                 Storage::disk('public')->delete($path);
             }
+
+            Log::error('Terjadi kesalahan saat menambahkan data!: ' . $e->getMessage());
 
             return redirect()->back()
                 ->with('error', 'Terjadi kesalahan saat menambahkan data!' . $e->getMessage())
@@ -91,13 +100,17 @@ class PerdaController extends Controller
         try {
             $perda = Perda::findOrFail($id);
             $validated = $request->validate([
-                'no_agenda' => 'required|string|max:255',
+                'no_agenda' => 'nullable|string|max:255',
                 'no_surat' => 'required|string|max:255',
                 'pengirim' => 'required|string|max:255',
                 'tanggal_surat' => 'required|date',
                 'tanggal_terima' => 'required|date',
                 'perihal' => 'required|string|max:255',
                 'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+                'catatan' => 'nullable|string',
+                'disposisi' => 'nullable|string',
+                'admin_notes' => 'nullable|string',
+                'status' => 'nullable|string|max:255',
             ]);
 
             if ($request->hasFile('lampiran')) {
@@ -116,8 +129,9 @@ class PerdaController extends Controller
             return redirect()->route('draft-phd.perda.index')
                 ->with('success', 'Perda berhasil diperbarui');
         } catch (\Exception $e) {
+            Log::error('Terjadi kesalahan saat memperbarui data!' . $e->getMessage());
             return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat memperbarui data!');
+                ->with('error', 'Terjadi kesalahan saat memperbarui data!' . $e->getMessage());
         }
     }
 
@@ -187,30 +201,27 @@ class PerdaController extends Controller
         try {
             $request->validate([
                 'disposisi' => 'required',
-                'sub_disposisi' => 'required_unless:disposisi,Kasubag Tata Usaha',
-                'tanggal_disposisi' => 'required|date',
                 'catatan' => 'nullable'
             ]);
 
             $perda = Perda::findOrFail($id);
 
+            // Combine disposisi and catatan into the disposisi field for display/single storage
             $disposisiText = $request->disposisi;
-            if ($request->sub_disposisi) {
-                $disposisiText .= ' | Diteruskan ke: ' . $request->sub_disposisi;
-            }
-            $disposisiText .= ' | Tanggal: ' . $request->tanggal_disposisi;
             if ($request->catatan) {
                 $disposisiText .= ' | Catatan: ' . $request->catatan;
             }
 
             $perda->update([
-                'disposisi' => $disposisiText
+                'disposisi' => $disposisiText,
+                'catatan' => $request->catatan // Still store catatan separately if needed
             ]);
 
             return redirect()->back()
                             ->with('success', 'Disposisi berhasil ditambahkan');
 
         } catch (\Exception $e) {
+            Log::error('Error adding disposisi:', ['error' => $e->getMessage()]);
             return redirect()->back()
                             ->with('error', 'Gagal menambahkan disposisi: ' . $e->getMessage());
         }
@@ -227,11 +238,16 @@ class PerdaController extends Controller
             $perda->disposisi = $request->disposisi;
             $perda->save();
 
-            return redirect()->back()
-                            ->with('success', 'Disposisi berhasil diperbarui');
+            return response()->json([
+                'success' => true,
+                'message' => 'Disposisi berhasil diperbarui'
+            ]);
         } catch (\Exception $e) {
-            return redirect()->back()
-                            ->with('error', 'Gagal mengupdate disposisi: ' . $e->getMessage());
+            Log::error('Error updating disposisi:', ['error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memperbarui disposisi'
+            ], 500);
         }
     }
 }
