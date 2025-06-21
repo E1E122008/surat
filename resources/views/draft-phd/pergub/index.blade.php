@@ -7,6 +7,19 @@
         </div>
         <div class="bg-white shadow-sm rounded-lg">
             <div class="p-4">
+                {{-- ALERT SECTION --}}
+                @if(session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert" id="alertBox">
+                        <i class="fas fa-check-circle me-2"></i>
+                        {{ session('success') }}
+                    </div>
+                @endif
+                @if(session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alertBox">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        {{ session('error') }}
+                    </div>
+                @endif
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-semibold text-gray-800 tracking-wide">
                         Peraturan Gubernur
@@ -32,7 +45,7 @@
                 </div>
                 <div class="table-responsive" style="max-width: 1200px; margin: auto;">
                     <table class="table" id="suratTable">
-                        <thead class="table-bordered">
+                        <thead>
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
@@ -44,36 +57,28 @@
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">   
+                        <tbody>   
                             @foreach($pergubs as $index => $pergub)
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $index + 1 }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $pergub->no_agenda }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $pergub->no_surat }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $pergub->pengirim }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $pergub->pengirim }}</td> 
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{($pergub->tanggal_terima)->format('d/m/Y') }}</td>
+                                    
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                         @if($pergub->disposisi)
                                             @php
                                                 $disposisiParts = explode('|', $pergub->disposisi);
-                                                $mainDisposisi = trim($disposisiParts[0]);
                                             @endphp
-                                            <span class="bg-{{ strtolower(str_replace(' ', '-', $mainDisposisi)) }}">
-                                                {{ $mainDisposisi }}
-                                            </span>
-                                            @if(count($disposisiParts) > 1)
-                                                <br>
-                                                <small class="text-muted">
-                                                    @foreach(array_slice($disposisiParts, 1) as $part)
-                                                        {{ trim($part) }}<br>
-                                                    @endforeach
-                                                </small>
-                                            @endif
+                                            @foreach($disposisiParts as $part)
+                                                {{ trim($part) }}<br>
+                                            @endforeach
                                         @else
                                             -
                                         @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap  text-sm font-medium text-center">
+                                    </td>   
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                         @if($pergub->status == 'tercatat')
                                             <span class="bg-tercatat">Tercatat</span>
                                         @elseif($pergub->status == 'terdisposisi')
@@ -87,48 +92,52 @@
                                         @elseif($pergub->status == 'selesai')
                                             <span class="bg-selesai">Selesai</span>
                                         @endif
-                                        
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <button type="button" class="btn btn-light btn-sm" onclick="openDisposisiModal({{ $pergub->id }})" title="Disposisi">
-                                            <i class="fas fa-sync-alt" style="color: #29fd0d;"></i>
-                                        </button>                                        
-                                        <button type="button" class="btn btn-success btn-sm" onclick="openStatusModal({{ $pergub->id }}, '{{ $pergub->status }}')" title="Update Status">
-                                            <i class="fas fa-check"></i>
-                                        </button>
-                                        <a href="{{ route('draft-phd.pergub.detail', $pergub->id) }}" class="btn btn-primary btn-sm">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        
-                                        <form class="inline-block" id="delete-form-{{ $pergub->id }}" action="{{ route('draft-phd.pergub.destroy', $pergub->id) }}" method="POST">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        <div class="dropdown">
+                                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-cog"></i> Aksi
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><button class="dropdown-item" type="button" onclick="openDisposisiModal({{ $pergub->id }})"><i class="fas fa-sync-alt fa-fw me-2 text-warning"></i>Disposisi</button></li>
+                                                <li><button class="dropdown-item" type="button" onclick="openStatusModal({{ $pergub->id }}, '{{ $pergub->status }}')"><i class="fas fa-check-circle fa-fw me-2 text-success"></i>Status</button></li>
+                                                <li><a class="dropdown-item" href="{{ route('draft-phd.pergub.detail', $pergub->id) }}"><i class="fas fa-eye fa-fw me-2 text-primary"></i>Detail</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $pergub->id }})">
+                                                        <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <form id="delete-form-{{ $pergub->id }}" action="{{ route('draft-phd.pergub.destroy', $pergub->id) }}" method="POST" style="display: none;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $pergub->id }})">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form> 
+                                        </form>
                                     </td>
                                 </tr>
                             @endforeach 
                         </tbody>
                     </table>
-                </div>
+                </div> 
                 <div class="mt-4">
                     {{ $pergubs->links() }}
                 </div>
-            </div>  
+            </div>
         </div>
     </div>
 
+    <!-- Modal Update Status -->
     <div class="modal fade" id="statusModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Update Status Peraturan Gubernur</h5>
+                    <h5 class="modal-title">Update Status Pergub</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="statusForm" method="POST">
                     @csrf
+                    @method('PUT')
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
@@ -150,7 +159,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="modal fade" id="disposisiModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -180,13 +189,13 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="tanggal_disposisi" class="form-label">Tanggal Disposisi</label>
-                            <input type="date" class="form-control" id="tanggal_disposisi" name="tanggal_disposisi" required>
+                            <label for="catatan" class="form-label">Catatan</label>
+                            <textarea class="form-control" id="catatan" name="catatan" rows="3"></textarea>
                         </div>
 
                         <div class="mb-3">
-                            <label for="catatan" class="form-label">Catatan</label>
-                            <textarea class="form-control" id="catatan" name="catatan" rows="3"></textarea>
+                            <label for="tanggal_disposisi" class="form-label">Tanggal Disposisi</label>
+                            <input type="date" class="form-control" id="tanggal_disposisi" name="tanggal_disposisi" required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -197,7 +206,7 @@
             </div>
         </div>
     </div>
-    
+
     <style>
         body {
             background-color: #f3f4f6 !important;
@@ -223,7 +232,34 @@
             background-color: #f3f4f6 !important;
         }
 
-        /* Status badges */
+        .bg-ktu {
+            background-color: rgba(255, 0, 0, 0.2);
+            color: red;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }   
+
+        .bg-sekretaris {
+            background-color: rgba(0, 0, 255, 0.2);
+            color: blue;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }       
+
+        .bg-kepala {
+            background-color: rgba(0, 255, 0, 0.2);
+            color: green;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }   
+
+        .bg-kasubag {
+            background-color: rgba(255, 165, 0, 0.2);
+            color: orange;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
         .bg-tercatat {
             background-color: #D1D5DB;
             color: #374151;
@@ -266,7 +302,7 @@
             border-radius: 3px;
         }
 
-        /* Table styling */
+        /* Remove table borders */
         .table {
             border: none !important;
             margin-bottom: 0 !important;
@@ -302,7 +338,15 @@
             background-color: #f9fafb;
         }
 
-        /* DataTables styling */
+        /* Header styling */
+        .table thead th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Remove DataTables default styling */
         .dataTables_wrapper {
             margin-top: 1rem;
         }
@@ -342,32 +386,29 @@
         }
     </style>
 
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('#suratTable').DataTable({
-                "paging": true,
-                "lengthChange": false,
-                "searching": false,
-                "ordering": true,
-                "info": true,
-                "autoWidth": false,
-                "responsive": true,
-                "pageLength": 10,
-                "dom": "<'row'<'col-sm-12'tr>>" +
-                       "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-                "language": {
-                    "paginate": {
-                        "next": "Next",
-                        "previous": "Previous"
-                    },
-                    "info": "Showing _START_ to _END_ of _TOTAL_ entries",
-                    "emptyTable": "No data available"
+        function searchTable() {
+            const input = document.getElementById('search');
+            const filter = input.value.toLowerCase();
+            const table = document.querySelector('table');
+            const tr = table.getElementsByTagName('tr');
+            
+            for (let i = 1; i < tr.length; i++) {
+                const td = tr[i].getElementsByTagName('td');
+                let found = false;
+                for (let j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        const txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                            found = true;
+                            break;
+                        }
+                    }
                 }
-            });
-        });
+                tr[i].style.display = found ? "" : "none";
+            }
+        }
 
         function confirmDelete(id) {
             Swal.fire({
@@ -375,8 +416,8 @@
                 text: "Data ini akan dihapus secara permanen!",
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#FF4757',
-                cancelButtonColor: '#747D8C',
+                confirmButtonColor: '#FF4757', // Merah yang lebih cerah
+                cancelButtonColor: '#747D8C', // Abu-abu yang lebih kontras
                 confirmButtonText: 'Ya, hapus!',
                 cancelButtonText: 'Batal',
                 showClass: {
@@ -400,20 +441,39 @@
             });
         }
 
-        function editCatatan(suratId, catatan) {
+        function openStatusModal(id, currentStatus) {
+            console.log('Opening modal for Pergub ID:', id);
+            const modal = document.getElementById('statusModal');
+            const form = document.getElementById('statusForm');
+            form.action = `/draft-phd/pergub/${id}/update-status`;
+            document.getElementById('status').value = currentStatus;
+            
+            if (typeof bootstrap !== 'undefined') {
+                new bootstrap.Modal(modal).show();
+            } else {
+                console.error('Bootstrap Modal tidak tersedia');
+            }
+        }
+
+        document.getElementById('statusForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            this.submit();
+        });
+
+        function editCatatan(suratId, currentCatatan) { 
             const container = document.querySelector(`[data-surat-id="${suratId}"]`);
             const textarea = container.querySelector('.catatan-textarea');
-
-            textarea.readOnly = !textarea.readOnly;
-
+            
+            textarea.readOnly = !textarea.readOnly;     
+            
             if (!textarea.readOnly) {
                 textarea.focus();
                 container.querySelector('.btn-success i').classList.remove('fa-sync-alt');
                 container.querySelector('.btn-success i').classList.add('fa-save');
-            } else {
+            } else {    
                 container.querySelector('.btn-success i').classList.remove('fa-save');
                 container.querySelector('.btn-success i').classList.add('fa-sync-alt');
-
+                
                 fetch(`/draft-phd/pergub/${suratId}/update-catatan`, {
                     method: 'POST',
                     headers: {
@@ -424,88 +484,22 @@
                         catatan: textarea.value
                     })
                 })
-                .then(response => {
-                    console.log('Response:', response); 
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
-                    console.log('Data:', data);
                     if (data.success) {
-                        showSuccess('Catatan berhasil diperbarui');
+                        // showSuccess('Catatan berhasil diperbarui');
                     } else {
-                        showError('Gagal memperbarui catatan');
-                        textarea.value = catatan;
+                        // showError('Gagal memperbarui catatan');
+                        textarea.value = currentCatatan;
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    showError('Terjadi kesalahan sistem');
-                    textarea.value = catatan;
+                    // showError('Terjadi kesalahan sistem');
+                    textarea.value = currentCatatan;
                 });
             }
         }
-
-        function showSuccess(message) {
-            Swal.fire({
-                title: "Berhasil!",
-                text: message,
-                icon: "success",
-                showConfirmButton: false,
-                timer: 2000,
-                toast: true,
-                position: "top-end",
-                showClass: {
-                    popup: 'animate__animated animate__fadeInRight'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOutRight'
-                },
-                background: '#10B981',
-                color: '#ffffff'
-            });
-        }
-
-        function showError(message) {
-            Swal.fire({
-                title: "Error!",
-                text: message,
-                icon: "error",
-                showConfirmButton: false,
-                timer: 3000,
-                toast: true,
-                position: "top-end",
-                showClass: {
-                    popup: 'animate__animated animate__fadeInRight'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOutRight'
-                },
-                background: '#EF4444',
-                color: '#ffffff'
-            });
-        }
-
-        @if(session('success'))
-            showSuccess('{{ session('success') }}');
-        @endif
-
-        @if(session('error'))
-            showError('{{ session('error') }}');
-        @endif
-
-        function openStatusModal(id, currentStatus) {
-            console.log('Opening modal for ID:', id, 'Current status:', currentStatus);
-            
-            const form = document.getElementById('statusForm');
-            form.action = `/draft-phd/pergub/${id}/update-status`;
-            document.getElementById('status').value = currentStatus;
-            new bootstrap.Modal(document.getElementById('statusModal')).show();
-        }
-
-        document.getElementById('statusForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            this.submit(); // Submit form secara normal
-        });
 
         const subDisposisiOptions = {
             'Kabag Perancangan Per-UU kab/kota': [
@@ -592,6 +586,44 @@
             }
             
             this.submit();
+        });
+
+        // Auto-hide alert
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                let alert = document.getElementById('alertBox');
+                if (alert) {
+                    new bootstrap.Alert(alert).close();
+                }
+            }, 5000);
+        });
+    </script>  
+    
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#suratTable').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+                "pageLength": 10,
+                "dom": "<'row'<'col-sm-12'tr>>" +
+                       "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                "language": {
+                    "paginate": {
+                        "next": "Next",
+                        "previous": "Previous"
+                    },
+                    "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "emptyTable": "No data available"
+                }
+            });
         });
     </script>
 @endsection 

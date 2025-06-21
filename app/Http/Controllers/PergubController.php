@@ -200,30 +200,31 @@ class PergubController extends Controller
     {
         try {
             $request->validate([
-                'disposisi' => 'required',
-                'catatan' => 'nullable'
+                'disposisi' => 'required|string|max:255',
+                'sub_disposisi' => 'nullable|string|max:255',
+                'catatan' => 'nullable|string',
+                'tanggal_disposisi' => 'required|date',
             ]);
 
             $pergub = Pergub::findOrFail($id);
 
-            // Combine disposisi and catatan into the disposisi field for display/single storage
-            $disposisiText = $request->disposisi;
-            if ($request->catatan) {
-                $disposisiText .= ' | Catatan: ' . $request->catatan;
+            $disposisiParts = [];
+            $disposisiParts[] = $request->disposisi;
+            if ($request->filled('sub_disposisi') && $request->sub_disposisi !== 'Belum/Tidak diteruskan') {
+                $disposisiParts[] = $request->sub_disposisi;
             }
+            $tanggalDisposisi = \Carbon\Carbon::parse($request->tanggal_disposisi)->format('d/m/Y');
+            $disposisiParts[] = '(Tgl: ' . $tanggalDisposisi . ')';
 
-            $pergub->update([
-                'disposisi' => $disposisiText,
-                'catatan' => $request->catatan // Still store catatan separately if needed
-            ]);
+            $pergub->disposisi = implode(' | ', $disposisiParts);
+            $pergub->catatan = $request->catatan;
+            $pergub->status = 'terdisposisi';
+            $pergub->save();
 
-            return redirect()->back()
-                            ->with('success', 'Disposisi berhasil ditambahkan');
-
+            return redirect()->back()->with('success', 'Disposisi berhasil ditambahkan');
         } catch (\Exception $e) {
-            Log::error('Error adding disposisi pergub: ' . $e->getMessage());
-            return redirect()->back()
-                            ->with('error', 'Gagal menambahkan disposisi pergub: ' . $e->getMessage());
+            Log::error('Error adding disposisi: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menambahkan disposisi: ' . $e->getMessage());
         }
     }
 

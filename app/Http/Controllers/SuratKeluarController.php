@@ -111,14 +111,14 @@ class SuratKeluarController extends Controller
     public function destroy(SuratKeluar $suratKeluar)
     {
         try {
-            // Hapus file lampiran jika ada
-            if ($suratKeluar->lampiran) {
-                Storage::disk('public')->delete($suratKeluar->lampiran);
-            }
+        // Hapus file lampiran jika ada
+        if ($suratKeluar->lampiran) {
+            Storage::disk('public')->delete($suratKeluar->lampiran);
+        }
 
-            $suratKeluar->delete();
+        $suratKeluar->delete();
 
-            return redirect()->route('surat-keluar.index')
+        return redirect()->route('surat-keluar.index')
                 ->with('success', '✅ Surat keluar berhasil dihapus!');
                 
         } catch (\Exception $e) {

@@ -193,7 +193,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/draft-phd/pergub', [PergubController::class, 'index'])->name('draft-phd.pergub.index');
     Route::get('/draft-phd/pergub/create', [PergubController::class, 'create'])->name('draft-phd.pergub.create');
     Route::get('/draft-phd/pergub/{pergub}/status', [PergubController::class, 'status'])->name('draft-phd.pergub.status');
-    Route::post('/draft-phd/pergub/{id}/update-status', [PergubController::class, 'updateStatus'])
+    Route::put('/draft-phd/pergub/{id}/update-status', [PergubController::class, 'updateStatus'])
         ->name('draft-phd.pergub.update-status');
     Route::get('/draft-phd/pergub/{pergub}/detail', [PergubController::class, 'detail'])->name('draft-phd.pergub.detail');
     Route::get('/draft-phd/pergub/{pergub}/edit', [PergubController::class, 'edit'])->name('draft-phd.pergub.edit');

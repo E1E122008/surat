@@ -47,7 +47,7 @@
                             <label for="disposisi">Disposisi</label>
                             <textarea name="disposisi" id="disposisi" class="form-control border-effect" readonly rows="3">{{ $sk->disposisi ? str_replace(' | ', "\n", $sk->disposisi) : 'Belum ada disposisi' }}</textarea>
                         </div>
-
+                    
                         <div class="form-group mb-3">
                             <label for="status">Status</label>
                             <textarea name="status" id="status" class="form-control border-effect" readonly rows="3">{{ ucfirst($sk->status) }}</textarea>

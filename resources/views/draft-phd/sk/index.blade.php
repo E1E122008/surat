@@ -36,7 +36,7 @@
                     </div>
                 @endif
 
-                <div class="flex justify-between items-center mb-6">
+                    <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-semibold text-gray-800 tracking-wide">
                         Surat Keputusan
                     </h2>
@@ -88,8 +88,8 @@
                                                     $disposisiParts = explode('|', $item->disposisi);
                                                 @endphp
                                                 @foreach($disposisiParts as $part)
-                                                    {{ trim($part) }}<br>
-                                                @endforeach
+                                                            {{ trim($part) }}<br>
+                                                        @endforeach
                                             @else
                                                 -
                                             @endif
@@ -123,7 +123,7 @@
                                                     <li>
                                                         <button class="dropdown-item" type="button" onclick="openStatusModal({{ $item->id }}, '{{ $item->status }}')">
                                                             <i class="fas fa-check-circle fa-fw me-2 text-success"></i>Status
-                                                        </button>
+                                                </button>
                                                     </li>
                                                     <li>
                                                         <a class="dropdown-item" href="{{ route('draft-phd.sk.detail', $item->id) }}">
@@ -140,9 +140,9 @@
                                             </div>
                                             {{-- This form is submitted by the confirmDelete() Javascript function --}}
                                             <form id="delete-form-{{ $item->id }}" action="{{ route('draft-phd.sk.destroy', $item->id) }}" method="POST" style="display: none;">
-                                                @csrf
-                                                @method('DELETE')
-                                            </form>
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -605,10 +605,10 @@
     }
 
     function openStatusModal(id, currentStatus) {
-        document.getElementById('statusForm').action = `/sk/update-status/${id}`;
+            document.getElementById('statusForm').action = `/sk/update-status/${id}`;
         document.getElementById('status').value = currentStatus;
-        document.getElementById('suratId').value = id;
-        new bootstrap.Modal(document.getElementById('statusModal')).show();
+            document.getElementById('suratId').value = id;
+            new bootstrap.Modal(document.getElementById('statusModal')).show();
     }
 
     document.getElementById('saveStatus').addEventListener('click', function() {
