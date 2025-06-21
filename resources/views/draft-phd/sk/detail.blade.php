@@ -43,20 +43,15 @@
                     </div> 
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                         <div class="form-group mb-3">
-                            <label for="catatan">Catatan User</label>
-                            <textarea name="catatan" id="catatan" class="form-control border-effect" readonly>{{ $sk->catatan }}</textarea>
+                        <div class="form-group mb-3">
+                            <label for="disposisi">Disposisi</label>
+                            <textarea name="disposisi" id="disposisi" class="form-control border-effect" readonly rows="3">{{ $sk->disposisi ? str_replace(' | ', "\n", $sk->disposisi) : 'Belum ada disposisi' }}</textarea>
                         </div>
 
                         <div class="form-group mb-3">
-                            <label for="disposisi">Disposisi</label>
-                            <textarea type="text" name="disposisi" id="disposisi" class="form-control border-effect" readonly>{{ $sk->disposisi }}</textarea>
+                            <label for="status">Status</label>
+                            <textarea name="status" id="status" class="form-control border-effect" readonly rows="3">{{ ucfirst($sk->status) }}</textarea>
                         </div>
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <label for="admin_notes">Catatan Admin</label>
-                        <textarea name="admin_notes" id="admin_notes" class="form-control border-effect" readonly>{{ $sk->admin_notes }}</textarea>
                     </div>
 
                     <div class="form-group mb-3">
@@ -65,6 +60,8 @@
                             <i class="fas fa-eye"></i> {{ basename($sk->lampiran) }}
                         </button>
                     </div>
+
+                    
                 </div>
                 <div class="p-6 bg-white border-b border-gray-200">
                     <div class="button-container flex space-x-4">

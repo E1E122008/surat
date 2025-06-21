@@ -7,7 +7,36 @@
         </div>
         <div class="bg-white shadow-sm rounded-lg">
             <div class="p-4">
-                    <div class="flex justify-between items-center mb-6">
+                <!-- Alert Section -->
+                @if(session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                @if($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <ul class="mb-0">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-semibold text-gray-800 tracking-wide">
                         Surat Keputusan
                     </h2>
@@ -57,19 +86,10 @@
                                             @if($item->disposisi)
                                                 @php
                                                     $disposisiParts = explode('|', $item->disposisi);
-                                                    $mainDisposisi = trim($disposisiParts[0]);
                                                 @endphp
-                                                <span class="bg-{{ strtolower(str_replace(' ', '-', $mainDisposisi)) }}">
-                                                    {{ $mainDisposisi }}
-                                                </span>
-                                                @if(count($disposisiParts) > 1)
-                                                    <br>
-                                                    <small class="text-muted">
-                                                        @foreach(array_slice($disposisiParts, 1) as $part)
-                                                            {{ trim($part) }}<br>
-                                                        @endforeach
-                                                    </small>
-                                                @endif
+                                                @foreach($disposisiParts as $part)
+                                                    {{ trim($part) }}<br>
+                                                @endforeach
                                             @else
                                                 -
                                             @endif
@@ -90,24 +110,39 @@
                                             @endif
                                         </td>  
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-                                            <div class="flex justify-center gap-2">
-                                                <button type="button" class="btn btn-light btn-sm" onclick="openDisposisiModal({{ $item->id }})" title="Disposisi">
-                                                    <i class="fas fa-sync-alt" style="color: #29fd0d;"></i>
+                                            <div class="dropdown">
+                                                <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="fas fa-cog"></i> Aksi
                                                 </button>
-                                                <button onclick="openStatusModal({{ $item->id }}, '{{ $item->status }}')" class="btn btn-success btn-sm" title="Update Status">
-                                                    <i class="fas fa-check"></i>
-                                                </button>
-                                            <a href="{{ route('draft-phd.sk.detail', $item->id) }}" class="btn btn-primary btn-sm" title="Detail">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                            <form id="delete-form-{{ $item->id }}" action="{{ route('draft-phd.sk.destroy', $item->id) }}" method="POST" class="inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $item->id }})" title="Hapus">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </div>    
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <button class="dropdown-item" type="button" onclick="openDisposisiModal({{ $item->id }})">
+                                                            <i class="fas fa-sync-alt fa-fw me-2 text-warning"></i>Disposisi
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button class="dropdown-item" type="button" onclick="openStatusModal({{ $item->id }}, '{{ $item->status }}')">
+                                                            <i class="fas fa-check-circle fa-fw me-2 text-success"></i>Status
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="{{ route('draft-phd.sk.detail', $item->id) }}">
+                                                            <i class="fas fa-eye fa-fw me-2 text-primary"></i>Detail
+                                                        </a>
+                                                    </li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li>
+                                                        <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $item->id }})">
+                                                            <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            {{-- This form is submitted by the confirmDelete() Javascript function --}}
+                                            <form id="delete-form-{{ $item->id }}" action="{{ route('draft-phd.sk.destroy', $item->id) }}" method="POST" style="display: none;">
+                                                @csrf
+                                                @method('DELETE')
+                                            </form>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -379,6 +414,76 @@
         .btn-info:hover {
             background-color: #3c5aa8;
         }
+
+        tr:hover {
+            background-color: #f2f2f2;
+        }
+
+        .bg-ktu {
+            background-color: rgba(0, 255, 0, 0.2);
+            color: green;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-sekretaris {
+            background-color: rgba(0, 0, 255, 0.2);
+            color: blue;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-kepala {
+            background-color: rgba(255, 0, 0, 0.2);
+            color: red;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .bg-kasubag {
+            background-color: rgba(255, 165, 0, 0.2);
+            color: orange;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        /* Alert Styling */
+        .alert {
+            border: none;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .alert-success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+
+        .alert-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        .alert i {
+            margin-right: 0.5rem;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .btn-close:hover {
+            opacity: 1;
+        }
     </style>
 
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -499,19 +604,11 @@
         }
     }
 
-    @if(session('success'))
-        showSuccess('{{ session('success') }}');
-    @endif
-
-    @if(session('error'))
-        showError('{{ session('error') }}');
-    @endif
-
     function openStatusModal(id, currentStatus) {
-            document.getElementById('statusForm').action = `/sk/update-status/${id}`;
+        document.getElementById('statusForm').action = `/sk/update-status/${id}`;
         document.getElementById('status').value = currentStatus;
-            document.getElementById('suratId').value = id;
-            new bootstrap.Modal(document.getElementById('statusModal')).show();
+        document.getElementById('suratId').value = id;
+        new bootstrap.Modal(document.getElementById('statusModal')).show();
     }
 
     document.getElementById('saveStatus').addEventListener('click', function() {
@@ -651,40 +748,13 @@
                     "emptyTable": "No data available"
                 }
             });
+
+            // Automatically hide alerts after 5 seconds
+            window.setTimeout(function() {
+                $(".alert-dismissible").fadeTo(500, 0).slideUp(500, function(){
+                    $(this).remove();
+                });
+            }, 5000); // 5 seconds
         });
     </script>   
-
-    <style>
-        tr:hover {
-            background-color: #f2f2f2;
-        }
-
-        .bg-ktu {
-            background-color: rgba(0, 255, 0, 0.2);
-            color: green;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        .bg-sekretaris {
-            background-color: rgba(0, 0, 255, 0.2);
-            color: blue;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        .bg-kepala {
-            background-color: rgba(255, 0, 0, 0.2);
-            color: red;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        .bg-kasubag {
-            background-color: rgba(255, 165, 0, 0.2);
-            color: orange;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-    </style>
 @endsection

@@ -72,33 +72,7 @@
                     @enderror
                 </div>
 
-                <div class="form-group form-grid-full">
-                    <label for="catatan" class="form-label">Catatan User</label>
-                    <textarea name="catatan" id="catatan" rows="3" 
-                        class="form-control @error('catatan') is-invalid @enderror">{{ old('catatan') }}</textarea>
-                    @error('catatan')
-                        <div class="form-error">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="form-group form-grid-full">
-                    <label for="disposisi" class="form-label">Disposisi</label>
-                    <input type="text" name="disposisi" id="disposisi" 
-                        class="form-control @error('disposisi') is-invalid @enderror"
-                        value="{{ old('disposisi') }}">
-                    @error('disposisi')
-                        <div class="form-error">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="form-group form-grid-full">
-                    <label for="admin_notes" class="form-label">Catatan Admin</label>
-                    <textarea name="admin_notes" id="admin_notes" rows="3" 
-                        class="form-control @error('admin_notes') is-invalid @enderror">{{ old('admin_notes') }}</textarea>
-                    @error('admin_notes')
-                        <div class="form-error">{{ $message }}</div>
-                    @enderror
-                </div>
+                
 
                 <div class="form-group form-grid-full">
                     <label for="lampiran" class="form-label">Lampiran</label>

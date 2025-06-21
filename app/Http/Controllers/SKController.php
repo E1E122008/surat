@@ -55,8 +55,6 @@ class SKController extends Controller
                 'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
                 'catatan' => 'nullable|string',
                 'disposisi' => 'nullable|string',
-                'sub_disposisi' => 'nullable|string',
-                'tanggal_disposisi' => 'nullable|date',
                 'admin_notes' => 'nullable|string',
             ]);
 
@@ -78,9 +76,9 @@ class SKController extends Controller
                 throw new \Exception('Gagal menyimpan SK');
             }
 
-
             return redirect()->route('draft-phd.sk.index')
-                ->with('success', 'SK berhasil ditambahkan');
+                ->with('success', '✅ SK berhasil ditambahkan!');
+                
         } catch (\Exception $e) {
             // Jika terjadi error saat upload file, hapus file yang sudah terupload
             if (isset($path) && Storage::disk('public')->exists($path)) {
@@ -90,7 +88,7 @@ class SKController extends Controller
             Log::error('Terjadi kesalahan saat menyimpan SK: ' . $e->getMessage());
 
             return redirect()->back()
-                ->with('error', 'Gagal menyimpan SK: ' . $e->getMessage())
+                ->with('error', '❌ Gagal menyimpan SK: ' . $e->getMessage())
                 ->withInput();
         }
     }
@@ -112,9 +110,9 @@ class SKController extends Controller
             $sk->status = $request->status;
             $sk->save();
 
-            return redirect()->back()->with('success', 'Status berhasil diperbarui.');
+            return redirect()->back()->with('success', '✅ Status berhasil diperbarui!');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
+            return redirect()->back()->with('error', '❌ Gagal mengupdate status: ' . $e->getMessage());
         }
     }
 
@@ -136,8 +134,6 @@ class SKController extends Controller
                 'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
                 'catatan' => 'nullable|string',
                 'disposisi' => 'nullable|string',
-                'sub_disposisi' => 'nullable|string',
-                'tanggal_disposisi' => 'nullable|date',
                 'admin_notes' => 'nullable|string',
                 'status' => 'nullable|string|max:255',
             ]);
@@ -156,29 +152,34 @@ class SKController extends Controller
             $sk->update($validated);
 
             return redirect()->route('draft-phd.sk.index')
-                ->with('success', 'SK berhasil diperbarui');
+                ->with('success', '✅ SK berhasil diperbarui!');
+                
         } catch (\Exception $e) {
             Log::error('Terjadi kesalahan saat memperbarui SK: ' . $e->getMessage());
             return redirect()->back()
-                ->with('error', 'Gagal memperbarui SK: ' . $e->getMessage())
+                ->with('error', '❌ Gagal memperbarui SK: ' . $e->getMessage())
                 ->withInput();
         }
     }
 
     public function destroy(SK $sk)
     {
-
-        // Delete file if exists
-        if ($sk->lampiran) {
-            Storage::disk('public')->delete($sk->lampiran);
-        }
-            
+        try {
+            // Delete file if exists
+            if ($sk->lampiran) {
+                Storage::disk('public')->delete($sk->lampiran);
+            }
+                
             // Delete the SK record
-        $sk->delete();
+            $sk->delete();
 
             return redirect()->route('draft-phd.sk.index')
-                ->with('success', 'SK berhasil dihapus');
-        
+                ->with('success', '✅ SK berhasil dihapus!');
+                
+        } catch (\Exception $e) {
+            return redirect()->route('draft-phd.sk.index')
+                ->with('error', '❌ Gagal menghapus SK: ' . $e->getMessage());
+        }
     }
 
     public function export() 
@@ -214,29 +215,35 @@ class SKController extends Controller
     {
         try {
             $request->validate([
-                'disposisi' => 'required',
-                'sub_disposisi' => 'required_unless:disposisi,Kasubag Tata Usaha',
+                'disposisi' => 'required|string|max:255',
+                'sub_disposisi' => 'nullable|string|max:255',
+                'catatan' => 'nullable|string',
                 'tanggal_disposisi' => 'required|date',
-                'catatan' => 'nullable'
             ]);
-
+    
             $sk = SK::findOrFail($id);
-            $sk->disposisi = $request->disposisi;
-            $sk->sub_disposisi = $request->sub_disposisi;
-            $sk->tanggal_disposisi = $request->tanggal_disposisi;
-            $sk->catatan = $request->catatan;
+
+            // Gabungkan bagian-bagian disposisi menjadi satu string
+            $disposisiParts = [];
+            $disposisiParts[] = $request->disposisi;
+
+            if ($request->filled('sub_disposisi') && $request->sub_disposisi !== 'Belum/Tidak diteruskan') {
+                $disposisiParts[] = $request->sub_disposisi;
+            }
+            
+            // Format tanggal dan tambahkan ke disposisi
+            $tanggalDisposisi = \Carbon\Carbon::parse($request->tanggal_disposisi)->format('d/m/Y');
+            $disposisiParts[] = '(Tgl: ' . $tanggalDisposisi . ')';
+
+            $sk->disposisi = implode(' | ', $disposisiParts);
+            $sk->catatan = $request->catatan; // Simpan catatan
+            $sk->status = 'terdisposisi'; // Update status
             $sk->save();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Disposisi berhasil ditambahkan'
-            ]);
+            return redirect()->route('draft-phd.sk.index')->with('success', '✅ Surat berhasil didisposisikan.');
+
         } catch (\Exception $e) {
-            Log::error('Error adding disposisi:', ['error' => $e->getMessage()]);
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal menambahkan disposisi'
-            ], 500);
+            return redirect()->route('draft-phd.sk.index')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
