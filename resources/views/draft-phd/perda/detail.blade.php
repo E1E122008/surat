@@ -40,24 +40,44 @@
                     <div class="form-group mb-3">
                         <label for="perihal">Perihal</label>
                         <textarea name="perihal" id="perihal" class="form-control border-effect" readonly>{{ $perda->perihal }}</textarea>
-                    </div>    
-
+                    </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="form-group mb-3">
-                            <label for="catatan">Catatan User</label>
-                            <textarea name="catatan" id="catatan" class="form-control border-effect" readonly>{{ $perda->catatan }}</textarea>
-                        </div>
-
-                        <div class="form-group mb-3">
                             <label for="disposisi">Disposisi</label>
-                            <textarea type="text" name="disposisi" id="disposisi" class="form-control border-effect" readonly>{{ $perda->disposisi }}</textarea>
+                            <div class="form-control border-effect bg-gray-50" readonly style="min-height:90px;">
+                                @if($perda->disposisi)
+                                    @php $disposisiParts = explode('|', $perda->disposisi); @endphp
+                                    @foreach($disposisiParts as $part)
+                                        {{ trim($part) }}<br>
+                                    @endforeach
+                                @else
+                                    -
+                                @endif
+                            </div>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="status">Status</label>
+                            <div class="form-control border-effect bg-gray-50" readonly style="min-height:90px; display:flex; align-items:center;">
+                                @if($perda->status == 'tercatat')
+                                    <span class="bg-tercatat">Tercatat</span>
+                                @elseif($perda->status == 'terdisposisi')
+                                    <span class="bg-terdisposisi">Terdisposisi</span>
+                                @elseif($perda->status == 'diproses')
+                                    <span class="bg-diproses">Diproses</span>
+                                @elseif($perda->status == 'koreksi')
+                                    <span class="bg-koreksi">Koreksi</span>
+                                @elseif($perda->status == 'diambil')
+                                    <span class="bg-diambil">Diambil</span>
+                                @elseif($perda->status == 'selesai')
+                                    <span class="bg-selesai">Selesai</span>
+                                @else
+                                    {{ ucfirst($perda->status) }}
+                                @endif
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label for="admin_notes">Catatan Admin</label>
-                        <textarea name="admin_notes" id="admin_notes" class="form-control border-effect" readonly>{{ $perda->admin_notes }}</textarea>
-                    </div>
+                    
 
                     <div class="form-group mb-3">
                         <label for="lampiran">Lampiran</label>

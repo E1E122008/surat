@@ -7,6 +7,19 @@
         </div>
         <div class="bg-white shadow-sm rounded-lg">
             <div class="p-4">
+                {{-- ALERT SECTION --}}
+                @if(session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert" id="alertBox">
+                        <i class="fas fa-check-circle me-2"></i>
+                        {{ session('success') }}
+                    </div>
+                @endif
+                @if(session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alertBox">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        {{ session('error') }}
+                    </div>
+                @endif
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-semibold text-gray-800 tracking-wide">
                         Peraturan Daerah
@@ -57,19 +70,10 @@
                                         @if($perda->disposisi)
                                             @php
                                                 $disposisiParts = explode('|', $perda->disposisi);
-                                                $mainDisposisi = trim($disposisiParts[0]);
                                             @endphp
-                                            <span class="bg-{{ strtolower(str_replace(' ', '-', $mainDisposisi)) }}">
-                                                {{ $mainDisposisi }}
-                                            </span>
-                                            @if(count($disposisiParts) > 1)
-                                                <br>
-                                                <small class="text-muted">
-                                                    @foreach(array_slice($disposisiParts, 1) as $part)
-                                                        {{ trim($part) }}<br>
-                                                    @endforeach
-                                                </small>
-                                            @endif
+                                            @foreach($disposisiParts as $part)
+                                                {{ trim($part) }}<br>
+                                            @endforeach
                                         @else
                                             -
                                         @endif
@@ -90,24 +94,26 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-                                        <div class="flex justify-center gap-2">
-                                            <button type="button" class="btn btn-light btn-sm" onclick="openDisposisiModal({{ $perda->id }})" title="Disposisi">
-                                                <i class="fas fa-sync-alt" style="color: #29fd0d;"></i>
+                                        <div class="dropdown">
+                                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-cog"></i> Aksi
                                             </button>
-                                            <button type="button" class="btn btn-success btn-sm" onclick="openStatusModal({{ $perda->id }}, '{{ $perda->status }}')" title="Update Status">
-                                                <i class="fas fa-check"></i>
-                                            </button>
-                                            <a href="{{ route('draft-phd.perda.detail', $perda->id) }}" class="btn btn-primary btn-sm" title="Detail">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <form id="delete-form-{{ $perda->id }}" action="{{ route('draft-phd.perda.destroy', $perda->id) }}" method="POST" class="inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $perda->id }})" title="Hapus">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
+                                            <ul class="dropdown-menu">
+                                                <li><button class="dropdown-item" type="button" onclick="openDisposisiModal({{ $perda->id }})"><i class="fas fa-sync-alt fa-fw me-2 text-warning"></i>Disposisi</button></li>
+                                                <li><button class="dropdown-item" type="button" onclick="openStatusModal({{ $perda->id }}, '{{ $perda->status }}')"><i class="fas fa-check-circle fa-fw me-2 text-success"></i>Status</button></li>
+                                                <li><a class="dropdown-item" href="{{ route('draft-phd.perda.detail', $perda->id) }}"><i class="fas fa-eye fa-fw me-2 text-primary"></i>Detail</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $perda->id }})">
+                                                        <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
+                                                    </button>
+                                                </li>
+                                            </ul>
                                         </div>
+                                        <form id="delete-form-{{ $perda->id }}" action="{{ route('draft-phd.perda.destroy', $perda->id) }}" method="POST" style="display: none;">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
                                     </td>
                                 </tr>
                             @endforeach 
@@ -435,46 +441,6 @@
             });
         }
 
-        function showSuccess(message) {
-            Swal.fire({
-                title: "Berhasil!",
-                text: message,
-                icon: "success",
-                showConfirmButton: false,
-                timer: 2000,
-                toast: true,
-                position: "top-end",
-                showClass: {
-                    popup: 'animate__animated animate__fadeInRight'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOutRight'
-                },
-                background: '#10B981',
-                color: '#ffffff'
-            });
-        }
-
-        function showError(message) {
-            Swal.fire({
-                title: "Error!",
-                text: message,
-                icon: "error",
-                showConfirmButton: false,
-                timer: 3000,
-                toast: true,
-                position: "top-end",
-                showClass: {
-                    popup: 'animate__animated animate__fadeInRight'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOutRight'
-                },
-                background: '#EF4444',
-                color: '#ffffff'
-            });
-        }
-
         function openStatusModal(id, currentStatus) {
             console.log('Opening modal for Perda ID:', id);
             const modal = document.getElementById('statusModal');
@@ -521,27 +487,19 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        showSuccess('Catatan berhasil diperbarui');
+                        // showSuccess('Catatan berhasil diperbarui');
                     } else {
-                        showError('Gagal memperbarui catatan');
+                        // showError('Gagal memperbarui catatan');
                         textarea.value = currentCatatan;
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    showError('Terjadi kesalahan sistem');
+                    // showError('Terjadi kesalahan sistem');
                     textarea.value = currentCatatan;
                 });
             }
         }
-
-        @if(session('success'))
-            showSuccess('{{ session('success') }}');
-        @endif
-
-        @if(session('error'))
-            showError('{{ session('error') }}');
-        @endif
 
         const subDisposisiOptions = {
             'Kabag Perancangan Per-UU kab/kota': [
@@ -628,6 +586,16 @@
             }
             
             this.submit();
+        });
+
+        // Auto-hide alert
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                let alert = document.getElementById('alertBox');
+                if (alert) {
+                    new bootstrap.Alert(alert).close();
+                }
+            }, 5000);
         });
     </script>  
     
