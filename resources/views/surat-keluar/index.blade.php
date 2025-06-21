@@ -7,6 +7,35 @@
         </div>
         <div class="bg-white shadow-sm rounded-lg">
             <div class="p-4">
+                <!-- Alert Section -->
+                @if(session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                @if($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <ul class="mb-0">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-semibold text-gray-800 tracking-wide">
                         Surat Keluar
@@ -207,6 +236,44 @@
         .flex.justify-center.items-center {
             gap: 0.5rem;
         }
+
+        /* Alert Styling */
+        .alert {
+            border: none;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .alert-success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+
+        .alert-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        .alert i {
+            margin-right: 0.5rem;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .btn-close:hover {
+            opacity: 1;
+        }
     </style>
 
     <script>
@@ -222,6 +289,8 @@
         });
 
         function confirmDelete(id) {
+            console.log('confirmDelete called with id:', id); // Debug log
+            
             Swal.fire({
                 title: 'Apakah Anda yakin?',
                 text: "Data ini akan dihapus secara permanen!",
@@ -246,9 +315,19 @@
                 backdrop: 'rgba(0,0,0,0.4)',
                 padding: '2em'
             }).then((result) => {
+                console.log('SweetAlert result:', result); // Debug log
                 if (result.isConfirmed) {
-                    document.getElementById('delete-form-' + id).submit();
+                    console.log('User confirmed delete, submitting form...'); // Debug log
+                    const form = document.getElementById('delete-form-' + id);
+                    console.log('Form element:', form); // Debug log
+                    if (form) {
+                        form.submit();
+                    } else {
+                        console.error('Form not found for id:', id);
+                    }
                 }
+            }).catch((error) => {
+                console.error('SweetAlert error:', error); // Debug log
             });
         }
 

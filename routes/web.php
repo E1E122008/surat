@@ -33,7 +33,9 @@ Route::resource('surat-masuk', SuratMasukController::class);
 Route::get('surat-masuk/export', [SuratMasukController::class, 'export'])->name('surat-masuk.export');
 Route::post('surat-masuk/{id}/review', [SuratMasukController::class, 'review'])->name('surat-masuk.review')->middleware(['auth', 'checkRole:admin']);
 
-Route::get('surat-keluar/export', [SuratKeluarController::class, 'export'])->name('surat-keluar.export');
+Route::resource('surat-keluar', SuratKeluarController::class);
+Route::get('surat-keluar-export', [SuratKeluarController::class, 'export'])
+    ->name('surat-keluar.export');
 
 Route::get('login', [AuthenticatedSessionController::class, 'create'])
     ->name('login')
@@ -66,9 +68,6 @@ Route::middleware(['auth'])->group(function () {
         ->name('surat-masuk.export');
 
     Route::resource('surat-keluar', SuratKeluarController::class);
-    Route::get('surat-keluar/{id}/edit', [SuratKeluarController::class, 'edit'])->name('surat-keluar.edit');
-    Route::put('surat-keluar/{id}', [SuratKeluarController::class, 'update'])
-        ->name('surat-keluar.update');
     Route::get('surat-keluar-export', [SuratKeluarController::class, 'export'])
         ->name('surat-keluar.export');
 

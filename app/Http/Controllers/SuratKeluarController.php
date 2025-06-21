@@ -52,8 +52,10 @@ class SuratKeluarController extends Controller
 
             // Create record
             $suratKeluar = SuratKeluar::create($validated);
+            
             return redirect()->route('surat-keluar.index')
-                ->with('success', 'Surat keluar berhasil ditambahkan');
+                ->with('success', '✅ Surat keluar berhasil ditambahkan!');
+                
         } catch (\Exception $e) {
             // Jika terjadi error saat upload file, hapus file yang sudah terupload
             if (isset($path) && Storage::disk('public')->exists($path)) {
@@ -61,7 +63,7 @@ class SuratKeluarController extends Controller
             }
 
             return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat menambahkan surat keluar: ' . $e->getMessage())
+                ->with('error', '❌ Terjadi kesalahan saat menambahkan surat keluar: ' . $e->getMessage())
                 ->withInput();
         }
     }
@@ -98,24 +100,31 @@ class SuratKeluarController extends Controller
             $suratKeluar->update($validated);
 
             return redirect()->route('surat-keluar.index')
-                ->with('success', 'Surat keluar berhasil diperbarui');
+                ->with('success', '✅ Surat keluar berhasil diperbarui!');
+                
         } catch (\Exception $e) {
             return redirect()->route('surat-keluar.edit', $suratKeluar->id)
-                ->with('error', 'Gagal memperbarui surat keluar: ' . $e->getMessage());
+                ->with('error', '❌ Gagal memperbarui surat keluar: ' . $e->getMessage());
         }
     }
 
     public function destroy(SuratKeluar $suratKeluar)
     {
-        // Hapus file lampiran jika ada
-        if ($suratKeluar->lampiran) {
-            Storage::disk('public')->delete($suratKeluar->lampiran);
+        try {
+            // Hapus file lampiran jika ada
+            if ($suratKeluar->lampiran) {
+                Storage::disk('public')->delete($suratKeluar->lampiran);
+            }
+
+            $suratKeluar->delete();
+
+            return redirect()->route('surat-keluar.index')
+                ->with('success', '✅ Surat keluar berhasil dihapus!');
+                
+        } catch (\Exception $e) {
+            return redirect()->route('surat-keluar.index')
+                ->with('error', '❌ Gagal menghapus surat keluar: ' . $e->getMessage());
         }
-
-        $suratKeluar->delete();
-
-        return redirect()->route('surat-keluar.index')
-            ->with('success', 'Surat keluar berhasil dihapus');
     }
 
     public function export()
