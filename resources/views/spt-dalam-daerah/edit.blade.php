@@ -19,7 +19,7 @@
                                 <label for="no_surat" class="block text-sm font-medium text-gray-700">Nomor Surat</label>
                                 <input type="text" name="no_surat" id="no_surat" 
                                 class="form-control @error('no_surat') is-invalid @enderror"
-                                value="{{ old('no_surat', $sptDalamDaerah->no_surat) }}" readonly>
+                                value="{{ old('no_surat', $sptDalamDaerah->no_surat) }}" >
                                 @error('no_surat')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
