@@ -12,7 +12,7 @@
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <i class="fas fa-check-circle me-2"></i>
                         {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        
                     </div>
                 @endif
 
@@ -20,7 +20,7 @@
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <i class="fas fa-exclamation-circle me-2"></i>
                         {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        
                     </div>
                 @endif
 
@@ -67,7 +67,6 @@
                                 <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">No Surat</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">Tanggal</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">Perihal</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">Lampiran</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">Aksi</th>
                             </tr>
                         </thead>
@@ -78,25 +77,34 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->no_surat }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->tanggal->format('d/m/Y') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->perihal }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <button onclick="window.location.href='{{ asset('storage/' . $surat->lampiran) }}'" class="btn btn-primary">
-                                            <i class="fas fa-eye"></i> Lihat Lampiran
-                                        </button>
-                                    </td>
-
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <div class="flex justify-center items-center space-x-2">
-                                            <a href="{{ route('surat-keluar.edit', $surat->id) }}" class="btn btn-info btn-sm" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form id="delete-form-{{ $surat->id }}" action="{{ route('surat-keluar.destroy', $surat->id) }}" method="POST" class="inline-block">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $surat->id }})" title="Hapus">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        <div class="dropdown">
+                                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-cog"></i> Aksi
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item" href="{{ asset('storage/' . $surat->lampiran) }}" target="_blank">
+                                                        <i class="fas fa-eye fa-fw me-2 text-primary"></i>Lihat Lampiran
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="{{ route('surat-keluar.edit', $surat->id) }}">
+                                                        <i class="fas fa-edit fa-fw me-2 text-warning"></i>Edit
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $surat->id }})">
+                                                        <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
+                                                    </button>
+                                                </li>
+                                            </ul>
                                         </div>
+                                        <form id="delete-form-{{ $surat->id }}" action="{{ route('surat-keluar.destroy', $surat->id) }}" method="POST" style="display: none;">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
                                     </td>
                                 </tr>
                             @endforeach
@@ -236,56 +244,29 @@
         .flex.justify-center.items-center {
             gap: 0.5rem;
         }
-
-        /* Alert Styling */
-        .alert {
-            border: none;
-            border-radius: 8px;
-            padding: 1rem 1.5rem;
-            margin-bottom: 1.5rem;
-            font-weight: 500;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .alert-success {
-            background-color: #d1fae5;
-            color: #065f46;
-            border-left: 4px solid #10b981;
-        }
-
-        .alert-danger {
-            background-color: #fee2e2;
-            color: #991b1b;
-            border-left: 4px solid #ef4444;
-        }
-
-        .alert i {
-            margin-right: 0.5rem;
-        }
-
-        .btn-close {
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            opacity: 0.7;
-            transition: opacity 0.3s;
-        }
-
-        .btn-close:hover {
-            opacity: 1;
-        }
     </style>
 
     <script>
         // Auto-hide alerts after 5 seconds
         document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
-                const alerts = document.querySelectorAll('.alert');
-                alerts.forEach(function(alert) {
-                    const bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
-                });
-            }, 5000);
+            const alerts = document.querySelectorAll('.alert-dismissible');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    new bootstrap.Alert(alert).close();
+                }, 5000); // 5 detik
+            });
+        });
+
+        // Inisialisasi DataTables
+        $(document).ready(function() {
+            $('#suratTable').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                "emptyTable": "No data available"
+            });
         });
 
         function confirmDelete(id) {
@@ -357,6 +338,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
             $('#suratTable').DataTable({
@@ -364,20 +346,8 @@
                 "lengthChange": false,
                 "searching": false,
                 "ordering": true,
-                "info": true,
-                "autoWidth": false,
-                "responsive": true,
-                "pageLength": 10,
-                "dom": "<'row'<'col-sm-12'tr>>" +
-                       "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-                "language": {
-                    "paginate": {
-                        "next": "Next",
-                        "previous": "Previous"
-                    },
-                    "info": "Showing _START_ to _END_ of _TOTAL_ entries",
-                    "emptyTable": "No data available"
-                }
+                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                "emptyTable": "No data available"
             });
         });
     </script>

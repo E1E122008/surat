@@ -77,7 +77,7 @@ class SKController extends Controller
             }
 
             return redirect()->route('draft-phd.sk.index')
-                ->with('success', '✅ SK berhasil ditambahkan!');
+                ->with('success', ' SK berhasil ditambahkan!');
                 
         } catch (\Exception $e) {
             // Jika terjadi error saat upload file, hapus file yang sudah terupload
@@ -88,7 +88,7 @@ class SKController extends Controller
             Log::error('Terjadi kesalahan saat menyimpan SK: ' . $e->getMessage());
 
             return redirect()->back()
-                ->with('error', '❌ Gagal menyimpan SK: ' . $e->getMessage())
+                ->with('error', ' Gagal menyimpan SK: ' . $e->getMessage())
                 ->withInput();
         }
     }
@@ -110,9 +110,9 @@ class SKController extends Controller
             $sk->status = $request->status;
             $sk->save();
 
-            return redirect()->back()->with('success', '✅ Status berhasil diperbarui!');
+            return redirect()->back()->with('success', ' Status berhasil diperbarui!');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', '❌ Gagal mengupdate status: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
         }
     }
 
@@ -152,12 +152,12 @@ class SKController extends Controller
             $sk->update($validated);
 
             return redirect()->route('draft-phd.sk.index')
-                ->with('success', '✅ SK berhasil diperbarui!');
+                ->with('success', ' SK berhasil diperbarui!');
                 
         } catch (\Exception $e) {
             Log::error('Terjadi kesalahan saat memperbarui SK: ' . $e->getMessage());
             return redirect()->back()
-                ->with('error', '❌ Gagal memperbarui SK: ' . $e->getMessage())
+                ->with('error', ' Gagal memperbarui SK: ' . $e->getMessage())
                 ->withInput();
         }
     }
@@ -174,11 +174,11 @@ class SKController extends Controller
             $sk->delete();
 
             return redirect()->route('draft-phd.sk.index')
-                ->with('success', '✅ SK berhasil dihapus!');
+                ->with('success', ' SK berhasil dihapus!');
                 
         } catch (\Exception $e) {
             return redirect()->route('draft-phd.sk.index')
-                ->with('error', '❌ Gagal menghapus SK: ' . $e->getMessage());
+                ->with('error', ' Gagal menghapus SK: ' . $e->getMessage());
         }
     }
 
@@ -240,7 +240,7 @@ class SKController extends Controller
             $sk->status = 'terdisposisi'; // Update status
             $sk->save();
 
-            return redirect()->route('draft-phd.sk.index')->with('success', '✅ Surat berhasil didisposisikan.');
+            return redirect()->route('draft-phd.sk.index')->with('success', ' Surat berhasil didisposisikan.');
 
         } catch (\Exception $e) {
             return redirect()->route('draft-phd.sk.index')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
