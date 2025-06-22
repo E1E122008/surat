@@ -15,7 +15,7 @@
                     <label for="no_surat" class="form-label">Nomor Surat</label>
                     <input type="text" name="no_surat" id="no_surat" 
                         class="form-control @error('no_surat') is-invalid @enderror"
-                        value="{{ $nomorSurat }}" readonly>
+                        value="{{ $nomorSurat }}" >
                     @error('no_surat')
                         <div class="form-error">{{ $message }}</div>
                     @enderror

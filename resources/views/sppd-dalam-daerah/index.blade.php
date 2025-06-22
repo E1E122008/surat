@@ -7,6 +7,18 @@
         </div>
         <div class="bg-white shadow-sm rounded-lg">
             <div class="p-4">
+                @if(session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert" id="alertBox">
+                        <i class="fas fa-check-circle me-2"></i>
+                        {{ session('success') }}
+                    </div>
+                @endif
+                @if(session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alertBox">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        {{ session('error') }}
+                    </div>
+                @endif
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-semibold text-gray-800 tracking-wide">
                         SPPD Dalam Daerah
@@ -48,19 +60,34 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->no_surat }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tanggal->format('d/m/Y') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tujuan }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <div class="flex justify-center items-center space-x-2">
-                                            <a href="{{ route('sppd-dalam-daerah.detail', $item->id) }}" class="btn btn-info btn-sm" title="Detail">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <form id="delete-form-{{ $item->id }}" action="{{ route('sppd-dalam-daerah.destroy', $item->id) }}" method="POST" class="inline-block">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $item->id }})" title="Hapus">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        <div class="dropdown">
+                                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-cog"></i> Aksi
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item" href="{{ route('sppd-dalam-daerah.detail', $item->id) }}">
+                                                        <i class="fas fa-eye fa-fw me-2 text-primary"></i>Detail
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="{{ route('sppd-dalam-daerah.edit', $item->id) }}">
+                                                        <i class="fas fa-edit fa-fw me-2 text-warning"></i>Edit
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $item->id }})">
+                                                        <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
+                                                    </button>
+                                                </li>
+                                            </ul>
                                         </div>
+                                        <form id="delete-form-{{ $item->id }}" action="{{ route('sppd-dalam-daerah.destroy', $item->id) }}" method="POST" style="display: none;">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
                                     </td>
                                 </tr>
                             @endforeach
@@ -275,13 +302,18 @@
             });
         }
 
-        @if(session('success'))
-            showSuccess('{{ session('success') }}');
-        @endif
-
-        @if(session('error'))
-            showError('{{ session('error') }}');
-        @endif
+        document.addEventListener('DOMContentLoaded', function() {
+            const banners = document.querySelectorAll('.alert');
+            if (banners.length > 0) {
+                setTimeout(() => {
+                    banners.forEach(banner => {
+                        banner.style.transition = 'opacity 0.5s ease';
+                        banner.style.opacity = '0';
+                        setTimeout(() => banner.remove(), 500); // remove after fade out
+                    });
+                }, 5000); // 5 seconds
+            }
+        });
     </script>
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">

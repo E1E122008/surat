@@ -7,6 +7,18 @@
         </div>
         <div class="bg-white shadow-sm rounded-lg">
             <div class="p-4">
+                @if(session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert" id="alertBox">
+                        <i class="fas fa-check-circle me-2"></i>
+                        {{ session('success') }}
+                    </div>
+                @endif
+                @if(session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alertBox">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        {{ session('error') }}
+                    </div>
+                @endif
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-semibold text-gray-800 tracking-wide">
                         SPPD Luar Daerah
@@ -48,19 +60,34 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->no_surat }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tanggal->format('d/m/Y') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tujuan }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <div class="flex justify-center items-center space-x-2">
-                                            <a href="{{ route('sppd-luar-daerah.detail', $item->id) }}" class="btn btn-info btn-sm" title="Detail">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <form id="delete-form-{{ $item->id }}" action="{{ route('sppd-luar-daerah.destroy', $item->id) }}" method="POST" class="inline-block">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $item->id }})" title="Hapus">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        <div class="dropdown">
+                                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-cog"></i> Aksi
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item" href="{{ route('sppd-luar-daerah.detail', $item->id) }}">
+                                                        <i class="fas fa-eye fa-fw me-2 text-primary"></i>Detail
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="{{ route('sppd-luar-daerah.edit', $item->id) }}">
+                                                        <i class="fas fa-edit fa-fw me-2 text-warning"></i>Edit
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $item->id }})">
+                                                        <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
+                                                    </button>
+                                                </li>
+                                            </ul>
                                         </div>
+                                        <form id="delete-form-{{ $item->id }}" action="{{ route('sppd-luar-daerah.destroy', $item->id) }}" method="POST" style="display: none;">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
                                     </td>
                                 </tr>
                             @endforeach
@@ -203,46 +230,6 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function showSuccess(message) {
-            Swal.fire({
-                title: "Berhasil!",
-                text: message,
-                icon: "success",
-                showConfirmButton: false,
-                timer: 2000,
-                toast: true,
-                position: "top-end",
-                showClass: {
-                    popup: 'animate__animated animate__fadeInRight'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOutRight'
-                },
-                background: '#10B981',
-                color: '#ffffff'
-            });
-        }
-
-        function showError(message) {
-            Swal.fire({
-                title: "Error!",
-                text: message,
-                icon: "error",
-                showConfirmButton: false,
-                timer: 3000,
-                toast: true,
-                position: "top-end",
-                showClass: {
-                    popup: 'animate__animated animate__fadeInRight'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOutRight'
-                },
-                background: '#EF4444',
-                color: '#ffffff'
-            });
-        }
-
         function confirmDelete(id) {
             Swal.fire({
                 title: 'Apakah Anda yakin?',
@@ -273,16 +260,7 @@
                 }
             });
         }
-
-        @if(session('success'))
-            showSuccess('{{ session('success') }}');
-        @endif
-
-        @if(session('error'))
-            showError('{{ session('error') }}');
-        @endif
     </script>
-
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
@@ -301,13 +279,29 @@
                        "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
                 "language": {
                     "paginate": {
-                        "next": "Next",
-                        "previous": "Previous"
+                        "previous": "&laquo; Sebelumnya",
+                        "next": "Berikutnya &raquo;"
                     },
-                    "info": "Showing _START_ to _END_ of _TOTAL_ entries",
-                    "emptyTable": "No data available"
+                    "emptyTable": "Tidak ada data yang tersedia di tabel",
+                    "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+                    "infoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
+                    "infoFiltered": "(disaring dari _MAX_ total entri)",
+                    "search": "Cari:",
+                    "zeroRecords": "Tidak ada data yang cocok ditemukan"
                 }
             });
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            const banners = document.querySelectorAll('.alert');
+            if (banners.length > 0) {
+                setTimeout(() => {
+                    banners.forEach(banner => {
+                        banner.style.transition = 'opacity 0.5s ease';
+                        banner.style.opacity = '0';
+                        setTimeout(() => banner.remove(), 500); // remove after fade out
+                    });
+                }, 5000); // 5 seconds
+            }
         });
     </script>
 @endsection
