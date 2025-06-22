@@ -21,7 +21,12 @@
 
                             <div>
                                 <label for="tanggal" class="block text-sm font-medium text-gray-700">Tanggal</label>
-                                <input type="date" name="tanggal" id="tanggal" class="form-control border-effect" value="{{ $sptLuarDaerah->tanggal }}" >
+                                <input type="date" name="tanggal" id="tanggal" 
+                                class="form-control @error('tanggal') is-invalid @enderror"
+                                value="{{ old('tanggal', $sptLuarDaerah->tanggal->format('Y-m-d')) }}" required>
+                                @error('tanggal')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
                             </div>
                             
                             <div>
@@ -42,11 +47,21 @@
                                 <textarea name="nama_petugas" id="nama_petugas" rows="2" class="form-textarea" placeholder="Masukkan nama petugas" required>{{ old('nama_petugas', $sptLuarDaerah->nama_petugas) }}</textarea>
                             </div>
 
-                            <div class="form-group mb-3">
-                                <label for="lampiran" class="form-label">Lampiran</label>
-                                <input type="file" name="lampiran" id="lampiran" class="form-control border-effect">
+                            <div class="form-group md:col-span-2">
+                                <label for="lampiran" class="block text-sm font-medium text-gray-700 mb-2">Lampiran (PDF, DOC, DOCX, Gambar)</label>
+                                @if($sptLuarDaerah->lampiran)
+                                    <div class="mt-2">
+                                        <p class="text-sm text-gray-500">File saat ini: {{ basename($sptLuarDaerah->lampiran) }}</p>
+                                    </div>
+                                @endif
+                                <input type="file" name="lampiran" id="lampiran" class="mt-1 block w-full text-sm text-gray-500 
+                                file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                <p class="mt-1 text-sm text-gray-500">Biarkan kosong jika tidak ingin mengubah file</p>
+                                @error('lampiran')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
                             </div>
-                            
                         </div>
 
                         <div class="button-container">

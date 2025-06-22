@@ -29,12 +29,12 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="form-group">
                             <label for="perihal" class="font-semibold">Perihal</label>
-                            <input type="text" name="perihal" id="perihal" class="form-control border-effect" value="{{ $spt->perihal }}" readonly>
+                            <textarea name="perihal" id="perihal" class="form-control border-effect" readonly rows="4">{{ $spt->perihal }}</textarea>
                         </div>
 
                         <div class="form-group">
                             <label for="nama_petugas" class="font-semibold" >Nama Petugas</label>
-                            <input type="text" name="nama_petugas" id="nama_petugas" class="form-control border-effect" value="{{ $spt->nama_petugas }}" readonly>
+                            <textarea name="nama_petugas" id="nama_petugas" class="form-textarea" readonly rows="4">{{ $spt->nama_petugas }}</textarea>
                         </div>
 
                         <div class="form-group mb-3">

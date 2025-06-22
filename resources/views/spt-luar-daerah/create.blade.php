@@ -44,7 +44,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="form-group">
                     <label for="perihal" class="form-label">Perihal</label>
-                    <textarea name="perihal" id="perihal" rows="3" 
+                    <textarea name="perihal" id="perihal" rows="4" 
                         class="form-control @error('perihal') is-invalid @enderror"
                         required>{{ old('perihal') }}</textarea>
                     @error('perihal')

@@ -81,8 +81,10 @@ class SptLuarDaerahController extends Controller
                 'tujuan' => 'required|string|max:255',
                 'perihal' => 'required|string|max:255',
                 'nama_petugas' => 'required|string',
-                'lampiran' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
+                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
             ]);
+
+            $updateData = $request->except('lampiran');
 
             if ($request->hasFile('lampiran')) {
                 if ($sptLuarDaerah->lampiran) {
@@ -90,10 +92,10 @@ class SptLuarDaerahController extends Controller
                 }
                 $file = $request->file('lampiran');
                 $path = $file->store('lampiran/spt-luar-daerah', 'public');
-                $validated['lampiran'] = $path;
+                $updateData['lampiran'] = $path;
             }
 
-            $sptLuarDaerah->update($validated);
+            $sptLuarDaerah->update($updateData);
 
             return redirect()->route('spt-luar-daerah.index')
                 ->with('success', 'SPT Luar Daerah berhasil diperbarui');
