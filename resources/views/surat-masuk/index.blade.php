@@ -7,7 +7,18 @@
         </div>
         <div class="bg-white shadow-sm rounded-lg">
             <div class="p-4">
-                
+                @if(session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        {{ session('success') }}
+                    </div>
+                @endif
+                @if(session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        {{ session('error') }}
+                    </div>
+                @endif
                 
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-semibold text-gray-800 tracking-wide">
@@ -99,24 +110,38 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-                                        <div class="flex justify-center gap-2">
-                                            <button type="button" class="btn btn-light btn-sm" onclick="openDisposisiModal({{ $surat->id }})" title="Disposisi">
-                                                <i class="fas fa-sync-alt" style="color: #29fd0d;"></i>
+                                        <div class="dropdown">
+                                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-cog"></i> Aksi
                                             </button>
-                                            <button onclick="openStatusModal({{ $surat->id }}, '{{ $surat->status }}')" class="btn btn-success btn-sm" title="Update Status">
-                                                <i class="fas fa-check"></i>
-                                            </button>
-                                            <a href="{{ route('surat-masuk.detail', $surat->id) }}" class="btn btn-primary btn-sm" title="Detail">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <form id="delete-form-{{ $surat->id }}" action="{{ route('surat-masuk.destroy', $surat->id) }}" method="POST" class="inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $surat->id }})" title="Hapus">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <button class="dropdown-item" type="button" onclick="openDisposisiModal({{ $surat->id }})">
+                                                        <i class="fas fa-sync-alt fa-fw me-2 text-warning"></i>Disposisi
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <button class="dropdown-item" type="button" onclick="openStatusModal({{ $surat->id }}, '{{ $surat->status }}')">
+                                                        <i class="fas fa-check-circle fa-fw me-2 text-success"></i>Status
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="{{ route('surat-masuk.detail', $surat->id) }}">
+                                                        <i class="fas fa-eye fa-fw me-2 text-primary"></i>Detail
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $surat->id }})">
+                                                        <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
+                                                    </button>
+                                                </li>
+                                            </ul>
                                         </div>
+                                        <form id="delete-form-{{ $surat->id }}" action="{{ route('surat-masuk.destroy', $surat->id) }}" method="POST" style="display: none;">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
                                     </td>
                                 </tr>
                             @endforeach
@@ -507,56 +532,6 @@
             });
         }
 
-        // Fungsi untuk menampilkan alert sukses
-        function showSuccess(message) {
-            Swal.fire({
-                title: "Berhasil!",
-                text: message,
-                icon: "success",
-                showConfirmButton: false,
-                timer: 2000,
-                toast: true,
-                position: "top-end",
-                showClass: {
-                    popup: 'animate__animated animate__fadeInRight'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOutRight'
-                },
-                background: '#10B981',
-                color: '#ffffff'
-            });
-        }
-
-        // Fungsi untuk menampilkan alert error
-        function showError(message) {
-            Swal.fire({
-                title: "Error!",
-                text: message,
-                icon: "error",
-                showConfirmButton: false,
-                timer: 3000,
-                toast: true,
-                position: "top-end",
-                showClass: {
-                    popup: 'animate__animated animate__fadeInRight'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOutRight'
-                },
-                background: '#EF4444',
-                color: '#ffffff'
-            });
-        }
-
-        @if(session('success'))
-            showSuccess('{{ session('success') }}');
-        @endif
-
-        @if(session('error'))
-            showError('{{ session('error') }}');
-        @endif
-
         function editCatatan(suratId, currentCatatan) {
             const container = document.querySelector(`[data-surat-id="${suratId}"]`);
             const textarea = container.querySelector('.catatan-textarea');
@@ -671,6 +646,22 @@
         document.getElementById('disposisiForm').addEventListener('submit', function(e) {
             e.preventDefault();
             this.submit();
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert-dismissible');
+            if (alerts.length > 0) {
+                setTimeout(() => {
+                    alerts.forEach(alert => {
+                        const bsAlert = new bootstrap.Alert(alert);
+                        if (bsAlert) {
+                            bsAlert.close();
+                        }
+                    });
+                }, 5000); // 5 seconds
+            }
+
+            const disposisiSelect = document.getElementById('disposisi');
         });
     </script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">

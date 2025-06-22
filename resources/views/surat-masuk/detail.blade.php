@@ -48,6 +48,11 @@
                         <label for="disposisi" class="text-sm font-medium">Disposisi</label>
                         <textarea type="text" name="disposisi" id="disposisi" class="form-control border-effect" readonly>{{ $surat->disposisi ?? '-' }}</textarea>
                     </div>
+
+                    <div class="form-group mb-3">
+                        <label for="status" class="text-sm font-medium">Status</label>
+                        <input type="text" class="form-control border-effect" value="{{ ucfirst($surat->status) }}" readonly>
+                    </div>
                     
                     
 
