@@ -80,7 +80,7 @@
                                                 <li>
                                                     <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $item->id }})">
                                                         <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
-                                                    </button>
+                                                </button>
                                                 </li>
                                             </ul>
                                         </div>

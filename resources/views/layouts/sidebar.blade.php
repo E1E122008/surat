@@ -140,25 +140,10 @@
         </li>
 
         <li class="my-2">
-            <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('users.*') ? 'active' : '' }}" 
-               href="#">
+            <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('users.index') ? 'active' : '' }}" 
+               href="{{ route('users.index') }}">
                 <i class="fas fa-users mr-2"></i> Management User
-                <i class="fas fa-chevron-down ml-auto transform transition-transform duration-200" style="margin-left: auto;"></i>
             </a>
-            <ul class="list-none pl-4 hidden">
-                <li class="my-1">
-                    <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('users.index') ? 'active' : '' }}" 
-                       href="{{ route('users.index') }}">
-                        <i class="fas fa-user-friends mr-2"></i> Daftar User
-                    </a>
-                </li>
-                <li class="my-1">
-                    <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('roles.index') ? 'active' : '' }}" 
-                       href="{{ route('roles.index') }}">
-                        <i class="fas fa-user-shield mr-2"></i> Role & Permissions
-                    </a>
-                </li>
-            </ul>
         </li>
 
         <li class="my-2">
