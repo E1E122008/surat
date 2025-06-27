@@ -25,7 +25,11 @@ class DataRequestController extends Controller
 
         // Filter berdasarkan status
         if ($request->filled('status') && $request->status != 'all') {
-            $query->where('status', $request->status);
+            if ($request->status == 'pending_review') {
+                $query->where('status', 'pending');
+            } else {
+                $query->where('status', $request->status);
+            }
         }
 
         // Pencarian berdasarkan jenis surat, pengirim, atau catatan
@@ -38,7 +42,7 @@ class DataRequestController extends Controller
             });
         }
 
-        $approvalRequests = $query->latest()->get();
+        $approvalRequests = $query->latest()->paginate(10)->withQueryString();
 
         return view('data-requests.index', compact('approvalRequests'));
     }

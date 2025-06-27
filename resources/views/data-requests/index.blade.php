@@ -87,7 +87,7 @@
                                         </td>
                                         <td class="text-center">
                                             <div class="dropdown">
-                                                <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="aksiDropdown{{ $request->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="aksiDropdown{{ $request->id }}" data-bs-toggle="dropdown" aria-expanded="false">
                                                     Aksi
                                                 </button>
                                                 <ul class="dropdown-menu" aria-labelledby="aksiDropdown{{ $request->id }}">
@@ -120,6 +120,13 @@
                         </table>
                     </div>
                 </div>
+                @if(isset($approvalRequests) && method_exists($approvalRequests, 'links'))
+                    <div class="d-flex justify-content-center my-4">
+                        <nav aria-label="Page navigation">
+                            {{ $approvalRequests->links() }}
+                        </nav>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
