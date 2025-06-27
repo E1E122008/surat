@@ -112,7 +112,7 @@
                             <small class="text-muted">{{ Auth::user()->role }}</small>
                         </div>
                     </li>
-                    <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="fas fa-user me-2"></i> Profil</a></li>
+                    <li><a class="dropdown-item" href="{{ route('profile') }}"><i class="fas fa-user me-2"></i> Profil</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <form method="POST" action="{{ route('logout') }}">
@@ -134,9 +134,9 @@
 <!-- Responsive Navigation Menu -->
 <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
     <div class="pt-2 pb-3 space-y-1">
-        <x-responsive-nav-link :href="route('data-requests.index')" :active="request()->routeIs('data-requests.*')">
+        <a :href="route('data-requests.index')" :active="request()->routeIs('data-requests.*')">
             <i class="fas fa-file-alt mr-2"></i>
             {{ __('Permintaan Data') }}
-        </x-responsive-nav-link>
+        </a>
     </div>
 </div> 
