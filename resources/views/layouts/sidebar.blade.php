@@ -199,15 +199,18 @@
         // Tambahkan logika untuk menghapus overlay jika ada
     }
 
-    // Event listener untuk menu dropdown
-    document.querySelectorAll('.sidebar a[href="#"]').forEach(item => {
-        item.addEventListener('click', event => {
-            const submenu = item.nextElementSibling;
-            submenu.classList.toggle('hidden');
-            
-            // Putar ikon chevron
-            const iconChevron = item.querySelector('.fa-chevron-down');
-            iconChevron.classList.toggle('rotate-180');
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.sidebar a[href="#"]').forEach(item => {
+            item.addEventListener('click', function(event) {
+                event.preventDefault();
+                // Cari submenu UL dalam parent LI
+                const parentLi = item.parentElement;
+                const submenu = parentLi.querySelector('ul');
+                if (submenu) submenu.classList.toggle('hidden');
+                // Putar ikon chevron
+                const iconChevron = item.querySelector('.fa-chevron-down');
+                if (iconChevron) iconChevron.classList.toggle('rotate-180');
+            });
         });
     });
 </script>
