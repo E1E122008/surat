@@ -18,18 +18,39 @@ use Illuminate\Validation\Rule;
 
 class ApprovalRequestController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $approvalRequests = ApprovalRequest::with('user')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $query = ApprovalRequest::with('user')->orderBy('created_at', 'desc');
+
+        // Filter status
+        if ($request->filled('status') && $request->status !== 'all') {
+            if ($request->status === 'pending_review' || $request->status === 'pending') {
+                $query->where('status', 'pending');
+            } else {
+                $query->where('status', $request->status);
+            }
+        }
+
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('sender', 'like', "%$search%")
+                  ->orWhere('letter_type', 'like', "%$search%")
+                  ->orWhere('no_surat', 'like', "%$search%");
+            });
+        }
+
+        $approvalRequests = $query->paginate(10)->withQueryString();
+        $totalFiltered = $query->count();
+        $totalAll = ApprovalRequest::count();
 
         // Mark notifications as read
         Auth::user()->unreadNotifications
             ->where('type', 'App\Notifications\ApprovalRequestNotification')
             ->markAsRead();
 
-        return view('admin.approval-requests.index', compact('approvalRequests'));
+        return view('admin.approval-requests.index', compact('approvalRequests', 'totalFiltered', 'totalAll'));
     }
 
     public function approve(Request $request, $id)

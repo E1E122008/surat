@@ -1,66 +1,119 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <h2><i class="fas fa-clipboard-check"></i> Permintaan Persetujuan</h2>
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-envelope-open-text me-2"></i>Daftar Data Persetujuan</h1>
+        <div class="d-flex gap-2 align-items-center">
+            <form method="GET" class="d-flex">
+                <select name="status" id="statusFilter" class="form-control form-control-sm mr-2" onchange="this.form.submit()">
+                    <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>Semua Status</option>
+                    <option value="pending_review" {{ request('status') == 'pending_review' ? 'selected' : '' }}>Menunggu Review</option>
+                    <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
+                    <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                </select>
+                <input type="text" name="search" id="search" placeholder="Cari data surat..." class="form-control form-control-sm mr-2" value="{{ request('search') }}">
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+            
         </div>
     </div>
-
-    <div class="card">
-        <div class="card-body">
-            @if($approvalRequests->count() > 0)
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th class="text-center">No</th>
-                                <th class="text-center">Pengirim</th>
-                                <th class="text-center">Jenis Surat</th>
-                                <th class="text-center">Tanggal Permintaan</th>
-                                <th class="text-center">Status</th>
-                                <th class="text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($approvalRequests as $index => $request)
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <div>
+                        <span class="surat-badge surat-badge-sm mt-2 d-inline-block">
+                            <i class="fas fa-envelope"></i> Jumlah Surat: {{ $totalFiltered < $totalAll ? $totalFiltered . ' (Total: ' . $totalAll . ')' : $totalAll }}
+                        </span>
+                    </div>
+                    
+                </div>
+                <div class="card-body">
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
                                 <tr>
-                                    <td class="text-center">{{ $index + 1 }}</td>
-                                    <td class="text-center">{{ $request->sender }}</td>
-                                    <td class="text-center">{{ $request->letter_type }}</td>
-                                    <td class="text-center">{{ $request->created_at->format('d/m/Y') }}</td>
-                                    <td class="text-center">
-                                        @if($request->status === 'pending')
-                                            <span class="badge bg-warning"><i class="fas fa-clock me-1"></i> Menunggu Persetujuan</span>
-                                        @elseif($request->status === 'approved')
-                                            <span class="badge bg-success"><i class="fas fa-check me-1"></i> Disetujui</span>
-                                        @else
-                                            <span class="badge bg-danger"><i class="fas fa-times me-1"></i> Ditolak</span>
-                                        @endif
-                                    </td>
-                                    <td class="text-center">
-                                        @if($request->status === 'pending')
-                                            <div class="d-flex gap-2 justify-content-center">
-                                                <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detailRequestModal{{ $request->id }}" title="Lihat Detail">
-                                                    <i class="fas fa-eye"></i> Lihat Detail
-                                                </button>
-                                            </div>
-                                        @else
-                                            <span class="text-muted text-center fw-bold" data-bs-toggle="modal" data-bs-target="#detailRequestModal{{ $request->id }}" title="Lihat Detail">Sudah diproses</span>
-                                        @endif
-                                    </td>
+                                    <th class="text-center">No</th>
+                                    <th class="text-center">Jenis Surat</th>
+                                    <th class="text-center">Pengirim</th>
+                                    <th class="text-center">Tanggal Permintaan</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Aksi</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @forelse($approvalRequests as $index => $request)
+                                    <tr>
+                                        <td class="text-center">{{ $index + 1 }}</td>
+                                        <td class="text-center">
+                                            @php
+                                                $letterTypes = [
+                                                    'surat_masuk' => 'Surat Masuk',
+                                                    'sk' => 'SK',
+                                                    'perda' => 'PERDA',
+                                                    'pergub' => 'PERGUB',
+                                                ];
+                                            @endphp
+                                            {{ $letterTypes[$request->letter_type] ?? $request->letter_type }}
+                                        </td>
+                                        <td class="text-center">{{ $request->sender }}</td>
+                                        <td class="text-center">{{ $request->created_at->format('d M Y') }}</td>
+                                        <td class="text-center">
+                                            @if($request->status === 'pending')
+                                                <span class="badge bg-warning">Menunggu Review</span>
+                                            @elseif($request->status === 'approved')
+                                                <span class="badge bg-success">Disetujui</span>
+                                            @elseif($request->status === 'rejected')
+                                                <span class="badge bg-danger"><i class="fas fa-times me-1"></i> Ditolak</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="aksiDropdown{{ $request->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Aksi
+                                                </button>
+                                                <ul class="dropdown-menu" aria-labelledby="aksiDropdown{{ $request->id }}">
+                                                    <li>
+                                                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#detailRequestModal{{ $request->id }}" title="Detail">
+                                                            <i class="fas fa-eye me-2"></i> Lihat Detail
+                                                        </button>
+                                                    </li>
+                                                    @if($request->status === 'pending')
+                                                    <li>
+                                                        <form action="{{ route('admin.approval-requests.reject', $request->id) }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            <button type="submit" class="dropdown-item text-danger" title="Tolak">
+                                                                <i class="fas fa-times me-2"></i> Tolak
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                    @endif
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center">Tidak ada permintaan persetujuan</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            @else
-                <div class="text-center py-4">
-                    <i class="fas fa-inbox fa-3x mb-3 text-muted"></i>
-                    <p class="text-muted">Tidak ada permintaan persetujuan</p>
-                </div>
-            @endif
+                @if(isset($approvalRequests) && method_exists($approvalRequests, 'links'))
+                    <div class="d-flex justify-content-center my-4">
+                        <nav aria-label="Page navigation">
+                            {{ $approvalRequests->links() }}
+                        </nav>
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 </div>
@@ -225,3 +278,26 @@
 @endforeach
 
 @endsection
+
+<style>
+.surat-badge {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(90deg, #5b7ef1 0%, #6ea8fe 100%);
+    color: #fff;
+    font-weight: 500;
+    border-radius: 2rem;
+    padding: 0.3rem 1rem;
+    font-size: 1rem;
+    box-shadow: 0 2px 8px rgba(91,126,241,0.08);
+    gap: 0.5rem;
+}
+.surat-badge-sm {
+    font-size: 0.95rem;
+    padding: 0.2rem 0.8rem;
+}
+.surat-badge i {
+    font-size: 1em;
+    margin-right: 0.5rem;
+}
+</style>

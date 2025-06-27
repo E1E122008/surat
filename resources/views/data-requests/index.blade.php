@@ -4,10 +4,9 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Data Surat</h1>
-        <button type="button" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#requestModal">
-            <i class="fas fa-plus fa-sm text-white-50"></i> Tambah Data Surat
-        </button>
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-envelope-open-text me-2"></i>Permintaan Tambah Surat</h1>
+        
+        
     </div>
 
     <!-- Content Row -->
@@ -15,13 +14,17 @@
         <div class="col-12">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Daftar Data Surat</h6>
-                    <div class="dropdown no-arrow">
-                        <form action="{{ route('data-requests.index') }}" method="GET" class="d-flex">
+                    <div>
+                        <span class="surat-badge surat-badge-sm d-inline-block align-middle">
+                            <i class="fas fa-envelope"></i> Jumlah Surat: {{ $totalFiltered < $totalAll ? $totalFiltered . ' (Total: ' . $totalAll . ')' : $totalAll }}
+                        </span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <form action="{{ route('data-requests.index') }}" method="GET" class="d-flex align-items-center gap-2 mb-0">
                             <select name="status" 
                                     id="statusFilter" 
-                                    class="form-control form-control-sm mr-2"
-                                    onchange="this.form.submit()">
+                                    class="form-control form-control-sm"
+                                    style="height: 38px; min-width: 130px; max-width: 150px;">
                                 <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>Semua Status</option>
                                 <option value="pending_review" {{ request('status') == 'pending_review' ? 'selected' : '' }}>Menunggu Review</option>
                                 <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
@@ -31,14 +34,20 @@
                                    name="search" 
                                    id="search" 
                                    placeholder="Cari data surat..." 
-                                   class="form-control form-control-sm mr-2"
+                                   class="form-control form-control-sm"
+                                   style="height: 38px; min-width: 120px; max-width: 160px;"
                                    value="{{ request('search') }}">
-                            
-                            <button type="submit" class="btn btn-primary btn-sm">
+                            <button type="submit" class="btn btn-primary btn-sm d-flex align-items-center justify-content-center" style="height: 38px; width: 38px; padding: 0;">
                                 <i class="fas fa-search"></i>
+                            </button>
+                            <button type="button" class="btn btn-primary btn-sm shadow-sm d-flex align-items-center justify-content-center ms-2" style="height: 38px; min-width: 180px; font-size: 0.95em; padding: 0 28px; white-space: nowrap;" data-bs-toggle="modal" data-bs-target="#requestModal">
+                                <i class="fas fa-plus fa-sm text-white me-2"></i>Tambah Data Surat
                             </button>
                         </form>
                     </div>
+                    
+                    
+                    
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -255,8 +264,9 @@
                     </div>
                     <div class="mb-3">
                         <label for="lampiran" class="form-label">Lampiran</label>
-                        <input type="file" class="form-control" id="lampiran" name="lampiran" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
-                        <small class="text-muted">Format yang didukung: PDF, DOC, DOCX, JPG, JPEG, PNG</small>
+                        <input type="file" class="form-control" id="lampiran" name="lampiran" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
+                        <small class="text-muted">Format yang didukung: PDF, DOC, DOCX, JPG, JPEG, PNG</small><br>
+                        <small class="text-danger">* File lampiran wajib diisi</small>
                         @error('lampiran')
                             <div class="text-danger mt-1">{{ $message }}</div>
                         @enderror
@@ -289,7 +299,7 @@
         const statusFilter = document.getElementById('statusFilter');
         const form = searchInput.closest('form');
 
-        // Debounce function
+        // Debounce untuk search
         function debounce(func, wait) {
             let timeout;
             return function executedFunction(...args) {
@@ -302,10 +312,14 @@
             };
         }
 
-        // Submit form after typing stops for 500ms
         searchInput.addEventListener('input', debounce(function() {
             form.submit();
         }, 500));
+
+        // Auto-submit saat status diubah
+        statusFilter.addEventListener('change', function() {
+            form.submit();
+        });
     });
 
     // SweetAlert for cancel request confirmation
@@ -327,4 +341,27 @@
     }
 </script>
 @endpush
+
+<style>
+.surat-badge {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(90deg, #5b7ef1 0%, #6ea8fe 100%);
+    color: #fff;
+    font-weight: 500;
+    border-radius: 2rem;
+    padding: 0.3rem 1rem;
+    font-size: 1rem;
+    box-shadow: 0 2px 8px rgba(91,126,241,0.08);
+    gap: 0.5rem;
+}
+.surat-badge-sm {
+    font-size: 0.95rem;
+    padding: 0.2rem 0.8rem;
+}
+.surat-badge i {
+    font-size: 1em;
+    margin-right: 0.5rem;
+}
+</style>
 @endsection

@@ -45,38 +45,7 @@
             </span>
         </div>
         <div class="navbar-nav me-4">
-            <!-- Notifications Dropdown -->
-            <div class="nav-item dropdown me-3">
-                <a class="nav-link position-relative" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-bell"></i>
-                    @if(auth()->user()->unreadNotifications->count() > 0)
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            {{ auth()->user()->unreadNotifications->count() }}
-                            <span class="visually-hidden">unread notifications</span>
-                        </span>
-                    @endif
-                </a>
-                <div class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="notificationsDropdown" style="width: 300px; max-height: 400px; overflow-y: auto;">
-                    <h6 class="dropdown-header">Notifikasi</h6>
-                    @forelse(auth()->user()->notifications()->take(5)->get() as $notification)
-                        <a class="dropdown-item {{ $notification->read_at ? '' : 'bg-light' }}" href="#">
-                            <div class="d-flex flex-column">
-                                <strong class="text-dark">{{ $notification->data['message'] }}</strong>
-                                @if(isset($notification->data['notes']))
-                                    <small class="text-muted">{{ $notification->data['notes'] }}</small>
-                                @endif
-                                <small class="text-muted mt-1">{{ $notification->created_at->diffForHumans() }}</small>
-                            </div>
-                        </a>
-                    @empty
-                        <div class="dropdown-item text-muted">Tidak ada notifikasi</div>
-                    @endforelse
-                    @if(auth()->user()->notifications->count() > 5)
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item text-primary text-center" href="#">Lihat semua notifikasi</a>
-                    @endif
-                </div>
-            </div>
+            
             <!-- Profile Dropdown -->
             <div class="nav-item dropdown">
                 <a class="nav-link d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">

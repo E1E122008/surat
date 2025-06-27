@@ -1305,6 +1305,21 @@
         }
     </script>
 
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.sidebar a[href="#"]').forEach(item => {
+            item.addEventListener('click', function(event) {
+                event.preventDefault();
+                const submenu = item.nextElementSibling;
+                if (submenu) submenu.classList.toggle('hidden');
+                // Putar ikon chevron
+                const iconChevron = item.querySelector('.fa-chevron-down');
+                if (iconChevron) iconChevron.classList.toggle('rotate-180');
+            });
+        });
+    });
+    </script>
+
     @stack('scripts')
 
 </body>

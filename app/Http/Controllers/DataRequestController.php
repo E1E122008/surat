@@ -23,6 +23,9 @@ class DataRequestController extends Controller
                 return $query->where('user_id', Auth::id());
             });
 
+        // Total semua data (tanpa filter status/search)
+        $totalAll = (clone $query)->count();
+
         // Filter berdasarkan status
         if ($request->filled('status') && $request->status != 'all') {
             if ($request->status == 'pending_review') {
@@ -42,9 +45,12 @@ class DataRequestController extends Controller
             });
         }
 
+        // Total setelah filter
+        $totalFiltered = (clone $query)->count();
+
         $approvalRequests = $query->latest()->paginate(10)->withQueryString();
 
-        return view('data-requests.index', compact('approvalRequests'));
+        return view('data-requests.index', compact('approvalRequests', 'totalFiltered', 'totalAll'));
     }
 
     public function create()
