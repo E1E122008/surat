@@ -86,18 +86,29 @@
                                             @endif
                                         </td>
                                         <td class="text-center">
-                                            <button type="button" class="btn btn-sm btn-info me-1" data-bs-toggle="modal" data-bs-target="#detailModal{{ $request->id }}" title="Detail">
-                                                <i class="fas fa-eye"></i> 
-                                            </button>
-                                            @if($request->status === 'pending')
-                                                <form action="{{ route('data-requests.cancel', $request->id) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="button" class="btn btn-sm btn-danger" onclick="confirmCancelRequest(this)" title="Batal Kirim">
-                                                        <i class="fas fa-times"></i>
-                                                    </button>
-                                                </form>
-                                            @endif
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="aksiDropdown{{ $request->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Aksi
+                                                </button>
+                                                <ul class="dropdown-menu" aria-labelledby="aksiDropdown{{ $request->id }}">
+                                                    <li>
+                                                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#detailModal{{ $request->id }}" title="Detail">
+                                                            <i class="fas fa-eye me-2"></i> Lihat Detail
+                                                        </button>
+                                                    </li>
+                                                    @if($request->status === 'pending')
+                                                    <li>
+                                                        <form action="{{ route('data-requests.cancel', $request->id) }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="button" class="dropdown-item text-danger" onclick="confirmCancelRequest(this)" title="Batal Kirim">
+                                                                <i class="fas fa-times me-2"></i> Batal Kirim
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                    @endif
+                                                </ul>
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty
