@@ -56,5 +56,10 @@
                 @endforelse
             </tbody>
         </table>
+        @if(isset($suratMasuk) && method_exists($suratMasuk, 'links'))
+            <div class="mt-3 d-flex justify-content-center">
+                {{ $suratMasuk->links() }}
+            </div>
+        @endif
     </div>
 </div> 
