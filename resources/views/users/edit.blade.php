@@ -52,6 +52,28 @@
                     class="w-full bg-white text-gray-900 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400">
             </div>
 
+            <!-- Input Dinas -->
+            <div class="mb-4">
+                <label for="dinas" class="block text-gray-700 font-semibold mb-2">Dinas/Instansi</label>
+                <input type="text" name="dinas" id="dinas" value="{{ old('dinas', $user->dinas) }}" required
+                    class="w-full bg-white text-gray-900 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 @error('dinas') border-red-500 @enderror">
+                @error('dinas')
+                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Input Role -->
+            <div class="mb-4">
+                <label for="role" class="block text-gray-700 font-semibold mb-2">Role</label>
+                <select name="role" id="role" class="form-control w-full bg-white text-gray-900 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 @error('role') border-red-500 @enderror" required>
+                    <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>User</option>
+                    <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
+                </select>
+                @error('role')
+                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+
             <!-- Tombol Submit -->
             <div class="mt-6">
                 <button type="submit"

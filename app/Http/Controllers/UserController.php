@@ -26,16 +26,20 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => ['required', 'in:admin,user'],
+            'dinas' => ['required', 'string', 'max:255'],
         ]);
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role,
+            'dinas' => $request->dinas,
         ]);
 
         return redirect()->route('users.index')
-            ->with('success', 'User created successfully.');
+            ->with('success', 'User berhasil ditambahkan.');
     }
 
     public function edit(User $user)
@@ -65,14 +69,22 @@ class UserController extends Controller
             ]);
         }
 
+        // Update role dan dinas jika ada
+        if ($request->has('role')) {
+            $user->update(['role' => $request->role]);
+        }
+        if ($request->has('dinas')) {
+            $user->update(['dinas' => $request->dinas]);
+        }
+
         return redirect()->route('users.index')
-            ->with('success', 'User updated successfully.');
+            ->with('success', 'User berhasil diperbarui.');
     }
 
     public function destroy(User $user)
     {
         $user->delete();
         return redirect()->route('users.index')
-            ->with('success', 'User deleted successfully.');
+            ->with('success', 'User berhasil dihapus.');
     }
 } 

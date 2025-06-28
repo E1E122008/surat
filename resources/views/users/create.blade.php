@@ -37,11 +37,9 @@
             <!-- Select Role -->
             <div class="mb-4">
                 <label for="role" class="block text-gray-700 font-semibold mb-2">Role</label>
-                <select name="role" id="role" 
-                    class="w-full bg-white text-gray-900 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400">
-                    <option value="">Select Role</option>
-                    <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                    <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
+                <select name="role" id="role" class="w-full bg-white text-gray-900 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400" required>
+                    <option value="user" selected>User</option>
+                    <option value="admin">Admin</option>
                 </select>
                 @error('role')
                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
@@ -63,6 +61,12 @@
                 <label for="password_confirmation" class="block text-gray-700 font-semibold mb-2">Confirm Password</label>
                 <input type="text" name="password_confirmation" id="password_confirmation" placeholder="Confirm your password"
                     class="w-full bg-white text-gray-900 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400">
+            </div>
+
+            <!-- Input Dinas/Instansi -->
+            <div class="mb-3">
+                <label for="dinas" class="form-label">Dinas/Instansi</label>
+                <input type="text" name="dinas" id="dinas" class="form-control" required>
             </div>
 
             <!-- Submit Button -->
