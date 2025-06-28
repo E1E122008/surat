@@ -177,24 +177,36 @@
                     <div class="text-center mb-4">
                         <h4 class="mb-1">{{ auth()->user()->name }}</h4>
                         <p class="text-muted">{{ auth()->user()->role }}</p>
-                    </div>
-
-                    <div class="d-grid gap-2">
-                        <button class="action-btn btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-                            <i class="fas fa-edit"></i>Edit Profil
-                        </button>
-                        <button class="action-btn btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-                            <i class="fas fa-key"></i>Ganti Password
-                        </button>
-                        <a href="{{ route('dashboard') }}" class="action-btn btn btn-info">
-                            <i class="fas fa-home"></i>Kembali ke Beranda
-                        </a>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="action-btn btn btn-danger">
-                                <i class="fas fa-sign-out-alt"></i>Logout
+                        <!-- Dropdown Action -->
+                        <div class="dropdown mt-3">
+                            <button class="btn btn-primary dropdown-toggle w-100" type="button" id="profileActionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-cog me-2"></i> Aksi
                             </button>
-                        </form>
+                            <ul class="dropdown-menu w-100 text-center" aria-labelledby="profileActionDropdown">
+                                <li>
+                                    <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                                        <i class="fas fa-edit me-2"></i>Edit Profil
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                        <i class="fas fa-key me-2"></i>Ganti Password
+                                    </button>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                        <a href="{{ route('dashboard') }}" class="btn btn-info w-100 mt-2">
+                            <i class="fas fa-home me-2"></i>Kembali ke Beranda
+                        </a>
                     </div>
                 </div>
             </div>
@@ -206,60 +218,40 @@
                         <h5><i class="fas fa-user me-2"></i>Informasi Pribadi</h5>
                     </div>
                     <div class="info-body">
-                        <div class="info-item">
-                            <div class="info-label">Nama Lengkap</div>
-                            <div class="info-value">{{ auth()->user()->name }}</div>
+                        <div class="row mb-2">
+                            <div class="col-4 text-end text-muted fw-semibold"><i class="fas fa-id-card me-2"></i>Nama Lengkap</div>
+                            <div class="col-8">{{ auth()->user()->name }}</div>
                         </div>
-                        <div class="info-item">
-                            <div class="info-label">Email</div>
-                            <div class="info-value">{{ auth()->user()->email }}</div>
+                        <div class="row mb-2">
+                            <div class="col-4 text-end text-muted fw-semibold"><i class="fas fa-envelope me-2"></i>Email</div>
+                            <div class="col-8">{{ auth()->user()->email }}</div>
                         </div>
-                        <div class="info-item">
-                            <div class="info-label">Nomor Telepon</div>
-                            <div class="info-value">{{ auth()->user()->phone ?? '-' }}</div>
+                        <div class="row mb-2">
+                            <div class="col-4 text-end text-muted fw-semibold"><i class="fas fa-phone me-2"></i>Nomor Telepon</div>
+                            <div class="col-8">{{ auth()->user()->phone ?? '-' }}</div>
                         </div>
-                        <div class="info-item">
-                            <div class="info-label">Role</div>
-                            <div class="info-value">{{ auth()->user()->role }}</div>
+                        <div class="row mb-2">
+                            <div class="col-4 text-end text-muted fw-semibold"><i class="fas fa-briefcase me-2"></i>Jabatan</div>
+                            <div class="col-8">{{ auth()->user()->jabatan ?? '-' }}</div>
                         </div>
-                        <div class="info-item">
-                            <div class="info-label">NIP</div>
-                            <div class="info-value">{{ auth()->user()->nip ?? '-' }}</div>
+                        <div class="row mb-2">
+                            <div class="col-4 text-end text-muted fw-semibold"><i class="fas fa-building me-2"></i>Dinas/Instansi</div>
+                            <div class="col-8">{{ auth()->user()->dinas ?? '-' }}</div>
                         </div>
-                        <div class="info-item">
-                            <div class="info-label">Bergabung Sejak</div>
-                            <div class="info-value">{{ auth()->user()->created_at->format('d F Y') }}</div>
+                        <div class="row mb-2">
+                            <div class="col-4 text-end text-muted fw-semibold"><i class="fas fa-id-badge me-2"></i>NIP</div>
+                            <div class="col-8">{{ auth()->user()->nip ?? '-' }}</div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Statistik Aktivitas -->
-                <div class="profile-info-card">
-                    <div class="info-header">
-                        <h5><i class="fas fa-chart-line me-2"></i>Statistik Aktivitas</h5>
-                    </div>
-                    <div class="info-body">
-                        <div class="row text-center">
-                            <div class="col-md-4 mb-3">
-                                <div class="p-3 bg-light rounded">
-                                    <h3 class="text-primary mb-1">{{ $totalSuratMasuk ?? 0 }}</h3>
-                                    <p class="text-muted mb-0">Surat Masuk</p>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <div class="p-3 bg-light rounded">
-                                    <h3 class="text-success mb-1">{{ $totalSuratKeluar ?? 0 }}</h3>
-                                    <p class="text-muted mb-0">Surat Keluar</p>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <div class="p-3 bg-light rounded">
-                                    <h3 class="text-info mb-1">{{ $totalDisposisi ?? 0 }}</h3>
-                                    <p class="text-muted mb-0">Disposisi</p>
-                                </div>
-                            </div>
+                        <div class="row mb-2">
+                            <div class="col-4 text-end text-muted fw-semibold"><i class="fas fa-user-tag me-2"></i>Role</div>
+                            <div class="col-8">{{ auth()->user()->role }}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-4 text-end text-muted fw-semibold"><i class="fas fa-calendar-alt me-2"></i>Bergabung Sejak</div>
+                            <div class="col-8">{{ auth()->user()->created_at->format('d F Y') }}</div>
                         </div>
                     </div>
+                    
                 </div>
             </div>
         </div>
