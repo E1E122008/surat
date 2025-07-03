@@ -11,9 +11,9 @@ return new class extends Migration
         Schema::create('surat_keluar', function (Blueprint $table) {
             $table->id();
             $table->string('no_surat');
-            $table->string('tujuan');
-            $table->date('tanggal_surat');
-            $table->string('perihal');
+            $table->date('tanggal')->nullable();
+            $table->text('perihal')->nullable();
+            $table->text('catatan')->nullable();
             $table->string('lampiran')->nullable();
             $table->timestamps();
         });

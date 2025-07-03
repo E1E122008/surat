@@ -22,8 +22,7 @@ class Pergub extends Model
         'catatan',
         'disposisi',
         'status',
-        'submitted_by',
-        'admin_notes'
+        'submitted_by'
     ];
 
     protected $casts = [

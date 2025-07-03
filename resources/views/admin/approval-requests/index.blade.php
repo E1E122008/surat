@@ -41,8 +41,10 @@
                                     <th class="text-center">No</th>
                                     <th class="text-center">Jenis Surat</th>
                                     <th class="text-center">Pengirim</th>
+                                    <th class="text-center">Dinas</th>
                                     <th class="text-center">Tanggal Permintaan</th>
                                     <th class="text-center">Status</th>
+                                    <th class="text-center">Fisik</th>
                                     <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -62,6 +64,7 @@
                                             {{ $letterTypes[$request->letter_type] ?? $request->letter_type }}
                                         </td>
                                         <td class="text-center">{{ $request->sender }}</td>
+                                        <td class="text-center">{{ $request->user->dinas ?? '-' }}</td>
                                         <td class="text-center">{{ $request->created_at->format('d M Y') }}</td>
                                         <td class="text-center">
                                             @if($request->status === 'pending')
@@ -73,28 +76,22 @@
                                             @endif
                                         </td>
                                         <td class="text-center">
-                                            <div class="dropdown">
-                                                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="aksiDropdown{{ $request->id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    Aksi
-                                                </button>
-                                                <ul class="dropdown-menu" aria-labelledby="aksiDropdown{{ $request->id }}">
-                                                    <li>
-                                                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#detailRequestModal{{ $request->id }}" title="Detail">
-                                                            <i class="fas fa-eye me-2"></i> Lihat Detail
-                                                        </button>
-                                                    </li>
-                                                    @if($request->status === 'pending')
-                                                    <li>
-                                                        <form action="{{ route('admin.approval-requests.reject', $request->id) }}" method="POST" class="d-inline">
-                                                            @csrf
-                                                            <button type="submit" class="dropdown-item text-danger" title="Tolak">
-                                                                <i class="fas fa-times me-2"></i> Tolak
-                                                            </button>
-                                                        </form>
-                                                    </li>
+                                            @if($request->status === 'approved')
+                                                <span id="fisik-badge-{{ $request->id }}" style="cursor:pointer" onclick="toggleFisik({{ $request->id }})">
+                                                    @if($request->fisik_diterima)
+                                                        <span class="badge bg-success"><i class="fas fa-check"></i> Sudah</span>
+                                                    @else
+                                                        <span class="badge bg-secondary">Belum</span>
                                                     @endif
-                                                </ul>
-                                            </div>
+                                                </span>
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#detailRequestModal{{ $request->id }}" title="Detail">
+                                                <i class="fas fa-eye me-2"></i> Detail
+                                            </button>
                                         </td>
                                     </tr>
                                 @empty
@@ -161,6 +158,21 @@
                          <div class="mb-3">
                             <label class="form-label fw-bold">Tanggal Surat</label>
                             <p>{{ $request->tanggal_surat ? $request->tanggal_surat->format('d M Y') : '-' }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Status Fisik</label>
+                            @if($request->status === 'approved')
+                                <span id="fisik-status-{{ $request->id }}">
+                                    @if($request->fisik_diterima)
+                                        <span class="badge bg-success"><i class="fas fa-check"></i> Sudah diterima</span>
+                                        <div class="text-muted small">Diterima pada: {{ $request->fisik_diterima_at ? $request->fisik_diterima_at->format('d M Y H:i') : '-' }}</div>
+                                    @else
+                                        <span class="badge bg-secondary">Belum</span>
+                                    @endif
+                                </span>
+                            @else
+                                -
+                            @endif
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -236,7 +248,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="tanggal_diterima{{ $request->id }}" class="form-label">Tanggal Diterima</label>
-                        <input type="date" class="form-control" id="tanggal_diterima{{ $request->id }}" name="tanggal_diterima" required>
+                        <input type="date" class="form-control" id="tanggal_diterima{{ $request->id }}" name="tanggal_diterima" value="{{ old('tanggal_diterima', date('Y-m-d')) }}" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -301,3 +313,46 @@
     margin-right: 0.5rem;
 }
 </style>
+
+@push('scripts')
+<script>
+function konfirmasiFisik(id) {
+    fetch('/admin/approval-requests/' + id + '/fisik-ajax', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.status === 'success') {
+            document.getElementById('fisik-status-' + id).innerHTML =
+                `<span class='badge bg-success'><i class='fas fa-check'></i> Sudah diterima</span>
+                <div class='text-muted small'>Diterima pada: ${data.fisik_diterima_at}</div>`;
+        }
+    });
+}
+
+function toggleFisik(id) {
+    fetch('/admin/approval-requests/' + id + '/toggle-fisik', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        let badge = '';
+        if(data.fisik_diterima) {
+            badge = `<span class='badge bg-success'><i class='fas fa-check'></i> Sudah</span>`;
+        } else {
+            badge = `<span class='badge bg-secondary'>Belum</span>`;
+        }
+        document.getElementById('fisik-badge-' + id).innerHTML = badge;
+        document.getElementById('fisik-status-' + id).innerHTML = badge + (data.fisik_diterima_at ? `<div class='text-muted small'>Diterima pada: ${data.fisik_diterima_at}</div>` : '');
+    });
+}
+</script>
+@endpush

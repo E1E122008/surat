@@ -56,7 +56,6 @@
                                 <tr>
                                     <th class="text-center">No</th>
                                     <th class="text-center">Jenis Surat</th>
-                                    <th class="text-center">Pengirim</th>
                                     <th class="text-center">Tanggal Surat</th>
                                     <th class="text-center">Progres</th>
                                     <th class="text-center">Aksi</th>
@@ -77,7 +76,6 @@
                                             @endphp
                                             {{ $letterTypes[$request->letter_type] ?? $request->letter_type }}
                                         </td>
-                                        <td class="text-center">{{ $request->sender }}</td>
                                         <td class="text-center">{{ $request->tanggal_surat ? $request->tanggal_surat->format('d M Y') : '-' }}</td>
                                         <td class="text-center">
                                             @if($request->status === 'pending')
@@ -95,29 +93,9 @@
                                             @endif
                                         </td>
                                         <td class="text-center">
-                                            <div class="dropdown">
-                                                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="aksiDropdown{{ $request->id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    Aksi
-                                                </button>
-                                                <ul class="dropdown-menu" aria-labelledby="aksiDropdown{{ $request->id }}">
-                                                    <li>
-                                                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#detailModal{{ $request->id }}" title="Detail">
-                                                            <i class="fas fa-eye me-2"></i> Lihat Detail
-                                                        </button>
-                                                    </li>
-                                                    @if($request->status === 'pending')
-                                                    <li>
-                                                        <form action="{{ route('data-requests.cancel', $request->id) }}" method="POST" class="d-inline">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="button" class="dropdown-item text-danger" onclick="confirmCancelRequest(this)" title="Batal Kirim">
-                                                                <i class="fas fa-times me-2"></i> Batal Kirim
-                                                            </button>
-                                                        </form>
-                                                    </li>
-                                                    @endif
-                                                </ul>
-                                            </div>
+                                            <button type="button" class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#detailModal{{ $request->id }}" title="Detail">
+                                                <i class="fas fa-eye me-2"></i> Detail
+                                            </button>
                                         </td>
                                     </tr>
                                 @empty
@@ -161,20 +139,18 @@
                             <label class="form-label fw-bold">No. Surat</label>
                             <p>{{ $request->no_surat }}</p>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Pengirim</label>
-                            <p>{{ $request->sender }}</p>
-                        </div>
+                        
                         <div class="mb-3">
                             <label class="form-label fw-bold">Tanggal Surat</label>
                             <p>{{ $request->tanggal_surat ? $request->tanggal_surat->format('d M Y') : '-' }}</p>
                         </div>
-                    </div>
-                    <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label fw-bold">Perihal</label>
                             <p>{{ $request->perihal }}</p>
                         </div>
+                    </div>
+                    <div class="col-md-6">
+                        
                         <div class="mb-3">
                             <label class="form-label fw-bold">Lampiran</label>
                             @if($request->lampiran)
@@ -211,8 +187,22 @@
                         </div>
                     </div>
                 </div>
+                @if($request->status === 'approved')
+                    <div class="alert alert-success">
+                        Surat Anda telah disetujui. Silakan bawa dokumen fisik ke kantor untuk proses lebih lanjut.
+                    </div>
+                @endif
             </div>
             <div class="modal-footer">
+                @if($request->status === 'pending')
+                    <form action="{{ route('data-requests.cancel', $request->id) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="button" class="btn btn-danger" onclick="confirmCancelRequest(this)" title="Batal Kirim">
+                            <i class="fas fa-times me-2"></i> Batal Kirim
+                        </button>
+                    </form>
+                @endif
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
@@ -231,54 +221,42 @@
             <form action="{{ route('data-requests.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="letter_type" class="form-label">Jenis Surat</label>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="letter_type" class="form-label">Jenis Surat <span class="text-danger">*</span></label>
                             <select class="form-select" id="letter_type" name="letter_type" required>
                                 <option value="">Pilih Jenis Surat</option>
                                 <option value="surat_masuk">Surat Masuk</option>
                                 <option value="sk">SK</option>
                                 <option value="perda">PERDA</option>
                                 <option value="pergub">PERGUB</option>
-
                             </select>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="no_surat" class="form-label">No. Surat</label>
-                            <input type="text" class="form-control" id="no_surat" name="no_surat" required>
+                        <div class="col-md-6">
+                            <label for="no_surat" class="form-label">No. Surat <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="no_surat" name="no_surat" placeholder="Masukkan nomor surat" required>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="sender" class="form-label">Pengirim</label>
-                            <input type="text" class="form-control" id="sender" name="sender" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="tanggal_surat" class="form-label">Tanggal Surat</label>
+                        <div class="col-md-6">
+                            <label for="tanggal_surat" class="form-label">Tanggal Surat <span class="text-danger">*</span></label>
                             <input type="date" class="form-control" id="tanggal_surat" name="tanggal_surat" required>
                         </div>
+                        <div class="col-md-6">
+                            <label for="lampiran" class="form-label">Lampiran <span class="text-danger">*</span></label>
+                            <input type="file" class="form-control" id="lampiran" name="lampiran" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
+                            <small class="text-muted">File Lampiran wajib di isi, max 10MB.</small>
+                        </div>
+                        <div class="col-12">
+                            <label for="perihal" class="form-label">Perihal <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="perihal" name="perihal" rows="2" placeholder="Tuliskan perihal surat" required></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label for="notes" class="form-label">Catatan</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="Tambahkan catatan jika diperlukan..."></textarea>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="perihal" class="form-label">Perihal</label>
-                        <input type="text" class="form-control" id="perihal" name="perihal" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="lampiran" class="form-label">Lampiran</label>
-                        <input type="file" class="form-control" id="lampiran" name="lampiran" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
-                        <small class="text-muted">Format yang didukung: PDF, DOC, DOCX, JPG, JPEG, PNG</small><br>
-                        <small class="text-danger">* File lampiran wajib diisi</small>
-                        @error('lampiran')
-                            <div class="text-danger mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="mb-3">
-                        <label for="notes" class="form-label">Catatan</label>
-                        <textarea class="form-control" id="notes" name="notes" rows="3" 
-                            placeholder="Tambahkan catatan jika diperlukan..."></textarea>
-                    </div>
-                    <div class="alert alert-info">
+                    <div class="alert alert-info mt-3">
                         <i class="fas fa-info-circle me-2"></i>
-                        Data surat akan direview oleh admin. Anda akan mendapatkan notifikasi setelah data disetujui atau ditolak.
+                        Data surat akan direview oleh admin, surat akan disimpan jika disetujui.
                     </div>
                 </div>
                 <div class="modal-footer">

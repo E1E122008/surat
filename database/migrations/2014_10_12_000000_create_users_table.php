@@ -19,6 +19,7 @@ return new class extends Migration
                 $table->string('phone')->nullable();
                 $table->string('nip')->nullable();
                 $table->string('avatar')->nullable();
+                $table->string('dinas')->nullable();
                 $table->rememberToken();
                 $table->timestamps();
             });

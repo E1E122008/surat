@@ -4,12 +4,12 @@
 <div class="container mx-auto px-4 py-6">
     <div class="mb-6">
         <a href="{{ route('users.index') }}" class="text-blue-500 hover:text-blue-700">
-            <i class="fas fa-arrow-left"></i> Back to Users
+            <i class="fas fa-arrow-left"></i> Kembali
         </a>
     </div>
 
     <div class="max-w-lg mx-auto bg-white shadow-lg rounded-lg p-6">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Create User</h2>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Buat Akun</h2>
 
         <form action="{{ route('users.store') }}" method="POST">
             @csrf

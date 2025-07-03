@@ -18,7 +18,7 @@ class SppdLuarDaerah extends Model
         'perihal',
         'nama_petugas',
         'lampiran',
-        'catatan',
+        'catatan'
     ];
 
     protected $casts = [

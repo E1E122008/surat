@@ -264,6 +264,9 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div class="mt-4 flex justify-center">
+                            {{ $suratMasuk->links('pagination::tailwind') }}
+                        </div>
                     </div>
 
                     <!-- Tab Surat Keputusan -->
@@ -341,6 +344,9 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div class="mt-4 flex justify-center">
+                            {{ $sk->links('pagination::tailwind') }}
+                        </div>
                     </div>
 
                     <!-- Tab Perda -->
@@ -417,6 +423,9 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div class="mt-4 flex justify-center">
+                            {{ $perda->links('pagination::tailwind') }}
+                        </div>
                     </div>
 
                     <!-- Tab Pergub -->
@@ -492,6 +501,9 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="mt-4 flex justify-center">
+                            {{ $pergub->links('pagination::tailwind') }}
                         </div>
                     </div>
                 </div> <!-- End tab-content -->

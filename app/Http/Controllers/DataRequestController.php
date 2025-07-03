@@ -62,7 +62,6 @@ class DataRequestController extends Controller
     {
         $validated = $request->validate([
             'letter_type' => 'required|string|max:255',
-            'sender' => 'required|string|max:255',
             'tanggal_surat' => 'required|date',
             'perihal' => 'required|string|max:255',
             'lampiran' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
@@ -84,7 +83,7 @@ class DataRequestController extends Controller
         $dataRequest = ApprovalRequest::create([
             'user_id' => Auth::id(),
             'letter_type' => $validated['letter_type'],
-            'sender' => $validated['sender'],
+            'sender' => Auth::user()->name,
             'tanggal_surat' => $validated['tanggal_surat'],
             'perihal' => $validated['perihal'],
             'lampiran' => $lampiranPath,

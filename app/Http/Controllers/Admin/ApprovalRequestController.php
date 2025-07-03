@@ -176,4 +176,22 @@ class ApprovalRequestController extends Controller
                 return false;
         }
     }
+
+    public function toggleFisik($id)
+    {
+        $request = ApprovalRequest::findOrFail($id);
+        // Hanya boleh toggle jika status sudah approved
+        if ($request->status !== 'approved') {
+            return response()->json(['status' => 'forbidden'], 403);
+        }
+        $request->fisik_diterima = !$request->fisik_diterima;
+        $request->fisik_diterima_at = $request->fisik_diterima ? now() : null;
+        $request->save();
+
+        return response()->json([
+            'status' => 'success',
+            'fisik_diterima' => $request->fisik_diterima,
+            'fisik_diterima_at' => $request->fisik_diterima_at ? $request->fisik_diterima_at->format('d M Y H:i') : null
+        ]);
+    }
 } 

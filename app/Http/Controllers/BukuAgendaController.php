@@ -148,10 +148,10 @@ class BukuAgendaController extends Controller
         }
 
         // Eksekusi query
-        $suratMasuk = $query->orderBy('created_at', 'desc')->get();
-        $sk = $querySK->orderBy('created_at', 'desc')->get();
-        $perda = $queryPerda->orderBy('created_at', 'desc')->get();
-        $pergub = $queryPergub->orderBy('created_at', 'desc')->get();
+        $suratMasuk = $query->orderBy('created_at', 'desc')->paginate(10);
+        $sk = $querySK->orderBy('created_at', 'desc')->paginate(10);
+        $perda = $queryPerda->orderBy('created_at', 'desc')->paginate(10);
+        $pergub = $queryPergub->orderBy('created_at', 'desc')->paginate(10);
 
         // Tambahkan perhitungan total surat
         $totalSurat = [

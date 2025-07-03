@@ -14,6 +14,8 @@ return new class extends Migration
             $table->date('tanggal');
             $table->string('perihal');
             $table->text('nama_petugas');
+            $table->string('tujuan');
+            $table->string('lampiran')->nullable();
             $table->timestamps();
         });
     }

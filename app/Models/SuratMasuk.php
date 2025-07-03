@@ -22,10 +22,7 @@ class SuratMasuk extends Model
         'catatan',
         'disposisi',
         'status',
-        'sub_disposisi',
-        'tanggal_disposisi',
-        'submitted_by',
-        'admin_notes'
+        'submitted_by'
     ];
 
     protected $casts = [

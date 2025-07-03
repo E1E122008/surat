@@ -6,17 +6,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
-        Schema::create('surat_masuk', function (Blueprint $table) {
+        Schema::create('sks', function (Blueprint $table) {
             $table->id();
-            $table->integer('no_agenda')->nullable();
-            $table->string('no_surat');
+            $table->integer('no_agenda');
+            $table->string('no_surat')->unique();
             $table->string('pengirim');
-            $table->date('tanggal_surat');
+            $table->date('tanggal_surat')->nullable();
             $table->date('tanggal_terima');
             $table->string('perihal');
             $table->string('disposisi')->nullable();
@@ -28,11 +25,8 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('surat_masuk');
+        Schema::dropIfExists('sks');
     }
-};
+}; 

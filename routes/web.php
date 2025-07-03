@@ -279,4 +279,5 @@ Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->name('admin.')-
     Route::post('/approval-requests/{id}/reject', [ApprovalRequestController::class, 'reject'])
         ->name('approval-requests.reject');
     Route::post('/approval-requests', [ApprovalRequestController::class, 'store'])->name('approval-requests.store');
+    Route::post('/approval-requests/{id}/toggle-fisik', [ApprovalRequestController::class, 'toggleFisik'])->name('admin.approval-requests.toggle-fisik');
 });
