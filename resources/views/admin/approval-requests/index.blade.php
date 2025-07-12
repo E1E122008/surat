@@ -65,7 +65,13 @@
                                         </td>
                                         <td class="text-center">{{ $request->sender }}</td>
                                         <td class="text-center">{{ $request->user->dinas ?? '-' }}</td>
-                                        <td class="text-center">{{ $request->created_at->format('d M Y') }}</td>
+                                        <td class="text-center">
+                                            @if($request->created_at)
+                                                {{ $request->created_at instanceof \Illuminate\Support\Carbon ? $request->created_at->format('d M Y') : \Carbon\Carbon::parse($request->created_at)->format('d M Y') }}
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
                                         <td class="text-center">
                                             @if($request->status === 'pending')
                                                 <span class="badge bg-warning">Menunggu Review</span>
@@ -153,11 +159,23 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Tanggal Permintaan</label>
-                            <p>{{ $request->created_at->format('d M Y') }}</p>
+                            <p>
+                                @if($request->created_at)
+                                    {{ $request->created_at instanceof \Illuminate\Support\Carbon ? $request->created_at->format('d M Y') : \Carbon\Carbon::parse($request->created_at)->format('d M Y') }}
+                                @else
+                                    -
+                                @endif
+                            </p>
                         </div>
                          <div class="mb-3">
                             <label class="form-label fw-bold">Tanggal Surat</label>
-                            <p>{{ $request->tanggal_surat ? $request->tanggal_surat->format('d M Y') : '-' }}</p>
+                            <p>
+                                @if($request->tanggal_surat)
+                                    {{ $request->tanggal_surat instanceof \Illuminate\Support\Carbon ? $request->tanggal_surat->format('d M Y') : \Carbon\Carbon::parse($request->tanggal_surat)->format('d M Y') }}
+                                @else
+                                    -
+                                @endif
+                            </p>
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Status Fisik</label>
@@ -165,7 +183,14 @@
                                 <span id="fisik-status-{{ $request->id }}">
                                     @if($request->fisik_diterima)
                                         <span class="badge bg-success"><i class="fas fa-check"></i> Sudah diterima</span>
-                                        <div class="text-muted small">Diterima pada: {{ $request->fisik_diterima_at ? $request->fisik_diterima_at->format('d M Y H:i') : '-' }}</div>
+                                        <div class="text-muted small">
+                                            Diterima pada:
+                                            @if($request->fisik_diterima_at)
+                                                {{ $request->fisik_diterima_at instanceof \Illuminate\Support\Carbon ? $request->fisik_diterima_at->format('d M Y H:i') : \Carbon\Carbon::parse($request->fisik_diterima_at)->format('d M Y H:i') }}
+                                            @else
+                                                -
+                                            @endif
+                                        </div>
                                     @else
                                         <span class="badge bg-secondary">Belum</span>
                                     @endif
@@ -234,7 +259,7 @@
 <div class="modal fade" id="approveModal{{ $request->id }}" tabindex="-1" aria-labelledby="approveModalLabel{{ $request->id }}" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header"></div>
                 <h5 class="modal-title" id="approveModalLabel{{ $request->id }}">Setujui Permintaan Data</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>

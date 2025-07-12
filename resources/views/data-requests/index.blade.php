@@ -57,7 +57,7 @@
                                     <th class="text-center">No</th>
                                     <th class="text-center">Jenis Surat</th>
                                     <th class="text-center">Tanggal Surat</th>
-                                    <th class="text-center">Progres</th>
+                                    <th class="text-center">Status</th>
                                     <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -83,9 +83,15 @@
                                                     Menunggu Review
                                                 </span>
                                             @elseif($request->status === 'approved')
-                                                <span class="badge bg-success">
-                                                    Disetujui
-                                                </span>
+                                                @if(!$request->fisik_diterima)
+                                                    <span class="badge bg-info">
+                                                        Menunggu Fisik Surat
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-success">
+                                                        Selesai
+                                                    </span>
+                                                @endif
                                             @elseif($request->status === 'rejected')
                                                 <span class="badge bg-danger">
                                                     <i class="fas fa-times me-1"></i> Ditolak
@@ -187,7 +193,7 @@
                         </div>
                     </div>
                 </div>
-                @if($request->status === 'approved')
+                @if($request->status === 'approved' && !$request->fisik_diterima)
                     <div class="alert alert-success">
                         Surat Anda telah disetujui. Silakan bawa dokumen fisik ke kantor untuk proses lebih lanjut.
                     </div>
