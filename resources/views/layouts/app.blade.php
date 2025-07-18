@@ -12,11 +12,18 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
     <!-- Scripts -->
+    @php
+        $manifestPath = public_path('build/manifest.json');
+        $manifest = file_exists($manifestPath) ? json_decode(file_get_contents($manifestPath), true) : [];
+        $cssFile = isset($manifest['resources/css/app.css']['file']) ? $manifest['resources/css/app.css']['file'] : 'app.css';
+        $jsFile = isset($manifest['resources/js/app.js']['file']) ? $manifest['resources/js/app.js']['file'] : 'app.js';
+    @endphp
+
     @if (app()->environment('local'))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @else
-        <link rel="stylesheet" href="{{ asset('build/assets/app.css') }}">
-        <script src="{{ asset('build/assets/app.js') }}" defer></script>
+        <link rel="stylesheet" href="{{ asset('build/assets/' . $cssFile) }}">
+        <script src="{{ asset('build/assets/' . $jsFile) }}" defer></script>
     @endif
 
     <!-- Bootstrap CSS -->

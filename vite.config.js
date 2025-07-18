@@ -11,8 +11,20 @@ export default defineConfig({
                 'resources/js/app.js'
             ],
             refresh: true,
+            // Tambahkan konfigurasi untuk production
+            buildDirectory: 'build'
         }),
     ],
+    build: {
+        // Pastikan manifest.json dibuat
+        manifest: true,
+        outDir: 'public/build',
+        rollupOptions: {
+            output: {
+                manualChunks: undefined
+            }
+        }
+    },
     css: {
         postcss: {
             plugins: [tailwindcss, autoprefixer],
