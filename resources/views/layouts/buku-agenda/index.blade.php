@@ -315,7 +315,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($sk as $index => $surat)
+                                    @foreach($sks as $index => $surat)
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_agenda }}</td>
@@ -345,7 +345,7 @@
                             </table>
                         </div>
                         <div class="mt-4 flex justify-center">
-                            {{ $sk->links('pagination::tailwind') }}
+                            {{ $sks->links('pagination::tailwind') }}
                         </div>
                     </div>
 
