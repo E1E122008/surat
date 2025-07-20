@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+
+
 @section('content')
 <div class="container-fluid">
     <!-- Page Heading -->
@@ -256,12 +258,11 @@
 
 <!-- Approve Modal -->
 @foreach($approvalRequests as $request)
-<div class="modal fade" id="approveModal{{ $request->id }}" tabindex="-1" aria-labelledby="approveModalLabel{{ $request->id }}" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade " id="approveModal{{ $request->id }}" tabindex="-1" aria-labelledby="approveModalLabel{{ $request->id }}" aria-hidden="true">
+    <div class="modal-dialog bg-white shadow-lg shadow-lg rounded-2">
         <div class="modal-content">
-            <div class="modal-header"></div>
+            <div class="modal-header">
                 <h5 class="modal-title" id="approveModalLabel{{ $request->id }}">Setujui Permintaan Data</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{ route('admin.approval-requests.approve', $request->id) }}" method="POST">
                 @csrf
