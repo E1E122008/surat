@@ -60,11 +60,12 @@
                             file:text-sm file:font-semibold
                             file:bg-blue-50 file:text-blue-700
                             hover:file:bg-blue-100"
-                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif"
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                             @error('lampiran') is-invalid @enderror">   
                         @error('lampiran')
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                         @enderror
+                        <div class="mt-1 text-sm text-gray-500">PDF, DOC, DOCX, JPG, JPEG, PNG (Maksimal 2GB)</div>
                     </div>
                 </div>  
 

@@ -88,7 +88,7 @@
                                     file:bg-blue-50 file:text-blue-700
                                     hover:file:bg-blue-100"
                                     accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
-                                <p class="mt-1 text-sm text-gray-500">Biarkan kosong jika tidak ingin mengubah file</p>     
+                                <div class="mt-1 text-sm text-gray-500">PDF, DOC, DOCX, JPG, JPEG, PNG (Maksimal 2GB) </div>
                                 @error('lampiran')
                                     <p class="form-error">{{ $message }}</p>
                                 @enderror

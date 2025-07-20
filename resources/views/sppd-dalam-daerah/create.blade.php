@@ -66,8 +66,8 @@
 
                 <div class="form-group form-grid-full">
                     <label for="lampiran" class="form-label">Lampiran</label>
-                    <input type="file" name="lampiran" id="lampiran" class="form-control @error('lampiran') is-invalid @enderror">
-                    <div class="form-help">PDF, DOC, DOCX, JPG, JPEG, PNG, atau GIF (Maksimal 2MB)</div>
+                    <input type="file" name="lampiran" id="lampiran" class="form-control @error('lampiran') is-invalid @enderror" required>
+                    <div class="form-help">PDF, DOC, DOCX, JPG, JPEG, PNG (Maksimal 2GB)</div>
                     @error('lampiran')
                         <div class="form-error">{{ $message }}</div>
                     @enderror

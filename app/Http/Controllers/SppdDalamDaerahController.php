@@ -43,7 +43,7 @@ class SppdDalamDaerahController extends Controller
             'tujuan' => 'required|string|max:255',
             'perihal' => 'required|string|max:255',
             'nama_petugas' => 'required|string',
-            'lampiran' => 'nullable|mimes:pdf|max:2048',
+            'lampiran' => 'required|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
         ]);
 
         if ($request->hasFile('lampiran')) {
@@ -80,7 +80,7 @@ class SppdDalamDaerahController extends Controller
                 'tujuan' => 'required|string|max:255',
                 'perihal' => 'required|string|max:255',
                 'nama_petugas' => 'required|string',
-                'lampiran' => 'nullable|mimes:pdf|max:2048',
+                'lampiran' => 'nullable|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
             ]);
 
             if ($request->hasFile('lampiran')) {

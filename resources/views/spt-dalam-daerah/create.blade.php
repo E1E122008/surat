@@ -69,7 +69,7 @@
                     <input type="file" name="lampiran" id="lampiran" 
                         class="form-control @error('lampiran') is-invalid @enderror"
                         required>
-                    <div class="form-help">PDF, DOC, DOCX, JPG, JPEG, PNG, atau GIF (Maksimal 2MB)</div>
+                    <div class="form-help">PDF, DOC, DOCX, JPG, JPEG, PNG (Maksimal 2GB)</div>
                     @error('lampiran')
                         <div class="form-error">{{ $message }}</div>
                     @enderror

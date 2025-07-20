@@ -71,7 +71,7 @@
                             </div>
                             
                             <div class="form-group md:col-span-2">
-                                <label for="lampiran" class="block text-sm font-medium text-gray-700">Lampiran (PDF, DOC, DOCX, Gambar)</label>
+                                <label for="lampiran" class="block text-sm font-medium text-gray-700">Lampiran</label>
                                 @if($sppdDalamDaerah->lampiran)
                                     <div class="mt-2">
                                         <p class="text-sm text-gray-500">File saat ini: {{ basename($sppdDalamDaerah->lampiran) }}</p>
@@ -85,7 +85,7 @@
                                     file:bg-blue-50 file:text-blue-700
                                     hover:file:bg-blue-100"
                                     accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
-                                <p class="mt-1 text-sm text-gray-500">Biarkan kosong jika tidak ingin mengubah file</p>
+                                <div class="mt-1 text-sm text-gray-500">PDF, DOC, DOCX, JPG, JPEG, PNG (Maksimal 2GB)</div>
                                 @error('lampiran')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror

@@ -249,7 +249,7 @@
                         <div class="col-md-6">
                             <label for="lampiran" class="form-label">Lampiran <span class="text-danger">*</span></label>
                             <input type="file" class="form-control" id="lampiran" name="lampiran" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
-                            <small class="text-muted">File Lampiran wajib di isi, max 10MB.</small>
+                            <small class="text-muted">File Lampiran wajib di isi, max 2GB.</small>
                         </div>
                         <div class="col-12">
                             <label for="perihal" class="form-label">Perihal <span class="text-danger">*</span></label>

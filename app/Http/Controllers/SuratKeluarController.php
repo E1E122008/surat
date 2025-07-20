@@ -39,7 +39,7 @@ class SuratKeluarController extends Controller
                 'no_surat' => 'required|string|max:255',
                 'tanggal' => 'required|date',
                 'perihal' => 'required|string|max:255',
-                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
+                'lampiran' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
             ]);
 
             // Handle file upload
@@ -82,7 +82,7 @@ class SuratKeluarController extends Controller
                 'no_surat' => 'required|string|max:255',
                 'tanggal' => 'required|date',
                 'perihal' => 'required|string|max:255',
-                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,gif|max:2048',
+                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
             ]);
 
             if ($request->hasFile('lampiran')) {

@@ -64,7 +64,7 @@ class DataRequestController extends Controller
             'letter_type' => 'required|string|max:255',
             'tanggal_surat' => 'required|date',
             'perihal' => 'required|string|max:255',
-            'lampiran' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
+            'lampiran' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
             'notes' => 'nullable|string',
             'no_surat' => 'required|string|max:255',
         ]);
