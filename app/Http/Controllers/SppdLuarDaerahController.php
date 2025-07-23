@@ -24,7 +24,7 @@ class SppdLuarDaerahController extends Controller
             });
         }
         
-        $sppdLuarDaerah = $query->paginate(10);
+        $sppdLuarDaerah = $query->latest()->paginate(10);
         return view('sppd-luar-daerah.index', compact('sppdLuarDaerah'));
     }
 

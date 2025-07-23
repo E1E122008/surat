@@ -22,7 +22,7 @@ class SuratKeluarController extends Controller
             });
         }
         
-        $suratKeluar = $query->paginate(10);
+        $suratKeluar = $query->latest()->paginate(10);
         return view('surat-keluar.index', compact('suratKeluar'));
     }
 

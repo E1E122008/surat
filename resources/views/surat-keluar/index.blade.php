@@ -264,8 +264,16 @@
                 "lengthChange": false,
                 "searching": false,
                 "ordering": true,
-                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
-                "emptyTable": "No data available"
+                "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
+                "emptyTable": "Tidak ada data yang tersedia",
+                "language": {
+                    "paginate": {
+                        "previous": "Sebelumnya",
+                        "next": "Berikutnya"
+                    },
+                    "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
+                    "emptyTable": "Tidak ada data yang tersedia"
+                }
             });
         });
 
@@ -346,8 +354,16 @@
                 "lengthChange": false,
                 "searching": false,
                 "ordering": true,
-                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
-                "emptyTable": "No data available"
+                "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
+                "emptyTable": "Tidak ada data yang tersedia",
+                "language": {
+                    "paginate": {
+                        "previous": "Sebelumnya",
+                        "next": "Berikutnya"
+                    },
+                    "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
+                    "emptyTable": "Tidak ada data yang tersedia"
+                }
             });
         });
     </script>

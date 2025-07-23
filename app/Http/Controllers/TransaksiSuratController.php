@@ -91,13 +91,13 @@ class TransaksiSuratController extends Controller
         }
 
         // Ambil hasil query
-        $suratMasuk = $suratMasuk->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
-        $suratKeluar = $suratKeluar->orderBy('created_at', 'desc')->get();
-        $sk = $sk->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
-        $perda = $perda->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
-        $pergub = $pergub->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
-        $sppdDalam = $sppdDalam->orderBy('created_at', 'desc')->get();
-        $sppdLuar = $sppdLuar->orderBy('created_at', 'desc')->get();
+        $suratMasuk = $suratMasuk->latest()->paginate(10);
+        $suratKeluar = $suratKeluar->latest()->get();
+        $sk = $sk->latest()->paginate(10);
+        $perda = $perda->latest()->paginate(10);
+        $pergub = $pergub->latest()->paginate(10);
+        $sppdDalam = $sppdDalam->latest()->get();
+        $sppdLuar = $sppdLuar->latest()->get();
         $sptDalam = $sptDalam->orderBy('created_at', 'desc')->get();
         $sptLuar = $sptLuar->orderBy('created_at', 'desc')->get();
 

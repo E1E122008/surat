@@ -739,13 +739,15 @@
                 "pageLength": 10,
                 "dom": "<'row'<'col-sm-12'tr>>" +
                        "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
+                "emptyTable": "Tidak ada data yang tersedia",
                 "language": {
                     "paginate": {
-                        "next": "Next",
-                        "previous": "Previous"
+                        "previous": "Sebelumnya",
+                        "next": "Berikutnya"
                     },
-                    "info": "Showing _START_ to _END_ of _TOTAL_ entries",
-                    "emptyTable": "No data available"
+                    "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
+                    "emptyTable": "Tidak ada data yang tersedia"
                 }
             });
 

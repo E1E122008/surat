@@ -25,7 +25,7 @@ class SptLuarDaerahController extends Controller
             });
         }
         
-        $sptLuarDaerah = $query->paginate(10);
+        $sptLuarDaerah = $query->latest()->paginate(10);
         return view('spt-luar-daerah.index', compact('sptLuarDaerah'));
     }
 

@@ -284,11 +284,11 @@
                        "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
                 "language": {
                     "paginate": {
-                        "previous": "&laquo; Sebelumnya",
-                        "next": "Berikutnya &raquo;"
+                        "previous": "Sebelumnya",
+                        "next": "Berikutnya"
                     },
-                    "emptyTable": "Tidak ada data yang tersedia di tabel",
-                    "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+                    "emptyTable": "Tidak ada data yang tersedia",
+                    "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
                     "infoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
                     "infoFiltered": "(disaring dari _MAX_ total entri)",
                     "search": "Cari:",

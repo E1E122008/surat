@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\ApprovalRequestNotification;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class SuratMasukController extends Controller
 {
@@ -27,7 +28,7 @@ class SuratMasukController extends Controller
             });
         }
 
-        $suratMasuk = $query->paginate(10);
+        $suratMasuk = $query->latest()->paginate(10);
         return view('surat-masuk.index', compact('suratMasuk'));
     }
 
