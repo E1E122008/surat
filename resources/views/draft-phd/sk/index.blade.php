@@ -64,110 +64,95 @@
                 <div class="table-responsive" style="max-width: 1200px; margin: auto;">
                     <table class="table" id="suratTable">
                         <thead>
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Terima</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Terima</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                    <tbody>
+                        @forelse($sks as $index => $item)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $index + 1 + ($sks->currentPage() - 1) * $sks->perPage() }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $item->no_agenda }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $item->no_surat }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $item->pengirim }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $item->tanggal_terima->format('d/m/Y') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                    @if($item->disposisi)
+                                        @php $disposisiParts = explode('|', $item->disposisi); @endphp
+                                        @foreach($disposisiParts as $part)
+                                            {{ trim($part) }}<br>
+                                        @endforeach
+                                    @else
+                                        -
+                                    @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        @if($item->status == 'tercatat')
+                                            <span class="bg-tercatat">Tercatat</span>
+                                        @elseif($item->status == 'terdisposisi')
+                                            <span class="bg-terdisposisi">Terdisposisi</span>
+                                        @elseif($item->status == 'diproses')
+                                            <span class="bg-diproses">Diproses</span>
+                                        @elseif($item->status == 'koreksi')
+                                            <span class="bg-koreksi">Koreksi</span>
+                                        @elseif($item->status == 'diambil')
+                                            <span class="bg-diambil">Diambil</span>
+                                        @elseif($item->status == 'selesai')
+                                            <span class="bg-selesai">Selesai</span>
+                                        @endif
+                                    </td>  
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        <div class="dropdown">
+                                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-cog"></i> Aksi
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><button class="dropdown-item" type="button" onclick="openDisposisiModal({{ $item->id }})"><i class="fas fa-sync-alt fa-fw me-2 text-warning"></i>Disposisi</button></li>
+                                                <li><button class="dropdown-item" type="button" onclick="openStatusModal({{ $item->id }}, '{{ $item->status }}')"><i class="fas fa-check-circle fa-fw me-2 text-success"></i>Status</button></li>
+                                                <li><a class="dropdown-item" href="{{ route('draft-phd.sk.detail', $item->id) }}"><i class="fas fa-eye fa-fw me-2 text-primary"></i>Detail</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $item->id }})">
+                                                        <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <form id="delete-form-{{ $item->id }}" action="{{ route('draft-phd.sk.destroy', $item->id) }}" method="POST" style="display: none;">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
+                                    </td>
                                 </tr>
-                            </thead>
-                        <tbody>
-                                @forelse($sks as $index => $item)
-                                    <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $index + 1 + ($sks->currentPage() - 1) * $sks->perPage() }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $item->no_agenda }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $item->no_surat }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $item->pengirim }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $item->tanggal_terima->format('d/m/Y') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-                                            @if($item->disposisi)
-                                                @php
-                                                    $disposisiParts = explode('|', $item->disposisi);
-                                                @endphp
-                                                @foreach($disposisiParts as $part)
-                                                            {{ trim($part) }}<br>
-                                                        @endforeach
-                                            @else
-                                                -
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-                                            @if($item->status == 'tercatat')
-                                                <span class="bg-tercatat">Tercatat</span>
-                                            @elseif($item->status == 'terdisposisi')
-                                                <span class="bg-terdisposisi">Terdisposisi</span>
-                                            @elseif($item->status == 'diproses')
-                                                <span class="bg-diproses">Diproses</span>
-                                            @elseif($item->status == 'koreksi')
-                                                <span class="bg-koreksi">Koreksi</span>
-                                            @elseif($item->status == 'diambil')
-                                                <span class="bg-diambil">Diambil</span>
-                                            @elseif($item->status == 'selesai')
-                                                <span class="bg-selesai">Selesai</span>
-                                            @endif
-                                        </td>  
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-                                            <div class="dropdown">
-                                                <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="fas fa-cog"></i> Aksi
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li>
-                                                        <button class="dropdown-item" type="button" onclick="openDisposisiModal({{ $item->id }})">
-                                                            <i class="fas fa-sync-alt fa-fw me-2 text-warning"></i>Disposisi
-                                                        </button>
-                                                    </li>
-                                                    <li>
-                                                        <button class="dropdown-item" type="button" onclick="openStatusModal({{ $item->id }}, '{{ $item->status }}')">
-                                                            <i class="fas fa-check-circle fa-fw me-2 text-success"></i>Status
-                                                </button>
-                                                    </li>
-                                                    <li>
-                                                        <a class="dropdown-item" href="{{ route('draft-phd.sk.detail', $item->id) }}">
-                                                            <i class="fas fa-eye fa-fw me-2 text-primary"></i>Detail
-                                                        </a>
-                                                    </li>
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    <li>
-                                                        <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $item->id }})">
-                                                            <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
-                                                        </button>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            {{-- This form is submitted by the confirmDelete() Javascript function --}}
-                                            <form id="delete-form-{{ $item->id }}" action="{{ route('draft-phd.sk.destroy', $item->id) }}" method="POST" style="display: none;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" class="text-center">Belum ada data surat.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="text-center">Belum ada data surat</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
 
-                    <div class="mt-4 d-flex justify-content-center">
-                        {{ $sks->links('pagination::bootstrap-4') }}
-                    </div>
-                    <div class="d-flex justify-content-center">
-                        <span class="surat-badge surat-badge-sm mt-2 d-inline-block">
-                            <i class="fas fa-envelope"></i> Jumlah Surat Keputusan: {{ $sks->total() }}
-                        </span>
-                    </div>
-                    <style>
-                        .pagination .page-item:first-child, .pagination .page-item:last-child {
-                            display: none !important;
-                        }
-                    </style>
+                <div class="mt-4 d-flex justify-content-center">
+                    {{ $sks->links('pagination::bootstrap-4') }}
+                </div>
+                <div class="d-flex justify-content-center">
+                    <span class="surat-badge surat-badge-sm mt-2 d-inline-block">
+                        <i class="fas fa-envelope"></i> Jumlah Surat Keputusan: {{ $sks->total() }}
+                    </span>
+                </div>
+                <style>
+                    .pagination .page-item:first-child, .pagination .page-item:last-child {
+                        display: none !important;
+                    }
+                </style>
             </div>
         </div>
     </div>
