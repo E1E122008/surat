@@ -1,7 +1,7 @@
 <div class="tab-pane fade {{ request('tab') == 'pergub' ? 'show active' : '' }}" id="pergub">
     <h4>📋 Peraturan Gubernur</h4>
     <div class="mb-3">
-        <span class="stats-badge">
+        <span class="surat-badge">
             <i class="fas fa-scroll me-1"></i>
             Jumlah PERGUB: {{ $totalPergub }}
         </span>
@@ -47,15 +47,30 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="text-center">Tidak ada PERGUB</td>
+                    <td colspan="7" class="text-center">Tidak ada Peraturan Gubernur</td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
         @if(isset($pergub) && method_exists($pergub, 'links'))
             <div class="mt-3 d-flex justify-content-center">
-                {{ $pergub->links() }}
+                {{ $pergub->links('pagination::bootstrap-4') }}
             </div>
         @endif
     </div>
 </div> 
+
+<style>
+    .surat-badge {
+        display: inline-flex;
+        align-items: center;
+        background: linear-gradient(90deg, #5b7ef1 0%, #6ea8fe 100%);
+        color: #fff;
+        font-weight: 500;
+        border-radius: 2rem;
+        padding: 0.3rem 1rem;
+        font-size: 1rem;
+        box-shadow: 0 2px 8px rgba(91,126,241,0.08);
+        gap: 0.5rem;
+    }
+    </style>
