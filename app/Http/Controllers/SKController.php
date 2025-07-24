@@ -214,36 +214,37 @@ class SKController extends Controller
     public function disposisi(Request $request, $id)
     {
         try {
+            // Validasi input
             $request->validate([
-                'disposisi' => 'required|string|max:255',
-                'sub_disposisi' => 'nullable|string|max:255',
-                'catatan' => 'nullable|string',
+                'disposisi' => 'required',
                 'tanggal_disposisi' => 'required|date',
+                'catatan' => 'nullable'
             ]);
-    
+
+            // Ambil data surat masuk
             $sk = SK::findOrFail($id);
 
-            // Gabungkan bagian-bagian disposisi menjadi satu string
-            $disposisiParts = [];
-            $disposisiParts[] = $request->disposisi;
-
-            if ($request->filled('sub_disposisi') && $request->sub_disposisi !== 'Belum/Tidak diteruskan') {
-                $disposisiParts[] = $request->sub_disposisi;
+            // Gabungkan data disposisi dalam satu string
+            $disposisiText = $request->disposisi;
+            if ($request->sub_disposisi) {
+                $disposisiText .= ' | Diteruskan ke: ' . $request->sub_disposisi;
             }
-            
-            // Format tanggal dan tambahkan ke disposisi
-            $tanggalDisposisi = \Carbon\Carbon::parse($request->tanggal_disposisi)->format('d/m/Y');
-            $disposisiParts[] = '(Tgl: ' . $tanggalDisposisi . ')';
+            $disposisiText .= ' | Tanggal: ' . $request->tanggal_disposisi;
+            if ($request->catatan) {
+                $disposisiText .= ' | Catatan: ' . $request->catatan;
+            }
 
-            $sk->disposisi = implode(' | ', $disposisiParts);
-            $sk->catatan = $request->catatan; // Simpan catatan
-            $sk->status = 'terdisposisi'; // Update status
-            $sk->save();
+            // Update kolom disposisi
+            $sk->update([
+                'disposisi' => $disposisiText
+            ]);
 
-            return redirect()->route('draft-phd.sk.index')->with('success', ' Surat berhasil didisposisikan.');
+            return redirect()->back()
+                            ->with('success', 'Disposisi berhasil ditambahkan');
 
         } catch (\Exception $e) {
-            return redirect()->route('draft-phd.sk.index')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return redirect()->back()
+                            ->with('error', 'Gagal menambahkan disposisi: ' . $e->getMessage());
         }
     }
 

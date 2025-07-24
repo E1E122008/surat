@@ -199,32 +199,37 @@ class PerdaController extends Controller
     public function disposisi(Request $request, $id)
     {
         try {
+            // Validasi input
             $request->validate([
-                'disposisi' => 'required|string|max:255',
-                'sub_disposisi' => 'nullable|string|max:255',
-                'catatan' => 'nullable|string',
+                'disposisi' => 'required',
                 'tanggal_disposisi' => 'required|date',
+                'catatan' => 'nullable'
             ]);
 
-            $perda = Perda::findOrFail($id);
+            // Ambil data surat masuk
+            $perda = perda::findOrFail($id);
 
-            $disposisiParts = [];
-            $disposisiParts[] = $request->disposisi;
-            if ($request->filled('sub_disposisi') && $request->sub_disposisi !== 'Belum/Tidak diteruskan') {
-                $disposisiParts[] = $request->sub_disposisi;
+            // Gabungkan data disposisi dalam satu string
+            $disposisiText = $request->disposisi;
+            if ($request->sub_disposisi) {
+                $disposisiText .= ' | Diteruskan ke: ' . $request->sub_disposisi;
             }
-            $tanggalDisposisi = \Carbon\Carbon::parse($request->tanggal_disposisi)->format('d/m/Y');
-            $disposisiParts[] = '(Tgl: ' . $tanggalDisposisi . ')';
+            $disposisiText .= ' | Tanggal: ' . $request->tanggal_disposisi;
+            if ($request->catatan) {
+                $disposisiText .= ' | Catatan: ' . $request->catatan;
+            }
 
-            $perda->disposisi = implode(' | ', $disposisiParts);
-            $perda->catatan = $request->catatan;
-            $perda->status = 'terdisposisi';
-            $perda->save();
+            // Update kolom disposisi
+            $perda->update([
+                'disposisi' => $disposisiText
+            ]);
 
-            return redirect()->back()->with('success', 'Disposisi berhasil ditambahkan');
+            return redirect()->back()
+                            ->with('success', 'Disposisi berhasil ditambahkan');
+
         } catch (\Exception $e) {
-            \Log::error('Error adding disposisi: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Gagal menambahkan disposisi: ' . $e->getMessage());
+            return redirect()->back()
+                            ->with('error', 'Gagal menambahkan disposisi: ' . $e->getMessage());
         }
     }
 

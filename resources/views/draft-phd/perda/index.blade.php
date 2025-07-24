@@ -68,10 +68,21 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $perda->tanggal_terima->format('d/m/Y') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                         @if($perda->disposisi)
-                                            @php $disposisiParts = explode('|', $perda->disposisi); @endphp
-                                            @foreach($disposisiParts as $part)
-                                                {{ trim($part) }}<br>
-                                            @endforeach
+                                            @php
+                                                $disposisiParts = explode('|', $perda->disposisi);
+                                                $mainDisposisi = trim($disposisiParts[0]);
+                                            @endphp
+                                            <span class="bg-{{ strtolower(str_replace(' ', '-', $mainDisposisi)) }}">
+                                                {{ $mainDisposisi }}
+                                            </span>
+                                            @if(count($disposisiParts) > 1)
+                                                <br>
+                                                <small class="text-muted">
+                                                    @foreach(array_slice($disposisiParts, 1) as $part)
+                                                        {{ trim($part) }}<br>
+                                                    @endforeach
+                                                </small>
+                                            @endif
                                         @else
                                             -
                                         @endif
