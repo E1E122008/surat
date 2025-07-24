@@ -60,6 +60,9 @@
                         </div>
                     </div>
 
+                <div class="mb-2 text-end">
+                    <span class="badge bg-info">Total Data: {{ $sks->total() }}</span>
+                </div>
                 <div class="table-responsive" style="max-width: 1200px; margin: auto;">
                     <table class="table" id="suratTable">
                         <thead>
@@ -75,9 +78,9 @@
                                 </tr>
                             </thead>
                         <tbody>
-                                @foreach($sks as $index => $item)
+                                @forelse($sks as $index => $item)
                                     <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $index + 1 }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $index + 1 + ($sks->currentPage() - 1) * $sks->perPage() }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $item->no_agenda }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $item->no_surat }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $item->pengirim }}</td>
@@ -145,14 +148,23 @@
                                                 </form>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="8" class="text-center">Belum ada data surat.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
 
-                    <div class="mt-4">
-                        {{ $sks->links() }}
-                </div>
+                    <div class="mt-4 d-flex justify-content-center">
+                        {{ $sks->links('pagination::bootstrap-4') }}
+                    </div>
+                    <style>
+                        .pagination .page-item:first-child, .pagination .page-item:last-child {
+                            display: none !important;
+                        }
+                    </style>
             </div>
         </div>
     </div>
@@ -728,28 +740,8 @@
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#suratTable').DataTable({
-                "paging": true,
-                "lengthChange": false,
-                "searching": false,
-                "ordering": true,
-                "info": true,
-                "autoWidth": false,
-                "responsive": true,
-                "pageLength": 10,
-                "dom": "<'row'<'col-sm-12'tr>>" +
-                       "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-                "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
-                "emptyTable": "Tidak ada data yang tersedia",
-                "language": {
-                    "paginate": {
-                        "previous": "Sebelumnya",
-                        "next": "Berikutnya"
-                    },
-                    "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
-                    "emptyTable": "Tidak ada data yang tersedia"
-                }
-            });
+            // The DataTables initialization is removed as per the new_code.
+            // The pagination links are now handled by the default Laravel pagination.
 
             // Automatically hide alerts after 5 seconds
             window.setTimeout(function() {

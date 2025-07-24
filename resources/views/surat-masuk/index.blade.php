@@ -46,11 +46,14 @@
                     </div>
                 </div>
 
+                <div class="mb-2 text-end">
+                    <span class="badge bg-info">Total Data: {{ $suratMasuk->total() }}</span>
+                </div>
                 <div class="table-responsive" style="max-width: 1200px; margin: auto;">
                     <table class="table" id="suratTable">
                         <thead>
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>   
+                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
@@ -61,9 +64,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($suratMasuk as $index => $surat)
+                            @forelse($suratMasuk as $index => $surat)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $index + 1 }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $index + 1 + ($suratMasuk->currentPage() - 1) * $suratMasuk->perPage() }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $surat->no_agenda }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $surat->no_surat }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $surat->pengirim }}</td>
@@ -144,14 +147,23 @@
                                         </form>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="text-center">Belum ada data surat.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
 
-                <div class="mt-4">
-                    {{ $suratMasuk->links() }}
+                <div class="mt-4 d-flex justify-content-center">
+                    {{ $suratMasuk->links('pagination::bootstrap-4') }}
                 </div>
+                <style>
+                    .pagination .page-item:first-child, .pagination .page-item:last-child {
+                        display: none !important;
+                    }
+                </style>
             </div>
         </div>
     </div>
@@ -669,26 +681,8 @@
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#suratTable').DataTable({
-                "paging": true,
-                "lengthChange": false,
-                "searching": false,
-                "ordering": true,
-                "info": true,
-                "autoWidth": false,
-                "responsive": true,
-                "pageLength": 10,
-                "dom": "<'row'<'col-sm-12'tr>>" +
-                       "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-                "language": {
-                    "paginate": {
-                        "previous": "Sebelumnya",
-                        "next": "Berikutnya"
-                    },
-                    "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
-                    "emptyTable": "Tidak ada data yang tersedia"
-                }
-            });
+            // This script block is no longer needed for DataTables initialization
+            // as the table is now rendered directly.
         });
     </script>
 

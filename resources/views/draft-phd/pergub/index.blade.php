@@ -43,6 +43,9 @@
                         </a>
                     </div>  
                 </div>
+                <div class="mb-2 text-end">
+                    <span class="badge bg-info">Total Data: {{ $pergubs->total() }}</span>
+                </div>
                 <div class="table-responsive" style="max-width: 1200px; margin: auto;">
                     <table class="table" id="suratTable">
                         <thead>
@@ -57,27 +60,24 @@
                                 <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody>   
-                            @foreach($pergubs as $index => $pergub)
+                        <tbody>
+                            @forelse($pergubs as $index => $pergub)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $index + 1 }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $index + 1 + ($pergubs->currentPage() - 1) * $pergubs->perPage() }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $pergub->no_agenda }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $pergub->no_surat }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $pergub->pengirim }}</td> 
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{($pergub->tanggal_terima)->format('d/m/Y') }}</td>
-                                    
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $pergub->pengirim }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $pergub->tanggal_terima->format('d/m/Y') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                         @if($pergub->disposisi)
-                                            @php
-                                                $disposisiParts = explode('|', $pergub->disposisi);
-                                            @endphp
+                                            @php $disposisiParts = explode('|', $pergub->disposisi); @endphp
                                             @foreach($disposisiParts as $part)
                                                 {{ trim($part) }}<br>
                                             @endforeach
                                         @else
                                             -
                                         @endif
-                                    </td>   
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                         @if($pergub->status == 'tercatat')
                                             <span class="bg-tercatat">Tercatat</span>
@@ -116,13 +116,22 @@
                                         </form>
                                     </td>
                                 </tr>
-                            @endforeach 
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="text-center">Belum ada data surat.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
-                </div> 
-                <div class="mt-4">
-                    {{ $pergubs->links() }}
                 </div>
+                <div class="mt-4 d-flex justify-content-center">
+                    {{ $pergubs->links('pagination::bootstrap-4') }}
+                </div>
+                <style>
+                    .pagination .page-item:first-child, .pagination .page-item:last-child {
+                        display: none !important;
+                    }
+                </style>
             </div>
         </div>
     </div>
@@ -604,26 +613,8 @@
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#suratTable').DataTable({
-                "paging": true,
-                "lengthChange": false,
-                "searching": false,
-                "ordering": true,
-                "info": true,
-                "autoWidth": false,
-                "responsive": true,
-                "pageLength": 10,
-                "dom": "<'row'<'col-sm-12'tr>>" +
-                       "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-                "language": {
-                    "paginate": {
-                        "previous": "Sebelumnya",
-                        "next": "Berikutnya"
-                    },
-                    "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
-                    "emptyTable": "Tidak ada data yang tersedia"
-                }
-            });
+            // The DataTables initialization is removed as per the new_code.
+            // The search functionality is now handled by the PHP/Blade template.
         });
     </script>
 @endsection 

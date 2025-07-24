@@ -59,6 +59,9 @@
                         </a>
                     </div>
                 </div>
+                <div class="mb-2 text-end">
+                    <span class="badge bg-info">Total Data: {{ $suratKeluar->total() }}</span>
+                </div>
                 <div class="table-responsive" style="max-width: 1200px; margin: auto;">
                     <table class="table" id="suratTable">
                         <thead>
@@ -71,9 +74,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($suratKeluar as $index => $surat)
+                            @forelse($suratKeluar as $index => $surat)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $index + 1 }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $index + 1 + ($suratKeluar->currentPage() - 1) * $suratKeluar->perPage() }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->no_surat }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->tanggal->format('d/m/Y') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->perihal }}</td>
@@ -107,13 +110,22 @@
                                         </form>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="text-center">Belum ada data surat.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-4">
-                    {{ $suratKeluar->links() }}
+                <div class="mt-4 d-flex justify-content-center">
+                    {{ $suratKeluar->links('pagination::bootstrap-4') }}
                 </div>
+                <style>
+                    .pagination .page-item:first-child, .pagination .page-item:last-child {
+                        display: none !important;
+                    }
+                </style>
             </div>
         </div>
     </div>
@@ -259,22 +271,8 @@
 
         // Inisialisasi DataTables
         $(document).ready(function() {
-            $('#suratTable').DataTable({
-                "paging": true,
-                "lengthChange": false,
-                "searching": false,
-                "ordering": true,
-                "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
-                "emptyTable": "Tidak ada data yang tersedia",
-                "language": {
-                    "paginate": {
-                        "previous": "Sebelumnya",
-                        "next": "Berikutnya"
-                    },
-                    "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
-                    "emptyTable": "Tidak ada data yang tersedia"
-                }
-            });
+            // This script block is no longer needed as DataTables is removed.
+            // Keeping it for now as it might be used elsewhere or for future reference.
         });
 
         function confirmDelete(id) {
@@ -348,23 +346,7 @@
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        $(document).ready(function() {
-            $('#suratTable').DataTable({
-                "paging": true,
-                "lengthChange": false,
-                "searching": false,
-                "ordering": true,
-                "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
-                "emptyTable": "Tidak ada data yang tersedia",
-                "language": {
-                    "paginate": {
-                        "previous": "Sebelumnya",
-                        "next": "Berikutnya"
-                    },
-                    "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
-                    "emptyTable": "Tidak ada data yang tersedia"
-                }
-            });
-        });
+        // This script block is no longer needed as DataTables is removed.
+        // Keeping it for now as it might be used elsewhere or for future reference.
     </script>
 @endsection
