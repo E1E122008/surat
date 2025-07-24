@@ -46,9 +46,7 @@
                     </div>
                 </div>
 
-                <div class="mb-2 text-end">
-                    <span class="badge bg-info">Total Data: {{ $suratMasuk->total() }}</span>
-                </div>
+                
                 <div class="table-responsive" style="max-width: 1200px; margin: auto;">
                     <table class="table" id="suratTable">
                         <thead>
@@ -154,6 +152,11 @@
 
                 <div class="mt-4 d-flex justify-content-center">
                     {{ $suratMasuk->links('pagination::bootstrap-4') }}
+                </div>
+                <div class="d-flex justify-content-center">
+                    <span class="surat-badge surat-badge-sm mt-2 d-inline-block">
+                        <i class="fas fa-envelope"></i> Jumlah Surat Masuk: {{ $suratMasuk->total() }}
+                    </span>
                 </div>
                 <style>
                     .pagination .page-item:first-child, .pagination .page-item:last-child {
@@ -418,6 +421,27 @@
             background-color: #4a69bd;
             color: white;
             border: none;
+        }
+
+        .surat-badge {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(90deg, #5b7ef1 0%, #6ea8fe 100%);
+            color: #fff;
+            font-weight: 500;
+            border-radius: 2rem;
+            padding: 0.3rem 1rem;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(91,126,241,0.08);
+            gap: 0.5rem;
+        }
+        .surat-badge-sm {
+            font-size: 0.95rem;
+            padding: 0.2rem 0.8rem;
+        }
+        .surat-badge i {
+            font-size: 1em;
+            margin-right: 0.5rem;
         }
 
         .btn-info:hover {
