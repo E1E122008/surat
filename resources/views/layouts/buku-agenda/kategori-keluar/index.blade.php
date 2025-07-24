@@ -271,7 +271,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($suratKeluar as $index => $surat)
+                                    @forelse($suratKeluar as $index => $surat)
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_surat }}</td>
@@ -285,9 +285,16 @@
                                                 <a href="{{ asset('storage/' . $surat->lampiran) }}" class="text-blue-500 hover:underline">{{ $surat->lampiran }}</a>
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="px-6 py-4 whitespace-nowrap text-center">Tidak ada data</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="mt-4 d-flex justify-content-center">
+                            {{ $suratKeluar->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
 
@@ -335,7 +342,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($sppdDalamDaerah as $index => $surat)
+                                    @forelse($sppdDalamDaerah as $index => $surat)
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_surat }}</td>
@@ -351,9 +358,16 @@
                                                 <a href="{{ asset('storage/' . $surat->lampiran) }}" class="text-blue-500 hover:underline">{{ $surat->lampiran }}</a>
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="px-6 py-4 whitespace-nowrap text-center">Tidak ada data</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="mt-4 d-flex justify-content-center">
+                            {{ $sppdDalamDaerah->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
                 
@@ -401,7 +415,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($sppdLuarDaerah as $index => $surat)
+                                    @forelse($sppdLuarDaerah as $index => $surat)
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_surat }}</td>
@@ -417,9 +431,16 @@
                                                 <a href="{{ asset('storage/' . $surat->lampiran) }}" class="text-blue-500 hover:underline">{{ $surat->lampiran }}</a>
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="px-6 py-4 whitespace-nowrap text-center">Tidak ada data</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="mt-4 d-flex justify-content-center">
+                            {{ $sppdLuarDaerah->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
                     <div class="tab-pane fade {{ request('tab') == 'spt-dalam' ? 'show active' : '' }}" id="spt-dalam">
@@ -466,7 +487,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($sptDalamDaerah as $index => $surat)
+                                    @forelse($sptDalamDaerah as $index => $surat)
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_surat }}</td>
@@ -482,10 +503,17 @@
                                                 <a href="{{ asset('storage/' . $surat->lampiran) }}" class="text-blue-500 hover:underline">{{ $surat->lampiran }}</a>
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="px-6 py-4 whitespace-nowrap text-center">Tidak ada data</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
-                        </div> 
+                        </div>
+                        <div class="mt-4 d-flex justify-content-center">
+                            {{ $sptDalamDaerah->links('pagination::bootstrap-4') }}
+                        </div>
                     </div>
                     <div class="tab-pane fade {{ request('tab') == 'spt-luar' ? 'show active' : '' }}" id="spt-luar">
                         <h4>📤 SPT Luar Daerah</h4>
@@ -531,7 +559,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($sptLuarDaerah as $index => $surat)
+                                    @forelse($sptLuarDaerah as $index => $surat)
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_surat }}</td>
@@ -547,9 +575,16 @@
                                                 <a href="{{ asset('storage/' . $surat->lampiran) }}" class="text-blue-500 hover:underline">{{ $surat->lampiran }}</a>
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="8" class="text-center">Belum ada data surat</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="mt-4 d-flex justify-content-center">
+                            {{ $sptLuarDaerah->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
                 </div> <!-- End tab-content -->

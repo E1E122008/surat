@@ -54,8 +54,8 @@
         </div>
     </div>
 
-    <div class="mt-4">
-        {{ $users->links() }}
+    <div class="mt-4 d-flex justify-content-center">
+        {{ $users->links('pagination::bootstrap-4') }}
     </div>
 </div>
 @endsection

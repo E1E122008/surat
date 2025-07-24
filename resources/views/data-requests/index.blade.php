@@ -116,7 +116,7 @@
                 @if(isset($approvalRequests) && method_exists($approvalRequests, 'links'))
                     <div class="d-flex justify-content-center my-4">
                         <nav aria-label="Page navigation">
-                            {{ $approvalRequests->links() }}
+                            {{ $approvalRequests->links('pagination::bootstrap-4') }}
                         </nav>
                     </div>
                 @endif

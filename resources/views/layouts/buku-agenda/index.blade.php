@@ -235,7 +235,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($suratMasuk as $index => $surat)
+                                    @forelse($suratMasuk as $index => $surat)
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_agenda }}</td>
@@ -260,12 +260,17 @@
                                                 <a href="{{ asset('storage/' . $surat->lampiran) }}" class="text-blue-500 hover:underline">{{ $surat->lampiran }}</a>
                                             </td>
                                         </tr>
-                                    @endforeach
+
+                                    @empty
+                                        <tr>
+                                            <td colspan="8" class="text-center">Belum ada data surat</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
                         <div class="mt-4 flex justify-center">
-                            {{ $suratMasuk->links('pagination::tailwind') }}
+                            {{ $suratMasuk->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
 
@@ -315,7 +320,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($sks as $index => $surat)
+                                    @forelse($sks as $index => $surat)
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_agenda }}</td>
@@ -340,12 +345,16 @@
                                                 <a href="{{ asset('storage/' . $surat->lampiran) }}" class="text-blue-500 hover:underline">{{ $surat->lampiran }}</a>
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="8" class="text-center">Belum ada data surat</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
                         <div class="mt-4 flex justify-center">
-                            {{ $sks->links('pagination::tailwind') }}
+                            {{ $sks->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
 
@@ -394,7 +403,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($perda as $index => $surat)
+                                    @forelse($perda as $index => $surat)
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_agenda }}</td>
@@ -419,12 +428,16 @@
                                                 <a href="{{ asset('storage/' . $surat->lampiran) }}" class="text-blue-500 hover:underline">{{ $surat->lampiran }}</a>
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="8" class="text-center">Belum ada data surat</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
                         <div class="mt-4 flex justify-center">
-                            {{ $perda->links('pagination::tailwind') }}
+                            {{ $perda->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
 
@@ -473,7 +486,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($pergub as $index => $surat)
+                                    @forelse($pergub as $index => $surat)
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_agenda }}</td>
@@ -498,12 +511,16 @@
                                                 <a href="{{ asset('storage/' . $surat->lampiran) }}" class="text-blue-500 hover:underline">{{ $surat->lampiran }}</a>
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="8" class="text-center">Belum ada data surat</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
                         <div class="mt-4 flex justify-center">
-                            {{ $pergub->links('pagination::tailwind') }}
+                            {{ $pergub->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
                 </div> <!-- End tab-content -->

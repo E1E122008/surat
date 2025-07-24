@@ -157,11 +157,11 @@ class KategoriKeluarController extends Controller
         }
 
         // Eksekusi query
-        $suratKeluar = $querySuratKeluar->get();
-        $sppdDalamDaerah = $querySppdDalamDaerah->get();
-        $sppdLuarDaerah = $querySppdLuarDaerah->get();
-        $sptDalamDaerah = $querySptDalamDaerah->get();
-        $sptLuarDaerah = $querySptLuarDaerah->get();
+        $suratKeluar = $querySuratKeluar->orderBy('created_at', 'desc')->paginate(10);
+        $sppdDalamDaerah = $querySppdDalamDaerah->orderBy('created_at', 'desc')->paginate(10);
+        $sppdLuarDaerah = $querySppdLuarDaerah->orderBy('created_at', 'desc')->paginate(10);
+        $sptDalamDaerah = $querySptDalamDaerah->orderBy('created_at', 'desc')->paginate(10);
+        $sptLuarDaerah = $querySptLuarDaerah->orderBy('created_at', 'desc')->paginate(10);
 
         // Hitung total surat
         $totalSurat = [
