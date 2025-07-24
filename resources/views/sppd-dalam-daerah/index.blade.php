@@ -42,6 +42,7 @@
                         </a>
                     </div>
                 </div>
+                
                 <div class="table-responsive" style="max-width: 1200px; margin: auto;">
                     <table class="table" id="suratTable">
                         <thead>
@@ -54,7 +55,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($sppd as $index => $item)
+                            @forelse($sppd as $index => $item)
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $index + 1 }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->no_surat }}</td>
@@ -90,13 +91,27 @@
                                         </form>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-6 py-4 whitespace-nowrap text-center">Tidak ada data</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-4">
-                    {{ $sppd->links() }}
+                <div class="mt-4 d-flex justify-content-center">
+                    {{ $sppd->links('pagination::bootstrap-4') }}
                 </div>
+                <div class="d-flex justify-content-center">
+                    <span class="surat-badge surat-badge-sm mt-2 d-inline-block">
+                        <i class="fas fa-envelope"></i> Jumlah Surat SPPD Dalam Daerah: {{ $sppd->total() }}
+                    </span>
+                </div>
+                <style>
+                    .pagination .page-item:first-child, .pagination .page-item:last-child {
+                        display: none !important;
+                    }
+                </style>
             </div>
         </div>
     </div>
@@ -223,6 +238,26 @@
             font-size: 1rem;
         }
 
+        .surat-badge {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(90deg, #5b7ef1 0%, #6ea8fe 100%);
+            color: #fff;
+            font-weight: 500;
+            border-radius: 2rem;
+            padding: 0.3rem 1rem;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(91,126,241,0.08);
+            gap: 0.5rem;
+        }
+        .surat-badge-sm {
+            font-size: 0.95rem;
+            padding: 0.2rem 0.8rem;
+        }
+        .surat-badge i {
+            font-size: 1em;
+            margin-right: 0.5rem;
+        }
         /* Adjust the action buttons container */
         .flex.justify-center.items-center {
             gap: 0.5rem;
@@ -321,26 +356,7 @@
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#suratTable').DataTable({
-                "paging": true,
-                "lengthChange": false,
-                "searching": false,
-                "ordering": true,
-                "info": true,
-                "autoWidth": false,
-                "responsive": true,
-                "pageLength": 10,
-                "dom": "<'row'<'col-sm-12'tr>>" +
-                       "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-                "language": {
-                    "paginate": {
-                        "previous": "Sebelumnya",
-                        "next": "Berikutnya"
-                    },
-                    "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
-                    "emptyTable": "Tidak ada data yang tersedia"
-                }
-            });
+            
         });
     </script>
 @endsection 

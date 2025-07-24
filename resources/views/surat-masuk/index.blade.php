@@ -71,10 +71,6 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $surat->no_surat }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $surat->pengirim }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $surat->tanggal_terima->format('d/m/Y') }}</td>
-                                    
-                                    
-                                    
-
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                         @if($surat->disposisi)
                                             @php
