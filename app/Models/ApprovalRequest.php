@@ -22,6 +22,7 @@ class ApprovalRequest extends Model
         'no_surat',
         'approved_by',
         'approved_at',
+        'no_hp',
     ];
 
     protected $casts = [

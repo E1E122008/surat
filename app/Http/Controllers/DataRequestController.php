@@ -67,6 +67,7 @@ class DataRequestController extends Controller
             'lampiran' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
             'notes' => 'nullable|string',
             'no_surat' => 'required|string|max:255',
+            'no_hp' => 'required|string|max:20', // validasi no_hp
         ]);
 
         $lampiranPath = null;
@@ -90,6 +91,7 @@ class DataRequestController extends Controller
             'notes' => $validated['notes'] ?? null,
             'status' => 'pending',
             'no_surat' => $validated['no_surat'],
+            'no_hp' => $validated['no_hp'], // simpan no_hp
         ]);
 
         Log::info('Data Request created:', $dataRequest->toArray());

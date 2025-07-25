@@ -160,6 +160,10 @@
                             <p>{{ $request->no_surat }}</p>
                         </div>
                         <div class="mb-3">
+                            <label class="form-label fw-bold">No. HP</label>
+                            <p>{{ $request->no_hp }}</p>
+                        </div>
+                        <div class="mb-3">
                             <label class="form-label fw-bold">Tanggal Permintaan</label>
                             <p>
                                 @if($request->created_at)

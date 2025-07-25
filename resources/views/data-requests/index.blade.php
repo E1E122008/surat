@@ -145,17 +145,22 @@
                             <label class="form-label fw-bold">No. Surat</label>
                             <p>{{ $request->no_surat }}</p>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">No. HP</label>
+                            <p>{{ $request->no_hp }}</p>
+                        </div>
                         
                         <div class="mb-3">
                             <label class="form-label fw-bold">Tanggal Surat</label>
                             <p>{{ $request->tanggal_surat ? $request->tanggal_surat->format('d M Y') : '-' }}</p>
                         </div>
+                        
+                    </div>
+                    <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label fw-bold">Perihal</label>
                             <p>{{ $request->perihal }}</p>
                         </div>
-                    </div>
-                    <div class="col-md-6">
                         
                         <div class="mb-3">
                             <label class="form-label fw-bold">Lampiran</label>
@@ -243,10 +248,15 @@
                             <input type="text" class="form-control" id="no_surat" name="no_surat" placeholder="Masukkan nomor surat" required>
                         </div>
                         <div class="col-md-6">
+                            <label for="no_hp" class="form-label">No. HP <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="no_hp" name="no_hp" placeholder="08xxxxxxxxxx" required>
+                            <small class="text-muted">Masukkan No.HP yang bisa di hubungi untuk info selanjutnya.</small>
+                        </div>
+                        <div class="col-md-6">
                             <label for="tanggal_surat" class="form-label">Tanggal Surat <span class="text-danger">*</span></label>
                             <input type="date" class="form-control" id="tanggal_surat" name="tanggal_surat" required>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <label for="lampiran" class="form-label">Lampiran <span class="text-danger">*</span></label>
                             <input type="file" class="form-control" id="lampiran" name="lampiran" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
                             <small class="text-muted">File Lampiran wajib di isi, max 2GB.</small>
