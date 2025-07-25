@@ -10,7 +10,7 @@
                     <div>
                         <h3 class="h4 fw-bold text-primary mb-0">
                             Selamat Datang di Sistem Informasi Administrasi Persuratan Biro Hukum
-                            <span class="d-block small text-secondary mt-1">Pemerintah Sulawesi Tenggara</span>
+                            <span class="d-block small text-secondary mt-1">Sekretariat Daerah Provinsi Sulawesi Tenggara</span>
                         </h3>
                     </div>
                     <div class="text-secondary">
