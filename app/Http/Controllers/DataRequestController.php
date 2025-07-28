@@ -64,21 +64,32 @@ class DataRequestController extends Controller
             'letter_type' => 'required|string|max:255',
             'tanggal_surat' => 'required|date',
             'perihal' => 'required|string|max:255',
-            'lampiran' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
+            'lampiran' => 'required',
+            'lampiran.*' => 'file|mimes:pdf,doc,docx|max:2097152', // max 2GB per file, hanya PDF & Word
             'notes' => 'nullable|string',
             'no_surat' => 'required|string|max:255',
             'no_hp' => 'required|string|max:20', // validasi no_hp
         ]);
 
-        $lampiranPath = null;
+        $lampiranPaths = [];
         if ($request->hasFile('lampiran')) {
-            try {
-                $lampiranPath = $request->file('lampiran')->store('lampiran', 'public');
-            } catch (\Exception $e) {
-                Log::error('Failed to upload lampiran: ' . $e->getMessage());
-                return redirect()->back()
-                    ->with('error', 'Gagal mengunggah lampiran. Silakan coba lagi.');
+            foreach ($request->file('lampiran') as $file) {
+                $lampiranPaths[] = [
+                    'path' => $file->store('lampiran', 'public'),
+                    'name' => $file->getClientOriginalName(),
+                ];
             }
+        }
+        // Pastikan ada minimal 1 PDF dan 1 Word
+        $hasPdf = false;
+        $hasWord = false;
+        foreach ($lampiranPaths as $file) {
+            $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            if ($ext === 'pdf') $hasPdf = true;
+            if ($ext === 'doc' || $ext === 'docx') $hasWord = true;
+        }
+        if (!$hasPdf || !$hasWord) {
+            return redirect()->back()->withInput()->withErrors(['lampiran' => 'Wajib melampirkan file PDF dan Word.']);
         }
 
         $dataRequest = ApprovalRequest::create([
@@ -87,7 +98,7 @@ class DataRequestController extends Controller
             'sender' => Auth::user()->name,
             'tanggal_surat' => $validated['tanggal_surat'],
             'perihal' => $validated['perihal'],
-            'lampiran' => $lampiranPath,
+            'lampiran' => json_encode($lampiranPaths),
             'notes' => $validated['notes'] ?? null,
             'status' => 'pending',
             'no_surat' => $validated['no_surat'],
@@ -165,7 +176,19 @@ class DataRequestController extends Controller
         try {
             // If there's an uploaded file, delete it from storage
             if ($dataRequest->lampiran) {
-                Storage::disk('public')->delete($dataRequest->lampiran);
+                $lampiranPaths = json_decode($dataRequest->lampiran, true);
+                if (is_array($lampiranPaths)) {
+                    foreach ($lampiranPaths as $lampiranPath) {
+                        // Data baru: array, data lama: string
+                        if (is_array($lampiranPath) && isset($lampiranPath['path'])) {
+                            Storage::disk('public')->delete($lampiranPath['path']);
+                        } elseif (is_string($lampiranPath)) {
+                            Storage::disk('public')->delete($lampiranPath);
+                        }
+                    }
+                } elseif (is_string($lampiranPaths)) {
+                    Storage::disk('public')->delete($lampiranPaths);
+                }
             }
 
             $dataRequest->delete();

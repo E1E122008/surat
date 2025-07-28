@@ -58,12 +58,34 @@
 
                     <div class="form-group mb-3">
                         <label for="lampiran" class="text-sm font-medium">Lampiran</label>
-                        @if($surat->lampiran)
-                        <button onclick="window.location.href='{{ asset('storage/' . $surat->lampiran) }}'" class="btn btn-primary">
-                            <i class="fas fa-file-pdf"></i> {{ basename($surat->lampiran) }}
-                        </button>
+                        @php
+                            $lampiran = is_array($surat->lampiran) ? $surat->lampiran : json_decode($surat->lampiran, true);
+                        @endphp
+                        @if($lampiran && count($lampiran))
+                            <div class="row">
+                                @foreach($lampiran as $file)
+                                    @php
+                                        if (is_string($file)) {
+                                            $file = ['path' => $file, 'name' => basename($file)];
+                                        }
+                                        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                                        $iconClass = 'fa-file-alt text-secondary';
+                                        if(in_array($ext, ['jpg','jpeg','png','gif'])) $iconClass = 'fa-file-image text-info';
+                                        elseif($ext === 'pdf') $iconClass = 'fa-file-pdf text-danger';
+                                        elseif(in_array($ext, ['doc','docx'])) $iconClass = 'fa-file-word text-primary';
+                                    @endphp
+                                    <div class="col-12 mb-2 d-flex align-items-center gap-2">
+                                        <a href="{{ asset('storage/' . $file['path']) }}" target="_blank" class="fs-4 me-2" title="Lihat file">
+                                            <i class="fas {{ $iconClass }}"></i>
+                                        </a>
+                                        <span class="fw-bold small lampiran-filename" title="{{ $file['name'] }}">
+                                            {{ $file['name'] }}
+                                        </span>
+                                    </div>
+                                @endforeach
+                            </div>
                         @else
-                        <p>-</p>
+                            <p>-</p>
                         @endif
                     </div>
                 </div>
@@ -84,3 +106,14 @@
         </div>
     </div>
 @endsection
+
+<style>
+.lampiran-filename {
+    max-width: 250px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+</style>

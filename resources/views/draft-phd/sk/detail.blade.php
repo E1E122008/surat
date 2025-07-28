@@ -56,9 +56,35 @@
 
                     <div class="form-group mb-3">
                         <label for="lampiran">Lampiran</label>
-                        <button onclick="window.location.href='{{ asset('storage/' . $sk->lampiran) }}'" class="btn btn-primary">
-                            <i class="fas fa-eye"></i> {{ basename($sk->lampiran) }}
-                        </button>
+                        @php
+                            $lampiran = is_array($sk->lampiran) ? $sk->lampiran : json_decode($sk->lampiran, true);
+                        @endphp
+                        @if($lampiran && count($lampiran))
+                            <div class="row">
+                                @foreach($lampiran as $file)
+                                    @php
+                                        if (is_string($file)) {
+                                            $file = ['path' => $file, 'name' => basename($file)];
+                                        }
+                                        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                                        $iconClass = 'fa-file-alt text-secondary';
+                                        if(in_array($ext, ['jpg','jpeg','png','gif'])) $iconClass = 'fa-file-image text-info';
+                                        elseif($ext === 'pdf') $iconClass = 'fa-file-pdf text-danger';
+                                        elseif(in_array($ext, ['doc','docx'])) $iconClass = 'fa-file-word text-primary';
+                                    @endphp
+                                    <div class="col-12 mb-2 d-flex align-items-center gap-2">
+                                        <a href="{{ asset('storage/' . $file['path']) }}" target="_blank" class="fs-4 me-2" title="Lihat file">
+                                            <i class="fas {{ $iconClass }}"></i>
+                                        </a>
+                                        <span class="fw-bold small lampiran-filename" title="{{ $file['name'] }}">
+                                            {{ $file['name'] }}
+                                        </span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <p>-</p>
+                        @endif
                     </div>
 
                     

@@ -2,6 +2,28 @@
 
 @section('content')
 <div class="container-fluid">
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show auto-dismiss-alert" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show auto-dismiss-alert" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show auto-dismiss-alert" role="alert">
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-envelope-open-text me-2"></i>Permintaan Tambah Surat</h1>
@@ -164,12 +186,48 @@
                         
                         <div class="mb-3">
                             <label class="form-label fw-bold">Lampiran</label>
-                            @if($request->lampiran)
-                                <p>
-                                    <a href="{{ asset('storage/' . $request->lampiran) }}" target="_blank" class="btn btn-sm btn-info">
-                                        <i class="fas fa-paperclip"></i> Lihat Lampiran
-                                    </a>
-                                </p>
+                            @php
+                                // Handle null, string kosong, dan format lama
+                                $lampiran = $request->lampiran;
+                                if (is_string($lampiran)) {
+                                    $lampiran = trim($lampiran);
+                                    if ($lampiran === '' || $lampiran === 'null') {
+                                        $lampiran = [];
+                                    } else {
+                                        $decoded = json_decode($lampiran, true);
+                                        // Jika decode gagal, asumsikan string path lama
+                                        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                            $lampiran = $decoded;
+                                        } else {
+                                            $lampiran = [ ['path' => $lampiran, 'name' => basename($lampiran)] ];
+                                        }
+                                    }
+                                }
+                            @endphp
+                            @if($lampiran && count($lampiran))
+                                <div class="row">
+                                    @foreach($lampiran as $file)
+                                        @php
+                                            // Pastikan $file array, jika string, konversi ke array
+                                            if (is_string($file)) {
+                                                $file = ['path' => $file, 'name' => basename($file)];
+                                            }
+                                            $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                                            $iconClass = 'fa-file-alt text-secondary';
+                                            if(in_array($ext, ['jpg','jpeg','png','gif'])) $iconClass = 'fa-file-image text-info';
+                                            elseif($ext === 'pdf') $iconClass = 'fa-file-pdf text-danger';
+                                            elseif(in_array($ext, ['doc','docx'])) $iconClass = 'fa-file-word text-primary';
+                                        @endphp
+                                        <div class="col-12 mb-2 d-flex align-items-center gap-2">
+                                            <a href="{{ asset('storage/' . $file['path']) }}" target="_blank" class="fs-4 me-2" title="Lihat file">
+                                                <i class="fas {{ $iconClass }}"></i>
+                                            </a>
+                                            <span class="fw-bold small lampiran-filename" title="{{ $file['name'] }}">
+                                                {{ $file['name'] }}
+                                            </span>
+                                        </div>
+                                    @endforeach
+                                </div>
                             @else
                                 <p>-</p>
                             @endif
@@ -258,8 +316,8 @@
                         </div>
                         <div class="col-md-12">
                             <label for="lampiran" class="form-label">Lampiran <span class="text-danger">*</span></label>
-                            <input type="file" class="form-control" id="lampiran" name="lampiran" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
-                            <small class="text-muted">File Lampiran wajib di isi, max 2GB.</small>
+                            <input type="file" class="form-control" id="lampiran" name="lampiran[]" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xls,.xlsx,.zip,.rar" multiple required>
+                            <small class="form-text text-muted">wajib melampirkan file PDF dan Wordnya. Max 2GB per file.</small>
                         </div>
                         <div class="col-12">
                             <label for="perihal" class="form-label">Perihal <span class="text-danger">*</span></label>
@@ -314,6 +372,17 @@
         statusFilter.addEventListener('change', function() {
             form.submit();
         });
+
+        setTimeout(function() {
+            document.querySelectorAll('.auto-dismiss-alert').forEach(function(alert) {
+                if (window.bootstrap && bootstrap.Alert) {
+                    var bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                    bsAlert.close();
+                } else {
+                    alert.style.display = 'none';
+                }
+            });
+        }, 5000);
     });
 
     // SweetAlert for cancel request confirmation
@@ -356,6 +425,14 @@
 .surat-badge i {
     font-size: 1em;
     margin-right: 0.5rem;
+}
+.lampiran-filename {
+    max-width: 250px;         /* Atur sesuai kebutuhan modal */
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
 }
 </style>
 @endsection

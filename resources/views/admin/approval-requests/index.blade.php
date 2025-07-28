@@ -23,6 +23,18 @@
             
         </div>
     </div>
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show auto-dismiss-alert" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show auto-dismiss-alert" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
     <div class="row">
         <div class="col-12">
             <div class="card shadow mb-4">
@@ -183,6 +195,74 @@
                                 @endif
                             </p>
                         </div>
+                        
+                    </div>
+                    <div class="col-md-6">
+                         <div class="mb-3">
+                            <label class="form-label fw-bold">Perihal</label>
+                            <p>{{ $request->perihal }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Lampiran</label>
+                            @php
+                                $lampiran = $request->lampiran;
+                                if (is_string($lampiran)) {
+                                    $lampiran = trim($lampiran);
+                                    if ($lampiran === '' || $lampiran === 'null') {
+                                        $lampiran = [];
+                                    } else {
+                                        $decoded = json_decode($lampiran, true);
+                                        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                            $lampiran = $decoded;
+                                        } else {
+                                            $lampiran = [ ['path' => $lampiran, 'name' => basename($lampiran)] ];
+                                        }
+                                    }
+                                }
+                            @endphp
+                            @if($lampiran && count($lampiran))
+                                <div class="row">
+                                    @foreach($lampiran as $file)
+                                        @php
+                                            if (is_string($file)) {
+                                                $file = ['path' => $file, 'name' => basename($file)];
+                                            }
+                                            $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                                            $iconClass = 'fa-file-alt text-secondary';
+                                            if(in_array($ext, ['jpg','jpeg','png','gif'])) $iconClass = 'fa-file-image text-info';
+                                            elseif($ext === 'pdf') $iconClass = 'fa-file-pdf text-danger';
+                                            elseif(in_array($ext, ['doc','docx'])) $iconClass = 'fa-file-word text-primary';
+                                        @endphp
+                                        <div class="col-12 mb-2 d-flex align-items-center gap-2">
+                                            <a href="{{ asset('storage/' . $file['path']) }}" target="_blank" class="fs-4 me-2" title="Lihat file">
+                                                <i class="fas {{ $iconClass }}"></i>
+                                            </a>
+                                            <span class="fw-bold small lampiran-filename" title="{{ $file['name'] }}">
+                                                {{ $file['name'] }}
+                                            </span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p>-</p>
+                            @endif
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Deskripsi (Catatan User)</label>
+                            <p>{{ $request->notes ?: '-' }}</p>
+                        </div>
+                         <div class="mb-3">
+                            <label class="form-label fw-bold">Status Saat Ini</label>
+                            <p>
+                                @if($request->status === 'pending')
+                                    <span class="badge bg-warning"><i class="fas fa-clock me-1"></i> Menunggu Persetujuan</span>
+                                @elseif($request->status === 'approved')
+                                    <span class="badge bg-success"><i class="fas fa-check me-1"></i> Disetujui</span>
+                                @else
+                                    <span class="badge bg-danger"><i class="fas fa-times me-1"></i> Ditolak</span>
+                                @endif
+                            </p>
+                        </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Status Fisik</label>
                             @if($request->status === 'approved')
@@ -204,40 +284,6 @@
                             @else
                                 -
                             @endif
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                         <div class="mb-3">
-                            <label class="form-label fw-bold">Perihal</label>
-                            <p>{{ $request->perihal }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Lampiran</label>
-                            @if($request->lampiran)
-                                <p>
-                                    <a href="{{ asset('storage/' . $request->lampiran) }}" target="_blank" class="btn btn-sm btn-info">
-                                        <i class="fas fa-paperclip"></i> Lihat Lampiran
-                                    </a>
-                                </p>
-                            @else
-                                <p>-</p>
-                            @endif
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Deskripsi (Catatan User)</label>
-                            <p>{{ $request->notes ?: '-' }}</p>
-                        </div>
-                         <div class="mb-3">
-                            <label class="form-label fw-bold">Status Saat Ini</label>
-                            <p>
-                                @if($request->status === 'pending')
-                                    <span class="badge bg-warning"><i class="fas fa-clock me-1"></i> Menunggu Persetujuan</span>
-                                @elseif($request->status === 'approved')
-                                    <span class="badge bg-success"><i class="fas fa-check me-1"></i> Disetujui</span>
-                                @else
-                                    <span class="badge bg-danger"><i class="fas fa-times me-1"></i> Ditolak</span>
-                                @endif
-                            </p>
                         </div>
                     </div>
                 </div>
@@ -280,6 +326,15 @@
                         <label for="tanggal_diterima{{ $request->id }}" class="form-label">Tanggal Diterima</label>
                         <input type="date" class="form-control" id="tanggal_diterima{{ $request->id }}" name="tanggal_diterima" value="{{ old('tanggal_diterima', date('Y-m-d')) }}" required>
                     </div>
+                    @if($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -342,6 +397,14 @@
     font-size: 1em;
     margin-right: 0.5rem;
 }
+.lampiran-filename {
+    max-width: 250px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
 </style>
 
 @push('scripts')
@@ -384,5 +447,20 @@ function toggleFisik(id) {
         document.getElementById('fisik-status-' + id).innerHTML = badge + (data.fisik_diterima_at ? `<div class='text-muted small'>Diterima pada: ${data.fisik_diterima_at}</div>` : '');
     });
 }
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            document.querySelectorAll('.auto-dismiss-alert').forEach(function(alert) {
+                // Bootstrap 5 way to close alert
+                if (window.bootstrap && bootstrap.Alert) {
+                    var bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                    bsAlert.close();
+                } else {
+                    alert.style.display = 'none';
+                }
+            });
+        }, 5000);
+    });
 </script>
 @endpush
