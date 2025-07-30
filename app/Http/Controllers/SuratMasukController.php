@@ -46,7 +46,8 @@ class SuratMasukController extends Controller
                 'tanggal_surat' => 'required|date',
                 'tanggal_terima' => 'required|date',
                 'perihal' => 'required|string|max:255',
-                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
+                'lampiran' => 'nullable|array',
+                'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
                 'catatan' => 'nullable|string',
                 'no_agenda' => 'nullable|string|max:255',
                 'disposisi' => 'nullable|string|max:255',
@@ -64,10 +65,19 @@ class SuratMasukController extends Controller
                 }
             }
 
+            $lampiranPaths = [];
             if ($request->hasFile('lampiran')) {
-                $file = $request->file('lampiran');
-                $path = $file->store('lampiran/surat-masuk', 'public');
-                $validated['lampiran'] = $path;
+                $files = $request->file('lampiran');
+                if (!is_array($files)) {
+                    $files = [$files];
+                }
+                foreach ($files as $file) {
+                    $lampiranPaths[] = [
+                        'path' => $file->store('lampiran/surat-masuk', 'public'),
+                        'name' => $file->getClientOriginalName(),
+                    ];
+                }
+                $validated['lampiran'] = json_encode($lampiranPaths);
             }
 
             $suratMasuk = SuratMasuk::create($validated);
@@ -115,7 +125,10 @@ class SuratMasukController extends Controller
                 'tanggal_surat' => 'required|date',
                 'tanggal_terima' => 'nullable|date',
                 'perihal' => 'required|string|max:255',
-                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
+                'lampiran' => 'nullable|array',
+                'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
+                'hapus_lampiran' => 'nullable|array',
+                'hapus_lampiran.*' => 'integer',
                 'disposisi' => 'nullable|string|max:255',
                 'status' => 'nullable|string|max:255',
                 'submitted_by' => 'nullable|exists:users,id',
@@ -123,16 +136,43 @@ class SuratMasukController extends Controller
                 'admin_notes' => 'nullable|string',
             ]);
 
-            if ($request->hasFile('lampiran')) {
-                // Hapus file lama jika ada
-                if ($suratMasuk->lampiran) {
-                    Storage::disk('public')->delete($suratMasuk->lampiran);
-                }
-                
-                $file = $request->file('lampiran');
-                $path = $file->store('lampiran/surat-masuk', 'public');
-                $validated['lampiran'] = $path;
+            // Handle existing lampiran
+            $existingLampiran = [];
+            if ($suratMasuk->lampiran) {
+                $existingLampiran = json_decode($suratMasuk->lampiran, true) ?? [];
             }
+
+            // Remove selected files
+            if ($request->has('hapus_lampiran')) {
+                $filesToDelete = $request->input('hapus_lampiran');
+                foreach ($filesToDelete as $index) {
+                    if (isset($existingLampiran[$index])) {
+                        // Delete file from storage
+                        Storage::disk('public')->delete($existingLampiran[$index]['path']);
+                        // Remove from array
+                        unset($existingLampiran[$index]);
+                    }
+                }
+                // Reindex array
+                $existingLampiran = array_values($existingLampiran);
+            }
+
+            // Add new files
+            if ($request->hasFile('lampiran')) {
+                $files = $request->file('lampiran');
+                if (!is_array($files)) {
+                    $files = [$files];
+                }
+                foreach ($files as $file) {
+                    $existingLampiran[] = [
+                        'path' => $file->store('lampiran/surat-masuk', 'public'),
+                        'name' => $file->getClientOriginalName(),
+                    ];
+                }
+            }
+
+            // Update lampiran field
+            $validated['lampiran'] = json_encode($existingLampiran);
 
             $suratMasuk->update($validated);
 

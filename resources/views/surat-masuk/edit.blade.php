@@ -84,21 +84,62 @@
 
                             <div class="md:col-span-2">
                                 <label for="lampiran" class="block text-sm font-medium text-gray-700">Lampiran (PDF, DOC, DOCX, Gambar)</label>
+                                
                                 @if($suratMasuk->lampiran)
-                                    <div class="mt-2">
-                                        <p class="text-sm text-gray-500">File saat ini: {{ basename($suratMasuk->lampiran) }}</p>
-                                    </div>
+                                    @php
+                                        $lampiranData = json_decode($suratMasuk->lampiran, true) ?? [];
+                                    @endphp
+                                    
+                                    @if(is_array($lampiranData) && count($lampiranData) > 0)
+                                        <div class="mt-3 space-y-2">
+                                            <h4 class="text-sm font-medium text-gray-700">File Lampiran Saat Ini:</h4>
+                                            @foreach($lampiranData as $index => $file)
+                                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+                                                    <div class="flex items-center space-x-3">
+                                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                        </svg>
+                                                        <div>
+                                                            <p class="text-sm font-medium text-gray-900">{{ $file['name'] ?? 'File' }}</p>
+                                                            <p class="text-xs text-gray-500">{{ basename($file['path'] ?? '') }}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex items-center space-x-2">
+                                                        @if(isset($file['path']))
+                                                            <a href="{{ asset('storage/' . $file['path']) }}" target="_blank" 
+                                                               class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                                                Lihat
+                                                            </a>
+                                                        @endif
+                                                        <label class="flex items-center">
+                                                            <input type="checkbox" name="hapus_lampiran[]" value="{{ $index }}" 
+                                                                   class="rounded border-gray-300 text-red-600 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50">
+                                                            <span class="ml-2 text-sm text-red-600">Hapus</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
                                 @endif
-                                <input type="file" name="lampiran" id="lampiran" 
-                                    class="mt-1 block w-full text-sm text-gray-500
-                                    file:mr-4 file:py-2 file:px-4
-                                    file:rounded-md file:border-0
-                                    file:text-sm file:font-semibold
-                                    file:bg-blue-50 file:text-blue-700
-                                    hover:file:bg-blue-100"
-                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
-                                <p class="mt-1 text-sm text-gray-500">Biarkan kosong jika tidak ingin mengubah file</p>
+
+                                <div class="mt-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tambah File Baru (Opsional)</label>
+                                    <input type="file" name="lampiran[]" id="lampiran" 
+                                        class="mt-1 block w-full text-sm text-gray-500
+                                        file:mr-4 file:py-2 file:px-4
+                                        file:rounded-md file:border-0
+                                        file:text-sm file:font-semibold
+                                        file:bg-blue-50 file:text-blue-700
+                                        hover:file:bg-blue-100"
+                                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple>
+                                    <p class="mt-1 text-sm text-gray-500">Pilih file untuk ditambahkan ke lampiran existing</p>
+                                </div>
+                                
                                 @error('lampiran')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
+                                @error('lampiran.*')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
