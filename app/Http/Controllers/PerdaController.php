@@ -56,11 +56,21 @@ class PerdaController extends Controller
             
             $validated['submitted_by'] = Auth::id();
 
+            $lampiranPaths = [];
             if ($request->hasFile('lampiran')) {
-                $file = $request->file('lampiran');
+                $files = $request->file('lampiran');
+                if (!is_array($files)) {
+                    $files = [$files];
+                }
+                foreach ($files as $file) {
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $path = $file->storeAs('lampiran/perda', $fileName, 'public');
-                $validated['lampiran'] = $path;
+                    $lampiranPaths[] = [
+                        'path' => $path,
+                        'name' => $file->getClientOriginalName(),
+                    ];
+                }
+                $validated['lampiran'] = json_encode($lampiranPaths);
             }
             
             // Set status default to 'tercatat' unless provided

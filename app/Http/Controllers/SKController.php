@@ -52,7 +52,8 @@ class SKController extends Controller
                 'tanggal_surat' => 'required|date',
                 'tanggal_terima' => 'required|date',
                 'perihal' => 'required|string|max:255',
-                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
+                'lampiran' => 'nullable|array', // Changed to array
+                'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152', // Added validation for array items
                 'catatan' => 'nullable|string',
                 'disposisi' => 'nullable|string',
                 'admin_notes' => 'nullable|string',
@@ -60,11 +61,21 @@ class SKController extends Controller
 
             $validated['submitted_by'] = Auth::id();
 
+            $lampiranPaths = [];
             if ($request->hasFile('lampiran')) {
-                $file = $request->file('lampiran');
+                $files = $request->file('lampiran');
+                if (!is_array($files)) {
+                    $files = [$files];
+                }
+                foreach ($files as $file) {
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $path = $file->storeAs('lampiran/sk', $fileName, 'public');
-                $validated['lampiran'] = $path;
+                    $lampiranPaths[] = [
+                        'path' => $path,
+                        'name' => $file->getClientOriginalName(),
+                    ];
+                }
+                $validated['lampiran'] = json_encode($lampiranPaths);
             }
 
             // Set status default to 'tercatat' unless provided
@@ -131,22 +142,29 @@ class SKController extends Controller
                 'tanggal_surat' => 'required|date',
                 'tanggal_terima' => 'required|date',
                 'perihal' => 'required|string|max:255',
-                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
+                'lampiran' => 'nullable|array', // Changed to array
+                'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152', // Added validation for array items
                 'catatan' => 'nullable|string',
                 'disposisi' => 'nullable|string',
                 'admin_notes' => 'nullable|string',
                 'status' => 'nullable|string|max:255',
             ]);
 
+            $lampiranPaths = [];
             if ($request->hasFile('lampiran')) {
-                // Hapus file lama jika ada
-                if ($sk->lampiran) {
-                    Storage::disk('public')->delete($sk->lampiran);
+                $files = $request->file('lampiran');
+                if (!is_array($files)) {
+                    $files = [$files];
                 }
-                
-                $file = $request->file('lampiran');
-                $path = $file->store('lampiran/sk', 'public');
-                $validated['lampiran'] = $path;
+                foreach ($files as $file) {
+                    $fileName = time() . '_' . $file->getClientOriginalName();
+                    $path = $file->storeAs('lampiran/sk', $fileName, 'public');
+                    $lampiranPaths[] = [
+                        'path' => $path,
+                        'name' => $file->getClientOriginalName(),
+                    ];
+                }
+                $validated['lampiran'] = json_encode($lampiranPaths);
             }
 
             $sk->update($validated);
@@ -167,7 +185,14 @@ class SKController extends Controller
         try {
             // Delete file if exists
             if ($sk->lampiran) {
-                Storage::disk('public')->delete($sk->lampiran);
+                $lampiranData = json_decode($sk->lampiran, true);
+                if (is_array($lampiranData)) {
+                    foreach ($lampiranData as $lampiran) {
+                        if (Storage::disk('public')->exists($lampiran['path'])) {
+                            Storage::disk('public')->delete($lampiran['path']);
+                        }
+                    }
+                }
             }
                 
             // Delete the SK record

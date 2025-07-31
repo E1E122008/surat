@@ -129,8 +129,8 @@
                                                 </li>
                                                 <li><hr class="dropdown-divider"></li>
                                                 <li>
-                                                    <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $surat->id }})">
-                                                        <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
+                                                <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $surat->id }})">
+                                                    <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
                                                 </button>
                                                 </li>
                                             </ul>
