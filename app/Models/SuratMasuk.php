@@ -28,7 +28,8 @@ class SuratMasuk extends Model
     protected $casts = [
         'tanggal_surat' => 'date',
         'tanggal_terima' => 'date',
-        'tanggal_disposisi' => 'date'
+        'tanggal_disposisi' => 'date',
+        'lampiran' => 'array'
     ];
 
     protected $attributes = [

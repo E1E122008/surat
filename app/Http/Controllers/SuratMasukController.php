@@ -46,7 +46,7 @@ class SuratMasukController extends Controller
                 'tanggal_surat' => 'required|date',
                 'tanggal_terima' => 'required|date',
                 'perihal' => 'required|string|max:255',
-                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
+                'lampiran.*' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
                 'catatan' => 'nullable|string',
                 'no_agenda' => 'nullable|string|max:255',
                 'disposisi' => 'nullable|string|max:255',
@@ -64,11 +64,19 @@ class SuratMasukController extends Controller
                 }
             }
 
+            // Handle multiple file uploads
+            $lampiranPaths = [];
             if ($request->hasFile('lampiran')) {
-                $file = $request->file('lampiran');
-                $path = $file->store('lampiran/surat-masuk', 'public');
-                $validated['lampiran'] = $path;
+                foreach ($request->file('lampiran') as $file) {
+                    $path = $file->store('lampiran/surat-masuk', 'public');
+                    $lampiranPaths[] = [
+                        'path' => $path,
+                        'name' => $file->getClientOriginalName(),
+                        'size' => $file->getSize()
+                    ];
+                }
             }
+            $validated['lampiran'] = $lampiranPaths;
 
             $suratMasuk = SuratMasuk::create($validated);
 
@@ -78,8 +86,11 @@ class SuratMasukController extends Controller
                 ->with('success', $successMessage);
 
         } catch (\Exception $e) {
-            if (isset($path) && Storage::disk('public')->exists($path)) {
-                Storage::disk('public')->delete($path);
+            // Clean up uploaded files if creation fails
+            if (!empty($lampiranPaths)) {
+                foreach ($lampiranPaths as $lampiran) {
+                    Storage::disk('public')->delete($lampiran['path']);
+                }
             }
 
             Log::error('Terjadi kesalahan saat mengajukan surat masuk: ' . $e->getMessage());
@@ -115,7 +126,7 @@ class SuratMasukController extends Controller
                 'tanggal_surat' => 'required|date',
                 'tanggal_terima' => 'nullable|date',
                 'perihal' => 'required|string|max:255',
-                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
+                'lampiran.*' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
                 'disposisi' => 'nullable|string|max:255',
                 'status' => 'nullable|string|max:255',
                 'submitted_by' => 'nullable|exists:users,id',
@@ -123,17 +134,22 @@ class SuratMasukController extends Controller
                 'admin_notes' => 'nullable|string',
             ]);
 
+            // Get existing attachments
+            $existingLampiran = $suratMasuk->lampiran ?? [];
+
+            // Handle new file uploads
             if ($request->hasFile('lampiran')) {
-                // Hapus file lama jika ada
-                if ($suratMasuk->lampiran) {
-                    Storage::disk('public')->delete($suratMasuk->lampiran);
+                foreach ($request->file('lampiran') as $file) {
+                    $path = $file->store('lampiran/surat-masuk', 'public');
+                    $existingLampiran[] = [
+                        'path' => $path,
+                        'name' => $file->getClientOriginalName(),
+                        'size' => $file->getSize()
+                    ];
                 }
-                
-                $file = $request->file('lampiran');
-                $path = $file->store('lampiran/surat-masuk', 'public');
-                $validated['lampiran'] = $path;
             }
 
+            $validated['lampiran'] = $existingLampiran;
             $suratMasuk->update($validated);
 
             return redirect()->route('surat-masuk.index')
@@ -144,12 +160,71 @@ class SuratMasukController extends Controller
         }
     }
 
+    public function deleteAttachment(Request $request, $id)
+    {
+        try {
+            $suratMasuk = SuratMasuk::findOrFail($id);
+            $attachmentIndex = $request->input('attachment_index');
+            
+            $lampiran = $suratMasuk->lampiran ?? [];
+            
+            if (isset($lampiran[$attachmentIndex])) {
+                $fileToDelete = $lampiran[$attachmentIndex];
+                
+                // Delete file from storage
+                if (isset($fileToDelete['path'])) {
+                    Storage::disk('public')->delete($fileToDelete['path']);
+                } elseif (is_string($fileToDelete)) {
+                    // Handle old format (single string path)
+                    Storage::disk('public')->delete($fileToDelete);
+                }
+                
+                // Remove from array
+                unset($lampiran[$attachmentIndex]);
+                $lampiran = array_values($lampiran); // Reindex array
+                
+                $suratMasuk->update(['lampiran' => $lampiran]);
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'File berhasil dihapus'
+                ]);
+            }
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'File tidak ditemukan'
+            ], 404);
+            
+        } catch (\Exception $e) {
+            Log::error('Error deleting attachment: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus file'
+            ], 500);
+        }
+    }
+
     public function destroy(SuratMasuk $suratMasuk)
     {
+        // Delete all attachment files
         if ($suratMasuk->lampiran) {
-            Storage::disk('public')->delete($suratMasuk->lampiran);
+            $lampiran = $suratMasuk->lampiran;
+            
+            if (is_array($lampiran)) {
+                foreach ($lampiran as $file) {
+                    if (is_array($file) && isset($file['path'])) {
+                        Storage::disk('public')->delete($file['path']);
+                    } elseif (is_string($file)) {
+                        // Handle old format
+                        Storage::disk('public')->delete($file);
+                    }
+                }
+            } elseif (is_string($lampiran)) {
+                // Handle very old single file format
+                Storage::disk('public')->delete($lampiran);
+            }
         }
-
 
         $suratMasuk->delete();
 

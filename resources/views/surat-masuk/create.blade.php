@@ -75,10 +75,25 @@
 
                 <div class="form-group form-grid-full">
                     <label for="lampiran" class="form-label">Lampiran</label>
-                    <input type="file" name="lampiran" id="lampiran" 
-                        class="form-control @error('lampiran') is-invalid @enderror">
-                    <div class="form-help">PDF, DOC, DOCX, JPG, JPEG, PNG (Maksimal 2GB)</div>
+                    <input type="file" 
+                           name="lampiran[]" 
+                           id="lampiran" 
+                           multiple
+                           class="form-control @error('lampiran') is-invalid @enderror @error('lampiran.*') is-invalid @enderror"
+                           accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                           onchange="previewFiles(this)">
+                    <div class="form-help">Pilih satu atau beberapa file (PDF, DOC, DOCX, JPG, JPEG, PNG, maksimal 2MB per file)</div>
+                    
+                    <!-- File preview -->
+                    <div id="filesPreview" class="mt-3 space-y-2 hidden">
+                        <h4 class="text-sm font-medium text-gray-600">File yang akan diupload:</h4>
+                        <div id="filesList" class="space-y-2"></div>
+                    </div>
+                    
                     @error('lampiran')
+                        <div class="form-error">{{ $message }}</div>
+                    @enderror
+                    @error('lampiran.*')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
                 </div>
@@ -91,3 +106,49 @@
         </form>
     </div>
 @endsection
+
+<script>
+function previewFiles(input) {
+    const preview = document.getElementById('filesPreview');
+    const filesList = document.getElementById('filesList');
+    
+    filesList.innerHTML = '';
+    
+    if (input.files.length > 0) {
+        preview.classList.remove('hidden');
+        
+        Array.from(input.files).forEach((file, index) => {
+            const fileSize = (file.size / 1024).toFixed(1);
+            const ext = file.name.split('.').pop().toLowerCase();
+            
+            let iconClass = 'fa-file-alt text-gray-500';
+            let bgColor = 'bg-gray-50';
+            
+            if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) {
+                iconClass = 'fa-file-image text-blue-500';
+                bgColor = 'bg-blue-50';
+            } else if (ext === 'pdf') {
+                iconClass = 'fa-file-pdf text-red-500';
+                bgColor = 'bg-red-50';
+            } else if (['doc', 'docx'].includes(ext)) {
+                iconClass = 'fa-file-word text-indigo-500';
+                bgColor = 'bg-indigo-50';
+            }
+            
+            const fileElement = document.createElement('div');
+            fileElement.className = `flex items-center space-x-3 p-3 ${bgColor} rounded-lg border`;
+            fileElement.innerHTML = `
+                <i class="fas ${iconClass} text-lg"></i>
+                <div>
+                    <p class="text-sm font-medium text-gray-900">${file.name}</p>
+                    <p class="text-xs text-gray-500">${fileSize} KB</p>
+                </div>
+            `;
+            
+            filesList.appendChild(fileElement);
+        });
+    } else {
+        preview.classList.add('hidden');
+    }
+}
+</script>
