@@ -86,24 +86,63 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                     @if($item->disposisi)
                                         @php
-                                            $disposisiParts = explode('|', $sk->disposisi);
-                                            $mainDisposisi = trim($disposisiParts[0]);
+                                            $disposisiParts = explode('|', $item->disposisi);
+                                            $persetujuanKetua = null;
+                                            $tujuanDisposisi = null;
+                                            $otherParts = [];
+
+                                            // Pisahkan status persetujuan dan bagian lainnya
+                                            foreach($disposisiParts as $index => $part) {
+                                                $trimmedPart = trim($part);
+                                                if (preg_match('/(Sudah|Belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i', $trimmedPart)) {
+                                                    $persetujuanKetua = $trimmedPart;
+                                                } elseif (strpos($trimmedPart, 'Persetujuan Ketua Biro Hukum:') !== false) {
+                                                    // Fallback format lama
+                                                    $persetujuanKetua = $trimmedPart;
+                                                } elseif ($index === 0 && !$tujuanDisposisi) {
+                                                    $tujuanDisposisi = $trimmedPart;
+                                                } else {
+                                                    $otherParts[] = $trimmedPart;
+                                                }
+                                            }
+
+                                            // Jika tujuan belum terisi, ambil dari otherParts
+                                            if (!$tujuanDisposisi && count($otherParts) > 0) {
+                                                $tujuanDisposisi = $otherParts[0];
+                                                $otherParts = array_slice($otherParts, 1);
+                                            }
                                         @endphp
-                                        <span class="bg-{{ strtolower(str_replace(' ', '-', $mainDisposisi)) }}">
-                                            {{ $mainDisposisi }}
-                                        </span>
-                                        @if(count($disposisiParts) > 1)
-                                            <br>
-                                            <small class="text-muted">
-                                                @foreach(array_slice($disposisiParts, 1) as $part)
-                                                    {{ trim($part) }}<br>
-                                                @endforeach
-                                            </small>
-                                        @endif
+                                        <div class="text-center">
+                                            {{-- Status Persetujuan --}}
+                                            @if($persetujuanKetua)
+                                                <div class="mb-2">
+                                                    <span class="badge {{ (stripos($persetujuanKetua, 'Sudah') !== false) ? 'bg-success' : 'bg-warning' }}">
+                                                        {{ $persetujuanKetua }}
+                                                    </span>
+                                                </div>
+                                            @endif
+
+                                            {{-- Tujuan Disposisi Utama --}}
+                                            @if($tujuanDisposisi)
+                                                <div class="mb-1">
+                                                    <strong>{{ $tujuanDisposisi }}</strong>
+                                                </div>
+                                            @endif
+
+                                            {{-- Informasi Lainnya --}}
+                                            @if(count($otherParts) > 0)
+                                                <small class="text-muted d-block">
+                                                    @foreach($otherParts as $part)
+                                                        {{ $part }}
+                                                        @if(!$loop->last)<br>@endif
+                                                    @endforeach
+                                                </small>
+                                            @endif
+                                        </div>
                                     @else
                                         -
                                     @endif
-                                    </td>
+                                </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                         @if($item->status == 'tercatat')
                                             <span class="bg-tercatat">Tercatat</span>
@@ -125,7 +164,14 @@
                                                 <i class="fas fa-cog"></i> Aksi
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li><button class="dropdown-item" type="button" onclick="openDisposisiModal({{ $item->id }})"><i class="fas fa-sync-alt fa-fw me-2 text-warning"></i>Disposisi</button></li>
+                                                <li>
+                                                    <button 
+                                                        class="dropdown-item" 
+                                                        type="button" 
+                                                        onclick="openDisposisiModal({{ $item->id }}, @js($item->disposisi))">
+                                                        <i class="fas fa-sync-alt fa-fw me-2 text-warning"></i>Disposisi
+                                                    </button>
+                                                </li>
                                                 <li><button class="dropdown-item" type="button" onclick="openStatusModal({{ $item->id }}, '{{ $item->status }}')"><i class="fas fa-check-circle fa-fw me-2 text-success"></i>Status</button></li>
                                                 <li><a class="dropdown-item" href="{{ route('draft-phd.sk.detail', $item->id) }}"><i class="fas fa-eye fa-fw me-2 text-primary"></i>Detail</a></li>
                                                 <li><hr class="dropdown-divider"></li>
@@ -211,6 +257,21 @@
                 <form id="disposisiForm" method="POST">
                     @csrf
                     <div class="modal-body">
+                        <!-- STATUS PERSETUJUAN KETUA BIRO HUKUM -->
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Status Persetujuan Ketua Biro Hukum:</strong></label>
+                            @if(auth()->user() && auth()->user()->role === 'admin')
+                                <div id="radioPersetujuanGroupSk" class="mb-2">
+                                    <input class="form-check-input" type="radio" name="persetujuan_ketua" id="radioSkDisetujui" value="Sudah">
+                                    <label class="form-check-label me-3" for="radioSkDisetujui">Sudah Disetujui</label>
+                                    <input class="form-check-input" type="radio" name="persetujuan_ketua" id="radioSkBelum" value="Belum" checked>
+                                    <label class="form-check-label" for="radioSkBelum">Belum Disetujui</label>
+                                </div>
+                            @else
+                                <span id="statusPersetujuanSk" class="badge bg-secondary"></span>
+                            @endif
+                        </div>
+
                         <div class="mb-3">
                             <label for="disposisi" class="form-label">Tujuan Disposisi</label>
                             <select class="form-select" id="disposisi" name="disposisi" required>
@@ -701,12 +762,34 @@
         document.getElementById('tanggal_disposisi').value = today;
     }
 
-    function openDisposisiModal(id) {
+    function openDisposisiModal(id, currentDisposisi = '') {
         document.getElementById('disposisiForm').action = `/draft-phd/sk/${id}/disposisi`;
         document.getElementById('disposisi').value = '';
         document.getElementById('sub_disposisi').value = '';
         document.getElementById('subDisposisiContainer').style.display = 'none';
         setDefaultDate();
+
+        // Atur status persetujuan berdasarkan disposisi yang ada
+        const radioSudah = document.getElementById('radioSkDisetujui');
+        const radioBelum = document.getElementById('radioSkBelum');
+        const statusBadge = document.getElementById('statusPersetujuanSk');
+        let statusLabel = 'Belum Disetujui';
+
+        if (currentDisposisi && /(Sudah|sudah)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/.test(currentDisposisi)) {
+            statusLabel = 'Sudah Disetujui';
+            if (radioSudah && radioBelum) {
+                radioSudah.checked = true;
+                radioBelum.checked = false;
+            }
+        } else if (radioSudah && radioBelum) {
+            radioSudah.checked = false;
+            radioBelum.checked = true;
+        }
+
+        if (statusBadge) {
+            statusBadge.innerText = statusLabel;
+        }
+
         new bootstrap.Modal(document.getElementById('disposisiModal')).show();
     }
 

@@ -243,21 +243,54 @@ class SKController extends Controller
             $request->validate([
                 'disposisi' => 'required',
                 'tanggal_disposisi' => 'required|date',
-                'catatan' => 'nullable'
+                'catatan' => 'nullable',
+                'persetujuan_ketua' => 'nullable|in:Sudah,Belum,sudah,belum'
             ]);
 
-            // Ambil data surat masuk
+            // Ambil data SK
             $sk = SK::findOrFail($id);
 
-            // Gabungkan data disposisi dalam satu string
-            $disposisiText = $request->disposisi;
+            // Tentukan status persetujuan (prioritas dari form, jika tidak ada ambil dari existing)
+            $statusPersetujuan = 'Belum';
+            if ($request->has('persetujuan_ketua')) {
+                $inputValue = ucfirst(strtolower($request->persetujuan_ketua));
+                if (in_array($inputValue, ['Sudah', 'Belum'])) {
+                    $statusPersetujuan = $inputValue;
+                }
+            } elseif ($sk->disposisi) {
+                // Cek format baru
+                if (preg_match('/(Sudah|Belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i', $sk->disposisi, $matches)) {
+                    $statusPersetujuan = ucfirst(strtolower($matches[1]));
+                }
+                // Fallback format lama
+                elseif (preg_match('/Persetujuan Ketua Biro Hukum:\s*(Sudah|Belum|sudah|belum)/i', $sk->disposisi, $matches)) {
+                    $statusPersetujuan = ucfirst(strtolower($matches[1]));
+                }
+            }
+
+            // Susun format disposisi: Status persetujuan dahulu, lalu detail lain
+            $disposisiParts = [];
+
+            // 1. Status Persetujuan Ketua Biro Hukum
+            $disposisiParts[] = $statusPersetujuan . ' di Setujui Ketua Biro Hukum';
+
+            // 2. Tujuan Disposisi
+            $disposisiParts[] = $request->disposisi;
+
+            // 3. Diteruskan ke (jika ada)
             if ($request->sub_disposisi) {
-                $disposisiText .= ' | Diteruskan ke: ' . $request->sub_disposisi;
+                $disposisiParts[] = 'Diteruskan ke: ' . $request->sub_disposisi;
             }
-            $disposisiText .= ' | Tanggal: ' . $request->tanggal_disposisi;
+
+            // 4. Tanggal Disposisi
+            $disposisiParts[] = 'Tanggal: ' . $request->tanggal_disposisi;
+
+            // 5. Catatan (jika ada)
             if ($request->catatan) {
-                $disposisiText .= ' | Catatan: ' . $request->catatan;
+                $disposisiParts[] = 'Catatan: ' . $request->catatan;
             }
+
+            $disposisiText = implode(' | ', $disposisiParts);
 
             // Update kolom disposisi
             $sk->update([

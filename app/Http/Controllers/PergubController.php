@@ -12,6 +12,17 @@ use Illuminate\Support\Facades\Log;
 
 class PergubController extends Controller
 {
+    // API akses disposisi pergub (khusus modal)
+    public function apiShow($id)
+    {
+        $pergub = Pergub::findOrFail($id);
+        return response()->json([
+            'id' => $pergub->id,
+            'disposisi' => $pergub->disposisi,
+            'status' => $pergub->status
+        ]);
+    }
+
     public function index(Request $request)
     {
         $query = Pergub::query();
@@ -214,21 +225,56 @@ class PergubController extends Controller
             $request->validate([
                 'disposisi' => 'required',
                 'tanggal_disposisi' => 'required|date',
-                'catatan' => 'nullable'
+                'catatan' => 'nullable',
+                'persetujuan_ketua' => 'nullable|in:Sudah,Belum,sudah,belum'
             ]);
 
-            // Ambil data surat masuk
+            // Ambil data pergub
             $pergub = Pergub::findOrFail($id);
 
-            // Gabungkan data disposisi dalam satu string
-            $disposisiText = $request->disposisi;
+            // Tentukan status persetujuan (prioritas dari form, jika tidak ada ambil dari existing)
+            $statusPersetujuan = 'Belum';
+            if ($request->has('persetujuan_ketua')) {
+                // Normalisasi input (uppercase first letter)
+                $inputValue = ucfirst(strtolower($request->persetujuan_ketua));
+                if (in_array($inputValue, ['Sudah', 'Belum'])) {
+                    $statusPersetujuan = $inputValue;
+                }
+            } elseif ($pergub->disposisi) {
+                // Ambil dari disposisi yang sudah ada - format baru: "Sudah di Setujui Ketua Biro Hukum" atau "Belum di Setujui Ketua Biro Hukum"
+                if (preg_match('/(Sudah|Belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i', $pergub->disposisi, $matches)) {
+                    $statusPersetujuan = ucfirst(strtolower($matches[1]));
+                }
+                // Fallback untuk format lama jika masih ada
+                elseif (preg_match('/Persetujuan Ketua Biro Hukum:\s*(Sudah|Belum|sudah|belum)/i', $pergub->disposisi, $matches)) {
+                    $statusPersetujuan = ucfirst(strtolower($matches[1]));
+                }
+            }
+
+            // Format disposisi: Status Persetujuan terlebih dahulu, kemudian informasi lainnya
+            $disposisiParts = [];
+            
+            // 1. Status Persetujuan Ketua Biro Hukum (pertama)
+            $disposisiParts[] = $statusPersetujuan . ' di Setujui Ketua Biro Hukum';
+            
+            // 2. Tujuan Disposisi
+            $disposisiParts[] = $request->disposisi;
+            
+            // 3. Diteruskan ke (jika ada)
             if ($request->sub_disposisi) {
-                $disposisiText .= ' | Diteruskan ke: ' . $request->sub_disposisi;
+                $disposisiParts[] = 'Diteruskan ke: ' . $request->sub_disposisi;
             }
-            $disposisiText .= ' | Tanggal: ' . $request->tanggal_disposisi;
+            
+            // 4. Tanggal Disposisi
+            $disposisiParts[] = 'Tanggal: ' . $request->tanggal_disposisi;
+            
+            // 5. Catatan (jika ada)
             if ($request->catatan) {
-                $disposisiText .= ' | Catatan: ' . $request->catatan;
+                $disposisiParts[] = 'Catatan: ' . $request->catatan;
             }
+
+            // Gabungkan semua bagian dengan separator
+            $disposisiText = implode(' | ', $disposisiParts);
 
             // Update kolom disposisi
             $pergub->update([
@@ -248,7 +294,7 @@ class PergubController extends Controller
     {
         try {
             $request->validate([
-                'disposisi' => 'required|string|max:255',
+                'disposisi' => 'required|string',
             ]);
 
             $pergub = Pergub::findOrFail($id);
