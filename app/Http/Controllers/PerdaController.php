@@ -74,11 +74,14 @@ class PerdaController extends Controller
                     $files = [$files];
                 }
                 foreach ($files as $file) {
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $path = $file->storeAs('lampiran/perda', $fileName, 'public');
+                    // Sanitize nama file untuk menghindari karakter khusus yang bermasalah
+                    $originalName = $file->getClientOriginalName();
+                    $sanitizedName = preg_replace('/[^a-zA-Z0-9._-]/', '_', $originalName);
+                    $fileName = time() . '_' . $sanitizedName;
+                    $path = $file->storeAs('lampiran/perda', $fileName, 'public');
                     $lampiranPaths[] = [
                         'path' => $path,
-                        'name' => $file->getClientOriginalName(),
+                        'name' => $originalName, // Simpan nama asli untuk display
                     ];
                 }
                 $validated['lampiran'] = json_encode($lampiranPaths);
@@ -113,7 +116,8 @@ class PerdaController extends Controller
     public function edit($id)
     {   
         $perda = Perda::findOrFail($id);
-        return view('draft-phd.perda.edit', compact('perda'));
+        $lampiranLama = $perda->lampiran ? array_values(json_decode($perda->lampiran, true)) : [];
+        return view('draft-phd.perda.edit', compact('perda', 'lampiranLama'));
     }
 
     public function update(Request $request, $id)
@@ -127,43 +131,49 @@ class PerdaController extends Controller
                 'tanggal_surat' => 'required|date',
                 'tanggal_terima' => 'required|date',
                 'perihal' => 'required|string|max:255',
-                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
+                'lampiran' => 'nullable|array',
+                'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2147483648',
                 'catatan' => 'nullable|string',
                 'disposisi' => 'nullable|string',
                 'admin_notes' => 'nullable|string',
                 'status' => 'nullable|string|max:255',
             ]);
 
-            // Proses lampiran - form edit menggunakan single file input (name="lampiran")
-            if ($request->hasFile('lampiran')) {
-                // Validasi file hanya jika ada file yang diupload
-                $request->validate([
-                    'lampiran' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
-                ]);
-                
-                // Hapus file lama jika ada
-                if ($perda->lampiran) {
-                    $lampiranLama = json_decode($perda->lampiran, true);
-                    if (is_array($lampiranLama)) {
-                        foreach ($lampiranLama as $lampiran) {
-                            if (isset($lampiran['path']) && Storage::disk('public')->exists($lampiran['path'])) {
-                                Storage::disk('public')->delete($lampiran['path']);
-                            }
-                        }
+            // Ambil lampiran lama yang dipertahankan
+            $lampiranLama = $request->input('lampiran_lama', []);
+            $lampiranDihapus = $request->input('lampiran_dihapus', []);
+            $lampiranData = [];
+            $lampiranSebelumnya = json_decode($perda->lampiran, true) ?? [];
+
+            // Proses lampiran yang ada
+            foreach ($lampiranSebelumnya as $file) {
+                // Jika file tidak dihapus dan masih ada di lampiran_lama
+                if (!in_array($file['path'], $lampiranDihapus) && in_array($file['path'], $lampiranLama)) {
+                    $lampiranData[] = $file;
+                } else {
+                    // Hapus file fisik jika user hapus lampiran
+                    if (Storage::disk('public')->exists($file['path'])) {
+                        Storage::disk('public')->delete($file['path']);
                     }
                 }
-                
-                $file = $request->file('lampiran');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $path = $file->storeAs('lampiran/perda', $fileName, 'public');
-                $validated['lampiran'] = json_encode([[
-                    'path' => $path,
-                    'name' => $file->getClientOriginalName(),
-                ]]);
-            } else {
-                // Jika tidak ada file baru, pertahankan lampiran yang lama
-                $validated['lampiran'] = $perda->lampiran;
             }
+
+            // Proses upload file baru
+            if ($request->hasFile('lampiran')) {
+                foreach ($request->file('lampiran') as $file) {
+                    // Sanitize nama file untuk menghindari karakter khusus yang bermasalah
+                    $originalName = $file->getClientOriginalName();
+                    $sanitizedName = preg_replace('/[^a-zA-Z0-9._-]/', '_', $originalName);
+                    $fileName = time() . '_' . $sanitizedName;
+                    $path = $file->storeAs('lampiran/perda', $fileName, 'public');
+                    $lampiranData[] = [
+                        'path' => $path,
+                        'name' => $originalName, // Simpan nama asli untuk display
+                    ];
+                }
+            }
+
+            $validated['lampiran'] = json_encode($lampiranData);
             
             $perda->update($validated);
 
