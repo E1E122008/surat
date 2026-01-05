@@ -757,10 +757,8 @@
             'Sub Kordinator Penetapan',
             'Sub Kordinator Pengaturan',
             'Sub Kordinator Dokumentasi NHL'
-        ],
-        'Kasubag Tata Usaha': [
-            'Belum/Tidak diteruskan'
         ]
+        // Catatan: Kasubag Tata Usaha tidak memiliki sub disposisi
     };
 
     // Tambahkan fungsi untuk set tanggal otomatis
@@ -891,7 +889,9 @@
                     disposisiSelect.dispatchEvent(changeEvent);
                     
                     // 3. Set Diteruskan Kepada (sub_disposisi) setelah change event
-                    if (subDisposisi && subDisposisi.trim()) {
+                    // Jangan tampilkan sub disposisi jika tujuan adalah "Kasubag Tata Usaha"
+                    const selectedTujuan = disposisiSelect.value;
+                    if (selectedTujuan !== 'Kasubag Tata Usaha' && subDisposisi && subDisposisi.trim()) {
                         setTimeout(() => {
                             const subDisposisiContainer = document.getElementById('subDisposisiContainer');
                             const subDisposisiSelect = document.getElementById('sub_disposisi');
@@ -927,8 +927,28 @@
                                     subDisposisiSelect.value = subDisposisiValue;
                                     console.log('SK - Added new sub_disposisi option:', subDisposisiValue);
                                 }
+                                
+                                // Jika tidak ada sub_disposisi yang ada, set default ke "Belum/Tidak diteruskan"
+                                if (!subDisposisiValue && subDisposisiSelect.options.length > 1) {
+                                    subDisposisiSelect.value = 'Belum/Tidak diteruskan';
+                                }
                             }
                         }, 200);
+                    } else if (selectedTujuan !== 'Kasubag Tata Usaha') {
+                        // Jika tidak ada sub_disposisi yang ada, set default setelah change event
+                        setTimeout(() => {
+                            const subDisposisiContainer = document.getElementById('subDisposisiContainer');
+                            const subDisposisiSelect = document.getElementById('sub_disposisi');
+                            if (subDisposisiContainer && subDisposisiSelect && subDisposisiContainer.style.display === 'block') {
+                                subDisposisiSelect.value = 'Belum/Tidak diteruskan';
+                            }
+                        }, 250);
+                    } else if (selectedTujuan === 'Kasubag Tata Usaha') {
+                        // Pastikan sub disposisi disembunyikan jika tujuan adalah Kasubag Tata Usaha
+                        const subDisposisiContainer = document.getElementById('subDisposisiContainer');
+                        if (subDisposisiContainer) {
+                            subDisposisiContainer.style.display = 'none';
+                        }
                     }
                 }, 100);
             }
@@ -1022,7 +1042,11 @@
         // Reset sub disposisi
         subDisposisiSelect.innerHTML = '<option value="">Pilih Tujuan</option>';
         
-        if (selectedDisposisi && subDisposisiOptions[selectedDisposisi]) {
+        // Kasubag Tata Usaha tidak memiliki sub disposisi
+        if (selectedDisposisi === 'Kasubag Tata Usaha') {
+            subDisposisiContainer.style.display = 'none';
+            subDisposisiSelect.required = false;
+        } else if (selectedDisposisi && subDisposisiOptions[selectedDisposisi]) {
             // Tampilkan container dan tambahkan opsi
             subDisposisiContainer.style.display = 'block';
             
@@ -1033,8 +1057,9 @@
                 subDisposisiSelect.appendChild(optionElement);
             });
             
-            // Set required jika bukan Kasubag Tata Usaha
-            subDisposisiSelect.required = (selectedDisposisi !== 'Kasubag Tata Usaha');
+            // Set default value ke "Belum/Tidak diteruskan"
+            subDisposisiSelect.value = 'Belum/Tidak diteruskan';
+            subDisposisiSelect.required = true;
         } else {
             subDisposisiContainer.style.display = 'none';
             subDisposisiSelect.required = false;
@@ -1045,16 +1070,45 @@
     document.getElementById('disposisiForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
+        const form = this;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn ? submitBtn.innerHTML : '';
+        
         const disposisi = document.getElementById('disposisi').value;
         const subDisposisi = document.getElementById('sub_disposisi').value;
+        const subDisposisiContainer = document.getElementById('subDisposisiContainer');
+        const tanggalDisposisi = document.getElementById('tanggal_disposisi').value;
         
-        // Validasi khusus
-        if (disposisi !== 'Kasubag Tata Usaha' && !subDisposisi) {
-            alert('Silakan pilih sub disposisi');
+        // Validasi sub disposisi jika container terlihat
+        if (disposisi !== 'Kasubag Tata Usaha' && subDisposisiContainer && subDisposisiContainer.style.display !== 'none' && !subDisposisi) {
+            Swal.fire({
+                title: 'Validasi Gagal',
+                text: 'Silakan pilih sub disposisi',
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
             return;
         }
         
-        this.submit();
+        // Validasi tanggal
+        if (!tanggalDisposisi) {
+            Swal.fire({
+                title: 'Validasi Gagal',
+                text: 'Silakan isi tanggal disposisi',
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+        
+        // Disable button dan tampilkan loading
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
+        }
+        
+        // Submit form
+        form.submit();
     });
     </script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">

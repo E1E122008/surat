@@ -18,27 +18,33 @@
                                 <label for="no_agenda" class="block text-sm font-medium text-gray-700">Nomor Agenda</label>
                                 <input type="text" name="no_agenda" id="no_agenda" 
                                     class="form-control"
-                                    value="{{ old('no_agenda', $suratMasuk->no_agenda) }}" required>
+                                    value="{{ old('no_agenda', $suratMasuk->no_agenda) }}" 
+                                    placeholder="Masukkan nomor agenda surat masuk"
+                                    autofocus>
                                 @error('no_agenda')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             <div>
-                                <label for="no_surat" class="block text-sm font-medium text-gray-700">Nomor Surat</label>
+                                <label for="no_surat" class="block text-sm font-medium text-gray-700">Nomor Surat <span class="text-red-500">*</span></label>
                                 <input type="text" name="no_surat" id="no_surat" 
                                     class="form-control"
-                                    value="{{ old('no_surat', $suratMasuk->no_surat) }}" required>
+                                    value="{{ old('no_surat', $suratMasuk->no_surat) }}" 
+                                    placeholder="Masukkan nomor surat dari pengirim"
+                                    required>
                                 @error('no_surat')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             <div>
-                                <label for="pengirim" class="block text-sm font-medium text-gray-700">Pengirim</label>
+                                <label for="pengirim" class="block text-sm font-medium text-gray-700">Pengirim <span class="text-red-500">*</span></label>
                                 <input type="text" name="pengirim" id="pengirim" 
                                     class="form-control"
-                                    value="{{ old('pengirim', $suratMasuk->pengirim) }}" required>
+                                    value="{{ old('pengirim', $suratMasuk->pengirim) }}" 
+                                    placeholder="Nama instansi atau pengirim surat"
+                                    required>
                                 @error('pengirim')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
@@ -432,6 +438,14 @@
                 input.value = path;
                 this.appendChild(input);
             });
+            
+            // Tampilkan loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                const originalText = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
+            }
         });
     </script>
 @endsection

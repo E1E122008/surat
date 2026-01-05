@@ -14,27 +14,33 @@
                     <label for="no_agenda" class="form-label">Nomor Agenda</label>
                     <input type="text" name="no_agenda" id="no_agenda" 
                         class="form-control @error('no_agenda') is-invalid @enderror"
-                        value="{{ old('no_agenda') }}" required>
+                        value="{{ old('no_agenda') }}" 
+                        placeholder="Masukkan nomor agenda surat masuk"
+                        autofocus>
                     @error('no_agenda')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
                 </div>
 
                 <div class="form-group">
-                    <label for="no_surat" class="form-label">Nomor Surat</label>
+                    <label for="no_surat" class="form-label">Nomor Surat <span class="text-red-500">*</span></label>
                     <input type="text" name="no_surat" id="no_surat" 
                         class="form-control @error('no_surat') is-invalid @enderror"
-                        value="{{ old('no_surat') }}" required>
+                        value="{{ old('no_surat') }}" 
+                        placeholder="Masukkan nomor surat dari pengirim"
+                        required>
                     @error('no_surat')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
                 </div>
 
                 <div class="form-group">
-                    <label for="pengirim" class="form-label">Pengirim</label>
+                    <label for="pengirim" class="form-label">Pengirim <span class="text-red-500">*</span></label>
                     <input type="text" name="pengirim" id="pengirim" 
                         class="form-control @error('pengirim') is-invalid @enderror"
-                        value="{{ old('pengirim') }}" required>
+                        value="{{ old('pengirim') }}" 
+                        placeholder="Nama instansi atau pengirim surat"
+                        required>
                     @error('pengirim')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -63,9 +69,10 @@
                 </div>
 
                 <div class="form-group form-grid-full">
-                    <label for="perihal" class="form-label">Perihal</label>
+                    <label for="perihal" class="form-label">Perihal <span class="text-red-500">*</span></label>
                     <textarea name="perihal" id="perihal" rows="3" 
                         class="form-control @error('perihal') is-invalid @enderror"
+                        placeholder="Masukkan perihal atau isi pokok surat"
                         required>{{ old('perihal') }}</textarea>
                     @error('perihal')
                         <div class="form-error">{{ $message }}</div>
@@ -106,7 +113,12 @@
 
             <div class="form-actions">
                 <a href="{{ route('surat-masuk.index') }}" class="btn btn-cancel">Batal</a>
-                <button type="submit" class="btn btn-submit">Simpan</button>
+                <button type="submit" class="btn btn-submit" id="submitBtn">
+                    <span class="btn-text">Simpan</span>
+                    <span class="btn-loading" style="display: none;">
+                        <i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...
+                    </span>
+                </button>
             </div>
         </form>
     </div>
@@ -316,12 +328,33 @@
             }
             
             function showError(message) {
-                // You can use SweetAlert or any other notification library
-                alert(message);
+                Swal.fire({
+                    title: 'Error',
+                    text: message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             }
             
             // Make removeFile function global
             window.removeFile = removeFile;
+            
+            // Handle form submission dengan loading state
+            const createForm = document.getElementById('createForm');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (createForm && submitBtn) {
+                createForm.addEventListener('submit', function(e) {
+                    const btnText = submitBtn.querySelector('.btn-text');
+                    const btnLoading = submitBtn.querySelector('.btn-loading');
+                    
+                    if (btnText && btnLoading) {
+                        submitBtn.disabled = true;
+                        btnText.style.display = 'none';
+                        btnLoading.style.display = 'inline-block';
+                    }
+                });
+            }
         });
     </script>
 @endsection

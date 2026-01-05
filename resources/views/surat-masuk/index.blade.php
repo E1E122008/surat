@@ -712,6 +712,8 @@
                     optionElement.textContent = option;
                     subDisposisiSelect.appendChild(optionElement);
                 });
+                // Set default value ke "Belum/Tidak diteruskan"
+                subDisposisiSelect.value = 'Belum/Tidak diteruskan';
                 subDisposisiSelect.required = true;
             } else {
                 // Sembunyikan sub disposisi jika tidak ada opsi
@@ -885,8 +887,22 @@
                                         subDisposisiSelect.appendChild(newOption);
                                         subDisposisiSelect.value = subDisposisi;
                                     }
+                                    
+                                    // Jika tidak ada sub_disposisi yang ada, set default ke "Belum/Tidak diteruskan"
+                                    if (!subDisposisi && subDisposisiSelect.options.length > 1) {
+                                        subDisposisiSelect.value = 'Belum/Tidak diteruskan';
+                                    }
                                 }
                             }, 100);
+                        } else {
+                            // Jika tidak ada sub_disposisi yang ada, set default setelah change event
+                            setTimeout(() => {
+                                const subDisposisiContainer = document.getElementById('subDisposisiContainer');
+                                const subDisposisiSelect = document.getElementById('sub_disposisi');
+                                if (subDisposisiContainer && subDisposisiSelect && subDisposisiContainer.style.display === 'block') {
+                                    subDisposisiSelect.value = 'Belum/Tidak diteruskan';
+                                }
+                            }, 150);
                         }
                     }, 50);
                 }
@@ -1066,13 +1082,47 @@
 
         document.getElementById('disposisiForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            // Pastikan status persetujuan ikut terkirim saat submit
-            const radioDisetujui = document.getElementById('radioDisetujui');
-            const radioBelum = document.getElementById('radioBelum');
-            if (radioDisetujui && radioBelum) {
-                // Status sudah di-handle oleh radio button, form akan otomatis mengirim value
+            
+            const form = this;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn ? submitBtn.innerHTML : '';
+            
+            // Validasi form
+            const disposisi = document.getElementById('disposisi').value;
+            const subDisposisi = document.getElementById('sub_disposisi').value;
+            const subDisposisiContainer = document.getElementById('subDisposisiContainer');
+            const tanggalDisposisi = document.getElementById('tanggal_disposisi').value;
+            
+            // Validasi sub disposisi jika container terlihat
+            if (subDisposisiContainer && subDisposisiContainer.style.display !== 'none' && !subDisposisi) {
+                Swal.fire({
+                    title: 'Validasi Gagal',
+                    text: 'Silakan pilih sub disposisi',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                });
+                return;
             }
-            this.submit();
+            
+            // Validasi tanggal
+            if (!tanggalDisposisi) {
+                Swal.fire({
+                    title: 'Validasi Gagal',
+                    text: 'Silakan isi tanggal disposisi',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+            
+            // Disable button dan tampilkan loading
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
+            }
+            
+            // Submit form
+            form.submit();
         });
 
         document.addEventListener('DOMContentLoaded', function() {
