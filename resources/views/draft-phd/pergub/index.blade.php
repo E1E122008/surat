@@ -72,6 +72,9 @@
                                                 $disposisiParts = explode('|', $pergub->disposisi);
                                                 $persetujuanKetua = null;
                                                 $tujuanDisposisi = null;
+                                                $subDisposisi = null;
+                                                $tanggalDisposisi = null;
+                                                $catatan = null;
                                                 $otherParts = [];
 
                                                 // Pisahkan status persetujuan dan bagian lainnya
@@ -82,6 +85,15 @@
                                                     } elseif (strpos($trimmedPart, 'Persetujuan Ketua Biro Hukum:') !== false) {
                                                         // Fallback format lama
                                                         $persetujuanKetua = $trimmedPart;
+                                                    } elseif (strpos($trimmedPart, 'Diteruskan ke:') !== false) {
+                                                        // Extract sub disposisi
+                                                        $subDisposisi = trim(str_replace('Diteruskan ke:', '', $trimmedPart));
+                                                    } elseif (strpos($trimmedPart, 'Tanggal:') !== false) {
+                                                        // Extract tanggal disposisi
+                                                        $tanggalDisposisi = trim(str_replace('Tanggal:', '', $trimmedPart));
+                                                    } elseif (strpos($trimmedPart, 'Catatan:') !== false) {
+                                                        // Extract catatan
+                                                        $catatan = trim(str_replace('Catatan:', '', $trimmedPart));
                                                     } elseif ($index === 0 && !$tujuanDisposisi) {
                                                         $tujuanDisposisi = $trimmedPart;
                                                     } else {
@@ -112,7 +124,28 @@
                                                     </div>
                                                 @endif
 
-                                                {{-- Informasi Lainnya --}}
+                                                {{-- Tampilkan Diteruskan ke --}}
+                                                @if($subDisposisi)
+                                                    <div class="mb-1 text-sm">
+                                                        <strong>Diteruskan ke:</strong> {{ $subDisposisi }}
+                                                    </div>
+                                                @endif
+
+                                                {{-- Tampilkan Tanggal --}}
+                                                @if($tanggalDisposisi)
+                                                    <div class="mb-1 text-sm">
+                                                        <strong>Tanggal:</strong> {{ $tanggalDisposisi }}
+                                                    </div>
+                                                @endif
+
+                                                {{-- Tampilkan Catatan --}}
+                                                @if($catatan)
+                                                    <div class="mb-1 text-sm">
+                                                        <strong>Catatan:</strong> {{ $catatan }}
+                                                    </div>
+                                                @endif
+
+                                                {{-- Informasi Lainnya (fallback untuk data lama) --}}
                                                 @if(count($otherParts) > 0)
                                                     <small class="text-muted d-block">
                                                         @foreach($otherParts as $part)
@@ -875,14 +908,21 @@
                 }
             }
             
-            // 5. Set Catatan
-            if (catatan) {
+            // 5. Set Catatan (setelah semua field lain di-set, termasuk setelah change event disposisi)
+            setTimeout(() => {
                 const catatanInput = document.getElementById('catatan');
                 if (catatanInput) {
-                    catatanInput.value = catatan;
-                    console.log('Pergub - Setting catatan:', catatan);
+                    if (catatan && catatan.trim()) {
+                        catatanInput.value = catatan.trim();
+                        console.log('Pergub - Setting catatan:', catatan.trim());
+                    } else {
+                        catatanInput.value = '';
+                        console.log('Pergub - No catatan data, clearing field');
+                    }
+                } else {
+                    console.error('Pergub - Catatan input element not found');
                 }
-            }
+            }, 250);
             
             // Tampilkan modal
             setTimeout(() => {

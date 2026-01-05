@@ -75,6 +75,9 @@
                                                 $disposisiParts = explode('|', $surat->disposisi);
                                                 $persetujuanKetua = null;
                                                 $tujuanDisposisi = null;
+                                                $subDisposisi = null;
+                                                $tanggalDisposisi = null;
+                                                $catatan = null;
                                                 $otherParts = [];
                                                 
                                                 // Pisahkan status persetujuan dari bagian lainnya
@@ -86,6 +89,15 @@
                                                     } elseif (strpos($trimmedPart, 'Persetujuan Ketua Biro Hukum:') !== false) {
                                                         // Fallback untuk format lama
                                                         $persetujuanKetua = $trimmedPart;
+                                                    } elseif (strpos($trimmedPart, 'Diteruskan ke:') !== false) {
+                                                        // Extract sub disposisi
+                                                        $subDisposisi = trim(str_replace('Diteruskan ke:', '', $trimmedPart));
+                                                    } elseif (strpos($trimmedPart, 'Tanggal:') !== false) {
+                                                        // Extract tanggal disposisi
+                                                        $tanggalDisposisi = trim(str_replace('Tanggal:', '', $trimmedPart));
+                                                    } elseif (strpos($trimmedPart, 'Catatan:') !== false) {
+                                                        // Extract catatan
+                                                        $catatan = trim(str_replace('Catatan:', '', $trimmedPart));
                                                     } elseif ($index === 0 && !$persetujuanKetua) {
                                                         // Jika bagian pertama bukan persetujuan, berarti itu tujuan disposisi
                                                         $tujuanDisposisi = $trimmedPart;
@@ -118,9 +130,30 @@
                                                     </div>
                                                 @endif
                                                 
-                                                {{-- Tampilkan Informasi Lainnya --}}
+                                                {{-- Tampilkan Diteruskan ke --}}
+                                                @if($subDisposisi)
+                                                    <div class="mb-1 text-sm">
+                                                        <strong>Diteruskan ke:</strong> {{ $subDisposisi }}
+                                                    </div>
+                                                @endif
+                                                
+                                                {{-- Tampilkan Tanggal --}}
+                                                @if($tanggalDisposisi)
+                                                    <div class="mb-1 text-sm">
+                                                        <strong>Tanggal:</strong> {{ $tanggalDisposisi }}
+                                                    </div>
+                                                @endif
+                                                
+                                                {{-- Tampilkan Catatan --}}
+                                                @if($catatan)
+                                                    <div class="mb-1 text-sm">
+                                                        <strong>Catatan:</strong> {{ $catatan }}
+                                                    </div>
+                                                @endif
+                                                
+                                                {{-- Tampilkan Informasi Lainnya (fallback untuk data lama) --}}
                                                 @if(count($otherParts) > 0)
-                                                    <small class="text-muted d-block">
+                                                    <small class="text-muted d-block text-left" style="text-align: left !important;">
                                                         @foreach($otherParts as $part)
                                                             {{ $part }}
                                                             @if(!$loop->last)<br>@endif
@@ -738,16 +771,16 @@
             form.action = `/surat-masuk/${id}/disposisi`;
             document.getElementById('disposisiSuratId').value = id;
             
-            // Reset form terlebih dahulu
-            form.reset();
-            document.getElementById('subDisposisiContainer').style.display = 'none';
-            
-            // Ambil data dari data attribute button (tanpa API)
+            // Ambil data dari data attribute button (tanpa API) SEBELUM reset form
             const persetujuan = buttonElement && buttonElement.getAttribute('data-persetujuan') ? buttonElement.getAttribute('data-persetujuan') : 'Belum';
             const tujuan = buttonElement && buttonElement.getAttribute('data-tujuan') ? buttonElement.getAttribute('data-tujuan') : '';
             const subDisposisi = buttonElement && buttonElement.getAttribute('data-sub-disposisi') ? buttonElement.getAttribute('data-sub-disposisi') : '';
             const tanggal = buttonElement && buttonElement.getAttribute('data-tanggal') ? buttonElement.getAttribute('data-tanggal') : '';
             const catatan = buttonElement && buttonElement.getAttribute('data-catatan') ? buttonElement.getAttribute('data-catatan') : '';
+            
+            // Reset form setelah mengambil data
+            form.reset();
+            document.getElementById('subDisposisiContainer').style.display = 'none';
             
             console.log('Data from button attributes:', {
                 persetujuan,
@@ -966,14 +999,21 @@
                 }
             }
             
-            // 5. Set Catatan
-            if (catatan) {
+            // 5. Set Catatan (setelah semua field lain di-set, termasuk setelah change event disposisi)
+            setTimeout(() => {
                 const catatanInput = document.getElementById('catatan');
                 if (catatanInput) {
-                    catatanInput.value = catatan;
-                    console.log('Setting catatan:', catatan);
+                    if (catatan && catatan.trim()) {
+                        catatanInput.value = catatan.trim();
+                        console.log('Setting catatan:', catatan.trim());
+                    } else {
+                        catatanInput.value = '';
+                        console.log('No catatan data, clearing field');
+                    }
+                } else {
+                    console.error('Catatan input element not found');
                 }
-            }
+            }, 250);
             
             // Tampilkan modal
             setTimeout(() => {

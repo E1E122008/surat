@@ -189,14 +189,29 @@ class SuratMasukController extends Controller
 
     public function destroy(SuratMasuk $suratMasuk)
     {
-        if ($suratMasuk->lampiran) {
-            Storage::disk('public')->delete($suratMasuk->lampiran);
-        }
+        try {
+            // Delete file if exists
+            if ($suratMasuk->lampiran) {
+                $lampiranData = json_decode($suratMasuk->lampiran, true);
+                if (is_array($lampiranData)) {
+                    foreach ($lampiranData as $lampiran) {
+                        if (isset($lampiran['path']) && Storage::disk('public')->exists($lampiran['path'])) {
+                            Storage::disk('public')->delete($lampiran['path']);
+                        }
+                    }
+                }
+            }
+                
+            // Delete the SuratMasuk record
+            $suratMasuk->delete();
 
-        $suratMasuk->delete();
-
-        return redirect()->route('surat-masuk.index')
+            return redirect()->route('surat-masuk.index')
                 ->with('success', 'Data surat masuk berhasil dihapus!');
+                
+        } catch (\Exception $e) {
+            return redirect()->route('surat-masuk.index')
+                ->with('error', 'Gagal menghapus surat masuk: ' . $e->getMessage());
+        }
     }
 
     public function export() 

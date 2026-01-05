@@ -135,14 +135,35 @@ class PergubController extends Controller
                 'status' => 'nullable|string|max:255',
             ]);
 
+            // Proses lampiran - form edit menggunakan single file input (name="lampiran")
             if ($request->hasFile('lampiran')) {
+                // Validasi file hanya jika ada file yang diupload
+                $request->validate([
+                    'lampiran' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
+                ]);
+                
+                // Hapus file lama jika ada
                 if ($pergub->lampiran) {
-                    Storage::disk('public')->delete($pergub->lampiran);
+                    $lampiranLama = json_decode($pergub->lampiran, true);
+                    if (is_array($lampiranLama)) {
+                        foreach ($lampiranLama as $lampiran) {
+                            if (isset($lampiran['path']) && Storage::disk('public')->exists($lampiran['path'])) {
+                                Storage::disk('public')->delete($lampiran['path']);
+                            }
+                        }
+                    }
                 }
-
+                
                 $file = $request->file('lampiran');
-                $path = $file->store('lampiran/pergub', 'public');
-                $validated['lampiran'] = $path;
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('lampiran/pergub', $fileName, 'public');
+                $validated['lampiran'] = json_encode([[
+                    'path' => $path,
+                    'name' => $file->getClientOriginalName(),
+                ]]);
+            } else {
+                // Jika tidak ada file baru, pertahankan lampiran yang lama
+                $validated['lampiran'] = $pergub->lampiran;
             }
 
             $pergub->update($validated);
@@ -201,15 +222,30 @@ class PergubController extends Controller
     }
 
     public function destroy(Pergub $pergub)
-    {   
-        if ($pergub->lampiran) {
-            Storage::disk('public')->delete($pergub->lampiran);
+    {
+        try {
+            // Delete file if exists
+            if ($pergub->lampiran) {
+                $lampiranData = json_decode($pergub->lampiran, true);
+                if (is_array($lampiranData)) {
+                    foreach ($lampiranData as $lampiran) {
+                        if (isset($lampiran['path']) && Storage::disk('public')->exists($lampiran['path'])) {
+                            Storage::disk('public')->delete($lampiran['path']);
+                        }
+                    }
+                }
+            }
+                
+            // Delete the Pergub record
+            $pergub->delete();
+
+            return redirect()->route('draft-phd.pergub.index')
+                ->with('success', 'Pergub berhasil dihapus');
+                
+        } catch (\Exception $e) {
+            return redirect()->route('draft-phd.pergub.index')
+                ->with('error', 'Gagal menghapus Pergub: ' . $e->getMessage());
         }
-
-        $pergub->delete();
-
-        return redirect()->route('draft-phd.pergub.index')
-            ->with('success', 'Pergub berhasil dihapus');
     }
 
     public function export()

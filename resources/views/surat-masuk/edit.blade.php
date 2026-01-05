@@ -113,7 +113,11 @@
                                                             {{ $file['name'] }}
                                                         </a>
                                                         <p class="text-xs text-gray-500 mt-1">
-                                                            {{ strtoupper($ext) }} • {{ number_format(filesize(public_path('storage/' . $file['path'])) / 1024, 1) }} KB
+                                                            @php
+                                                                $filePath = public_path('storage/' . $file['path']);
+                                                                $fileSize = file_exists($filePath) ? number_format(filesize($filePath) / 1024, 1) . ' KB' : 'File tidak ditemukan';
+                                                            @endphp
+                                                            {{ strtoupper($ext) }} • {{ $fileSize }}
                                                         </p>
                                                     </div>
                                                 </div>

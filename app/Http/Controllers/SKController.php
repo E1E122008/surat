@@ -45,6 +45,7 @@ class SKController extends Controller
     public function store(Request $request)
     { 
         try {
+            // Validasi tanpa lampiran terlebih dahulu
             $validated = $request->validate([
                 'no_agenda' => 'nullable|string|max:255',
                 'no_surat' => 'required|string|max:255|unique:sks,no_surat',
@@ -52,12 +53,27 @@ class SKController extends Controller
                 'tanggal_surat' => 'required|date',
                 'tanggal_terima' => 'required|date',
                 'perihal' => 'required|string|max:255',
-                'lampiran' => 'nullable|array', // Changed to array
-                'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152', // Added validation for array items
                 'catatan' => 'nullable|string',
                 'disposisi' => 'nullable|string',
                 'admin_notes' => 'nullable|string',
             ]);
+
+            // Validasi lampiran hanya jika ada file yang diupload
+            // Form create menggunakan array (lampiran[]), jadi validasi sebagai array
+            if ($request->hasFile('lampiran')) {
+                $files = $request->file('lampiran');
+                // Pastikan files adalah array
+                if (!is_array($files)) {
+                    $files = [$files];
+                }
+                // Validasi sebagai array hanya jika ada file
+                if (count($files) > 0) {
+                    $request->validate([
+                        'lampiran' => 'array',
+                        'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
+                    ]);
+                }
+            }
 
             $validated['submitted_by'] = Auth::id();
 
@@ -135,6 +151,7 @@ class SKController extends Controller
     public function update(Request $request, SK $sk)
     {
         try {
+            // Validasi tanpa lampiran terlebih dahulu
             $validated = $request->validate([
                 'no_agenda' => 'nullable|string|max:255',
                 'no_surat' => 'required|string|max:255',
@@ -142,29 +159,29 @@ class SKController extends Controller
                 'tanggal_surat' => 'required|date',
                 'tanggal_terima' => 'required|date',
                 'perihal' => 'required|string|max:255',
-                'lampiran' => 'nullable|array', // Changed to array
-                'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152', // Added validation for array items
                 'catatan' => 'nullable|string',
                 'disposisi' => 'nullable|string',
                 'admin_notes' => 'nullable|string',
                 'status' => 'nullable|string|max:255',
             ]);
 
-            $lampiranPaths = [];
+            // Proses lampiran - form edit menggunakan single file input (name="lampiran")
             if ($request->hasFile('lampiran')) {
-                $files = $request->file('lampiran');
-                if (!is_array($files)) {
-                    $files = [$files];
-                }
-                foreach ($files as $file) {
-                    $fileName = time() . '_' . $file->getClientOriginalName();
-                    $path = $file->storeAs('lampiran/sk', $fileName, 'public');
-                    $lampiranPaths[] = [
-                        'path' => $path,
-                        'name' => $file->getClientOriginalName(),
-                    ];
-                }
-                $validated['lampiran'] = json_encode($lampiranPaths);
+                // Validasi file hanya jika ada file yang diupload
+                $request->validate([
+                    'lampiran' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
+                ]);
+                
+                $file = $request->file('lampiran');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('lampiran/sk', $fileName, 'public');
+                $validated['lampiran'] = json_encode([[
+                    'path' => $path,
+                    'name' => $file->getClientOriginalName(),
+                ]]);
+            } else {
+                // Jika tidak ada file baru, pertahankan lampiran yang lama
+                $validated['lampiran'] = $sk->lampiran;
             }
 
             $sk->update($validated);
