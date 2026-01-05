@@ -147,7 +147,20 @@
                                                 <i class="fas fa-cog"></i> Aksi
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li><button class="dropdown-item" type="button" onclick="openDisposisiModal({{ $perda->id }})"><i class="fas fa-sync-alt fa-fw me-2 text-warning"></i>Disposisi</button></li>
+                                                <li>
+                                                    <button 
+                                                        class="dropdown-item" 
+                                                        type="button" 
+                                                        data-surat-id="{{ $perda->id }}"
+                                                        data-persetujuan="{{ isset($persetujuanKetua) && $persetujuanKetua ? $persetujuanKetua : 'Belum' }}"
+                                                        data-tujuan="{{ isset($tujuanDisposisi) && $tujuanDisposisi ? htmlspecialchars($tujuanDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
+                                                        data-sub-disposisi="{{ isset($subDisposisi) && $subDisposisi ? htmlspecialchars($subDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
+                                                        data-tanggal="{{ isset($tanggalDisposisi) && $tanggalDisposisi ? htmlspecialchars($tanggalDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
+                                                        data-catatan="{{ isset($catatan) && $catatan ? htmlspecialchars($catatan, ENT_QUOTES, 'UTF-8') : '' }}"
+                                                        onclick="openDisposisiModal({{ $perda->id }}, this)">
+                                                        <i class="fas fa-sync-alt fa-fw me-2 text-warning"></i>Disposisi
+                                                    </button>
+                                                </li>
                                                 <li><button class="dropdown-item" type="button" onclick="openStatusModal({{ $perda->id }}, '{{ $perda->status }}')"><i class="fas fa-check-circle fa-fw me-2 text-success"></i>Status</button></li>
                                                 <li><a class="dropdown-item" href="{{ route('draft-phd.perda.detail', $perda->id) }}"><i class="fas fa-eye fa-fw me-2 text-primary"></i>Detail</a></li>
                                                 <li><hr class="dropdown-divider"></li>
@@ -629,74 +642,245 @@
             document.getElementById('tanggal_disposisi').value = today;
         }
 
-        function openDisposisiModal(id) {
+        function openDisposisiModal(id, buttonElement) {
+            // Validasi parameter
+            if (!id) {
+                console.error('Perda - ID tidak valid');
+                return;
+            }
+            
             const form = document.getElementById('disposisiForm');
+            if (!form) {
+                console.error('Perda - Form tidak ditemukan');
+                return;
+            }
+            
             form.action = `/draft-phd/perda/${id}/disposisi`;
-            document.getElementById('disposisiPerdaId').value = id;
+            const suratIdInput = document.getElementById('disposisiPerdaId');
+            if (suratIdInput) {
+                suratIdInput.value = id;
+            }
             
-            // Reset form dan sub disposisi
+            // Reset form terlebih dahulu
             form.reset();
-            document.getElementById('subDisposisiContainer').style.display = 'none';
+            const subDisposisiContainer = document.getElementById('subDisposisiContainer');
+            if (subDisposisiContainer) {
+                subDisposisiContainer.style.display = 'none';
+            }
             
-            // Set tanggal default
-            setDefaultDate();
+            // Ambil data dari data attribute button (tanpa API)
+            const persetujuan = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute('data-persetujuan') : 'Belum';
+            const tujuan = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute('data-tujuan') : '';
+            const subDisposisi = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute('data-sub-disposisi') : '';
+            const tanggal = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute('data-tanggal') : '';
+            const catatan = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute('data-catatan') : '';
             
-            // AJAX dapatkan disposisi dan status persetujuan secara real-time
-            fetch(`/api/perda/${id}`)
-                .then(res => res.json())
-                .then(data => {
-                    let status = 'Belum Disetujui';
-                    let isAdmin = false;
-                    @if(auth()->user() && auth()->user()->role === 'admin')
-                        isAdmin = true;
-                    @endif
-                    
-                    // Cek format baru: "Sudah di Setujui Ketua Biro Hukum" atau "Belum di Setujui Ketua Biro Hukum"
-                    if (data && data.disposisi) {
-                        if (data.disposisi.match(/(Sudah|sudah)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i)) {
-                            status = 'Sudah Disetujui';
-                            if(isAdmin) {
-                                document.getElementById('radioDisetujui').checked = true;
-                                document.getElementById('radioBelum').checked = false;
-                            }
-                        } else if (data.disposisi.match(/(Belum|belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i)) {
-                            status = 'Belum Disetujui';
-                            if(isAdmin) {
-                                document.getElementById('radioDisetujui').checked = false;
-                                document.getElementById('radioBelum').checked = true;
-                            }
-                        } else {
-                            // Fallback untuk format lama
-                            if (data.disposisi.includes('Persetujuan Ketua Biro Hukum: sudah') || data.disposisi.includes('Persetujuan Ketua Biro Hukum: Sudah')) {
-                                status = 'Sudah Disetujui';
-                                if(isAdmin) {
-                                    document.getElementById('radioDisetujui').checked = true;
-                                    document.getElementById('radioBelum').checked = false;
-                                }
-                            } else {
-                                if(isAdmin) {
-                                    document.getElementById('radioDisetujui').checked = false;
-                                    document.getElementById('radioBelum').checked = true;
-                                }
-                            }
-                        }
+            console.log('Perda - Data from button attributes:', {
+                persetujuan,
+                tujuan,
+                subDisposisi,
+                tanggal,
+                catatan
+            });
+            
+            let isAdmin = false;
+            @if(auth()->user() && auth()->user()->role === 'admin')
+                isAdmin = true;
+            @endif
+            
+            // 1. Set Status Persetujuan Ketua Biro Hukum
+            let persetujuanValue = 'Belum';
+            if (persetujuan) {
+                if (persetujuan.toLowerCase().includes('sudah')) {
+                    persetujuanValue = 'Sudah';
+                } else if (persetujuan.toLowerCase().includes('belum')) {
+                    persetujuanValue = 'Belum';
+                } else {
+                    persetujuanValue = persetujuan;
+                }
+            }
+            
+            let status = persetujuanValue === 'Sudah' ? 'Sudah Disetujui' : 'Belum Disetujui';
+            console.log('Perda - Setting persetujuan:', persetujuanValue, '->', status);
+            
+            if (isAdmin) {
+                const radioDisetujui = document.getElementById('radioDisetujui');
+                const radioBelum = document.getElementById('radioBelum');
+                if (radioDisetujui && radioBelum) {
+                    if (persetujuanValue === 'Sudah') {
+                        radioDisetujui.checked = true;
+                        radioBelum.checked = false;
+                        console.log('Perda - Radio Sudah checked');
                     } else {
-                        if(isAdmin) {
-                            document.getElementById('radioDisetujui').checked = false;
-                            document.getElementById('radioBelum').checked = true;
+                        radioDisetujui.checked = false;
+                        radioBelum.checked = true;
+                        console.log('Perda - Radio Belum checked');
+                    }
+                }
+            } else {
+                const statusEl = document.getElementById('statusPersetujuanPerda');
+                if (statusEl) {
+                    statusEl.innerText = status;
+                }
+            }
+            
+            // 2. Set Tujuan Disposisi
+            if (tujuan) {
+                const disposisiSelect = document.getElementById('disposisi');
+                if (disposisiSelect) {
+                    const tujuanValue = tujuan.trim();
+                    console.log('Perda - Setting tujuan disposisi:', tujuanValue);
+                    
+                    // Cari option yang cocok
+                    let found = false;
+                    for (let i = 0; i < disposisiSelect.options.length; i++) {
+                        const option = disposisiSelect.options[i];
+                        if (option.value === tujuanValue || option.textContent.trim() === tujuanValue) {
+                            disposisiSelect.value = option.value;
+                            found = true;
+                            console.log('Perda - Found matching option:', option.value);
+                            break;
                         }
                     }
                     
-                    const statusEl = document.getElementById('statusPersetujuanPerda');
-                    if (statusEl) {
-                        statusEl.innerText = status;
+                    // Jika tidak ditemukan exact match, coba partial match
+                    if (!found) {
+                        for (let i = 0; i < disposisiSelect.options.length; i++) {
+                            const option = disposisiSelect.options[i];
+                            if (option.value.includes(tujuanValue) || tujuanValue.includes(option.value) ||
+                                option.textContent.includes(tujuanValue) || tujuanValue.includes(option.textContent.trim())) {
+                                disposisiSelect.value = option.value;
+                                found = true;
+                                console.log('Perda - Found partial matching option:', option.value);
+                                break;
+                            }
+                        }
                     }
-                })
-                .catch(error => {
-                    console.error('Error fetching disposisi:', error);
-                });
+                    
+                    // Trigger change event untuk menampilkan sub disposisi jika ada
+                    setTimeout(() => {
+                        const changeEvent = new Event('change', { bubbles: true });
+                        disposisiSelect.dispatchEvent(changeEvent);
+                        
+                        // 3. Set Diteruskan Kepada (sub_disposisi) setelah change event
+                        if (subDisposisi && subDisposisi.trim()) {
+                            setTimeout(() => {
+                                const subDisposisiContainer = document.getElementById('subDisposisiContainer');
+                                const subDisposisiSelect = document.getElementById('sub_disposisi');
+                                
+                                console.log('Perda - Setting sub_disposisi:', subDisposisi);
+                                
+                                if (subDisposisiContainer && subDisposisiSelect) {
+                                    subDisposisiContainer.style.display = 'block';
+                                    
+                                    // Cari option yang cocok
+                                    let found = false;
+                                    const subDisposisiValue = subDisposisi.trim();
+                                    
+                                    for (let i = 0; i < subDisposisiSelect.options.length; i++) {
+                                        const option = subDisposisiSelect.options[i];
+                                        if (option.value === subDisposisiValue || 
+                                            option.textContent.trim() === subDisposisiValue ||
+                                            option.value.includes(subDisposisiValue) ||
+                                            option.textContent.includes(subDisposisiValue)) {
+                                            subDisposisiSelect.value = option.value;
+                                            found = true;
+                                            console.log('Perda - Found matching sub_disposisi option:', option.value);
+                                            break;
+                                        }
+                                    }
+                                    
+                                    if (!found && subDisposisiValue) {
+                                        // Tambahkan option baru jika tidak ada
+                                        const newOption = document.createElement('option');
+                                        newOption.value = subDisposisiValue;
+                                        newOption.textContent = subDisposisiValue;
+                                        subDisposisiSelect.appendChild(newOption);
+                                        subDisposisiSelect.value = subDisposisiValue;
+                                        console.log('Perda - Added new sub_disposisi option:', subDisposisiValue);
+                                    }
+                                }
+                            }, 200);
+                        }
+                    }, 100);
+                }
+            }
             
-            new bootstrap.Modal(document.getElementById('disposisiModal')).show();
+            // 4. Set Tanggal Disposisi
+            const tanggalInput = document.getElementById('tanggal_disposisi');
+            if (tanggalInput) {
+                if (tanggal && tanggal.trim()) {
+                    let tanggalValue = tanggal.trim();
+                    console.log('Perda - Setting tanggal disposisi from data:', tanggalValue);
+                    
+                    // Jika format YYYY-MM-DD sudah benar, gunakan langsung
+                    if (tanggalValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                        tanggalInput.value = tanggalValue;
+                        console.log('Perda - Tanggal set to (YYYY-MM-DD):', tanggalValue);
+                    } else {
+                        // Coba parse format lain
+                        const dateParts = tanggalValue.split(/[-\/]/);
+                        if (dateParts.length === 3) {
+                            let day, month, year;
+                            
+                            if (dateParts[2].length === 4) {
+                                if (parseInt(dateParts[0]) > 12) {
+                                    day = dateParts[0].padStart(2, '0');
+                                    month = dateParts[1].padStart(2, '0');
+                                    year = dateParts[2];
+                                } else {
+                                    month = dateParts[0].padStart(2, '0');
+                                    day = dateParts[1].padStart(2, '0');
+                                    year = dateParts[2];
+                                }
+                            } else if (dateParts[0].length === 4) {
+                                year = dateParts[0];
+                                month = dateParts[1].padStart(2, '0');
+                                day = dateParts[2].padStart(2, '0');
+                            } else {
+                                day = dateParts[0].padStart(2, '0');
+                                month = dateParts[1].padStart(2, '0');
+                                year = dateParts[2];
+                            }
+                            
+                            tanggalInput.value = `${year}-${month}-${day}`;
+                            console.log('Perda - Converted tanggal:', tanggalInput.value);
+                        } else {
+                            console.log('Perda - Invalid tanggal format, using default');
+                            setDefaultDate();
+                        }
+                    }
+                } else {
+                    console.log('Perda - No tanggal data, using default');
+                    setDefaultDate();
+                }
+            }
+            
+            // 5. Set Catatan
+            if (catatan) {
+                const catatanInput = document.getElementById('catatan');
+                if (catatanInput) {
+                    catatanInput.value = catatan;
+                    console.log('Perda - Setting catatan:', catatan);
+                }
+            }
+            
+            // Tampilkan modal
+            setTimeout(() => {
+                const modalElement = document.getElementById('disposisiModal');
+                if (modalElement) {
+                    const modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                    
+                    // Log final values setelah modal ditampilkan
+                    setTimeout(() => {
+                        console.log('Perda - Modal shown, final values:');
+                        console.log('Perda - Disposisi:', document.getElementById('disposisi')?.value);
+                        console.log('Perda - Tanggal:', document.getElementById('tanggal_disposisi')?.value);
+                        console.log('Perda - Catatan:', document.getElementById('catatan')?.value);
+                    }, 100);
+                }
+            }, 100);
         }
 
         // Radio button listener (ADMIN)

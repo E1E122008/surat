@@ -15,10 +15,11 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class SuratMasukController extends Controller
 {
-    // API akses disposisi surat masuk (khusus modal)
+    // API akses disposisi surat masuk (disederhanakan - hanya untuk radio button listener)
     public function apiShow($id)
     {
         $surat = SuratMasuk::findOrFail($id);
+        
         return response()->json([
             'id' => $surat->id,
             'disposisi' => $surat->disposisi,

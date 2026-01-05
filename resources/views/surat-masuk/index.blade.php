@@ -101,7 +101,7 @@
                                                     $otherParts = array_slice($otherParts, 1);
                                                 }
                                             @endphp
-                                            <div class="text-left">
+                                            <div class="text-center">
                                                 {{-- Tampilkan Status Persetujuan Terlebih Dahulu --}}
                                                 @if($persetujuanKetua)
                                                     <div class="mb-2">
@@ -155,7 +155,15 @@
                                             </button>
                                             <ul class="dropdown-menu">
                                                 <li>
-                                                    <button class="dropdown-item" type="button" onclick="openDisposisiModal({{ $surat->id }})">
+                                                    <button class="dropdown-item" type="button" 
+                                                        data-surat-id="{{ $surat->id }}"
+                                                        data-persetujuan="{{ isset($persetujuanKetua) && $persetujuanKetua ? $persetujuanKetua : 'Belum' }}"
+                                                        data-tujuan="{{ isset($tujuanDisposisi) && $tujuanDisposisi ? htmlspecialchars($tujuanDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
+                                                        data-sub-disposisi="{{ isset($subDisposisi) && $subDisposisi ? htmlspecialchars($subDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
+                                                        data-tanggal="{{ isset($tanggalDisposisi) && $tanggalDisposisi ? htmlspecialchars($tanggalDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
+                                                        data-catatan="{{ isset($catatan) && $catatan ? htmlspecialchars($catatan, ENT_QUOTES, 'UTF-8') : '' }}"
+                                                        data-disposisi-full="{{ $surat->disposisi ? htmlspecialchars($surat->disposisi, ENT_QUOTES, 'UTF-8') : '' }}"
+                                                        onclick="openDisposisiModal({{ $surat->id }}, this)">
                                                         <i class="fas fa-sync-alt fa-fw me-2 text-warning"></i>Disposisi
                                                     </button>
                                                 </li>
@@ -265,7 +273,8 @@
 @else
     <span id="statusPersetujuan" class="badge bg-secondary"></span>
 @endif
-<input type="hidden" id="disposisiSuratId" name="disposisiSuratId" />
+                        <input type="hidden" id="disposisiSuratId" name="disposisiSuratId" />
+                        <input type="hidden" id="currentDisposisi" name="currentDisposisi" />
                         </div>
                         <div class="mb-3">
                             <label for="disposisi" class="form-label">Tujuan Disposisi</label>
@@ -713,106 +722,322 @@
 
         // Tambahkan fungsi untuk set tanggal otomatis
         function setDefaultDate() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('tanggal_disposisi').value = today;
+            const tanggalInput = document.getElementById('tanggal_disposisi');
+            if (tanggalInput) {
+                const today = new Date().toISOString().split('T')[0];
+                tanggalInput.value = today;
+                console.log('Default date set:', today);
+            }
         }
 
         // Panggil fungsi saat modal disposisi dibuka
-        function openDisposisiModal(id) {
+        function openDisposisiModal(id, buttonElement) {
             const form = document.getElementById('disposisiForm');
             form.action = `/surat-masuk/${id}/disposisi`;
             document.getElementById('disposisiSuratId').value = id;
-            // Reset form dan sub disposisi
+            
+            // Reset form terlebih dahulu
             form.reset();
             document.getElementById('subDisposisiContainer').style.display = 'none';
-            // Set tanggal default
-            setDefaultDate();
-            // AJAX dapatkan disposisi dan status persetujuan secara real-time
-            fetch(`/api/surat-masuk/${id}`)
-                .then(res => res.json())
-                .then(data => {
-                    let status = 'Belum Disetujui';
-                    let isAdmin = false;
-                    @if(auth()->user() && auth()->user()->role === 'admin')
-                        isAdmin = true;
-                    @endif
-                    // Cek format baru: "Sudah di Setujui Ketua Biro Hukum" atau "Belum di Setujui Ketua Biro Hukum"
-                    if (data && data.disposisi) {
-                        if (data.disposisi.match(/(Sudah|sudah)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i)) {
-                            status = 'Sudah Disetujui';
-                            if(isAdmin) {
-                                document.getElementById('radioDisetujui').checked = true;
-                                document.getElementById('radioBelum').checked = false;
+            
+            // Ambil data dari data attribute button (tanpa API)
+            const persetujuan = buttonElement && buttonElement.getAttribute('data-persetujuan') ? buttonElement.getAttribute('data-persetujuan') : 'Belum';
+            const tujuan = buttonElement && buttonElement.getAttribute('data-tujuan') ? buttonElement.getAttribute('data-tujuan') : '';
+            const subDisposisi = buttonElement && buttonElement.getAttribute('data-sub-disposisi') ? buttonElement.getAttribute('data-sub-disposisi') : '';
+            const tanggal = buttonElement && buttonElement.getAttribute('data-tanggal') ? buttonElement.getAttribute('data-tanggal') : '';
+            const catatan = buttonElement && buttonElement.getAttribute('data-catatan') ? buttonElement.getAttribute('data-catatan') : '';
+            
+            console.log('Data from button attributes:', {
+                persetujuan,
+                tujuan,
+                subDisposisi,
+                tanggal,
+                catatan
+            });
+            
+            // Simpan disposisi lengkap untuk radio button listener
+            const currentDisposisiInput = document.getElementById('currentDisposisi');
+            if (currentDisposisiInput && buttonElement) {
+                // Ambil disposisi lengkap dari data attribute
+                const disposisiFull = buttonElement.getAttribute('data-disposisi-full');
+                if (disposisiFull) {
+                    currentDisposisiInput.value = disposisiFull;
+                } else {
+                    // Fallback: ambil dari API jika tidak ada di data attribute
+                    fetch(`/api/surat-masuk/${id}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data && data.disposisi) {
+                                currentDisposisiInput.value = data.disposisi;
                             }
-                        } else if (data.disposisi.match(/(Belum|belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i)) {
-                            status = 'Belum Disetujui';
-                            if(isAdmin) {
-                                document.getElementById('radioDisetujui').checked = false;
-                                document.getElementById('radioBelum').checked = true;
-                            }
-                        } else {
-                            // Fallback untuk format lama
-                            if (data.disposisi.includes('Persetujuan Ketua Biro Hukum: sudah') || data.disposisi.includes('Persetujuan Ketua Biro Hukum: Sudah')) {
-                                status = 'Sudah Disetujui';
-                                if(isAdmin) {
-                                    document.getElementById('radioDisetujui').checked = true;
-                                    document.getElementById('radioBelum').checked = false;
-                                }
-                            } else {
-                                if(isAdmin) {
-                                    document.getElementById('radioDisetujui').checked = false;
-                                    document.getElementById('radioBelum').checked = true;
-                                }
-                            }
-                        }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching disposisi:', error);
+                        });
+                }
+            }
+            
+            let isAdmin = false;
+            @if(auth()->user() && auth()->user()->role === 'admin')
+                isAdmin = true;
+            @endif
+            
+            // 1. Set Status Persetujuan Ketua Biro Hukum
+            // Normalisasi persetujuan (bisa "Sudah", "Belum", atau "Sudah di Setujui Ketua Biro Hukum", dll)
+            let persetujuanValue = 'Belum';
+            if (persetujuan) {
+                if (persetujuan.toLowerCase().includes('sudah')) {
+                    persetujuanValue = 'Sudah';
+                } else if (persetujuan.toLowerCase().includes('belum')) {
+                    persetujuanValue = 'Belum';
+                } else {
+                    persetujuanValue = persetujuan; // Ambil apa adanya jika tidak match
+                }
+            }
+            
+            let status = persetujuanValue === 'Sudah' ? 'Sudah Disetujui' : 'Belum Disetujui';
+            console.log('Setting persetujuan:', persetujuanValue, '->', status);
+            
+            if (isAdmin) {
+                const radioDisetujui = document.getElementById('radioDisetujui');
+                const radioBelum = document.getElementById('radioBelum');
+                if (radioDisetujui && radioBelum) {
+                    if (persetujuanValue === 'Sudah') {
+                        radioDisetujui.checked = true;
+                        radioBelum.checked = false;
+                        console.log('Radio Sudah checked');
                     } else {
-                        if(isAdmin) {
-                            document.getElementById('radioDisetujui').checked = false;
-                            document.getElementById('radioBelum').checked = true;
+                        radioDisetujui.checked = false;
+                        radioBelum.checked = true;
+                        console.log('Radio Belum checked');
+                    }
+                }
+            } else {
+                const statusEl = document.getElementById('statusPersetujuan');
+                if (statusEl) {
+                    statusEl.innerText = status;
+                }
+            }
+            
+            // 2. Set Tujuan Disposisi
+            if (tujuan) {
+                const disposisiSelect = document.getElementById('disposisi');
+                if (disposisiSelect) {
+                    const tujuanValue = tujuan.trim();
+                    console.log('Setting tujuan disposisi:', tujuanValue);
+                    
+                    // Cari option yang cocok
+                    let found = false;
+                    for (let i = 0; i < disposisiSelect.options.length; i++) {
+                        const option = disposisiSelect.options[i];
+                        if (option.value === tujuanValue || option.textContent.trim() === tujuanValue) {
+                            disposisiSelect.value = option.value;
+                            found = true;
+                            console.log('Found matching option:', option.value);
+                            break;
                         }
                     }
-                    document.getElementById('statusPersetujuan').innerText = status;
-                });
-            new bootstrap.Modal(document.getElementById('disposisiModal')).show();
+                    
+                    // Jika tidak ditemukan exact match, coba partial match
+                    if (!found) {
+                        for (let i = 0; i < disposisiSelect.options.length; i++) {
+                            const option = disposisiSelect.options[i];
+                            if (option.value.includes(tujuanValue) || tujuanValue.includes(option.value) ||
+                                option.textContent.includes(tujuanValue) || tujuanValue.includes(option.textContent.trim())) {
+                                disposisiSelect.value = option.value;
+                                found = true;
+                                console.log('Found partial matching option:', option.value);
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Trigger change event untuk menampilkan sub disposisi jika ada
+                    setTimeout(() => {
+                        const changeEvent = new Event('change', { bubbles: true });
+                        disposisiSelect.dispatchEvent(changeEvent);
+                        
+                        // 3. Set Diteruskan Kepada (sub_disposisi) setelah change event
+                        if (subDisposisi) {
+                            setTimeout(() => {
+                                const subDisposisiContainer = document.getElementById('subDisposisiContainer');
+                                const subDisposisiSelect = document.getElementById('sub_disposisi');
+                                
+                                if (subDisposisiContainer && subDisposisiSelect) {
+                                    subDisposisiContainer.style.display = 'block';
+                                    
+                                    // Cari option yang cocok
+                                    let found = false;
+                                    for (let i = 0; i < subDisposisiSelect.options.length; i++) {
+                                        if (subDisposisiSelect.options[i].value === subDisposisi || 
+                                            subDisposisiSelect.options[i].textContent.trim() === subDisposisi) {
+                                            subDisposisiSelect.value = subDisposisiSelect.options[i].value;
+                                            found = true;
+                                            break;
+                                        }
+                                    }
+                                    
+                                    if (!found && subDisposisi) {
+                                        // Tambahkan option baru jika tidak ada
+                                        const newOption = document.createElement('option');
+                                        newOption.value = subDisposisi;
+                                        newOption.textContent = subDisposisi;
+                                        subDisposisiSelect.appendChild(newOption);
+                                        subDisposisiSelect.value = subDisposisi;
+                                    }
+                                }
+                            }, 100);
+                        }
+                    }, 50);
+                }
+            }
+            
+            // 4. Set Tanggal Disposisi (PENTING: gunakan data dari database jika ada)
+            const tanggalInput = document.getElementById('tanggal_disposisi');
+            if (tanggalInput) {
+                if (tanggal && tanggal.trim()) {
+                    let tanggalValue = tanggal.trim();
+                    console.log('Setting tanggal disposisi from data:', tanggalValue);
+                    
+                    // Jika format YYYY-MM-DD sudah benar, gunakan langsung
+                    if (tanggalValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                        tanggalInput.value = tanggalValue;
+                        console.log('Tanggal set to (YYYY-MM-DD):', tanggalValue);
+                    } else {
+                        // Coba parse format lain (DD/MM/YYYY, DD-MM-YYYY, dll)
+                        const dateParts = tanggalValue.split(/[-\/]/);
+                        if (dateParts.length === 3) {
+                            let day, month, year;
+                            
+                            // Cek panjang tahun untuk menentukan format
+                            if (dateParts[2].length === 4) {
+                                // Format DD/MM/YYYY atau MM/DD/YYYY
+                                if (parseInt(dateParts[0]) > 12) {
+                                    // Format DD/MM/YYYY atau DD-MM-YYYY
+                                    day = dateParts[0].padStart(2, '0');
+                                    month = dateParts[1].padStart(2, '0');
+                                    year = dateParts[2];
+                                } else {
+                                    // Format MM/DD/YYYY atau MM-DD-YYYY
+                                    month = dateParts[0].padStart(2, '0');
+                                    day = dateParts[1].padStart(2, '0');
+                                    year = dateParts[2];
+                                }
+                            } else if (dateParts[0].length === 4) {
+                                // Format YYYY-MM-DD atau YYYY/MM/DD
+                                year = dateParts[0];
+                                month = dateParts[1].padStart(2, '0');
+                                day = dateParts[2].padStart(2, '0');
+                            } else {
+                                // Default: asumsikan DD/MM/YYYY
+                                day = dateParts[0].padStart(2, '0');
+                                month = dateParts[1].padStart(2, '0');
+                                year = dateParts[2];
+                            }
+                            
+                            tanggalInput.value = `${year}-${month}-${day}`;
+                            console.log('Converted tanggal:', tanggalInput.value);
+                        } else {
+                            // Fallback: gunakan tanggal hari ini jika format tidak valid
+                            console.log('Invalid tanggal format, using default');
+                            setDefaultDate();
+                        }
+                    }
+                } else {
+                    // Set tanggal default jika tidak ada data
+                    console.log('No tanggal data, using default');
+                    setDefaultDate();
+                }
+            }
+            
+            // 5. Set Catatan
+            if (catatan) {
+                const catatanInput = document.getElementById('catatan');
+                if (catatanInput) {
+                    catatanInput.value = catatan;
+                    console.log('Setting catatan:', catatan);
+                }
+            }
+            
+            // Tampilkan modal
+            setTimeout(() => {
+                const modalElement = document.getElementById('disposisiModal');
+                if (modalElement) {
+                    const modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                    
+                    // Log final values setelah modal ditampilkan
+                    setTimeout(() => {
+                        console.log('Modal shown, final values:');
+                        console.log('Disposisi:', document.getElementById('disposisi')?.value);
+                        console.log('Tanggal:', document.getElementById('tanggal_disposisi')?.value);
+                        console.log('Catatan:', document.getElementById('catatan')?.value);
+                    }, 100);
+                }
+            }, 100);
         }
 
         // Radio button listener (ADMIN)
         if (document.getElementById('radioPersetujuanGroup')) {
             document.getElementById('radioPersetujuanGroup').addEventListener('change', function(e) {
                 const id = document.getElementById('disposisiSuratId').value;
-                fetch(`/api/surat-masuk/${id}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        let disposisiBaru = data.disposisi || '';
-                        let statusSetuju = false;
-                        
-                        if(document.getElementById('radioDisetujui').checked) {
-                            statusSetuju = true;
-                            // Format baru: "Sudah di Setujui Ketua Biro Hukum"
-                            const newFormat = 'Sudah di Setujui Ketua Biro Hukum';
-                            if (disposisiBaru.match(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i)) {
-                                disposisiBaru = disposisiBaru.replace(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i, newFormat);
-                            } else if (disposisiBaru.includes('Persetujuan Ketua Biro Hukum:')) {
-                                // Fallback format lama
-                                disposisiBaru = disposisiBaru.replace(/Persetujuan Ketua Biro Hukum:[^|]*/g, newFormat);
-                            } else {
-                                disposisiBaru = newFormat + (disposisiBaru ? ' | ' + disposisiBaru : '');
-                            }
-                        } else {
-                            // Format baru: "Belum di Setujui Ketua Biro Hukum"
-                            const newFormat = 'Belum di Setujui Ketua Biro Hukum';
-                            if (disposisiBaru.match(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i)) {
-                                disposisiBaru = disposisiBaru.replace(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i, newFormat);
-                            } else if (disposisiBaru.includes('Persetujuan Ketua Biro Hukum:')) {
-                                // Fallback format lama
-                                disposisiBaru = disposisiBaru.replace(/Persetujuan Ketua Biro Hukum:[^|]*/g, newFormat);
-                            } else {
-                                disposisiBaru = newFormat + (disposisiBaru ? ' | ' + disposisiBaru : '');
-                            }
-                        }
-                        sendUpdatePersetujuan(id, disposisiBaru, statusSetuju);
-                    });
+                const currentDisposisiInput = document.getElementById('currentDisposisi');
+                let disposisiBaru = currentDisposisiInput ? currentDisposisiInput.value : '';
+                let statusSetuju = false;
+                
+                // Jika tidak ada disposisi di hidden input, ambil dari API (fallback)
+                if (!disposisiBaru) {
+                    fetch(`/api/surat-masuk/${id}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            disposisiBaru = data.disposisi || '';
+                            updatePersetujuan(id, disposisiBaru);
+                        })
+                        .catch(error => {
+                            console.error('Error fetching disposisi:', error);
+                        });
+                    return;
+                }
+                
+                updatePersetujuan(id, disposisiBaru);
             });
+        }
+        
+        function updatePersetujuan(id, disposisiBaru) {
+            let statusSetuju = false;
+            
+            if(document.getElementById('radioDisetujui').checked) {
+                statusSetuju = true;
+                // Format baru: "Sudah di Setujui Ketua Biro Hukum"
+                const newFormat = 'Sudah di Setujui Ketua Biro Hukum';
+                if (disposisiBaru.match(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i)) {
+                    disposisiBaru = disposisiBaru.replace(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i, newFormat);
+                } else if (disposisiBaru.includes('Persetujuan Ketua Biro Hukum:')) {
+                    // Fallback format lama
+                    disposisiBaru = disposisiBaru.replace(/Persetujuan Ketua Biro Hukum:[^|]*/g, newFormat);
+                } else {
+                    disposisiBaru = newFormat + (disposisiBaru ? ' | ' + disposisiBaru : '');
+                }
+            } else {
+                // Format baru: "Belum di Setujui Ketua Biro Hukum"
+                const newFormat = 'Belum di Setujui Ketua Biro Hukum';
+                if (disposisiBaru.match(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i)) {
+                    disposisiBaru = disposisiBaru.replace(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i, newFormat);
+                } else if (disposisiBaru.includes('Persetujuan Ketua Biro Hukum:')) {
+                    // Fallback format lama
+                    disposisiBaru = disposisiBaru.replace(/Persetujuan Ketua Biro Hukum:[^|]*/g, newFormat);
+                } else {
+                    disposisiBaru = newFormat + (disposisiBaru ? ' | ' + disposisiBaru : '');
+                }
+            }
+            
+            // Update hidden input dengan disposisi baru
+            const currentDisposisiInput = document.getElementById('currentDisposisi');
+            if (currentDisposisiInput) {
+                currentDisposisiInput.value = disposisiBaru;
+            }
+            
+            sendUpdatePersetujuan(id, disposisiBaru, statusSetuju);
         }
 
         function sendUpdatePersetujuan(id, disposisiBaru, statusSetuju) {
