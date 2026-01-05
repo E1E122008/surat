@@ -15,6 +15,17 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class SuratMasukController extends Controller
 {
+    // API akses disposisi surat masuk (khusus modal)
+    public function apiShow($id)
+    {
+        $surat = SuratMasuk::findOrFail($id);
+        return response()->json([
+            'id' => $surat->id,
+            'disposisi' => $surat->disposisi,
+            'status' => $surat->status
+        ]);
+    }
+
     public function index(Request $request)
     {
         $query = SuratMasuk::latest();
@@ -102,7 +113,6 @@ class SuratMasukController extends Controller
 
     public function detail($id)
     {
-        $surat = SuratMasuk::find($id); // Ambil data surat berdasarkan ID
         $surat = SuratMasuk::findOrFail($id);
         return view('surat-masuk.detail', compact('surat'));
     }
@@ -182,7 +192,6 @@ class SuratMasukController extends Controller
             Storage::disk('public')->delete($suratMasuk->lampiran);
         }
 
-
         $suratMasuk->delete();
 
         return redirect()->route('surat-masuk.index')
@@ -233,11 +242,8 @@ class SuratMasukController extends Controller
 
     public function show($id)
     {
-        $surat = SuratMasuk::find($id); // Ambil data surat berdasarkan ID
-        if (!$surat) {
-            return redirect()->route('surat.index')->with('error', 'Surat tidak ditemukan.');
-        }
-        return view('surat-masuk.detail', compact('surat')); // Kirim variabel ke view
+        $surat = SuratMasuk::findOrFail($id);
+        return view('surat-masuk.detail', compact('surat'));
     }
 
     public function status($id)
@@ -270,21 +276,56 @@ class SuratMasukController extends Controller
             $request->validate([
                 'disposisi' => 'required',
                 'tanggal_disposisi' => 'required|date',
-                'catatan' => 'nullable'
+                'catatan' => 'nullable',
+                'persetujuan_ketua' => 'nullable|in:Sudah,Belum,sudah,belum'
             ]);
 
             // Ambil data surat masuk
             $suratMasuk = SuratMasuk::findOrFail($id);
 
-            // Gabungkan data disposisi dalam satu string
-            $disposisiText = $request->disposisi;
+            // Tentukan status persetujuan (prioritas dari form, jika tidak ada ambil dari existing)
+            $statusPersetujuan = 'Belum';
+            if ($request->has('persetujuan_ketua')) {
+                // Normalisasi input (uppercase first letter)
+                $inputValue = ucfirst(strtolower($request->persetujuan_ketua));
+                if (in_array($inputValue, ['Sudah', 'Belum'])) {
+                    $statusPersetujuan = $inputValue;
+                }
+            } elseif ($suratMasuk->disposisi) {
+                // Ambil dari disposisi yang sudah ada - format baru: "Sudah di Setujui Ketua Biro Hukum" atau "Belum di Setujui Ketua Biro Hukum"
+                if (preg_match('/(Sudah|Belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i', $suratMasuk->disposisi, $matches)) {
+                    $statusPersetujuan = ucfirst(strtolower($matches[1]));
+                }
+                // Fallback untuk format lama jika masih ada
+                elseif (preg_match('/Persetujuan Ketua Biro Hukum:\s*(Sudah|Belum|sudah|belum)/i', $suratMasuk->disposisi, $matches)) {
+                    $statusPersetujuan = ucfirst(strtolower($matches[1]));
+                }
+            }
+
+            // Format disposisi: Status Persetujuan terlebih dahulu, kemudian informasi lainnya
+            $disposisiParts = [];
+            
+            // 1. Status Persetujuan Ketua Biro Hukum (pertama)
+            $disposisiParts[] = $statusPersetujuan . ' di Setujui Ketua Biro Hukum';
+            
+            // 2. Tujuan Disposisi
+            $disposisiParts[] = $request->disposisi;
+            
+            // 3. Diteruskan ke (jika ada)
             if ($request->sub_disposisi) {
-                $disposisiText .= ' | Diteruskan ke: ' . $request->sub_disposisi;
+                $disposisiParts[] = 'Diteruskan ke: ' . $request->sub_disposisi;
             }
-            $disposisiText .= ' | Tanggal: ' . $request->tanggal_disposisi;
+            
+            // 4. Tanggal Disposisi
+            $disposisiParts[] = 'Tanggal: ' . $request->tanggal_disposisi;
+            
+            // 5. Catatan (jika ada)
             if ($request->catatan) {
-                $disposisiText .= ' | Catatan: ' . $request->catatan;
+                $disposisiParts[] = 'Catatan: ' . $request->catatan;
             }
+
+            // Gabungkan semua bagian dengan separator
+            $disposisiText = implode(' | ', $disposisiParts);
 
             // Update kolom disposisi
             $suratMasuk->update([

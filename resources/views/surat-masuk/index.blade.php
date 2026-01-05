@@ -73,19 +73,61 @@
                                         @if($surat->disposisi)
                                             @php
                                                 $disposisiParts = explode('|', $surat->disposisi);
-                                                $mainDisposisi = trim($disposisiParts[0]);
+                                                $persetujuanKetua = null;
+                                                $tujuanDisposisi = null;
+                                                $otherParts = [];
+                                                
+                                                // Pisahkan status persetujuan dari bagian lainnya
+                                                // Format baru: "Sudah di Setujui Ketua Biro Hukum" atau "Belum di Setujui Ketua Biro Hukum" (biasanya di bagian pertama)
+                                                foreach($disposisiParts as $index => $part) {
+                                                    $trimmedPart = trim($part);
+                                                    if (preg_match('/(Sudah|Belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i', $trimmedPart)) {
+                                                        $persetujuanKetua = $trimmedPart;
+                                                    } elseif (strpos($trimmedPart, 'Persetujuan Ketua Biro Hukum:') !== false) {
+                                                        // Fallback untuk format lama
+                                                        $persetujuanKetua = $trimmedPart;
+                                                    } elseif ($index === 0 && !$persetujuanKetua) {
+                                                        // Jika bagian pertama bukan persetujuan, berarti itu tujuan disposisi
+                                                        $tujuanDisposisi = $trimmedPart;
+                                                    } else {
+                                                        $otherParts[] = $trimmedPart;
+                                                    }
+                                                }
+                                                
+                                                
+                                                // Jika tidak ada tujuan disposisi yang terpisah, ambil dari otherParts
+                                                if (!$tujuanDisposisi && count($otherParts) > 0) {
+                                                    $tujuanDisposisi = $otherParts[0];
+                                                    $otherParts = array_slice($otherParts, 1);
+                                                }
                                             @endphp
-                                            <span class="bg-{{ strtolower(str_replace(' ', '-', $mainDisposisi)) }}">
-                                                {{ $mainDisposisi }}
-                                            </span>
-                                            @if(count($disposisiParts) > 1)
-                                                <br>
-                                                <small class="text-muted">
-                                                    @foreach(array_slice($disposisiParts, 1) as $part)
-                                                        {{ trim($part) }}<br>
-                                                    @endforeach
-                                                </small>
-                                            @endif
+                                            <div class="text-left">
+                                                {{-- Tampilkan Status Persetujuan Terlebih Dahulu --}}
+                                                @if($persetujuanKetua)
+                                                    <div class="mb-2">
+                                                        <span class="badge {{ (stripos($persetujuanKetua, 'Sudah') !== false || stripos($persetujuanKetua, 'sudah') !== false) ? 'bg-success' : 'bg-warning' }}">
+                                                            {{ $persetujuanKetua }}
+                                                        </span>
+                                                    </div>
+                                                @endif
+                                                
+                                                {{-- Tampilkan Tujuan Disposisi Utama --}}
+                                                @if($tujuanDisposisi)
+                                                    <div class="mb-1">
+                                                        <strong>{{ $tujuanDisposisi }}</strong>
+                                                    </div>
+                                                @endif
+                                                
+                                                {{-- Tampilkan Informasi Lainnya --}}
+                                                @if(count($otherParts) > 0)
+                                                    <small class="text-muted d-block">
+                                                        @foreach($otherParts as $part)
+                                                            {{ $part }}
+                                                            @if(!$loop->last)<br>@endif
+                                                        @endforeach
+                                                    </small>
+                                                @endif
+                                            </div>
                                         @else
                                             -
                                         @endif
@@ -210,6 +252,21 @@
                 <form id="disposisiForm" method="POST">
                     @csrf
                     <div class="modal-body">
+                        <!-- STATUS PERSETUJUAN KETUA BIRO HUKUM -->
+                        <div class="mb-3">
+<label class="form-label"><strong>Status Persetujuan Ketua Biro Hukum:</strong></label>
+@if(auth()->user() && auth()->user()->role === 'admin')
+    <div id="radioPersetujuanGroup" class="mb-2">
+        <input class="form-check-input" type="radio" name="persetujuan_ketua" id="radioDisetujui" value="Sudah">
+        <label class="form-check-label me-3" for="radioDisetujui">Sudah Disetujui</label>
+        <input class="form-check-input" type="radio" name="persetujuan_ketua" id="radioBelum" value="Belum">
+        <label class="form-check-label" for="radioBelum">Belum Disetujui</label>
+    </div>
+@else
+    <span id="statusPersetujuan" class="badge bg-secondary"></span>
+@endif
+<input type="hidden" id="disposisiSuratId" name="disposisiSuratId" />
+                        </div>
                         <div class="mb-3">
                             <label for="disposisi" class="form-label">Tujuan Disposisi</label>
                             <select class="form-select" id="disposisi" name="disposisi" required>
@@ -664,19 +721,132 @@
         function openDisposisiModal(id) {
             const form = document.getElementById('disposisiForm');
             form.action = `/surat-masuk/${id}/disposisi`;
-            
+            document.getElementById('disposisiSuratId').value = id;
             // Reset form dan sub disposisi
             form.reset();
             document.getElementById('subDisposisiContainer').style.display = 'none';
-            
             // Set tanggal default
             setDefaultDate();
-            
+            // AJAX dapatkan disposisi dan status persetujuan secara real-time
+            fetch(`/api/surat-masuk/${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    let status = 'Belum Disetujui';
+                    let isAdmin = false;
+                    @if(auth()->user() && auth()->user()->role === 'admin')
+                        isAdmin = true;
+                    @endif
+                    // Cek format baru: "Sudah di Setujui Ketua Biro Hukum" atau "Belum di Setujui Ketua Biro Hukum"
+                    if (data && data.disposisi) {
+                        if (data.disposisi.match(/(Sudah|sudah)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i)) {
+                            status = 'Sudah Disetujui';
+                            if(isAdmin) {
+                                document.getElementById('radioDisetujui').checked = true;
+                                document.getElementById('radioBelum').checked = false;
+                            }
+                        } else if (data.disposisi.match(/(Belum|belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i)) {
+                            status = 'Belum Disetujui';
+                            if(isAdmin) {
+                                document.getElementById('radioDisetujui').checked = false;
+                                document.getElementById('radioBelum').checked = true;
+                            }
+                        } else {
+                            // Fallback untuk format lama
+                            if (data.disposisi.includes('Persetujuan Ketua Biro Hukum: sudah') || data.disposisi.includes('Persetujuan Ketua Biro Hukum: Sudah')) {
+                                status = 'Sudah Disetujui';
+                                if(isAdmin) {
+                                    document.getElementById('radioDisetujui').checked = true;
+                                    document.getElementById('radioBelum').checked = false;
+                                }
+                            } else {
+                                if(isAdmin) {
+                                    document.getElementById('radioDisetujui').checked = false;
+                                    document.getElementById('radioBelum').checked = true;
+                                }
+                            }
+                        }
+                    } else {
+                        if(isAdmin) {
+                            document.getElementById('radioDisetujui').checked = false;
+                            document.getElementById('radioBelum').checked = true;
+                        }
+                    }
+                    document.getElementById('statusPersetujuan').innerText = status;
+                });
             new bootstrap.Modal(document.getElementById('disposisiModal')).show();
+        }
+
+        // Radio button listener (ADMIN)
+        if (document.getElementById('radioPersetujuanGroup')) {
+            document.getElementById('radioPersetujuanGroup').addEventListener('change', function(e) {
+                const id = document.getElementById('disposisiSuratId').value;
+                fetch(`/api/surat-masuk/${id}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        let disposisiBaru = data.disposisi || '';
+                        let statusSetuju = false;
+                        
+                        if(document.getElementById('radioDisetujui').checked) {
+                            statusSetuju = true;
+                            // Format baru: "Sudah di Setujui Ketua Biro Hukum"
+                            const newFormat = 'Sudah di Setujui Ketua Biro Hukum';
+                            if (disposisiBaru.match(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i)) {
+                                disposisiBaru = disposisiBaru.replace(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i, newFormat);
+                            } else if (disposisiBaru.includes('Persetujuan Ketua Biro Hukum:')) {
+                                // Fallback format lama
+                                disposisiBaru = disposisiBaru.replace(/Persetujuan Ketua Biro Hukum:[^|]*/g, newFormat);
+                            } else {
+                                disposisiBaru = newFormat + (disposisiBaru ? ' | ' + disposisiBaru : '');
+                            }
+                        } else {
+                            // Format baru: "Belum di Setujui Ketua Biro Hukum"
+                            const newFormat = 'Belum di Setujui Ketua Biro Hukum';
+                            if (disposisiBaru.match(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i)) {
+                                disposisiBaru = disposisiBaru.replace(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i, newFormat);
+                            } else if (disposisiBaru.includes('Persetujuan Ketua Biro Hukum:')) {
+                                // Fallback format lama
+                                disposisiBaru = disposisiBaru.replace(/Persetujuan Ketua Biro Hukum:[^|]*/g, newFormat);
+                            } else {
+                                disposisiBaru = newFormat + (disposisiBaru ? ' | ' + disposisiBaru : '');
+                            }
+                        }
+                        sendUpdatePersetujuan(id, disposisiBaru, statusSetuju);
+                    });
+            });
+        }
+
+        function sendUpdatePersetujuan(id, disposisiBaru, statusSetuju) {
+            fetch(`/surat-masuk/${id}/update-disposisi`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ disposisi: disposisiBaru })
+            })
+            .then((response) => response.json())
+            .then(data => {
+                if(data.success) {
+                    // Update tampilan status (jika ada untuk non-admin)
+                    const statusPersetujuanEl = document.getElementById('statusPersetujuan');
+                    if (statusPersetujuanEl) {
+                        statusPersetujuanEl.innerText = statusSetuju ? 'Sudah Disetujui' : 'Belum Disetujui';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error updating persetujuan:', error);
+            });
         }
 
         document.getElementById('disposisiForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            // Pastikan status persetujuan ikut terkirim saat submit
+            const radioDisetujui = document.getElementById('radioDisetujui');
+            const radioBelum = document.getElementById('radioBelum');
+            if (radioDisetujui && radioBelum) {
+                // Status sudah di-handle oleh radio button, form akan otomatis mengirim value
+            }
             this.submit();
         });
 

@@ -243,6 +243,9 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
+// API Route untuk detail surat masuk JSON
+Route::get('/api/surat-masuk/{id}', [App\Http\Controllers\SuratMasukController::class, 'apiShow']);
+
 // User Routes
 Route::middleware(['auth', 'checkRole:user'])->group(function () {
     // Transaksi Surat routes
