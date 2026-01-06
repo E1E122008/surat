@@ -157,6 +157,52 @@
             color: #0dcaf0;
             margin-right: 0.5rem;
         }
+
+        .lampiran-container {
+            position: relative;
+        }
+
+        .lampiran-dropdown {
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .hover-bg-light:hover {
+            background-color: #f8f9fa !important;
+        }
+
+        .lampiran-container:hover .lampiran-dropdown,
+        .lampiran-dropdown:hover {
+            display: block !important;
+        }
+
+        .lampiran-badge {
+            cursor: pointer;
+            padding: 0.4rem 0.8rem;
+            transition: all 0.2s ease;
+        }
+
+        .lampiran-badge:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .lampiran-dropdown {
+            margin-top: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .lampiran-dropdown a {
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+        }
+
+        .lampiran-dropdown a:hover {
+            background-color: #f3f4f6 !important;
+        }
     </style>
 
     <div class="container">
@@ -281,8 +327,54 @@
                                                     {{ $surat->perihal }}
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-500 text-center">
-                                                <a href="{{ asset('storage/' . $surat->lampiran) }}" class="text-blue-500 hover:underline">{{ $surat->lampiran }}</a>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                                @php
+                                                    $lampiran = is_array($surat->lampiran) ? $surat->lampiran : json_decode($surat->lampiran, true);
+                                                    // Jika lampiran adalah string (format lama), konversi ke array
+                                                    if (is_string($surat->lampiran) && !$lampiran) {
+                                                        $lampiran = [['path' => $surat->lampiran, 'name' => basename($surat->lampiran)]];
+                                                    }
+                                                @endphp
+                                                @if($lampiran && count($lampiran) > 0)
+                                                    <div class="lampiran-container position-relative d-inline-block">
+                                                        <span class="badge bg-primary lampiran-badge">
+                                                            <i class="fas fa-paperclip me-1"></i>
+                                                            {{ count($lampiran) }} {{ count($lampiran) == 1 ? 'file' : 'files' }}
+                                                        </span>
+                                                        <div class="lampiran-dropdown position-absolute bg-white p-2" 
+                                                             style="z-index: 1000; min-width: 280px; max-width: 400px; top: 100%; left: 0;">
+                                                            @foreach($lampiran as $file)
+                                                                @php
+                                                                    if (is_string($file)) {
+                                                                        $file = ['path' => $file, 'name' => basename($file)];
+                                                                    }
+                                                                    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                                                                    $iconClass = 'fa-file-alt text-gray-500';
+                                                                    if(in_array($ext, ['jpg','jpeg','png','gif'])) $iconClass = 'fa-file-image text-blue-500';
+                                                                    elseif($ext === 'pdf') $iconClass = 'fa-file-pdf text-red-500';
+                                                                    elseif(in_array($ext, ['doc','docx'])) $iconClass = 'fa-file-word text-blue-600';
+                                                                    // Encode path dengan benar
+                                                                    $pathParts = explode('/', $file['path']);
+                                                                    $encodedParts = array_map('rawurlencode', $pathParts);
+                                                                    $fileUrl = asset('storage/' . implode('/', $encodedParts));
+                                                                @endphp
+                                                                <a href="{{ $fileUrl }}" target="_blank" 
+                                                                   class="d-flex align-items-center text-decoration-none text-dark">
+                                                                    <i class="fas {{ $iconClass }} me-2 flex-shrink-0"></i>
+                                                                    <span class="text-truncate flex-grow-1" style="max-width: 280px;" title="{{ $file['name'] }}">
+                                                                        {{ $file['name'] }}
+                                                                    </span>
+                                                                    <i class="fas fa-external-link-alt ms-2 text-muted flex-shrink-0" style="font-size: 0.75rem;"></i>
+                                                                </a>
+                                                                @if(!$loop->last)
+                                                                    <hr class="my-1" style="margin: 0.5rem 0;">
+                                                                @endif
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
                                             </td>
                                         </tr>
                                     @empty
@@ -354,8 +446,54 @@
                                                     {{ $surat->perihal }}
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-500 text-center">
-                                                <a href="{{ asset('storage/' . $surat->lampiran) }}" class="text-blue-500 hover:underline">{{ $surat->lampiran }}</a>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                                @php
+                                                    $lampiran = is_array($surat->lampiran) ? $surat->lampiran : json_decode($surat->lampiran, true);
+                                                    // Jika lampiran adalah string (format lama), konversi ke array
+                                                    if (is_string($surat->lampiran) && !$lampiran) {
+                                                        $lampiran = [['path' => $surat->lampiran, 'name' => basename($surat->lampiran)]];
+                                                    }
+                                                @endphp
+                                                @if($lampiran && count($lampiran) > 0)
+                                                    <div class="lampiran-container position-relative d-inline-block">
+                                                        <span class="badge bg-primary lampiran-badge">
+                                                            <i class="fas fa-paperclip me-1"></i>
+                                                            {{ count($lampiran) }} {{ count($lampiran) == 1 ? 'file' : 'files' }}
+                                                        </span>
+                                                        <div class="lampiran-dropdown position-absolute bg-white p-2" 
+                                                             style="z-index: 1000; min-width: 280px; max-width: 400px; top: 100%; left: 0;">
+                                                            @foreach($lampiran as $file)
+                                                                @php
+                                                                    if (is_string($file)) {
+                                                                        $file = ['path' => $file, 'name' => basename($file)];
+                                                                    }
+                                                                    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                                                                    $iconClass = 'fa-file-alt text-gray-500';
+                                                                    if(in_array($ext, ['jpg','jpeg','png','gif'])) $iconClass = 'fa-file-image text-blue-500';
+                                                                    elseif($ext === 'pdf') $iconClass = 'fa-file-pdf text-red-500';
+                                                                    elseif(in_array($ext, ['doc','docx'])) $iconClass = 'fa-file-word text-blue-600';
+                                                                    // Encode path dengan benar
+                                                                    $pathParts = explode('/', $file['path']);
+                                                                    $encodedParts = array_map('rawurlencode', $pathParts);
+                                                                    $fileUrl = asset('storage/' . implode('/', $encodedParts));
+                                                                @endphp
+                                                                <a href="{{ $fileUrl }}" target="_blank" 
+                                                                   class="d-flex align-items-center text-decoration-none text-dark">
+                                                                    <i class="fas {{ $iconClass }} me-2 flex-shrink-0"></i>
+                                                                    <span class="text-truncate flex-grow-1" style="max-width: 280px;" title="{{ $file['name'] }}">
+                                                                        {{ $file['name'] }}
+                                                                    </span>
+                                                                    <i class="fas fa-external-link-alt ms-2 text-muted flex-shrink-0" style="font-size: 0.75rem;"></i>
+                                                                </a>
+                                                                @if(!$loop->last)
+                                                                    <hr class="my-1" style="margin: 0.5rem 0;">
+                                                                @endif
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
                                             </td>
                                         </tr>
                                     @empty
@@ -427,8 +565,54 @@
                                                     {{ $surat->perihal }}
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-500 text-center">
-                                                <a href="{{ asset('storage/' . $surat->lampiran) }}" class="text-blue-500 hover:underline">{{ $surat->lampiran }}</a>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                                @php
+                                                    $lampiran = is_array($surat->lampiran) ? $surat->lampiran : json_decode($surat->lampiran, true);
+                                                    // Jika lampiran adalah string (format lama), konversi ke array
+                                                    if (is_string($surat->lampiran) && !$lampiran) {
+                                                        $lampiran = [['path' => $surat->lampiran, 'name' => basename($surat->lampiran)]];
+                                                    }
+                                                @endphp
+                                                @if($lampiran && count($lampiran) > 0)
+                                                    <div class="lampiran-container position-relative d-inline-block">
+                                                        <span class="badge bg-primary lampiran-badge">
+                                                            <i class="fas fa-paperclip me-1"></i>
+                                                            {{ count($lampiran) }} {{ count($lampiran) == 1 ? 'file' : 'files' }}
+                                                        </span>
+                                                        <div class="lampiran-dropdown position-absolute bg-white p-2" 
+                                                             style="z-index: 1000; min-width: 280px; max-width: 400px; top: 100%; left: 0;">
+                                                            @foreach($lampiran as $file)
+                                                                @php
+                                                                    if (is_string($file)) {
+                                                                        $file = ['path' => $file, 'name' => basename($file)];
+                                                                    }
+                                                                    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                                                                    $iconClass = 'fa-file-alt text-gray-500';
+                                                                    if(in_array($ext, ['jpg','jpeg','png','gif'])) $iconClass = 'fa-file-image text-blue-500';
+                                                                    elseif($ext === 'pdf') $iconClass = 'fa-file-pdf text-red-500';
+                                                                    elseif(in_array($ext, ['doc','docx'])) $iconClass = 'fa-file-word text-blue-600';
+                                                                    // Encode path dengan benar
+                                                                    $pathParts = explode('/', $file['path']);
+                                                                    $encodedParts = array_map('rawurlencode', $pathParts);
+                                                                    $fileUrl = asset('storage/' . implode('/', $encodedParts));
+                                                                @endphp
+                                                                <a href="{{ $fileUrl }}" target="_blank" 
+                                                                   class="d-flex align-items-center text-decoration-none text-dark">
+                                                                    <i class="fas {{ $iconClass }} me-2 flex-shrink-0"></i>
+                                                                    <span class="text-truncate flex-grow-1" style="max-width: 280px;" title="{{ $file['name'] }}">
+                                                                        {{ $file['name'] }}
+                                                                    </span>
+                                                                    <i class="fas fa-external-link-alt ms-2 text-muted flex-shrink-0" style="font-size: 0.75rem;"></i>
+                                                                </a>
+                                                                @if(!$loop->last)
+                                                                    <hr class="my-1" style="margin: 0.5rem 0;">
+                                                                @endif
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
                                             </td>
                                         </tr>
                                     @empty
@@ -499,8 +683,54 @@
                                                     {{ $surat->perihal }}
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-500 text-center">
-                                                <a href="{{ asset('storage/' . $surat->lampiran) }}" class="text-blue-500 hover:underline">{{ $surat->lampiran }}</a>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                                @php
+                                                    $lampiran = is_array($surat->lampiran) ? $surat->lampiran : json_decode($surat->lampiran, true);
+                                                    // Jika lampiran adalah string (format lama), konversi ke array
+                                                    if (is_string($surat->lampiran) && !$lampiran) {
+                                                        $lampiran = [['path' => $surat->lampiran, 'name' => basename($surat->lampiran)]];
+                                                    }
+                                                @endphp
+                                                @if($lampiran && count($lampiran) > 0)
+                                                    <div class="lampiran-container position-relative d-inline-block">
+                                                        <span class="badge bg-primary lampiran-badge">
+                                                            <i class="fas fa-paperclip me-1"></i>
+                                                            {{ count($lampiran) }} {{ count($lampiran) == 1 ? 'file' : 'files' }}
+                                                        </span>
+                                                        <div class="lampiran-dropdown position-absolute bg-white p-2" 
+                                                             style="z-index: 1000; min-width: 280px; max-width: 400px; top: 100%; left: 0;">
+                                                            @foreach($lampiran as $file)
+                                                                @php
+                                                                    if (is_string($file)) {
+                                                                        $file = ['path' => $file, 'name' => basename($file)];
+                                                                    }
+                                                                    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                                                                    $iconClass = 'fa-file-alt text-gray-500';
+                                                                    if(in_array($ext, ['jpg','jpeg','png','gif'])) $iconClass = 'fa-file-image text-blue-500';
+                                                                    elseif($ext === 'pdf') $iconClass = 'fa-file-pdf text-red-500';
+                                                                    elseif(in_array($ext, ['doc','docx'])) $iconClass = 'fa-file-word text-blue-600';
+                                                                    // Encode path dengan benar
+                                                                    $pathParts = explode('/', $file['path']);
+                                                                    $encodedParts = array_map('rawurlencode', $pathParts);
+                                                                    $fileUrl = asset('storage/' . implode('/', $encodedParts));
+                                                                @endphp
+                                                                <a href="{{ $fileUrl }}" target="_blank" 
+                                                                   class="d-flex align-items-center text-decoration-none text-dark">
+                                                                    <i class="fas {{ $iconClass }} me-2 flex-shrink-0"></i>
+                                                                    <span class="text-truncate flex-grow-1" style="max-width: 280px;" title="{{ $file['name'] }}">
+                                                                        {{ $file['name'] }}
+                                                                    </span>
+                                                                    <i class="fas fa-external-link-alt ms-2 text-muted flex-shrink-0" style="font-size: 0.75rem;"></i>
+                                                                </a>
+                                                                @if(!$loop->last)
+                                                                    <hr class="my-1" style="margin: 0.5rem 0;">
+                                                                @endif
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
                                             </td>
                                         </tr>
                                     @empty
@@ -571,8 +801,54 @@
                                                     {{ $surat->perihal }}
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-500 text-center">
-                                                <a href="{{ asset('storage/' . $surat->lampiran) }}" class="text-blue-500 hover:underline">{{ $surat->lampiran }}</a>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                                @php
+                                                    $lampiran = is_array($surat->lampiran) ? $surat->lampiran : json_decode($surat->lampiran, true);
+                                                    // Jika lampiran adalah string (format lama), konversi ke array
+                                                    if (is_string($surat->lampiran) && !$lampiran) {
+                                                        $lampiran = [['path' => $surat->lampiran, 'name' => basename($surat->lampiran)]];
+                                                    }
+                                                @endphp
+                                                @if($lampiran && count($lampiran) > 0)
+                                                    <div class="lampiran-container position-relative d-inline-block">
+                                                        <span class="badge bg-primary lampiran-badge">
+                                                            <i class="fas fa-paperclip me-1"></i>
+                                                            {{ count($lampiran) }} {{ count($lampiran) == 1 ? 'file' : 'files' }}
+                                                        </span>
+                                                        <div class="lampiran-dropdown position-absolute bg-white p-2" 
+                                                             style="z-index: 1000; min-width: 280px; max-width: 400px; top: 100%; left: 0;">
+                                                            @foreach($lampiran as $file)
+                                                                @php
+                                                                    if (is_string($file)) {
+                                                                        $file = ['path' => $file, 'name' => basename($file)];
+                                                                    }
+                                                                    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                                                                    $iconClass = 'fa-file-alt text-gray-500';
+                                                                    if(in_array($ext, ['jpg','jpeg','png','gif'])) $iconClass = 'fa-file-image text-blue-500';
+                                                                    elseif($ext === 'pdf') $iconClass = 'fa-file-pdf text-red-500';
+                                                                    elseif(in_array($ext, ['doc','docx'])) $iconClass = 'fa-file-word text-blue-600';
+                                                                    // Encode path dengan benar
+                                                                    $pathParts = explode('/', $file['path']);
+                                                                    $encodedParts = array_map('rawurlencode', $pathParts);
+                                                                    $fileUrl = asset('storage/' . implode('/', $encodedParts));
+                                                                @endphp
+                                                                <a href="{{ $fileUrl }}" target="_blank" 
+                                                                   class="d-flex align-items-center text-decoration-none text-dark">
+                                                                    <i class="fas {{ $iconClass }} me-2 flex-shrink-0"></i>
+                                                                    <span class="text-truncate flex-grow-1" style="max-width: 280px;" title="{{ $file['name'] }}">
+                                                                        {{ $file['name'] }}
+                                                                    </span>
+                                                                    <i class="fas fa-external-link-alt ms-2 text-muted flex-shrink-0" style="font-size: 0.75rem;"></i>
+                                                                </a>
+                                                                @if(!$loop->last)
+                                                                    <hr class="my-1" style="margin: 0.5rem 0;">
+                                                                @endif
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
                                             </td>
                                         </tr>
                                     @empty
@@ -706,6 +982,28 @@
                 document.querySelector('[name="tahun"]').value = urlParams.get('tahun');
             }
         }
+
+        // Dropdown tetap terbuka saat hover ke dalam dropdown
+        document.querySelectorAll('.lampiran-container').forEach(function(container) {
+            const dropdown = container.querySelector('.lampiran-dropdown');
+            const badge = container.querySelector('.lampiran-badge');
+            
+            let timeout;
+            
+            function showDropdown() {
+                clearTimeout(timeout);
+                dropdown.style.display = 'block';
+            }
+            
+            function hideDropdown() {
+                timeout = setTimeout(function() {
+                    dropdown.style.display = 'none';
+                }, 100);
+            }
+            
+            container.addEventListener('mouseenter', showDropdown);
+            container.addEventListener('mouseleave', hideDropdown);
+        });
     });
     </script>
 @endsection
