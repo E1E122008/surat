@@ -40,6 +40,7 @@
                 <select name="role" id="role" class="w-full bg-white text-gray-900 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400" required>
                     <option value="user" selected>User</option>
                     <option value="admin">Admin</option>
+                    <option value="monitor">Monitor</option>
                 </select>
                 @error('role')
                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>

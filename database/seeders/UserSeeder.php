@@ -36,6 +36,26 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Kepala Biro Hukum',
                 'password' => \Illuminate\Support\Facades\Hash::make('k3p4lb1r0hukum!'),
+                'role' => 'monitor',
+                'dinas' => 'Biro Hukum',
+            ]
+        );
+
+        \App\Models\User::updateOrCreate(
+            ['email' => 'ktu@gmail.com'],
+            [
+                'name' => 'Ketua Tata Usaha',
+                'password' => \Illuminate\Support\Facades\Hash::make('k3tu4tn!'),
+                'role' => 'monitor',
+                'dinas' => 'Biro Hukum',
+            ]
+        );
+
+        \App\Models\User::updateOrCreate(
+            ['email' => 'staffbirohukum@gmail.com'],
+            [
+                'name' => 'Staff Biro Hukum',
+                'password' => \Illuminate\Support\Facades\Hash::make('st4ffb1r0hukum!'),
                 'role' => 'user',
                 'dinas' => 'Biro Hukum',
             ]

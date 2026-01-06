@@ -62,9 +62,11 @@
                             <button type="submit" class="btn btn-primary btn-sm d-flex align-items-center justify-content-center" style="height: 38px; width: 38px; padding: 0;">
                                 <i class="fas fa-search"></i>
                             </button>
-                            <button type="button" class="btn btn-primary btn-sm shadow-sm d-flex align-items-center justify-content-center ms-2" style="height: 38px; min-width: 180px; font-size: 0.95em; padding: 0 28px; white-space: nowrap;" data-bs-toggle="modal" data-bs-target="#requestModal">
-                                <i class="fas fa-plus fa-sm text-white me-2"></i>Tambah Data Surat
-                            </button>
+                            @if(auth()->user()->role !== 'monitor')
+                                <button type="button" class="btn btn-primary btn-sm shadow-sm d-flex align-items-center justify-content-center ms-2" style="height: 38px; min-width: 180px; font-size: 0.95em; padding: 0 28px; white-space: nowrap;" data-bs-toggle="modal" data-bs-target="#requestModal">
+                                    <i class="fas fa-plus fa-sm text-white me-2"></i>Tambah Data Surat
+                                </button>
+                            @endif
                         </form>
                     </div>
                     
@@ -263,7 +265,7 @@
                 @endif
             </div>
             <div class="modal-footer">
-                @if($request->status === 'pending')
+                @if($request->status === 'pending' && auth()->user()->role !== 'monitor')
                     <form action="{{ route('data-requests.cancel', $request->id) }}" method="POST" class="d-inline">
                         @csrf
                         @method('DELETE')

@@ -35,14 +35,16 @@
                                 <i class="fas fa-search"></i>
                             </button>
                         </form>
-                        <a href="{{ route('surat-masuk.create') }}" 
-                           class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Surat Masuk
-                        </a>
-                        <a href="{{ route('surat-masuk.export') }}" 
-                           class="btn btn-success">
-                            <i class="fas fa-file-excel"></i> Export Excel
-                        </a>
+                        @if(auth()->user()->role !== 'monitor')
+                            <a href="{{ route('surat-masuk.create') }}" 
+                               class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Surat Masuk
+                            </a>
+                            <a href="{{ route('surat-masuk.export') }}" 
+                               class="btn btn-success">
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </a>
+                        @endif
                     </div>
                 </div>
 
@@ -187,35 +189,39 @@
                                                 <i class="fas fa-cog"></i> Aksi
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li>
-                                                    <button class="dropdown-item" type="button" 
-                                                        data-surat-id="{{ $surat->id }}"
-                                                        data-persetujuan="{{ isset($persetujuanKetua) && $persetujuanKetua ? $persetujuanKetua : 'Belum' }}"
-                                                        data-tujuan="{{ isset($tujuanDisposisi) && $tujuanDisposisi ? htmlspecialchars($tujuanDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
-                                                        data-sub-disposisi="{{ isset($subDisposisi) && $subDisposisi ? htmlspecialchars($subDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
-                                                        data-tanggal="{{ isset($tanggalDisposisi) && $tanggalDisposisi ? htmlspecialchars($tanggalDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
-                                                        data-catatan="{{ isset($catatan) && $catatan ? htmlspecialchars($catatan, ENT_QUOTES, 'UTF-8') : '' }}"
-                                                        data-disposisi-full="{{ $surat->disposisi ? htmlspecialchars($surat->disposisi, ENT_QUOTES, 'UTF-8') : '' }}"
-                                                        onclick="openDisposisiModal({{ $surat->id }}, this)">
-                                                        <i class="fas fa-sync-alt fa-fw me-2 text-warning"></i>Disposisi
-                                                    </button>
-                                                </li>
-                                                <li>
-                                                    <button class="dropdown-item" type="button" onclick="openStatusModal({{ $surat->id }}, '{{ $surat->status }}')">
-                                                        <i class="fas fa-check-circle fa-fw me-2 text-success"></i>Status
-                                            </button>
-                                                </li>
+                                                @if(auth()->user()->role !== 'monitor')
+                                                    <li>
+                                                        <button class="dropdown-item" type="button" 
+                                                            data-surat-id="{{ $surat->id }}"
+                                                            data-persetujuan="{{ isset($persetujuanKetua) && $persetujuanKetua ? $persetujuanKetua : 'Belum' }}"
+                                                            data-tujuan="{{ isset($tujuanDisposisi) && $tujuanDisposisi ? htmlspecialchars($tujuanDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
+                                                            data-sub-disposisi="{{ isset($subDisposisi) && $subDisposisi ? htmlspecialchars($subDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
+                                                            data-tanggal="{{ isset($tanggalDisposisi) && $tanggalDisposisi ? htmlspecialchars($tanggalDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
+                                                            data-catatan="{{ isset($catatan) && $catatan ? htmlspecialchars($catatan, ENT_QUOTES, 'UTF-8') : '' }}"
+                                                            data-disposisi-full="{{ $surat->disposisi ? htmlspecialchars($surat->disposisi, ENT_QUOTES, 'UTF-8') : '' }}"
+                                                            onclick="openDisposisiModal({{ $surat->id }}, this)">
+                                                            <i class="fas fa-sync-alt fa-fw me-2 text-warning"></i>Disposisi
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button class="dropdown-item" type="button" onclick="openStatusModal({{ $surat->id }}, '{{ $surat->status }}')">
+                                                            <i class="fas fa-check-circle fa-fw me-2 text-success"></i>Status
+                                                        </button>
+                                                    </li>
+                                                @endif
                                                 <li>
                                                     <a class="dropdown-item" href="{{ route('surat-masuk.detail', $surat->id) }}">
                                                         <i class="fas fa-eye fa-fw me-2 text-primary"></i>Detail
                                                     </a>
                                                 </li>
-                                                <li><hr class="dropdown-divider"></li>
-                                                <li>
-                                                <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $surat->id }})">
-                                                    <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
-                                                </button>
-                                                </li>
+                                                @if(auth()->user()->role !== 'monitor')
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li>
+                                                        <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $surat->id }})">
+                                                            <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
+                                                        </button>
+                                                    </li>
+                                                @endif
                                             </ul>
                                         </div>
                                         <form id="delete-form-{{ $surat->id }}" action="{{ route('surat-masuk.destroy', $surat->id) }}" method="POST" style="display: none;">

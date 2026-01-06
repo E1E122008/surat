@@ -13,24 +13,32 @@ class CheckRole
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
-     * @param  string  $role
+     * @param  string  ...$roles
      * @return mixed
      */
-    public function handle(Request $request, Closure $next, $role)
+    public function handle(Request $request, Closure $next, ...$roles)
     {
         if (!Auth::check()) {
             return redirect()->route('login');
         }
 
-        if (Auth::user()->role !== $role) {
-            if (Auth::user()->role === 'admin') {
-                return redirect()->route('admin.dashboard')
-                    ->with('error', 'Anda tidak memiliki akses ke halaman ini.');
-            }
+        $userRole = Auth::user()->role;
+        
+        // Jika role user ada dalam daftar roles yang diizinkan
+        if (in_array($userRole, $roles)) {
+            return $next($request);
+        }
+
+        // Redirect berdasarkan role
+        if ($userRole === 'admin') {
+            return redirect()->route('dashboard')
+                ->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        } elseif ($userRole === 'monitor') {
             return redirect()->route('dashboard')
                 ->with('error', 'Anda tidak memiliki akses ke halaman ini.');
         }
-
-        return $next($request);
+        
+        return redirect()->route('dashboard')
+            ->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }
 } 

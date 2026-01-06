@@ -24,6 +24,7 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dinas</th>
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -34,6 +35,15 @@
                             <tr class="table-row">
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $user->name }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $user->email }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full
+                                        @if($user->role == 'admin') bg-purple-100 text-purple-800
+                                        @elseif($user->role == 'monitor') bg-blue-100 text-blue-800
+                                        @else bg-gray-100 text-gray-800
+                                        @endif">
+                                        {{ ucfirst($user->role) }}
+                                    </span>
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $user->created_at->format('Y-m-d') }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $user->dinas }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

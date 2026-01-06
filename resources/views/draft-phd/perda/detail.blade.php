@@ -145,9 +145,11 @@
                             <i class="fas fa-arrow-left mr-2"></i> Kembali
                         </a>
 
-                        <a href="{{ route('draft-phd.perda.edit', $perda->id) }}" class="btn btn-info flex items-center justify-center h-12 w-32 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition duration-200" title="Edit">
-                            <i class="fas fa-edit mr-2"></i> Edit
-                        </a>
+                        @if(auth()->user()->role !== 'monitor')
+                            <a href="{{ route('draft-phd.perda.edit', $perda->id) }}" class="btn btn-info flex items-center justify-center h-12 w-32 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition duration-200" title="Edit">
+                                <i class="fas fa-edit mr-2"></i> Edit
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>

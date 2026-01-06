@@ -51,12 +51,14 @@
                                 <i class="fas fa-search"></i>
                             </button>
                         </form>
-                        <a href="{{ route('surat-keluar.create') }}" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Surat Keluar
-                        </a>
-                        <a href="{{ route('surat-keluar.export') }}" class="btn btn-success">
-                            <i class="fas fa-file-excel"></i> Export Excel
-                        </a>
+                        @if(auth()->user()->role !== 'monitor')
+                            <a href="{{ route('surat-keluar.create') }}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Surat Keluar
+                            </a>
+                            <a href="{{ route('surat-keluar.export') }}" class="btn btn-success">
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </a>
+                        @endif
                     </div>
                 </div>
                 
@@ -89,17 +91,19 @@
                                                         <i class="fas fa-eye fa-fw me-2 text-primary"></i>Lihat Lampiran
                                                     </a>
                                                 </li>
-                                                <li>
-                                                    <a class="dropdown-item" href="{{ route('surat-keluar.edit', $surat->id) }}">
-                                                        <i class="fas fa-edit fa-fw me-2 text-warning"></i>Edit
-                                                    </a>
-                                                </li>
-                                                <li><hr class="dropdown-divider"></li>
-                                                <li>
-                                                    <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $surat->id }})">
-                                                        <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
-                                                    </button>
-                                                </li>
+                                                @if(auth()->user()->role !== 'monitor')
+                                                    <li>
+                                                        <a class="dropdown-item" href="{{ route('surat-keluar.edit', $surat->id) }}">
+                                                            <i class="fas fa-edit fa-fw me-2 text-warning"></i>Edit
+                                                        </a>
+                                                    </li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li>
+                                                        <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $surat->id }})">
+                                                            <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
+                                                        </button>
+                                                    </li>
+                                                @endif
                                             </ul>
                                         </div>
                                         <form id="delete-form-{{ $surat->id }}" action="{{ route('surat-keluar.destroy', $surat->id) }}" method="POST" style="display: none;">

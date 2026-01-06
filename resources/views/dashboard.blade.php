@@ -35,7 +35,7 @@
     </div>
 
     @auth
-    @if(Auth::user()->role === 'admin')
+    @if(in_array(Auth::user()->role, ['admin', 'monitor']))
     <!-- Charts Section -->
     <div class="row mb-5 mt-4">
         <!-- Grafik Statistik -->
@@ -119,9 +119,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function updateCharts(event, chartType) {
-        event.preventDefault();
+        if (event && event.preventDefault) {
+            event.preventDefault();
+        }
         
         const form = document.getElementById(`form-${chartType}`);
+        if (!form) {
+            console.log(`Form for ${chartType} not found`);
+            return;
+        }
         const period = new FormData(form).get('period');
         
         // Simpan periode yang dipilih
@@ -156,11 +162,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Set kembali nilai dropdown sesuai periode yang dipilih
-        document.getElementById(`filter-waktu-${chartType === 'incoming' ? 'masuk' : 'keluar'}`).value = period;
+        const filterElement = document.getElementById(`filter-waktu-${chartType === 'incoming' ? 'masuk' : 'keluar'}`);
+        if (filterElement) {
+            filterElement.value = period;
+        }
     }
 
     // Inisialisasi Chart Surat Masuk
-    const ctxIncoming = document.getElementById('incomingDocumentsChart').getContext('2d');
+    const incomingChartElement = document.getElementById('incomingDocumentsChart');
+    if (!incomingChartElement) {
+        console.log('Chart element not found, skipping chart initialization');
+    } else {
+    const ctxIncoming = incomingChartElement.getContext('2d');
     incomingChart = new Chart(ctxIncoming, {
         type: 'line',
         data: {
@@ -204,9 +217,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+    }
 
     // Inisialisasi Chart Surat Keluar
-    const ctxOutgoing = document.getElementById('outgoingDocumentsChart').getContext('2d');
+    const outgoingChartElement = document.getElementById('outgoingDocumentsChart');
+    if (!outgoingChartElement) {
+        console.log('Chart element not found, skipping chart initialization');
+    } else {
+    const ctxOutgoing = outgoingChartElement.getContext('2d');
     outgoingChart = new Chart(ctxOutgoing, {
         type: 'line',
         data: {
@@ -255,10 +273,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+    }
 
-    // Load data awal
-    updateCharts({ preventDefault: () => {} }, 'incoming');
-    updateCharts({ preventDefault: () => {} }, 'outgoing');
+    // Load data awal (hanya jika chart elements ada)
+    if (incomingChartElement && outgoingChartElement) {
+        updateCharts({ preventDefault: () => {} }, 'incoming');
+        updateCharts({ preventDefault: () => {} }, 'outgoing');
+    }
 });
 </script>
 

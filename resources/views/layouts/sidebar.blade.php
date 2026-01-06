@@ -22,7 +22,7 @@
         </li>
         
         @auth
-        @if(Auth::user()->role === 'admin')
+        @if(in_array(Auth::user()->role, ['admin', 'monitor']))
         <li class="my-2">
             <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('surat-masuk.*') ? 'active' : '' }}" 
                href="#">
@@ -113,10 +113,14 @@
                 </li>
             </ul>
         </li>
+        @endif
+        @endauth
     </ul>
 
     <h2 class="text-lg font-bold mb-2">Menu Tambahan</h2>
     <ul class="list-none p-0">
+        @auth
+        @if(Auth::user()->role !== 'monitor')
         <li class="my-2">
             <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('buku-agenda.*') ? 'active' : '' }}" 
                 href="#">
@@ -170,7 +174,11 @@
                 <i class="fas fa-exchange-alt mr-2"></i> Transaksi Surat
             </a>
         </li>
+        @endif
+        @endauth
 
+        @auth
+        @if(Auth::user()->role === 'user' || Auth::user()->role === 'monitor')
         <li class="my-2">
             <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('data-requests.*') ? 'active' : '' }}" 
                href="{{ route('data-requests.index') }}">
