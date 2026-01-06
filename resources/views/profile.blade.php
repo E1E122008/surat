@@ -282,15 +282,17 @@
                         <label class="form-label">Nomor Telepon</label>
                         <input type="text" class="form-control" name="phone" value="{{ auth()->user()->phone }}">
                     </div>
+                    @if(auth()->user()->role === 'admin')
                     <div class="mb-3">
                         <label class="form-label">Role</label>
                         <select class="form-select" name="role">
                             <option value="">Pilih Role</option>
-                            <option value="Admin" {{ auth()->user()->role == 'Admin' ? 'selected' : '' }}>Admin</option>
-                            <option value="User" {{ auth()->user()->role == 'User' ? 'selected' : '' }}>User</option>
-                            
+                            <option value="admin" {{ auth()->user()->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                            <option value="user" {{ auth()->user()->role == 'user' ? 'selected' : '' }}>User</option>
+                            <option value="monitor" {{ auth()->user()->role == 'monitor' ? 'selected' : '' }}>Monitor</option>
                         </select>
                     </div>
+                    @endif
                     <div class="mb-3">
                         <label class="form-label">NIP</label>
                         <input type="text" class="form-control" name="nip" value="{{ auth()->user()->nip }}">

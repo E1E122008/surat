@@ -29,15 +29,23 @@ class UserProfileController extends Controller
             'phone' => 'nullable|string|max:20',
             'jabatan' => 'required|string|max:100',
             'nip' => 'nullable|string|max:50',
+            'role' => 'nullable|in:admin,user,monitor',
         ]);
 
-        auth()->user()->update($request->only([
+        $updateData = $request->only([
             'name',
             'email',
             'phone',
             'jabatan',
             'nip'
-        ]));
+        ]);
+
+        // Hanya admin yang bisa mengubah role
+        if (auth()->user()->role === 'admin' && $request->has('role')) {
+            $updateData['role'] = $request->role;
+        }
+
+        auth()->user()->update($updateData);
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui');
     }

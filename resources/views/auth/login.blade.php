@@ -223,7 +223,7 @@
             </form>
 
             <div class="login-footer">
-                <p class="mb-0">&copy; 2025 Pemerintah Provinsi Sulawesi Tenggara</p>
+                <p class="mb-0">&copy; 2026 Pemerintah Provinsi Sulawesi Tenggara</p>
             </div>
         </div>
     </div>
