@@ -120,7 +120,7 @@
     <h2 class="text-lg font-bold mb-2">Menu Tambahan</h2>
     <ul class="list-none p-0">
         @auth
-        @if(Auth::user()->role !== 'monitor')
+        @if(Auth::user()->role === 'admin')
         <li class="my-2">
             <a class="flex items-center p-2 rounded-lg hover:bg-blue-100 {{ request()->routeIs('buku-agenda.*') ? 'active' : '' }}" 
                 href="#">
@@ -184,14 +184,6 @@
                href="{{ route('data-requests.index') }}">
                 <i class="fas fa-file-alt mr-2"></i> 
                 <span>Permintaan Data</span>
-                @if(auth()->user()->role == 'admin')
-                    @php
-                        $pendingCount = \App\Models\DataRequest::where('status', 'pending')->count();
-                    @endphp
-                    @if($pendingCount > 0)
-                        <span class="badge bg-warning text-dark rounded-full px-2 ml-auto">{{ $pendingCount }}</span>
-                    @endif
-                @endif
             </a>
         </li>
         @endif
