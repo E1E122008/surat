@@ -49,24 +49,24 @@
                 <div class="card-body">
                     
                     <div class="table-responsive">
-                        <table class="table table-bordered" width="100%" cellspacing="0">
+                        <table class="table" width="100%" cellspacing="0">
                             <thead>
                                 <tr>
-                                    <th class="text-center">No</th>
-                                    <th class="text-center">Jenis Surat</th>
-                                    <th class="text-center">Pengirim</th>
-                                    <th class="text-center">Dinas</th>
-                                    <th class="text-center">Tanggal Permintaan</th>
-                                    <th class="text-center">Status</th>
-                                    <th class="text-center">Fisik</th>
-                                    <th class="text-center">Aksi</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Jenis Surat</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Dinas</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Permintaan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Fisik</th>
+                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($approvalRequests as $index => $request)
                                     <tr>
-                                        <td class="text-center">{{ $index + 1 }}</td>
-                                        <td class="text-center">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $index + 1 + ($approvalRequests->currentPage() - 1) * $approvalRequests->perPage() }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                             @php
                                                 $letterTypes = [
                                                     'surat_masuk' => 'Surat Masuk',
@@ -77,16 +77,16 @@
                                             @endphp
                                             {{ $letterTypes[$request->letter_type] ?? $request->letter_type }}
                                         </td>
-                                        <td class="text-center">{{ $request->sender }}</td>
-                                        <td class="text-center">{{ $request->user->dinas ?? '-' }}</td>
-                                        <td class="text-center">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $request->sender }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $request->user->dinas ?? '-' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                             @if($request->created_at)
-                                                {{ $request->created_at instanceof \Illuminate\Support\Carbon ? $request->created_at->format('d M Y') : \Carbon\Carbon::parse($request->created_at)->format('d M Y') }}
+                                                {{ $request->created_at instanceof \Illuminate\Support\Carbon ? $request->created_at->format('d/m/Y') : \Carbon\Carbon::parse($request->created_at)->format('d/m/Y') }}
                                             @else
                                                 -
                                             @endif
                                         </td>
-                                        <td class="text-center">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                             @if($request->status === 'pending')
                                                 <span class="badge bg-warning">Menunggu Review</span>
                                             @elseif($request->status === 'approved')
@@ -95,7 +95,7 @@
                                                 <span class="badge bg-danger"><i class="fas fa-times me-1"></i> Ditolak</span>
                                             @endif
                                         </td>
-                                        <td class="text-center">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                             @if($request->status === 'approved')
                                                 <span id="fisik-badge-{{ $request->id }}" style="cursor:pointer" onclick="toggleFisik({{ $request->id }})">
                                                     @if($request->fisik_diterima)
@@ -108,7 +108,7 @@
                                                 -
                                             @endif
                                         </td>
-                                        <td class="text-center">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                             <button type="button" class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#detailRequestModal{{ $request->id }}" title="Detail">
                                                 <i class="fas fa-eye me-2"></i> Detail
                                             </button>
@@ -116,7 +116,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center">Tidak ada permintaan persetujuan</td>
+                                        <td colspan="8" class="text-center py-4">Tidak ada permintaan persetujuan</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -124,9 +124,84 @@
                     </div>
                 </div>
                 @if(isset($approvalRequests) && method_exists($approvalRequests, 'links'))
-                    <div class="d-flex justify-content-center my-4">
+                    <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top">
+                        <div class="text-sm text-gray-600">
+                            Menampilkan {{ $approvalRequests->firstItem() ?? 0 }} sampai {{ $approvalRequests->lastItem() ?? 0 }} dari {{ $approvalRequests->total() }} data
+                        </div>
                         <nav aria-label="Page navigation">
-                            {{ $approvalRequests->links('pagination::bootstrap-4') }}
+                            <ul class="pagination mb-0">
+                                {{-- Previous Page Link --}}
+                                @if ($approvalRequests->onFirstPage())
+                                    <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="fas fa-chevron-left"></i> Sebelumnya
+                                        </span>
+                                    </li>
+                                @else
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $approvalRequests->previousPageUrl() }}" rel="prev">
+                                            <i class="fas fa-chevron-left"></i> Sebelumnya
+                                        </a>
+                                    </li>
+                                @endif
+
+                                {{-- Pagination Elements --}}
+                                @php
+                                    $currentPage = $approvalRequests->currentPage();
+                                    $lastPage = $approvalRequests->lastPage();
+                                    $startPage = max(1, $currentPage - 2);
+                                    $endPage = min($lastPage, $currentPage + 2);
+                                @endphp
+
+                                @if ($startPage > 1)
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $approvalRequests->url(1) }}">1</a>
+                                    </li>
+                                    @if ($startPage > 2)
+                                        <li class="page-item disabled">
+                                            <span class="page-link">...</span>
+                                        </li>
+                                    @endif
+                                @endif
+
+                                @for ($page = $startPage; $page <= $endPage; $page++)
+                                    @if ($page == $currentPage)
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ $page }}</span>
+                                        </li>
+                                    @else
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $approvalRequests->url($page) }}">{{ $page }}</a>
+                                        </li>
+                                    @endif
+                                @endfor
+
+                                @if ($endPage < $lastPage)
+                                    @if ($endPage < $lastPage - 1)
+                                        <li class="page-item disabled">
+                                            <span class="page-link">...</span>
+                                        </li>
+                                    @endif
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $approvalRequests->url($lastPage) }}">{{ $lastPage }}</a>
+                                    </li>
+                                @endif
+
+                                {{-- Next Page Link --}}
+                                @if ($approvalRequests->hasMorePages())
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ $approvalRequests->nextPageUrl() }}" rel="next">
+                                            Selanjutnya <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                @else
+                                    <li class="page-item disabled">
+                                        <span class="page-link">
+                                            Selanjutnya <i class="fas fa-chevron-right"></i>
+                                        </span>
+                                    </li>
+                                @endif
+                            </ul>
                         </nav>
                     </div>
                 @endif
@@ -404,6 +479,93 @@
     overflow: hidden;
     text-overflow: ellipsis;
     vertical-align: middle;
+}
+
+/* Table Styling */
+.table {
+    border: none !important;
+    margin-bottom: 0 !important;
+}
+
+.table thead tr {
+    background-color: #4a69bd !important;
+    color: white;
+}
+
+.table th {
+    border: none !important;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    padding: 0.75rem;
+}
+
+.table td {
+    border: none !important;
+    padding: 0.75rem;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.table tbody tr:last-child {
+    border-bottom: 2px solid #000;
+}
+
+.table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+/* Pagination Styling */
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 0.25rem;
+}
+
+.pagination .page-item {
+    margin: 0;
+}
+
+.pagination .page-link {
+    padding: 0.5rem 0.75rem;
+    color: #374151;
+    background-color: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.pagination .page-link:hover {
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+    color: #111827;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #4a69bd;
+    border-color: #4a69bd;
+    color: white;
+    font-weight: 600;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #9ca3af;
+    background-color: #f9fafb;
+    border-color: #e5e7eb;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.pagination .page-link i {
+    font-size: 0.75rem;
 }
 </style>
 

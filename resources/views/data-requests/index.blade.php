@@ -137,13 +137,88 @@
                         </table>
                     </div>
                 </div>
-                @if(isset($approvalRequests) && method_exists($approvalRequests, 'links'))
-                    <div class="d-flex justify-content-center my-4">
-                        <nav aria-label="Page navigation">
-                            {{ $approvalRequests->links('pagination::bootstrap-4') }}
-                        </nav>
-                    </div>
-                @endif
+    @if(isset($approvalRequests) && method_exists($approvalRequests, 'links'))
+        <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top">
+            <div class="text-sm text-gray-600">
+                Menampilkan {{ $approvalRequests->firstItem() ?? 0 }} sampai {{ $approvalRequests->lastItem() ?? 0 }} dari {{ $approvalRequests->total() }} data
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination mb-0">
+                    {{-- Previous Page Link --}}
+                    @if ($approvalRequests->onFirstPage())
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                <i class="fas fa-chevron-left"></i> Sebelumnya
+                            </span>
+                        </li>
+                    @else
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $approvalRequests->previousPageUrl() }}" rel="prev">
+                                <i class="fas fa-chevron-left"></i> Sebelumnya
+                            </a>
+                        </li>
+                    @endif
+
+                    {{-- Pagination Elements --}}
+                    @php
+                        $currentPage = $approvalRequests->currentPage();
+                        $lastPage = $approvalRequests->lastPage();
+                        $startPage = max(1, $currentPage - 2);
+                        $endPage = min($lastPage, $currentPage + 2);
+                    @endphp
+
+                    @if ($startPage > 1)
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $approvalRequests->url(1) }}">1</a>
+                        </li>
+                        @if ($startPage > 2)
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        @endif
+                    @endif
+
+                    @for ($page = $startPage; $page <= $endPage; $page++)
+                        @if ($page == $currentPage)
+                            <li class="page-item active">
+                                <span class="page-link">{{ $page }}</span>
+                            </li>
+                        @else
+                            <li class="page-item">
+                                <a class="page-link" href="{{ $approvalRequests->url($page) }}">{{ $page }}</a>
+                            </li>
+                        @endif
+                    @endfor
+
+                    @if ($endPage < $lastPage)
+                        @if ($endPage < $lastPage - 1)
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        @endif
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $approvalRequests->url($lastPage) }}">{{ $lastPage }}</a>
+                        </li>
+                    @endif
+
+                    {{-- Next Page Link --}}
+                    @if ($approvalRequests->hasMorePages())
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $approvalRequests->nextPageUrl() }}" rel="next">
+                                Selanjutnya <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    @else
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                Selanjutnya <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </li>
+                    @endif
+                </ul>
+            </nav>
+        </div>
+    @endif
             </div>
         </div>
     </div>
@@ -435,6 +510,51 @@
     overflow: hidden;
     text-overflow: ellipsis;
     vertical-align: middle;
+}
+
+/* Pagination Styling */
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 0.25rem;
+}
+.pagination .page-item {
+    margin: 0;
+}
+.pagination .page-link {
+    padding: 0.5rem 0.75rem;
+    color: #374151;
+    background-color: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+.pagination .page-link:hover {
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+    color: #111827;
+}
+.pagination .page-item.active .page-link {
+    background-color: #4a69bd;
+    border-color: #4a69bd;
+    color: white;
+    font-weight: 600;
+}
+.pagination .page-item.disabled .page-link {
+    color: #9ca3af;
+    background-color: #f9fafb;
+    border-color: #e5e7eb;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+.pagination .page-link i {
+    font-size: 0.75rem;
 }
 </style>
 @endsection
