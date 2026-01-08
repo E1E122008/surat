@@ -37,24 +37,47 @@ class SptDalamDaerahController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'no_surat' => 'required|string|max:255',
-            'tanggal' => 'required|date',
-            'tujuan' => 'required|string|max:255',
-            'perihal' => 'required|string|max:255',
-            'nama_petugas' => 'required|string',
-            'lampiran' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
-        ]);
+        try {
+            $validated = $request->validate([
+                'no_surat' => 'required|string|max:255',
+                'tanggal' => 'required|date',
+                'tujuan' => 'required|string|max:255',
+                'perihal' => 'required|string|max:255',
+                'nama_petugas' => 'required|string',
+                'lampiran' => 'required|array',
+                'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2147483648',
+            ]);
 
-        if ($request->hasFile('lampiran')) {
-            $file = $request->file('lampiran');
-            $path = $file->store('lampiran/spt-dalam-daerah', 'public');                
-            $validated['lampiran'] = $path;
+            $lampiranPaths = [];
+            if ($request->hasFile('lampiran')) {
+                $files = $request->file('lampiran');
+                if (!is_array($files)) {
+                    $files = [$files];
+                }
+                foreach ($files as $file) {
+                    $lampiranPaths[] = [
+                        'path' => $file->store('lampiran/spt-dalam-daerah', 'public'),
+                        'name' => $file->getClientOriginalName(),
+                    ];
+                }
+                $validated['lampiran'] = json_encode($lampiranPaths);
+            }
+
+            SptDalamDaerah::create($validated);
+            return redirect()->route('spt-dalam-daerah.index')
+                ->with('success', 'SPT Dalam Daerah berhasil ditambahkan');
+        } catch (\Exception $e) {
+            if (isset($lampiranPaths)) {
+                foreach ($lampiranPaths as $lampiran) {
+                    if (isset($lampiran['path']) && Storage::disk('public')->exists($lampiran['path'])) {
+                        Storage::disk('public')->delete($lampiran['path']);
+                    }
+                }
+            }
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat menambahkan SPT Dalam Daerah: ' . $e->getMessage())
+                ->withInput();
         }
-        SptDalamDaerah::create($validated);
-        return redirect()->route('spt-dalam-daerah.index')
-            ->with('success', 'SPT Dalam Daerah berhasil ditambahkan');
-
     }
 
     public function detail($id)
@@ -66,7 +89,8 @@ class SptDalamDaerahController extends Controller
     public function edit($id)
     {
         $sptDalamDaerah = SptDalamDaerah::findOrFail($id);
-        return view('spt-dalam-daerah.edit', compact('sptDalamDaerah'));
+        $lampiranLama = $sptDalamDaerah->lampiran ? array_values(json_decode($sptDalamDaerah->lampiran, true) ?? []) : [];
+        return view('spt-dalam-daerah.edit', compact('sptDalamDaerah', 'lampiranLama'));
     }
 
     public function update(Request $request, $id)
@@ -79,17 +103,40 @@ class SptDalamDaerahController extends Controller
                 'tujuan' => 'required|string|max:255',
                 'perihal' => 'required|string|max:255',
                 'nama_petugas' => 'required|string',
-                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
+                'lampiran' => 'nullable|array',
+                'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2147483648',
             ]);
 
-            if ($request->hasFile('lampiran')) {
-                if ($sptDalamDaerah->lampiran) {
-                    Storage::disk('public')->delete($sptDalamDaerah->lampiran);
+            // Ambil lampiran lama yang dipertahankan
+            $lampiranLama = $request->input('lampiran_lama', []);
+            $lampiranDihapus = $request->input('lampiran_dihapus', []);
+            $lampiranData = [];
+            $lampiranSebelumnya = json_decode($sptDalamDaerah->lampiran, true) ?? [];
+
+            // Proses lampiran yang ada
+            foreach ($lampiranSebelumnya as $file) {
+                // Jika file tidak dihapus dan masih ada di lampiran_lama
+                if (!in_array($file['path'], $lampiranDihapus) && in_array($file['path'], $lampiranLama)) {
+                    $lampiranData[] = $file;
+                } else {
+                    // Hapus file fisik jika user hapus lampiran
+                    if (Storage::disk('public')->exists($file['path'])) {
+                        Storage::disk('public')->delete($file['path']);
+                    }
                 }
-                $file = $request->file('lampiran');
-                $path = $file->store('lampiran/spt-dalam-daerah', 'public');
-                $validated['lampiran'] = $path;
             }
+
+            // Proses upload file baru
+            if ($request->hasFile('lampiran')) {
+                foreach ($request->file('lampiran') as $file) {
+                    $lampiranData[] = [
+                        'path' => $file->store('lampiran/spt-dalam-daerah', 'public'),
+                        'name' => $file->getClientOriginalName(),
+                    ];
+                }
+            }
+
+            $validated['lampiran'] = json_encode($lampiranData);
 
             $sptDalamDaerah->update($validated);
 
@@ -97,21 +144,33 @@ class SptDalamDaerahController extends Controller
                 ->with('success', 'SPT Dalam Daerah berhasil diperbarui');
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat memperbarui SPT Dalam Daerah');
+                ->with('error', 'Terjadi kesalahan saat memperbarui SPT Dalam Daerah: ' . $e->getMessage());
         }
     }
 
     public function destroy(SptDalamDaerah $sptDalamDaerah)
     {
-        // Hapus file lampiran jika ada
-        if ($sptDalamDaerah->lampiran) {
-            Storage::disk('public')->delete($sptDalamDaerah->lampiran);
+        try {
+            // Delete file if exists
+            if ($sptDalamDaerah->lampiran) {
+                $lampiranData = json_decode($sptDalamDaerah->lampiran, true);
+                if (is_array($lampiranData)) {
+                    foreach ($lampiranData as $lampiran) {
+                        if (isset($lampiran['path']) && Storage::disk('public')->exists($lampiran['path'])) {
+                            Storage::disk('public')->delete($lampiran['path']);
+                        }
+                    }
+                }
+            }
+
+            $sptDalamDaerah->delete();
+
+            return redirect()->route('spt-dalam-daerah.index')
+                ->with('success', 'SPT Dalam Daerah berhasil dihapus');
+        } catch (\Exception $e) {
+            return redirect()->route('spt-dalam-daerah.index')
+                ->with('error', 'Gagal menghapus SPT Dalam Daerah: ' . $e->getMessage());
         }
-
-        $sptDalamDaerah->delete();
-
-        return redirect()->route('spt-dalam-daerah.index')
-            ->with('success', 'SPT Dalam Daerah berhasil dihapus');
     }
 
 

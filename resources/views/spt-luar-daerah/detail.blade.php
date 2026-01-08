@@ -37,11 +37,60 @@
                             <textarea name="nama_petugas" id="nama_petugas" class="form-textarea" readonly rows="4">{{ $spt->nama_petugas }}</textarea>
                         </div>
 
-                        <div class="form-group mb-3">
-                            <label for="lampiran" class="font-semibold">Lampiran</label>
-                            <button onclick="window.location.href='{{ asset('storage/' . $spt->lampiran) }}'" class="btn btn-primary">
-                                <i class="fas fa-file-pdf"></i> {{ basename($spt->lampiran) }}
-                            </button>
+                        <div class="form-group mb-3 md:col-span-2">
+                            <label for="lampiran" class="text-sm font-medium">Lampiran</label>
+                            @php
+                                $lampiran = is_array($spt->lampiran) ? $spt->lampiran : json_decode($spt->lampiran, true);
+                            @endphp
+                            @if($lampiran && count($lampiran))
+                                <div class="mt-2 space-y-3">
+                                    @foreach($lampiran as $file)
+                                        @php
+                                            if (is_string($file)) {
+                                                $file = ['path' => $file, 'name' => basename($file)];
+                                            }
+                                            $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                                            $iconClass = 'fa-file-alt text-gray-500';
+                                            if(in_array($ext, ['jpg','jpeg','png','gif'])) $iconClass = 'fa-file-image text-blue-500';
+                                            elseif($ext === 'pdf') $iconClass = 'fa-file-pdf text-red-500';
+                                            elseif(in_array($ext, ['doc','docx'])) $iconClass = 'fa-file-word text-blue-600';
+                                        @endphp
+                                        <div class="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 border border-gray-200 hover:bg-gray-100 transition-colors duration-200">
+                                            <div class="flex items-center flex-1 min-w-0">
+                                                <i class="fas {{ $iconClass }} text-xl mr-3 flex-shrink-0"></i>
+                                                <div class="flex-1 min-w-0">
+                                                    <a href="{{ asset('storage/' . $file['path']) }}" target="_blank"
+                                                       class="text-gray-900 font-medium hover:text-blue-600 transition-colors duration-200 truncate block"
+                                                       title="{{ $file['name'] }}">
+                                                        {{ $file['name'] }}
+                                                    </a>
+                                                    <p class="text-xs text-gray-500 mt-1">
+                                                        @php
+                                                            $filePath = public_path('storage/' . $file['path']);
+                                                            $fileSize = file_exists($filePath) ? number_format(filesize($filePath) / 1024, 1) . ' KB' : 'File tidak ditemukan';
+                                                        @endphp
+                                                        {{ strtoupper($ext) }} • {{ $fileSize }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center space-x-2 ml-4">
+                                                <a href="{{ asset('storage/' . $file['path']) }}" target="_blank"
+                                                   class="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-full transition-colors duration-200"
+                                                   title="Lihat file">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ asset('storage/' . $file['path']) }}" download
+                                                   class="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-full transition-colors duration-200"
+                                                   title="Download file">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="mt-2 text-gray-500 italic">Tidak ada lampiran</div>
+                            @endif
                         </div>
                     </div>
                     <div class="form-actions">
