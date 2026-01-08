@@ -10,23 +10,39 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <div class="mb-6">
-                        <h3 class="text-lg font-medium text-gray-900">{{ $request->title }}</h3>
+                        <h3 class="text-lg font-medium text-gray-900">Detail Permintaan Surat</h3>
                         <p class="mt-1 text-sm text-gray-500">Dibuat oleh {{ $request->user->name }} pada {{ $request->created_at->format('d M Y H:i') }}</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <h4 class="text-sm font-medium text-gray-500">Deskripsi</h4>
-                            <p class="mt-1 text-sm text-gray-900">{{ $request->description }}</p>
+                            <h4 class="text-sm font-medium text-gray-500">Jenis Surat</h4>
+                            <p class="mt-1 text-sm text-gray-900">
+                                @php
+                                    $letterTypes = [
+                                        'surat_masuk' => 'Surat Masuk',
+                                        'sk' => 'SK',
+                                        'perda' => 'PERDA',
+                                        'pergub' => 'PERGUB',
+                                    ];
+                                @endphp
+                                {{ $letterTypes[$request->letter_type] ?? $request->letter_type }}
+                            </p>
                         </div>
 
                         <div>
-                            <h4 class="text-sm font-medium text-gray-500">Jenis Data</h4>
-                            <p class="mt-1 text-sm text-gray-900">
-                                @if($request->data_type == 'surat_masuk') Surat Masuk
-                                @elseif($request->data_type == 'surat_keluar') Surat Keluar
-                                @else Disposisi @endif
-                            </p>
+                            <h4 class="text-sm font-medium text-gray-500">No. Surat</h4>
+                            <p class="mt-1 text-sm text-gray-900">{{ $request->no_surat ?? '-' }}</p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-500">Perihal</h4>
+                            <p class="mt-1 text-sm text-gray-900">{{ $request->perihal ?? '-' }}</p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-500">Tanggal Surat</h4>
+                            <p class="mt-1 text-sm text-gray-900">{{ $request->tanggal_surat ? $request->tanggal_surat->format('d M Y') : '-' }}</p>
                         </div>
 
                         <div>
@@ -43,12 +59,15 @@
                             </p>
                         </div>
 
-                        @if($request->deadline)
                         <div>
-                            <h4 class="text-sm font-medium text-gray-500">Batas Waktu</h4>
-                            <p class="mt-1 text-sm text-gray-900">{{ $request->deadline->format('d M Y') }}</p>
+                            <h4 class="text-sm font-medium text-gray-500">No. HP</h4>
+                            <p class="mt-1 text-sm text-gray-900">{{ $request->no_hp ?? '-' }}</p>
                         </div>
-                        @endif
+
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-500">Catatan</h4>
+                            <p class="mt-1 text-sm text-gray-900">{{ $request->notes ?? '-' }}</p>
+                        </div>
 
                         @if($request->status != 'pending')
                         <div class="md:col-span-2">

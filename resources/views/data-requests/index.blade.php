@@ -333,7 +333,7 @@
                         </div>
                     </div>
                 </div>
-                @if($request->status === 'approved' && !$request->fisik_diterima)
+                @if($request->status === 'approved' && !$request->fisik_diterima && auth()->user()->id == $request->user_id)
                     <div class="alert alert-success">
                         Surat Anda telah disetujui. Silakan bawa dokumen fisik ke kantor untuk proses lebih lanjut.
                     </div>

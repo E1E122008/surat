@@ -19,7 +19,7 @@ class DataRequestController extends Controller
     public function index(Request $request)
     {
         $query = ApprovalRequest::with('user')
-            ->when(Auth::user()->role != 'admin', function ($query) {
+            ->when(Auth::user()->role != 'admin' && Auth::user()->role != 'monitor', function ($query) {
                 return $query->where('user_id', Auth::id());
             });
 
