@@ -39,15 +39,23 @@ class SuratKeluarController extends Controller
                 'no_surat' => 'required|string|max:255',
                 'tanggal' => 'required|date',
                 'perihal' => 'required|string|max:255',
-                'lampiran' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
+                'lampiran' => 'required|array',
+                'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2147483648',
             ]);
 
-            // Handle file upload
+            $lampiranPaths = [];
             if ($request->hasFile('lampiran')) {
-                $file = $request->file('lampiran');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $path = $file->storeAs('lampiran/surat-keluar', $fileName, 'public');
-                $validated['lampiran'] = $path;
+                $files = $request->file('lampiran');
+                if (!is_array($files)) {
+                    $files = [$files];
+                }
+                foreach ($files as $file) {
+                    $lampiranPaths[] = [
+                        'path' => $file->store('lampiran/surat-keluar', 'public'),
+                        'name' => $file->getClientOriginalName(),
+                    ];
+                }
+                $validated['lampiran'] = json_encode($lampiranPaths);
             }
 
             // Create record
@@ -58,8 +66,12 @@ class SuratKeluarController extends Controller
                 
         } catch (\Exception $e) {
             // Jika terjadi error saat upload file, hapus file yang sudah terupload
-            if (isset($path) && Storage::disk('public')->exists($path)) {
-                Storage::disk('public')->delete($path);
+            if (isset($lampiranPaths)) {
+                foreach ($lampiranPaths as $lampiran) {
+                    if (isset($lampiran['path']) && Storage::disk('public')->exists($lampiran['path'])) {
+                        Storage::disk('public')->delete($lampiran['path']);
+                    }
+                }
             }
 
             return redirect()->back()
@@ -71,7 +83,8 @@ class SuratKeluarController extends Controller
     public function edit($id)
     {
         $suratKeluar = SuratKeluar::findOrFail($id);
-        return view('surat-keluar.edit', compact('suratKeluar'));
+        $lampiranLama = $suratKeluar->lampiran ? array_values(json_decode($suratKeluar->lampiran, true) ?? []) : [];
+        return view('surat-keluar.edit', compact('suratKeluar', 'lampiranLama'));
     }
 
     public function update(Request $request, $id)
@@ -82,20 +95,40 @@ class SuratKeluarController extends Controller
                 'no_surat' => 'required|string|max:255',
                 'tanggal' => 'required|date',
                 'perihal' => 'required|string|max:255',
-                'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2097152',
+                'lampiran' => 'nullable|array',
+                'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2147483648',
             ]);
 
-            if ($request->hasFile('lampiran')) {
-                // Hapus file lama jika ada
-                if ($suratKeluar->lampiran) {
-                    Storage::disk('public')->delete($suratKeluar->lampiran);
+            // Ambil lampiran lama yang dipertahankan
+            $lampiranLama = $request->input('lampiran_lama', []);
+            $lampiranDihapus = $request->input('lampiran_dihapus', []);
+            $lampiranData = [];
+            $lampiranSebelumnya = json_decode($suratKeluar->lampiran, true) ?? [];
+
+            // Proses lampiran yang ada
+            foreach ($lampiranSebelumnya as $file) {
+                // Jika file tidak dihapus dan masih ada di lampiran_lama
+                if (!in_array($file['path'], $lampiranDihapus) && in_array($file['path'], $lampiranLama)) {
+                    $lampiranData[] = $file;
+                } else {
+                    // Hapus file fisik jika user hapus lampiran
+                    if (Storage::disk('public')->exists($file['path'])) {
+                        Storage::disk('public')->delete($file['path']);
+                    }
                 }
-                
-                // Upload file baru
-                $file = $request->file('lampiran');
-                $path = $file->store('lampiran/surat-keluar', 'public');
-                $validated['lampiran'] = $path;
             }
+
+            // Proses upload file baru
+            if ($request->hasFile('lampiran')) {
+                foreach ($request->file('lampiran') as $file) {
+                    $lampiranData[] = [
+                        'path' => $file->store('lampiran/surat-keluar', 'public'),
+                        'name' => $file->getClientOriginalName(),
+                    ];
+                }
+            }
+
+            $validated['lampiran'] = json_encode($lampiranData);
 
             $suratKeluar->update($validated);
 
@@ -111,14 +144,21 @@ class SuratKeluarController extends Controller
     public function destroy(SuratKeluar $suratKeluar)
     {
         try {
-        // Hapus file lampiran jika ada
-        if ($suratKeluar->lampiran) {
-            Storage::disk('public')->delete($suratKeluar->lampiran);
-        }
+            // Delete file if exists
+            if ($suratKeluar->lampiran) {
+                $lampiranData = json_decode($suratKeluar->lampiran, true);
+                if (is_array($lampiranData)) {
+                    foreach ($lampiranData as $lampiran) {
+                        if (isset($lampiran['path']) && Storage::disk('public')->exists($lampiran['path'])) {
+                            Storage::disk('public')->delete($lampiran['path']);
+                        }
+                    }
+                }
+            }
 
-        $suratKeluar->delete();
+            $suratKeluar->delete();
 
-        return redirect()->route('surat-keluar.index')
+            return redirect()->route('surat-keluar.index')
                 ->with('success', ' Surat keluar berhasil dihapus!');
                 
         } catch (\Exception $e) {
