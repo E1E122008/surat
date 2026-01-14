@@ -82,9 +82,9 @@
                                                 // Pisahkan status persetujuan dan bagian lainnya
                                                 foreach($disposisiParts as $index => $part) {
                                                     $trimmedPart = trim($part);
-                                                    if (preg_match('/(Sudah|Belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i', $trimmedPart)) {
+                                                    if (preg_match('/(Sudah|Belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i', $trimmedPart)) {
                                                         $persetujuanKetua = $trimmedPart;
-                                                    } elseif (strpos($trimmedPart, 'Persetujuan Ketua Biro Hukum:') !== false) {
+                                                    } elseif (strpos($trimmedPart, 'Persetujuan Kepala Biro Hukum:') !== false) {
                                                         // Fallback format lama
                                                         $persetujuanKetua = $trimmedPart;
                                                     } elseif (strpos($trimmedPart, 'Diteruskan ke:') !== false) {
@@ -284,9 +284,9 @@
                 <form id="disposisiForm" method="POST">
                     @csrf
                     <div class="modal-body">
-                        <!-- STATUS PERSETUJUAN KETUA BIRO HUKUM -->
+                        <!-- STATUS PERSETUJUAN KEPALA BIRO HUKUM -->
                         <div class="mb-3">
-                            <label class="form-label"><strong>Status Persetujuan Ketua Biro Hukum:</strong></label>
+                            <label class="form-label"><strong>Status Persetujuan Kepala Biro Hukum:</strong></label>
                             @if(auth()->user() && auth()->user()->role === 'admin')
                                 <div id="radioPersetujuanGroup" class="mb-2">
                                     <input class="form-check-input" type="radio" name="persetujuan_ketua" id="radioDisetujui" value="Sudah">
@@ -303,9 +303,9 @@
                             <label for="disposisi" class="form-label">Tujuan Disposisi</label>
                             <select class="form-select" id="disposisi" name="disposisi" required>
                                 <option value="">Pilih Tujuan Disposisi</option>
-                                <option value="Kabag Perancangan Per-UU kab/kota">Kabag Perancangan Per-UU kab/kota</option>
+                                <option value="Kabag Peraturan Perundang-Undangan Kabupaten/Kota">Kabag Peraturan Perundang-Undangan Kabupaten/Kota</option>
                                 <option value="Kabag Bantuan Hukum dan HAM">Kabag Bantuan Hukum dan HAM</option>
-                                <option value="Perancangan Per-UU Ahli Madya">Perancangan Per-UU Ahli Madya</option>
+                                <option value="Ketua Tim Kerja Peraturan Perundang-Undangan Provinsi">Ketua Tim Kerja Peraturan Perundang-Undangan Provinsi</option>
                                 <option value="Kasubag Tata Usaha">Kasubag Tata Usaha</option>
                             </select>
                         </div>
@@ -652,23 +652,23 @@
         }
 
         const subDisposisiOptions = {
-            'Kabag Perancangan Per-UU kab/kota': [
+            'Kabag Peraturan Perundang-Undangan Kabupaten/Kota': [
                 'Belum/Tidak diteruskan',
-                'Analisis Hukum Wilayah 1',
-                'Analisis Hukum Wilayah 2',
-                'Analisis Hukum Wilayah 3'
+                'Fungsional Peraturan Per-UU, Wil. 1',
+                'Fungsional Peraturan Per-UU, Wil. 2',
+                'Fungsional Peraturan Per-UU, Wil. 3'
             ],
             'Kabag Bantuan Hukum dan HAM': [
                 'Belum/Tidak diteruskan',
-                'Analisis Hukum Litigasi',
-                'Analisis Hukum Non-Litigasi',
+                'Fungsional Analis Hukum Litigasi',
+                'Fungsional Analis Hukum Non Litigasi',
                 'Kasubag Tata Usaha'
             ],
-            'Perancangan Per-UU Ahli Madya': [
+            'Ketua Tim Kerja Peraturan Perundang-Undangan Provinsi': [
                 'Belum/Tidak diteruskan',
-                'Sub Kordinator Penetapan',
-                'Sub Kordinator Pengaturan',
-                'Sub Kordinator Dokumentasi NHL'
+                'Fungsional Peraturan Per-UU (SK)',
+                'Fungsional Peraturan Per-UU (Perda & Pergub)',
+                'Fungsional Peraturan Per-UU (JDIH & NHL)'
             ]
             // Catatan: Kasubag Tata Usaha tidak memiliki sub disposisi
         };
@@ -724,7 +724,7 @@
                 isAdmin = true;
             @endif
             
-            // 1. Set Status Persetujuan Ketua Biro Hukum
+            // 1. Set Status Persetujuan Kepala Biro Hukum
             let persetujuanValue = 'Belum';
             if (persetujuan) {
                 if (persetujuan.toLowerCase().includes('sudah')) {
@@ -960,24 +960,24 @@
                         
                         if(document.getElementById('radioDisetujui').checked) {
                             statusSetuju = true;
-                            // Format baru: "Sudah di Setujui Ketua Biro Hukum"
-                            const newFormat = 'Sudah di Setujui Ketua Biro Hukum';
-                            if (disposisiBaru.match(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i)) {
-                                disposisiBaru = disposisiBaru.replace(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i, newFormat);
-                            } else if (disposisiBaru.includes('Persetujuan Ketua Biro Hukum:')) {
+                            // Format baru: "Sudah di Setujui Kepala Biro Hukum"
+                            const newFormat = 'Sudah di Setujui Kepala Biro Hukum';
+                            if (disposisiBaru.match(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i)) {
+                                disposisiBaru = disposisiBaru.replace(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i, newFormat);
+                            } else if (disposisiBaru.includes('Persetujuan Kepala Biro Hukum:')) {
                                 // Fallback format lama
-                                disposisiBaru = disposisiBaru.replace(/Persetujuan Ketua Biro Hukum:[^|]*/g, newFormat);
+                                disposisiBaru = disposisiBaru.replace(/Persetujuan Kepala Biro Hukum:[^|]*/g, newFormat);
                             } else {
                                 disposisiBaru = newFormat + (disposisiBaru ? ' | ' + disposisiBaru : '');
                             }
                         } else {
-                            // Format baru: "Belum di Setujui Ketua Biro Hukum"
-                            const newFormat = 'Belum di Setujui Ketua Biro Hukum';
-                            if (disposisiBaru.match(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i)) {
-                                disposisiBaru = disposisiBaru.replace(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i, newFormat);
-                            } else if (disposisiBaru.includes('Persetujuan Ketua Biro Hukum:')) {
+                            // Format baru: "Belum di Setujui Kepala Biro Hukum"
+                            const newFormat = 'Belum di Setujui Kepala Biro Hukum';
+                            if (disposisiBaru.match(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i)) {
+                                disposisiBaru = disposisiBaru.replace(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i, newFormat);
+                            } else if (disposisiBaru.includes('Persetujuan Kepala Biro Hukum:')) {
                                 // Fallback format lama
-                                disposisiBaru = disposisiBaru.replace(/Persetujuan Ketua Biro Hukum:[^|]*/g, newFormat);
+                                disposisiBaru = disposisiBaru.replace(/Persetujuan Kepala Biro Hukum:[^|]*/g, newFormat);
                             } else {
                                 disposisiBaru = newFormat + (disposisiBaru ? ' | ' + disposisiBaru : '');
                             }

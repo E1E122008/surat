@@ -137,12 +137,12 @@
                         </table>
                     </div>
                 </div>
-    @if(isset($approvalRequests) && method_exists($approvalRequests, 'links'))
+                @if(isset($approvalRequests) && method_exists($approvalRequests, 'links'))
         <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top">
             <div class="text-sm text-gray-600">
                 Menampilkan {{ $approvalRequests->firstItem() ?? 0 }} sampai {{ $approvalRequests->lastItem() ?? 0 }} dari {{ $approvalRequests->total() }} data
             </div>
-            <nav aria-label="Page navigation">
+                        <nav aria-label="Page navigation">
                 <ul class="pagination mb-0">
                     {{-- Previous Page Link --}}
                     @if ($approvalRequests->onFirstPage())
@@ -216,9 +216,9 @@
                         </li>
                     @endif
                 </ul>
-            </nav>
-        </div>
-    @endif
+                        </nav>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

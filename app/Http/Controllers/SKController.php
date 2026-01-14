@@ -298,11 +298,11 @@ class SKController extends Controller
                 }
             } elseif ($sk->disposisi) {
                 // Cek format baru
-                if (preg_match('/(Sudah|Belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i', $sk->disposisi, $matches)) {
+                if (preg_match('/(Sudah|Belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i', $sk->disposisi, $matches)) {
                     $statusPersetujuan = ucfirst(strtolower($matches[1]));
                 }
                 // Fallback format lama
-                elseif (preg_match('/Persetujuan Ketua Biro Hukum:\s*(Sudah|Belum|sudah|belum)/i', $sk->disposisi, $matches)) {
+                elseif (preg_match('/Persetujuan Kepala Biro Hukum:\s*(Sudah|Belum|sudah|belum)/i', $sk->disposisi, $matches)) {
                     $statusPersetujuan = ucfirst(strtolower($matches[1]));
                 }
             }
@@ -310,8 +310,8 @@ class SKController extends Controller
             // Susun format disposisi: Status persetujuan dahulu, lalu detail lain
             $disposisiParts = [];
 
-            // 1. Status Persetujuan Ketua Biro Hukum
-            $disposisiParts[] = $statusPersetujuan . ' di Setujui Ketua Biro Hukum';
+            // 1. Status Persetujuan Kepala Biro Hukum
+            $disposisiParts[] = $statusPersetujuan . ' di Setujui Kepala Biro Hukum';
 
             // 2. Tujuan Disposisi
             $disposisiParts[] = $request->disposisi;

@@ -145,7 +145,7 @@ class SuratKeluarController extends Controller
     {
         try {
             // Delete file if exists
-            if ($suratKeluar->lampiran) {
+        if ($suratKeluar->lampiran) {
                 $lampiranData = json_decode($suratKeluar->lampiran, true);
                 if (is_array($lampiranData)) {
                     foreach ($lampiranData as $lampiran) {
@@ -154,11 +154,11 @@ class SuratKeluarController extends Controller
                         }
                     }
                 }
-            }
+        }
 
-            $suratKeluar->delete();
+        $suratKeluar->delete();
 
-            return redirect()->route('surat-keluar.index')
+        return redirect()->route('surat-keluar.index')
                 ->with('success', ' Surat keluar berhasil dihapus!');
                 
         } catch (\Exception $e) {

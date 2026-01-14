@@ -37,18 +37,18 @@ class SppdLuarDaerahController extends Controller
     public function store(Request $request)
     {   
         try {
-            $validated = $request->validate([
-                'no_surat' => 'required|string|max:255',
-                'tanggal' => 'required|date',
-                'tujuan' => 'required|string|max:255',
-                'perihal' => 'required|string|max:255',
-                'nama_petugas' => 'required|string',
+        $validated = $request->validate([
+            'no_surat' => 'required|string|max:255',
+            'tanggal' => 'required|date',
+            'tujuan' => 'required|string|max:255',
+            'perihal' => 'required|string|max:255',
+            'nama_petugas' => 'required|string',
                 'lampiran' => 'required|array',
                 'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2147483648',
-            ]);
+        ]);
 
             $lampiranPaths = [];
-            if ($request->hasFile('lampiran')) {
+        if ($request->hasFile('lampiran')) {
                 $files = $request->file('lampiran');
                 if (!is_array($files)) {
                     $files = [$files];
@@ -60,12 +60,12 @@ class SppdLuarDaerahController extends Controller
                     ];
                 }
                 $validated['lampiran'] = json_encode($lampiranPaths);
-            }
+        }
 
-            SppdLuarDaerah::create($validated);
+        SppdLuarDaerah::create($validated);
 
-            return redirect()->route('sppd-luar-daerah.index')
-                ->with('success', 'SPPD Luar Daerah berhasil ditambahkan');
+        return redirect()->route('sppd-luar-daerah.index')
+            ->with('success', 'SPPD Luar Daerah berhasil ditambahkan');
         } catch (\Exception $e) {
             if (isset($lampiranPaths)) {
                 foreach ($lampiranPaths as $lampiran) {
@@ -152,7 +152,7 @@ class SppdLuarDaerahController extends Controller
     {   
         try {
             // Delete file if exists
-            if ($sppdLuarDaerah->lampiran) {
+        if ($sppdLuarDaerah->lampiran) {
                 $lampiranData = json_decode($sppdLuarDaerah->lampiran, true);
                 if (is_array($lampiranData)) {
                     foreach ($lampiranData as $lampiran) {
@@ -161,12 +161,12 @@ class SppdLuarDaerahController extends Controller
                         }
                     }
                 }
-            }
+        }
 
-            $sppdLuarDaerah->delete();
+        $sppdLuarDaerah->delete();
 
-            return redirect()->route('sppd-luar-daerah.index')
-                ->with('success', 'SPPD Luar Daerah berhasil dihapus');
+        return redirect()->route('sppd-luar-daerah.index')
+            ->with('success', 'SPPD Luar Daerah berhasil dihapus');
         } catch (\Exception $e) {
             return redirect()->route('sppd-luar-daerah.index')
                 ->with('error', 'Gagal menghapus SPPD Luar Daerah: ' . $e->getMessage());

@@ -153,7 +153,7 @@ class SptLuarDaerahController extends Controller
     {
         try {
             // Delete file if exists
-            if ($sptLuarDaerah->lampiran) {
+        if ($sptLuarDaerah->lampiran) {
                 $lampiranData = json_decode($sptLuarDaerah->lampiran, true);
                 if (is_array($lampiranData)) {
                     foreach ($lampiranData as $lampiran) {
@@ -162,12 +162,12 @@ class SptLuarDaerahController extends Controller
                         }
                     }
                 }
-            }
+        }
 
-            $sptLuarDaerah->delete();
+        $sptLuarDaerah->delete();
 
-            return redirect()->route('spt-luar-daerah.index')
-                ->with('success', 'SPT Luar Daerah berhasil dihapus');
+        return redirect()->route('spt-luar-daerah.index')
+            ->with('success', 'SPT Luar Daerah berhasil dihapus');
         } catch (\Exception $e) {
             return redirect()->route('spt-luar-daerah.index')
                 ->with('error', 'Gagal menghapus SPT Luar Daerah: ' . $e->getMessage());

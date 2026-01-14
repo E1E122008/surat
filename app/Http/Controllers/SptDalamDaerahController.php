@@ -38,18 +38,18 @@ class SptDalamDaerahController extends Controller
     public function store(Request $request)
     {
         try {
-            $validated = $request->validate([
-                'no_surat' => 'required|string|max:255',
-                'tanggal' => 'required|date',
-                'tujuan' => 'required|string|max:255',
-                'perihal' => 'required|string|max:255',
-                'nama_petugas' => 'required|string',
+        $validated = $request->validate([
+            'no_surat' => 'required|string|max:255',
+            'tanggal' => 'required|date',
+            'tujuan' => 'required|string|max:255',
+            'perihal' => 'required|string|max:255',
+            'nama_petugas' => 'required|string',
                 'lampiran' => 'required|array',
                 'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2147483648',
-            ]);
+        ]);
 
             $lampiranPaths = [];
-            if ($request->hasFile('lampiran')) {
+        if ($request->hasFile('lampiran')) {
                 $files = $request->file('lampiran');
                 if (!is_array($files)) {
                     $files = [$files];
@@ -61,11 +61,11 @@ class SptDalamDaerahController extends Controller
                     ];
                 }
                 $validated['lampiran'] = json_encode($lampiranPaths);
-            }
+        }
 
-            SptDalamDaerah::create($validated);
-            return redirect()->route('spt-dalam-daerah.index')
-                ->with('success', 'SPT Dalam Daerah berhasil ditambahkan');
+        SptDalamDaerah::create($validated);
+        return redirect()->route('spt-dalam-daerah.index')
+            ->with('success', 'SPT Dalam Daerah berhasil ditambahkan');
         } catch (\Exception $e) {
             if (isset($lampiranPaths)) {
                 foreach ($lampiranPaths as $lampiran) {
@@ -152,7 +152,7 @@ class SptDalamDaerahController extends Controller
     {
         try {
             // Delete file if exists
-            if ($sptDalamDaerah->lampiran) {
+        if ($sptDalamDaerah->lampiran) {
                 $lampiranData = json_decode($sptDalamDaerah->lampiran, true);
                 if (is_array($lampiranData)) {
                     foreach ($lampiranData as $lampiran) {
@@ -161,12 +161,12 @@ class SptDalamDaerahController extends Controller
                         }
                     }
                 }
-            }
+        }
 
-            $sptDalamDaerah->delete();
+        $sptDalamDaerah->delete();
 
-            return redirect()->route('spt-dalam-daerah.index')
-                ->with('success', 'SPT Dalam Daerah berhasil dihapus');
+        return redirect()->route('spt-dalam-daerah.index')
+            ->with('success', 'SPT Dalam Daerah berhasil dihapus');
         } catch (\Exception $e) {
             return redirect()->route('spt-dalam-daerah.index')
                 ->with('error', 'Gagal menghapus SPT Dalam Daerah: ' . $e->getMessage());

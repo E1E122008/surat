@@ -94,11 +94,11 @@
                                                         @php
                                                             $file = is_string($lampiran[0]) ? ['path' => $lampiran[0], 'name' => basename($lampiran[0])] : $lampiran[0];
                                                         @endphp
-                                                        <li>
+                                                <li>
                                                             <a class="dropdown-item" href="{{ asset('storage/' . $file['path']) }}" target="_blank">
-                                                                <i class="fas fa-eye fa-fw me-2 text-primary"></i>Lihat Lampiran
-                                                            </a>
-                                                        </li>
+                                                        <i class="fas fa-eye fa-fw me-2 text-primary"></i>Lihat Lampiran
+                                                    </a>
+                                                </li>
                                                     @else
                                                         <li><h6 class="dropdown-header">Lampiran ({{ count($lampiran) }})</h6></li>
                                                         @foreach($lampiran as $file)

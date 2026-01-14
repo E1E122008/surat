@@ -73,7 +73,7 @@
                                 @enderror
                             </div>
 
-                            <div class="form-group md:col-span-2">
+                            <div class="form-group md:col-span-2">    
                                 <label for="lampiran" class="text-sm font-medium">Lampiran Saat Ini</label>
                                 @php
                                     $lampiran = is_array($sppdLuarDaerah->lampiran) ? $sppdLuarDaerah->lampiran : json_decode($sppdLuarDaerah->lampiran, true);

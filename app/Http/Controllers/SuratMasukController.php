@@ -308,12 +308,12 @@ class SuratMasukController extends Controller
                     $statusPersetujuan = $inputValue;
                 }
             } elseif ($suratMasuk->disposisi) {
-                // Ambil dari disposisi yang sudah ada - format baru: "Sudah di Setujui Ketua Biro Hukum" atau "Belum di Setujui Ketua Biro Hukum"
-                if (preg_match('/(Sudah|Belum)\s+di\s+Setujui\s+Ketua\s+Biro\s+Hukum/i', $suratMasuk->disposisi, $matches)) {
+                // Ambil dari disposisi yang sudah ada - format baru: "Sudah di Setujui Kepala Biro Hukum" atau "Belum di Setujui Kepala Biro Hukum"
+                if (preg_match('/(Sudah|Belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i', $suratMasuk->disposisi, $matches)) {
                     $statusPersetujuan = ucfirst(strtolower($matches[1]));
                 }
                 // Fallback untuk format lama jika masih ada
-                elseif (preg_match('/Persetujuan Ketua Biro Hukum:\s*(Sudah|Belum|sudah|belum)/i', $suratMasuk->disposisi, $matches)) {
+                elseif (preg_match('/Persetujuan Kepala Biro Hukum:\s*(Sudah|Belum|sudah|belum)/i', $suratMasuk->disposisi, $matches)) {
                     $statusPersetujuan = ucfirst(strtolower($matches[1]));
                 }
             }
@@ -321,8 +321,8 @@ class SuratMasukController extends Controller
             // Format disposisi: Status Persetujuan terlebih dahulu, kemudian informasi lainnya
             $disposisiParts = [];
             
-            // 1. Status Persetujuan Ketua Biro Hukum (pertama)
-            $disposisiParts[] = $statusPersetujuan . ' di Setujui Ketua Biro Hukum';
+            // 1. Status Persetujuan Kepala Biro Hukum (pertama)
+            $disposisiParts[] = $statusPersetujuan . ' di Setujui Kepala Biro Hukum';
             
             // 2. Tujuan Disposisi
             $disposisiParts[] = $request->disposisi;

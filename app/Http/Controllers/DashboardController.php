@@ -33,9 +33,10 @@ class DashboardController extends Controller
         $sppdCount = $sppdDalamCount + $sppdLuarCount;
         $sptCount = $sptDalamCount + $sptLuarCount;
 
-        // Data untuk grafik - mengambil data 6 bulan terakhir
+        // Data untuk grafik - mengambil data 5 bulan sebelumnya sampai bulan sekarang (total 6 bulan)
+        // Menggunakan now() untuk memastikan data selalu terupdate
         $months = collect(range(5, 0))->map(function($i) {
-            return now()->startOfMonth()->subMonths($i);
+            return Carbon::now()->startOfMonth()->subMonths($i);
         });
 
         $suratMasukData = $months->map(function($month) {
@@ -134,34 +135,36 @@ class DashboardController extends Controller
     {
         $period = $request->get('period', 'bulan');
         
-        // Tentukan rentang waktu berdasarkan filter
+        // Tentukan rentang waktu berdasarkan filter - selalu menggunakan Carbon::now() untuk data terbaru
         if ($period === 'minggu') {
-            $startDate = now()->subWeeks(7);
+            $startDate = Carbon::now()->subWeeks(7);
             $months = collect(range(0, 7))->map(function($i) {
-                return now()->subWeeks($i);
+                return Carbon::now()->subWeeks($i);
             })->reverse();
             $labels = $months->map(function($date) {
                 return $date->format('d M');
             });
         } elseif ($period === 'tahun') {
-            $startDate = now()->subYears(1);
+            $startDate = Carbon::now()->subYears(1);
             $months = collect(range(0, 11))->map(function($i) {
-                return now()->subMonths($i);
+                return Carbon::now()->subMonths($i);
             })->reverse();
             $labels = $months->map(function($date) {
                 return $date->format('M Y');
             });
         } else { // bulan
-            $startDate = now()->subMonths(6);
-            $months = collect(range(0, 6))->map(function($i) {
-                return now()->subMonths($i);
-            })->reverse();
+            // Mengambil 5 bulan sebelumnya sampai bulan sekarang (total 6 bulan)
+            // Menggunakan Carbon::now() untuk memastikan data selalu terupdate
+            $startDate = Carbon::now()->subMonths(5);
+            $months = collect(range(5, 0))->map(function($i) {
+                return Carbon::now()->startOfMonth()->subMonths($i);
+            });
             $labels = $months->map(function($date) {
                 return $date->format('M Y');
             });
         }
 
-        // Query data sesuai periode
+        // Query data sesuai periode - selalu menggunakan data terbaru
         $suratMasukData = $months->map(function($date) use ($period) {
             $query = SuratMasuk::query();
             if ($period === 'minggu') {
@@ -172,6 +175,31 @@ class DashboardController extends Controller
                             ->count();
             }
         });
+        
+        // Query untuk SK, Perda, Pergub (hanya untuk periode bulan)
+        $skData = [];
+        $perdaData = [];
+        $pergubData = [];
+        
+        if ($period === 'bulan') {
+            $skData = $months->map(function($date) {
+                return SK::whereYear('tanggal_terima', $date->year)
+                        ->whereMonth('tanggal_terima', $date->month)
+                        ->count();
+            });
+            
+            $perdaData = $months->map(function($date) {
+                return Perda::whereYear('tanggal_terima', $date->year)
+                        ->whereMonth('tanggal_terima', $date->month)
+                        ->count();
+            });
+            
+            $pergubData = $months->map(function($date) {
+                return Pergub::whereYear('tanggal_terima', $date->year)
+                        ->whereMonth('tanggal_terima', $date->month)
+                        ->count();
+            });
+        }
 
         // Lakukan hal yang sama untuk data lainnya
         $suratKeluarData = $months->map(function($date) use ($period) {
@@ -236,9 +264,9 @@ class DashboardController extends Controller
         return response()->json([
             'labels' => $labels,
             'suratMasukData' => $suratMasukData,
-            'skData' => $skData ?? [],
-            'perdaData' => $perdaData ?? [],
-            'pergubData' => $pergubData ?? [],
+            'skData' => $skData,
+            'perdaData' => $perdaData,
+            'pergubData' => $pergubData,
             'suratKeluarData' => $suratKeluarData,
             'sppdDalamData' => $sppdDalamData,
             'sppdLuarData' => $sppdLuarData,
