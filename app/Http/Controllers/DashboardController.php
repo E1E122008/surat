@@ -33,70 +33,90 @@ class DashboardController extends Controller
         $sppdCount = $sppdDalamCount + $sppdLuarCount;
         $sptCount = $sptDalamCount + $sptLuarCount;
 
-        // Data untuk grafik - mengambil data 5 bulan sebelumnya sampai bulan sekarang (total 6 bulan)
-        // Menggunakan now() untuk memastikan data selalu terupdate
-        $months = collect(range(5, 0))->map(function($i) {
-            return Carbon::now()->startOfMonth()->subMonths($i);
-        });
+        // Data untuk grafik - mulai dari tahun 2026, menampilkan 5 bulan ke depan dari bulan sekarang
+        // Jika sekarang Jan 2026 → tampilkan: Jan, Feb, Mar, Apr, Mei 2026 (5 bulan)
+        // Jika sekarang Maret 2026 → tampilkan: Mar, Apr, Mei, Jun, Jul 2026 (5 bulan)
+        $now = Carbon::now();
+        $startYear = 2026;
+        
+        // Tentukan bulan mulai (bulan sekarang)
+        $currentMonth = $now->month;
+        $currentYear = $now->year;
+        
+        // Jika tahun sekarang < 2026, mulai dari Jan 2026
+        if ($currentYear < $startYear) {
+            $currentYear = $startYear;
+            $currentMonth = 1;
+        }
+        
+        // Mulai dari bulan sekarang, tampilkan 5 bulan ke depan
+        $startMonth = $currentMonth;
+        $endMonth = min(12, $currentMonth + 4); // Maksimal sampai Desember
+        
+        // Generate array bulan dari startMonth sampai endMonth (5 bulan)
+        $months = collect();
+        for ($month = $startMonth; $month <= $endMonth; $month++) {
+            $months->push(Carbon::create($currentYear, $month, 1)->startOfMonth());
+        }
 
         $suratMasukData = $months->map(function($month) {
             return SuratMasuk::whereYear('tanggal_terima', $month->year)
                 ->whereMonth('tanggal_terima', $month->month)
                 ->count();
-        });
+        })->values();
 
         $skData = $months->map(function($month) {
             return SK::whereYear('tanggal_terima', $month->year)
                 ->whereMonth('tanggal_terima', $month->month)
                 ->count();
-        });
+        })->values();
 
         $perdaData = $months->map(function($month) {
             return Perda::whereYear('tanggal_terima', $month->year)
                 ->whereMonth('tanggal_terima', $month->month)
                 ->count();
-        });
+        })->values();
 
         $pergubData = $months->map(function($month) {
             return Pergub::whereYear('tanggal_terima', $month->year)
                 ->whereMonth('tanggal_terima', $month->month)
                 ->count();
-        });
+        })->values();
 
         // Data untuk grafik surat keluar
         $suratKeluarData = $months->map(function($month) {
             return SuratKeluar::whereYear('tanggal', $month->year)
                 ->whereMonth('tanggal', $month->month)
                 ->count();
-        });
+        })->values();
 
         $sppdDalamData = $months->map(function($month) {
             return SppdDalamDaerah::whereYear('tanggal', $month->year)
                 ->whereMonth('tanggal', $month->month)
                 ->count();
-        });
+        })->values();
 
         $sppdLuarData = $months->map(function($month) {
             return SppdLuarDaerah::whereYear('tanggal', $month->year)
                 ->whereMonth('tanggal', $month->month)
                 ->count();
-        });
+        })->values();
 
         $sptDalamData = $months->map(function($month) {
             return SptDalamDaerah::whereYear('tanggal', $month->year)
                 ->whereMonth('tanggal', $month->month)
                 ->count();
-        });
+        })->values();
 
         $sptLuarData = $months->map(function($month) {
             return SptLuarDaerah::whereYear('tanggal', $month->year)
                 ->whereMonth('tanggal', $month->month)
                 ->count();
-        });
+        })->values();
 
         $labels = $months->map(function($month) {
             return $month->format('M Y');
-        });
+        })->values();
 
         return view('dashboard', compact(
             'sppdDalamCount',
@@ -153,15 +173,35 @@ class DashboardController extends Controller
                 return $date->format('M Y');
             });
         } else { // bulan
-            // Mengambil 5 bulan sebelumnya sampai bulan sekarang (total 6 bulan)
-            // Menggunakan Carbon::now() untuk memastikan data selalu terupdate
-            $startDate = Carbon::now()->subMonths(5);
-            $months = collect(range(5, 0))->map(function($i) {
-                return Carbon::now()->startOfMonth()->subMonths($i);
-            });
+            // Mulai dari tahun 2026, menampilkan 5 bulan ke depan dari bulan sekarang
+            // Jika sekarang Jan 2026 → tampilkan: Jan, Feb, Mar, Apr, Mei 2026 (5 bulan)
+            // Jika sekarang Maret 2026 → tampilkan: Mar, Apr, Mei, Jun, Jul 2026 (5 bulan)
+            $now = Carbon::now();
+            $startYear = 2026;
+            
+            // Tentukan bulan mulai (bulan sekarang)
+            $currentMonth = $now->month;
+            $currentYear = $now->year;
+            
+            // Jika tahun sekarang < 2026, mulai dari Jan 2026
+            if ($currentYear < $startYear) {
+                $currentYear = $startYear;
+                $currentMonth = 1;
+            }
+            
+            // Mulai dari bulan sekarang, tampilkan 5 bulan ke depan
+            $startMonth = $currentMonth;
+            $endMonth = min(12, $currentMonth + 4); // Maksimal sampai Desember
+            
+            // Generate array bulan dari startMonth sampai endMonth (5 bulan)
+            $months = collect();
+            for ($month = $startMonth; $month <= $endMonth; $month++) {
+                $months->push(Carbon::create($currentYear, $month, 1)->startOfMonth());
+            }
+            
             $labels = $months->map(function($date) {
                 return $date->format('M Y');
-            });
+            })->values();
         }
 
         // Query data sesuai periode - selalu menggunakan data terbaru
@@ -174,7 +214,7 @@ class DashboardController extends Controller
                             ->whereMonth('tanggal_terima', $date->month)
                             ->count();
             }
-        });
+        })->values();
         
         // Query untuk SK, Perda, Pergub (hanya untuk periode bulan)
         $skData = [];
@@ -186,19 +226,19 @@ class DashboardController extends Controller
                 return SK::whereYear('tanggal_terima', $date->year)
                         ->whereMonth('tanggal_terima', $date->month)
                         ->count();
-            });
+            })->values();
             
             $perdaData = $months->map(function($date) {
                 return Perda::whereYear('tanggal_terima', $date->year)
                         ->whereMonth('tanggal_terima', $date->month)
                         ->count();
-            });
+            })->values();
             
             $pergubData = $months->map(function($date) {
                 return Pergub::whereYear('tanggal_terima', $date->year)
                         ->whereMonth('tanggal_terima', $date->month)
                         ->count();
-            });
+            })->values();
         }
 
         // Lakukan hal yang sama untuk data lainnya
@@ -211,7 +251,7 @@ class DashboardController extends Controller
                             ->whereMonth('tanggal', $date->month)
                             ->count();
             }
-        });
+        })->values();
 
         // Query untuk SPPD Dalam
         $sppdDalamData = $months->map(function($date) use ($period) {
@@ -223,7 +263,7 @@ class DashboardController extends Controller
                             ->whereMonth('tanggal', $date->month)
                             ->count();
             }
-        });
+        })->values();
 
         // Query untuk SPPD Luar
         $sppdLuarData = $months->map(function($date) use ($period) {
@@ -235,7 +275,7 @@ class DashboardController extends Controller
                             ->whereMonth('tanggal', $date->month)
                             ->count();
             }
-        });
+        })->values();
 
         // Query untuk SPT Dalam
         $sptDalamData = $months->map(function($date) use ($period) {
@@ -247,7 +287,7 @@ class DashboardController extends Controller
                             ->whereMonth('tanggal', $date->month)
                             ->count();
             }
-        });
+        })->values();
 
         // Query untuk SPT Luar
         $sptLuarData = $months->map(function($date) use ($period) {
@@ -259,7 +299,7 @@ class DashboardController extends Controller
                             ->whereMonth('tanggal', $date->month)
                             ->count();
             }
-        });
+        })->values();
 
         return response()->json([
             'labels' => $labels,

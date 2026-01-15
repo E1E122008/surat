@@ -178,10 +178,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/draft-phd/sk', [SKController::class, 'index'])->name('draft-phd.sk.index');
 
-    Route::get('/draft-phd/perda', [PerdaController::class, 'perdaIndex'])->name('draft-phd.perda.index');
+    Route::get('/draft-phd/perda', [PerdaController::class, 'index'])->name('draft-phd.perda.index');
     Route::get('/draft-phd/perda/{perda}/status', [PerdaController::class, 'status'])->name('draft-phd.perda.status')->middleware('preventMonitor');
     Route::put('/draft-phd/perda/{perda}/update-status', [PerdaController::class, 'updateStatus'])->name('draft-phd.perda.update-status')->middleware('preventMonitor');
-    Route::get('/draft-phd/pergub', [PergubController::class, 'pergubIndex'])->name('draft-phd.pergub.index');
+    Route::get('/draft-phd/pergub', [PergubController::class, 'index'])->name('draft-phd.pergub.index');
 
     // Routes untuk semua role (termasuk monitor) - hanya view
     Route::get('/draft-phd/sk/{sk}/detail', [SKController::class, 'detail'])->name('draft-phd.sk.detail');

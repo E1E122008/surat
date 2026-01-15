@@ -105,6 +105,29 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentOutgoingPeriod = 'bulan';
     let incomingChart, outgoingChart;
 
+    // Fungsi untuk menghitung stepSize dinamis berdasarkan nilai maksimum
+    function calculateStepSize(maxValue) {
+        if (maxValue === 0) return 1;
+        if (maxValue <= 10) return 1;
+        if (maxValue <= 50) return 5;
+        if (maxValue <= 100) return 10;
+        if (maxValue <= 200) return 20;
+        if (maxValue <= 500) return 50;
+        return Math.ceil(maxValue / 10);
+    }
+
+    // Fungsi untuk mendapatkan nilai maksimum dari semua dataset
+    function getMaxValue(datasets) {
+        let max = 0;
+        datasets.forEach(dataset => {
+            if (Array.isArray(dataset.data)) {
+                const datasetMax = Math.max(...dataset.data);
+                if (datasetMax > max) max = datasetMax;
+            }
+        });
+        return max;
+    }
+
     async function fetchChartData(period) {
         try {
             const response = await fetch(`/dashboard/chart-data?period=${period}`);
@@ -148,6 +171,13 @@ document.addEventListener('DOMContentLoaded', function() {
             incomingChart.data.datasets[1].data = data.skData;
             incomingChart.data.datasets[2].data = data.perdaData;
             incomingChart.data.datasets[3].data = data.pergubData;
+            
+            // Update skala Y-axis secara dinamis
+            const maxValue = getMaxValue(incomingChart.data.datasets);
+            const stepSize = calculateStepSize(maxValue);
+            incomingChart.options.scales.y.ticks.stepSize = stepSize;
+            incomingChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.1) : 10;
+            
             incomingChart.update();
         }
 
@@ -158,6 +188,13 @@ document.addEventListener('DOMContentLoaded', function() {
             outgoingChart.data.datasets[2].data = data.sppdLuarData;
             outgoingChart.data.datasets[3].data = data.sptDalamData;
             outgoingChart.data.datasets[4].data = data.sptLuarData;
+            
+            // Update skala Y-axis secara dinamis
+            const maxValue = getMaxValue(outgoingChart.data.datasets);
+            const stepSize = calculateStepSize(maxValue);
+            outgoingChart.options.scales.y.ticks.stepSize = stepSize;
+            outgoingChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.1) : 10;
+            
             outgoingChart.update();
         }
 
@@ -174,6 +211,21 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Chart element not found, skipping chart initialization');
     } else {
     const ctxIncoming = incomingChartElement.getContext('2d');
+    // Hitung stepSize dinamis untuk grafik incoming
+    const incomingDatasets = [
+        { data: @json($suratMasukData) },
+        { data: @json($skData) },
+        { data: @json($perdaData) },
+        { data: @json($pergubData) }
+    ];
+    const incomingMaxValue = Math.max(
+        ...incomingDatasets.flatMap(d => d.data || [0])
+    );
+    const incomingStepSize = incomingMaxValue <= 10 ? 1 : 
+                            incomingMaxValue <= 50 ? 5 : 
+                            incomingMaxValue <= 100 ? 10 : 
+                            Math.ceil(incomingMaxValue / 10);
+
     incomingChart = new Chart(ctxIncoming, {
         type: 'line',
         data: {
@@ -182,38 +234,89 @@ document.addEventListener('DOMContentLoaded', function() {
                 label: 'Surat Masuk',
                 data: @json($suratMasukData),
                 borderColor: '#4C1D95',
-                tension: 0.1
+                backgroundColor: 'rgba(76, 29, 149, 0.1)',
+                fill: false,
+                tension: 0.1,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: '#4C1D95',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2
             }, {
                 label: 'Surat Keputusan',
                 data: @json($skData),
                 borderColor: '#713F12',
-                tension: 0.1
+                backgroundColor: 'rgba(113, 63, 18, 0.1)',
+                fill: false,
+                tension: 0.1,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: '#713F12',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2
             }, {
                 label: 'Perda',
                 data: @json($perdaData),
                 borderColor: '#FEF08A',
-                tension: 0.1
+                backgroundColor: 'rgba(254, 240, 138, 0.1)',
+                fill: false,
+                tension: 0.1,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: '#FEF08A',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2
             }, {
                 label: 'Pergub',
                 data: @json($pergubData),
-                borderColor: 'yellow',
-                tension: 0.1
+                borderColor: '#FFD700',
+                backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                fill: false,
+                tension: 0.1,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: '#FFD700',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
             plugins: {
-                legend: { position: 'top' },
+                legend: { 
+                    position: 'top',
+                    display: true
+                },
                 title: {
                     display: true,
                     text: 'Dokumen Surat Masuk per Bulan'
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
                 }
             },
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: { stepSize: 1 }
+                    ticks: { 
+                        stepSize: incomingStepSize,
+                        precision: 0
+                    },
+                    max: incomingMaxValue > 0 ? Math.ceil(incomingMaxValue * 1.1) : 10
+                },
+                x: {
+                    display: true,
+                    grid: {
+                        display: false
+                    }
                 }
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
             }
         }
     });
@@ -225,6 +328,22 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Chart element not found, skipping chart initialization');
     } else {
     const ctxOutgoing = outgoingChartElement.getContext('2d');
+    // Hitung stepSize dinamis untuk grafik outgoing
+    const outgoingDatasets = [
+        { data: @json($suratKeluarData) },
+        { data: @json($sppdDalamData) },
+        { data: @json($sppdLuarData) },
+        { data: @json($sptDalamData) },
+        { data: @json($sptLuarData) }
+    ];
+    const outgoingMaxValue = Math.max(
+        ...outgoingDatasets.flatMap(d => d.data || [0])
+    );
+    const outgoingStepSize = outgoingMaxValue <= 10 ? 1 : 
+                             outgoingMaxValue <= 50 ? 5 : 
+                             outgoingMaxValue <= 100 ? 10 : 
+                             Math.ceil(outgoingMaxValue / 10);
+
     outgoingChart = new Chart(ctxOutgoing, {
         type: 'line',
         data: {
@@ -232,44 +351,102 @@ document.addEventListener('DOMContentLoaded', function() {
             datasets: [{
                 label: 'Surat Keluar',
                 data: @json($suratKeluarData),
-                borderColor: 'green',
-                tension: 0.1
+                borderColor: '#22c55e',
+                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                fill: false,
+                tension: 0.1,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: '#22c55e',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2
             }, {
                 label: 'SPPD DD',
                 data: @json($sppdDalamData),
-                borderColor: 'blue)',
-                tension: 0.1
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                fill: false,
+                tension: 0.1,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: '#3b82f6',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2
             }, {
                 label: 'SPPD LD',
                 data: @json($sppdLuarData),
-                borderColor: 'rgb(255, 99, 132)',
-                tension: 0.1
+                borderColor: '#ef4444',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                fill: false,
+                tension: 0.1,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: '#ef4444',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2
             }, {
                 label: 'SPT DD',
                 data: @json($sptDalamData),
-                borderColor: 'orange',
-                tension: 0.1
+                borderColor: '#f97316',
+                backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                fill: false,
+                tension: 0.1,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: '#f97316',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2
             }, {
                 label: 'SPT LD',
                 data: @json($sptLuarData),
-                borderColor: 'rgb(54, 162, 235)',
-                tension: 0.1
+                borderColor: '#06b6d4',
+                backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                fill: false,
+                tension: 0.1,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: '#06b6d4',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
             plugins: {
-                legend: { position: 'top' },
+                legend: { 
+                    position: 'top',
+                    display: true
+                },
                 title: {
                     display: true,
                     text: 'Dokumen Surat yang dikeluarkan per Bulan'
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
                 }
             },
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: { stepSize: 1 }
+                    ticks: { 
+                        stepSize: outgoingStepSize,
+                        precision: 0
+                    },
+                    max: outgoingMaxValue > 0 ? Math.ceil(outgoingMaxValue * 1.1) : 10
+                },
+                x: {
+                    display: true,
+                    grid: {
+                        display: false
+                    }
                 }
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
             }
         }
     });
