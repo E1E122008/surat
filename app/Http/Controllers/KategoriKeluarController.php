@@ -6,8 +6,8 @@ use App\Models\SuratKeluar;
 use Illuminate\Http\Request;
 use App\Models\SppdDalamDaerah;
 use App\Models\SppdLuarDaerah;
-use App\Models\sptDalamDaerah;
-use App\Models\sptLuarDaerah;
+use App\Models\SptDalamDaerah;
+use App\Models\SptLuarDaerah;
 use Carbon\Carbon;
 use App\Exports\AgendaKeluarExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -48,8 +48,8 @@ class KategoriKeluarController extends Controller
         $querySuratKeluar = SuratKeluar::query();
         $querySppdDalamDaerah = SppdDalamDaerah::query();
         $querySppdLuarDaerah = SppdLuarDaerah::query();
-        $querySptDalamDaerah = sptDalamDaerah::query();
-        $querySptLuarDaerah = sptLuarDaerah::query();
+        $querySptDalamDaerah = SptDalamDaerah::query();
+        $querySptLuarDaerah = SptLuarDaerah::query();
 
         // Logika pencarian
         if ($request->has('search')) {
@@ -253,11 +253,11 @@ class KategoriKeluarController extends Controller
                 $title = 'Arsip SPPD Luar Daerah';
                 break;
             case 'spt-dalam':
-                $query = sptDalamDaerah::query();
+                $query = SptDalamDaerah::query();
                 $title = 'Arsip SPT Dalam Daerah';
                 break;
             case 'spt-luar':
-                $query = sptLuarDaerah::query();
+                $query = SptLuarDaerah::query();
                 $title = 'Arsip SPT Luar Daerah';
                 break;
             default:
