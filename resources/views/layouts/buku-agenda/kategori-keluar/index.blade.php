@@ -386,7 +386,7 @@
                             </table>
                         </div>
                         <div class="mt-4 d-flex justify-content-center">
-                            {{ $suratKeluar->links('pagination::bootstrap-4') }}
+                            {{ $suratKeluar->appends(request()->query())->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
 
@@ -505,7 +505,7 @@
                             </table>
                         </div>
                         <div class="mt-4 d-flex justify-content-center">
-                            {{ $sppdDalamDaerah->links('pagination::bootstrap-4') }}
+                            {{ $sppdDalamDaerah->appends(request()->query())->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
                 
@@ -624,7 +624,7 @@
                             </table>
                         </div>
                         <div class="mt-4 d-flex justify-content-center">
-                            {{ $sppdLuarDaerah->links('pagination::bootstrap-4') }}
+                            {{ $sppdLuarDaerah->appends(request()->query())->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
                     <div class="tab-pane fade {{ request('tab') == 'spt-dalam' ? 'show active' : '' }}" id="spt-dalam">
@@ -742,7 +742,7 @@
                             </table>
                         </div>
                         <div class="mt-4 d-flex justify-content-center">
-                            {{ $sptDalamDaerah->links('pagination::bootstrap-4') }}
+                            {{ $sptDalamDaerah->appends(request()->query())->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
                     <div class="tab-pane fade {{ request('tab') == 'spt-luar' ? 'show active' : '' }}" id="spt-luar">
@@ -860,7 +860,7 @@
                             </table>
                         </div>
                         <div class="mt-4 d-flex justify-content-center">
-                            {{ $sptLuarDaerah->links('pagination::bootstrap-4') }}
+                            {{ $sptLuarDaerah->appends(request()->query())->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
                 </div> <!-- End tab-content -->

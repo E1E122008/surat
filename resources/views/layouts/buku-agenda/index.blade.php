@@ -358,7 +358,7 @@
                             </table>
                         </div>
                         <div class="mt-4 flex justify-center">
-                            {{ $suratMasuk->links('pagination::bootstrap-4') }}
+                            {{ $suratMasuk->appends(request()->query())->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
 
@@ -484,7 +484,7 @@
                             </table>
                         </div>
                         <div class="mt-4 flex justify-center">
-                            {{ $sks->links('pagination::bootstrap-4') }}
+                            {{ $sks->appends(request()->query())->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
 
@@ -609,7 +609,7 @@
                             </table>
                         </div>
                         <div class="mt-4 flex justify-center">
-                            {{ $perda->links('pagination::bootstrap-4') }}
+                            {{ $perda->appends(request()->query())->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
 
@@ -734,7 +734,7 @@
                             </table>
                         </div>
                         <div class="mt-4 flex justify-center">
-                            {{ $pergub->links('pagination::bootstrap-4') }}
+                            {{ $pergub->appends(request()->query())->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
                 </div> <!-- End tab-content -->
