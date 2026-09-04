@@ -36,27 +36,9 @@ class DashboardController extends Controller
         // Data untuk grafik - mulai dari tahun 2026, menampilkan 5 bulan ke depan dari bulan sekarang
         // Jika sekarang Jan 2026 → tampilkan: Jan, Feb, Mar, Apr, Mei 2026 (5 bulan)
         // Jika sekarang Maret 2026 → tampilkan: Mar, Apr, Mei, Jun, Jul 2026 (5 bulan)
-        $now = Carbon::now();
-        $startYear = 2026;
-        
-        // Tentukan bulan mulai (bulan sekarang)
-        $currentMonth = $now->month;
-        $currentYear = $now->year;
-        
-        // Jika tahun sekarang < 2026, mulai dari Jan 2026
-        if ($currentYear < $startYear) {
-            $currentYear = $startYear;
-            $currentMonth = 1;
-        }
-        
-        // Mulai dari bulan sekarang, tampilkan 5 bulan ke depan
-        $startMonth = $currentMonth;
-        $endMonth = min(12, $currentMonth + 4); // Maksimal sampai Desember
-        
-        // Generate array bulan dari startMonth sampai endMonth (5 bulan)
         $months = collect();
-        for ($month = $startMonth; $month <= $endMonth; $month++) {
-            $months->push(Carbon::create($currentYear, $month, 1)->startOfMonth());
+        for ($i = 5; $i >= 0; $i--) {
+            $months->push(Carbon::now()->subMonths($i)->startOfMonth());
         }
 
         $suratMasukData = $months->map(function($month) {
@@ -176,27 +158,9 @@ class DashboardController extends Controller
             // Mulai dari tahun 2026, menampilkan 5 bulan ke depan dari bulan sekarang
             // Jika sekarang Jan 2026 → tampilkan: Jan, Feb, Mar, Apr, Mei 2026 (5 bulan)
             // Jika sekarang Maret 2026 → tampilkan: Mar, Apr, Mei, Jun, Jul 2026 (5 bulan)
-            $now = Carbon::now();
-            $startYear = 2026;
-            
-            // Tentukan bulan mulai (bulan sekarang)
-            $currentMonth = $now->month;
-            $currentYear = $now->year;
-            
-            // Jika tahun sekarang < 2026, mulai dari Jan 2026
-            if ($currentYear < $startYear) {
-                $currentYear = $startYear;
-                $currentMonth = 1;
-            }
-            
-            // Mulai dari bulan sekarang, tampilkan 5 bulan ke depan
-            $startMonth = $currentMonth;
-            $endMonth = min(12, $currentMonth + 4); // Maksimal sampai Desember
-            
-            // Generate array bulan dari startMonth sampai endMonth (5 bulan)
             $months = collect();
-            for ($month = $startMonth; $month <= $endMonth; $month++) {
-                $months->push(Carbon::create($currentYear, $month, 1)->startOfMonth());
+            for ($i = 5; $i >= 0; $i--) {
+                $months->push(Carbon::now()->subMonths($i)->startOfMonth());
             }
             
             $labels = $months->map(function($date) {
