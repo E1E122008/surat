@@ -8,15 +8,13 @@
 
         <form action="{{ route('surat-masuk.store') }}" method="POST" enctype="multipart/form-data" id="createForm">
             @csrf
-            
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="form-group">
                     <label for="no_agenda" class="form-label">Nomor Agenda</label>
-                    <input type="text" name="no_agenda" id="no_agenda" 
-                        class="form-control @error('no_agenda') is-invalid @enderror"
-                        value="{{ old('no_agenda') }}" 
-                        placeholder="Masukkan nomor agenda surat masuk"
-                        autofocus>
+                    <input type="text" name="no_agenda" id="no_agenda"
+                        class="form-control @error('no_agenda') is-invalid @enderror" value="{{ old('no_agenda') }}"
+                        placeholder="Masukkan nomor agenda surat masuk" autofocus>
                     @error('no_agenda')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -24,11 +22,9 @@
 
                 <div class="form-group">
                     <label for="no_surat" class="form-label">Nomor Surat <span class="text-red-500">*</span></label>
-                    <input type="text" name="no_surat" id="no_surat" 
-                        class="form-control @error('no_surat') is-invalid @enderror"
-                        value="{{ old('no_surat') }}" 
-                        placeholder="Masukkan nomor surat dari pengirim"
-                        required>
+                    <input type="text" name="no_surat" id="no_surat"
+                        class="form-control @error('no_surat') is-invalid @enderror" value="{{ old('no_surat') }}"
+                        placeholder="Masukkan nomor surat dari pengirim" required>
                     @error('no_surat')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -36,11 +32,9 @@
 
                 <div class="form-group">
                     <label for="pengirim" class="form-label">Pengirim <span class="text-red-500">*</span></label>
-                    <input type="text" name="pengirim" id="pengirim" 
-                        class="form-control @error('pengirim') is-invalid @enderror"
-                        value="{{ old('pengirim') }}" 
-                        placeholder="Nama instansi atau pengirim surat"
-                        required>
+                    <input type="text" name="pengirim" id="pengirim"
+                        class="form-control @error('pengirim') is-invalid @enderror" value="{{ old('pengirim') }}"
+                        placeholder="Nama instansi atau pengirim surat" required>
                     @error('pengirim')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -50,9 +44,9 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="form-group">
                     <label for="tanggal_surat" class="form-label">Tanggal Surat</label>
-                    <input type="date" name="tanggal_surat" id="tanggal_surat" 
+                    <input type="date" name="tanggal_surat" id="tanggal_surat"
                         class="form-control @error('tanggal_surat') is-invalid @enderror"
-                        value="{{ old('tanggal_surat') }}" required>
+                        value="{{ old('tanggal_surat', date('Y-m-d')) }}" required>
                     @error('tanggal_surat')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -60,9 +54,9 @@
 
                 <div class="form-group">
                     <label for="tanggal_terima" class="form-label">Tanggal Terima</label>
-                    <input type="date" name="tanggal_terima" id="tanggal_terima" 
+                    <input type="date" name="tanggal_terima" id="tanggal_terima"
                         class="form-control @error('tanggal_terima') is-invalid @enderror"
-                        value="{{ old('tanggal_terima') }}" required>
+                        value="{{ old('tanggal_terima', date('Y-m-d')) }}" required>
                     @error('tanggal_terima')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -70,10 +64,8 @@
 
                 <div class="form-group form-grid-full">
                     <label for="perihal" class="form-label">Perihal <span class="text-red-500">*</span></label>
-                    <textarea name="perihal" id="perihal" rows="3" 
-                        class="form-control @error('perihal') is-invalid @enderror"
-                        placeholder="Masukkan perihal atau isi pokok surat"
-                        required>{{ old('perihal') }}</textarea>
+                    <textarea name="perihal" id="perihal" rows="3" class="form-control @error('perihal') is-invalid @enderror"
+                        placeholder="Masukkan perihal atau isi pokok surat" required>{{ old('perihal') }}</textarea>
                     @error('perihal')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -81,7 +73,7 @@
 
                 <div class="form-group form-grid-full">
                     <label for="lampiran" class="form-label">Lampiran</label>
-                    
+
                     <!-- Drag & Drop Zone -->
                     <div id="drag-drop-zone" class="drag-drop-zone">
                         <div class="drag-drop-content">
@@ -98,13 +90,14 @@
                             </p>
                         </div>
                     </div>
-                    
+
                     <!-- Hidden file input -->
-                    <input type="file" name="lampiran[]" id="lampiran" class="hidden" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
-                    
+                    <input type="file" name="lampiran[]" id="lampiran" class="hidden" multiple
+                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+
                     <!-- File preview container -->
                     <div id="file-preview" class="mt-4 space-y-2"></div>
-                    
+
                     @error('lampiran')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -133,18 +126,18 @@
             background-color: #f9fafb;
             cursor: pointer;
         }
-        
+
         .drag-drop-zone.dragover {
             border-color: #3b82f6;
             background-color: #eff6ff;
             transform: scale(1.02);
         }
-        
+
         .drag-drop-zone:hover {
             border-color: #9ca3af;
             background-color: #f3f4f6;
         }
-        
+
         .file-item {
             display: flex;
             align-items: center;
@@ -154,39 +147,39 @@
             border-radius: 6px;
             border: 1px solid #e5e7eb;
         }
-        
+
         .file-item .file-info {
             display: flex;
             align-items: center;
             flex: 1;
         }
-        
+
         .file-item .file-icon {
             margin-right: 0.75rem;
             font-size: 1.25rem;
         }
-        
+
         .file-item .file-details {
             flex: 1;
         }
-        
+
         .file-item .file-name {
             font-weight: 500;
             color: #374151;
         }
-        
+
         .file-item .file-size {
             font-size: 0.875rem;
             color: #6b7280;
         }
-        
+
         .file-item .remove-btn {
             padding: 0.25rem;
             color: #ef4444;
             border-radius: 4px;
             transition: all 0.2s ease;
         }
-        
+
         .file-item .remove-btn:hover {
             background-color: #fef2f2;
         }
@@ -198,74 +191,79 @@
             const fileInput = document.getElementById('lampiran');
             const browseBtn = document.getElementById('browse-btn');
             const filePreview = document.getElementById('file-preview');
-            
+
             let selectedFiles = [];
-            
+
             // Browse button click
             browseBtn.addEventListener('click', function() {
                 fileInput.click();
             });
-            
+
             // File input change
             fileInput.addEventListener('change', function(e) {
                 handleFiles(e.target.files);
             });
-            
+
             // Drag and drop events
             dragZone.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 dragZone.classList.add('dragover');
             });
-            
+
             dragZone.addEventListener('dragleave', function(e) {
                 e.preventDefault();
                 dragZone.classList.remove('dragover');
             });
-            
+
             dragZone.addEventListener('drop', function(e) {
                 e.preventDefault();
                 dragZone.classList.remove('dragover');
                 handleFiles(e.dataTransfer.files);
             });
-            
+
             // Click on drag zone
             dragZone.addEventListener('click', function() {
                 fileInput.click();
             });
-            
+
             function handleFiles(files) {
                 for (let file of files) {
                     // Validate file type
-                    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/jpg', 'image/png'];
-                    
+                    const allowedTypes = ['application/pdf', 'application/msword',
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg',
+                        'image/jpg', 'image/png'
+                    ];
+
                     if (!allowedTypes.includes(file.type)) {
-                        showError(`File "${file.name}" tidak didukung. Hanya PDF, DOC, DOCX, JPG, JPEG, PNG yang diizinkan.`);
+                        showError(
+                            `File "${file.name}" tidak didukung. Hanya PDF, DOC, DOCX, JPG, JPEG, PNG yang diizinkan.`
+                            );
                         continue;
                     }
-                    
+
                     // Validate file size (2GB = 2 * 1024 * 1024 * 1024 bytes)
                     if (file.size > 2 * 1024 * 1024 * 1024) {
                         showError(`File "${file.name}" terlalu besar. Maksimal 2GB per file.`);
                         continue;
                     }
-                    
+
                     // Add file to selected files
                     selectedFiles.push(file);
                     addFilePreview(file);
                 }
-                
+
                 // Update file input
                 updateFileInput();
             }
-            
+
             function addFilePreview(file) {
                 const fileItem = document.createElement('div');
                 fileItem.className = 'file-item';
                 fileItem.dataset.name = file.name;
-                
+
                 const fileIcon = getFileIcon(file.type);
                 const fileSize = formatFileSize(file.size);
-                
+
                 fileItem.innerHTML = `
                     <div class="file-info">
                         <i class="file-icon ${fileIcon}"></i>
@@ -278,33 +276,33 @@
                         <i class="fas fa-times"></i>
                     </button>
                 `;
-                
+
                 filePreview.appendChild(fileItem);
             }
-            
+
             function removeFile(fileName) {
                 // Remove from selected files
                 selectedFiles = selectedFiles.filter(file => file.name !== fileName);
-                
+
                 // Remove from preview
                 const fileItem = filePreview.querySelector(`[data-name="${fileName}"]`);
                 if (fileItem) {
                     fileItem.remove();
                 }
-                
+
                 // Update file input
                 updateFileInput();
             }
-            
+
             function updateFileInput() {
                 // Create new FileList-like object
                 const dt = new DataTransfer();
                 selectedFiles.forEach(file => dt.items.add(file));
                 fileInput.files = dt.files;
             }
-            
+
             function getFileIcon(fileType) {
-                switch(fileType) {
+                switch (fileType) {
                     case 'application/pdf':
                         return 'fas fa-file-pdf text-red-500';
                     case 'application/msword':
@@ -318,7 +316,7 @@
                         return 'fas fa-file text-gray-500';
                 }
             }
-            
+
             function formatFileSize(bytes) {
                 if (bytes === 0) return '0 Bytes';
                 const k = 1024;
@@ -326,7 +324,7 @@
                 const i = Math.floor(Math.log(bytes) / Math.log(k));
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
             }
-            
+
             function showError(message) {
                 Swal.fire({
                     title: 'Error',
@@ -335,19 +333,19 @@
                     confirmButtonText: 'OK'
                 });
             }
-            
+
             // Make removeFile function global
             window.removeFile = removeFile;
-            
+
             // Handle form submission dengan loading state
             const createForm = document.getElementById('createForm');
             const submitBtn = document.getElementById('submitBtn');
-            
+
             if (createForm && submitBtn) {
                 createForm.addEventListener('submit', function(e) {
                     const btnText = submitBtn.querySelector('.btn-text');
                     const btnLoading = submitBtn.querySelector('.btn-loading');
-                    
+
                     if (btnText && btnLoading) {
                         submitBtn.disabled = true;
                         btnText.style.display = 'none';

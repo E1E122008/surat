@@ -57,7 +57,7 @@
                     <label for="tanggal_terima" class="form-label">Tanggal Terima</label>
                     <input type="date" name="tanggal_terima" id="tanggal_terima" 
                         class="form-control @error('tanggal_terima') is-invalid @enderror"
-                        value="{{ old('tanggal_terima') }}" required>
+                        value="{{ old('tanggal_terima', date('Y-m-d')) }}" required>
                     @error('tanggal_terima')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
