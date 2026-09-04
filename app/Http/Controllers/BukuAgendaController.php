@@ -2,23 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\SuratMasuk;
-use App\Models\SK;
+use App\Exports\AgendaMasukExport;
 use App\Models\Perda;
 use App\Models\Pergub;
-
-use Carbon\Carbon;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\AgendaMasukExport;
+use App\Models\SK;
+use App\Models\SuratMasuk;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BukuAgendaController extends Controller
 {
     public function index(Request $request)
     {
         // Jika tidak ada parameter tab, redirect ke tab default
-        if (!$request->has('tab')) {
+        if (! $request->has('tab')) {
             return redirect()->route('buku-agenda.index', ['tab' => 'surat-masuk']);
         }
 
@@ -54,38 +53,38 @@ class BukuAgendaController extends Controller
         // Logika pencarian
         if ($request->has('search')) {
             $search = $request->search;
-            
+
             // Pencarian untuk setiap jenis surat
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('no_agenda', 'LIKE', "%{$search}%")
-                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
-                  ->orWhere('pengirim', 'LIKE', "%{$search}%")
-                  ->orWhere('perihal', 'LIKE', "%{$search}%")
-                  ->orWhere('disposisi', 'LIKE', "%{$search}%");
+                    ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                    ->orWhere('pengirim', 'LIKE', "%{$search}%")
+                    ->orWhere('perihal', 'LIKE', "%{$search}%")
+                    ->orWhere('disposisi', 'LIKE', "%{$search}%");
             });
 
-            $querysks->where(function($q) use ($search) {
+            $querysks->where(function ($q) use ($search) {
                 $q->where('no_agenda', 'LIKE', "%{$search}%")
-                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
-                  ->orWhere('pengirim', 'LIKE', "%{$search}%")
-                  ->orWhere('perihal', 'LIKE', "%{$search}%")
-                  ->orWhere('disposisi', 'LIKE', "%{$search}%");
+                    ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                    ->orWhere('pengirim', 'LIKE', "%{$search}%")
+                    ->orWhere('perihal', 'LIKE', "%{$search}%")
+                    ->orWhere('disposisi', 'LIKE', "%{$search}%");
             });
 
-            $queryPerda->where(function($q) use ($search) {
+            $queryPerda->where(function ($q) use ($search) {
                 $q->where('no_agenda', 'LIKE', "%{$search}%")
-                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
-                  ->orWhere('pengirim', 'LIKE', "%{$search}%")
-                  ->orWhere('perihal', 'LIKE', "%{$search}%")
-                  ->orWhere('disposisi', 'LIKE', "%{$search}%");
+                    ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                    ->orWhere('pengirim', 'LIKE', "%{$search}%")
+                    ->orWhere('perihal', 'LIKE', "%{$search}%")
+                    ->orWhere('disposisi', 'LIKE', "%{$search}%");
             });
 
-            $queryPergub->where(function($q) use ($search) {
+            $queryPergub->where(function ($q) use ($search) {
                 $q->where('no_agenda', 'LIKE', "%{$search}%")
-                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
-                  ->orWhere('pengirim', 'LIKE', "%{$search}%")
-                  ->orWhere('perihal', 'LIKE', "%{$search}%")
-                  ->orWhere('disposisi', 'LIKE', "%{$search}%");
+                    ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                    ->orWhere('pengirim', 'LIKE', "%{$search}%")
+                    ->orWhere('perihal', 'LIKE', "%{$search}%")
+                    ->orWhere('disposisi', 'LIKE', "%{$search}%");
             });
         }
 
@@ -95,8 +94,8 @@ class BukuAgendaController extends Controller
                 case 'minggu':
                     $weekNumber = $request->mingguKe;
                     $currentMonth = now()->startOfMonth();
-                    
-                    switch($weekNumber) {
+
+                    switch ($weekNumber) {
                         case 1:
                             $startDate = $currentMonth->copy(); // Tanggal 1-7
                             $endDate = $currentMonth->copy()->addDays(6);
@@ -114,7 +113,7 @@ class BukuAgendaController extends Controller
                             $endDate = $currentMonth->copy()->endOfMonth();
                             break;
                     }
-                    
+
                     $query->whereBetween('tanggal_terima', [$startDate, $endDate]);
                     $querysks->whereBetween('tanggal_terima', [$startDate, $endDate]);
                     $queryPerda->whereBetween('tanggal_terima', [$startDate, $endDate]);
@@ -124,13 +123,13 @@ class BukuAgendaController extends Controller
                 case 'bulan':
                     $month = $request->bulan;
                     $query->whereMonth('tanggal_terima', $month)
-                          ->whereYear('tanggal_terima', now()->year);
+                        ->whereYear('tanggal_terima', now()->year);
                     $querysks->whereMonth('tanggal_terima', $month)
-                            ->whereYear('tanggal_terima', now()->year);
+                        ->whereYear('tanggal_terima', now()->year);
                     $queryPerda->whereMonth('tanggal_terima', $month)
-                              ->whereYear('tanggal_terima', now()->year);
+                        ->whereYear('tanggal_terima', now()->year);
                     $queryPergub->whereMonth('tanggal_terima', $month)
-                              ->whereYear('tanggal_terima', now()->year);
+                        ->whereYear('tanggal_terima', now()->year);
                     break;
 
                 case 'tahun':
@@ -155,51 +154,51 @@ class BukuAgendaController extends Controller
 
         // Tambahkan perhitungan total surat
         $totalSurat = [
-            'surat_masuk' => $suratMasuk->count(),
-            'sk' => $sks->count(),
-            'perda' => $perda->count(),
-            'pergub' => $pergub->count()
+            'surat_masuk' => $suratMasuk->total(),
+            'sk' => $sks->total(),
+            'perda' => $perda->total(),
+            'pergub' => $pergub->total(),
         ];
 
         // Kirim data ke view
         return view('layouts.buku-agenda.index', compact(
-            'suratMasuk', 
-            'activeTab', 
-            'sks', 
-            'perda', 
+            'suratMasuk',
+            'activeTab',
+            'sks',
+            'perda',
             'pergub',
             'filterInfo',
             'totalSurat'
         ));
     }
-    
+
     public function export(Request $request)
     {
         $filterType = $request->filterType;
         $tab = $request->tab ?? 'surat-masuk';
-        
+
         // Tentukan nama file berdasarkan tab dan filter
-        $prefix = match($tab) {
+        $prefix = match ($tab) {
             'surat-masuk' => 'surat-masuk',
             'surat-keputusan' => 'sk',
             'perda' => 'perda',
             'pergub' => 'pergub',
             default => 'surat-masuk'
         };
-        
+
         // Tambahkan info filter ke nama file jika ada
         $filterInfo = '';
         if ($filterType) {
-            $filterInfo = match($filterType) {
+            $filterInfo = match ($filterType) {
                 'minggu' => "-minggu-{$request->mingguKe}-bulan-{$request->bulan}",
                 'bulan' => "-bulan-{$request->bulan}",
                 'tahun' => "-tahun-{$request->tahun}",
                 default => ''
             };
         }
-        
+
         // Generate nama file
-        $fileName = $prefix . $filterInfo . '-' . date('Y-m-d-His') . '.xlsx';
+        $fileName = $prefix.$filterInfo.'-'.date('Y-m-d-His').'.xlsx';
 
         return Excel::download(new AgendaMasukExport(
             $filterType,
@@ -213,9 +212,9 @@ class BukuAgendaController extends Controller
     public function exportPDF(Request $request)
     {
         $tab = $request->tab ?? 'surat-masuk';
-        
+
         // Inisialisasi query berdasarkan tab
-        switch($tab) {
+        switch ($tab) {
             case 'surat-masuk':
                 $query = SuratMasuk::query();
                 $title = 'Arsip Surat Masuk';
@@ -243,8 +242,8 @@ class BukuAgendaController extends Controller
                 case 'minggu':
                     $weekNumber = $request->mingguKe;
                     $currentMonth = Carbon::create(null, $request->bulan ?? now()->month);
-                    
-                    switch($weekNumber) {
+
+                    switch ($weekNumber) {
                         case 1:
                             $startDate = $currentMonth->copy()->startOfMonth();
                             $endDate = $currentMonth->copy()->startOfMonth()->addDays(6);
@@ -265,17 +264,17 @@ class BukuAgendaController extends Controller
                             $startDate = $currentMonth->copy()->startOfMonth();
                             $endDate = $currentMonth->copy()->endOfMonth();
                     }
-                    
+
                     $query->whereBetween('tanggal_terima', [$startDate, $endDate]);
-                    $filterInfo = "Minggu ke-{$weekNumber} Bulan " . $currentMonth->format('F Y');
+                    $filterInfo = "Minggu ke-{$weekNumber} Bulan ".$currentMonth->format('F Y');
                     break;
 
                 case 'bulan':
                     $month = $request->bulan;
                     $year = $request->tahun ?? now()->year;
                     $query->whereMonth('tanggal_terima', $month)
-                          ->whereYear('tanggal_terima', $year);
-                    $filterInfo = "Bulan " . Carbon::create(null, $month, 1)->format('F') . " {$year}";
+                        ->whereYear('tanggal_terima', $year);
+                    $filterInfo = 'Bulan '.Carbon::create(null, $month, 1)->format('F')." {$year}";
                     break;
 
                 case 'tahun':
@@ -285,10 +284,10 @@ class BukuAgendaController extends Controller
                     break;
 
                 default:
-                    $filterInfo = "Semua Data";
+                    $filterInfo = 'Semua Data';
             }
         } else {
-            $filterInfo = "Semua Data";
+            $filterInfo = 'Semua Data';
         }
 
         // Ambil data
@@ -298,13 +297,13 @@ class BukuAgendaController extends Controller
         $pdf = PDF::loadView('layouts.buku-agenda.pdf', [
             'title' => $title,
             'filterInfo' => $filterInfo,
-            'data' => $data
+            'data' => $data,
         ]);
 
         // Set paper ke landscape untuk data yang banyak
         $pdf->setPaper('a4', 'landscape');
 
         // Download PDF
-        return $pdf->download($title . ' - ' . $filterInfo . '.pdf');
+        return $pdf->download($title.' - '.$filterInfo.'.pdf');
     }
 }

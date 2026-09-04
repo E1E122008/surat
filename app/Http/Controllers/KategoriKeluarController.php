@@ -165,11 +165,11 @@ class KategoriKeluarController extends Controller
 
         // Hitung total surat
         $totalSurat = [
-            'surat_keluar' => $suratKeluar->count(),
-            'sppd_dalam' => $sppdDalamDaerah->count(),
-            'sppd_luar' => $sppdLuarDaerah->count(),
-            'spt_dalam' => $sptDalamDaerah->count(),
-            'spt_luar' => $sptLuarDaerah->count()
+            'surat_keluar' => $suratKeluar->total(),
+            'sppd_dalam' => $sppdDalamDaerah->total(),
+            'sppd_luar' => $sppdLuarDaerah->total(),
+            'spt_dalam' => $sptDalamDaerah->total(),
+            'spt_luar' => $sptLuarDaerah->total()
         ];
 
         // Kirim data ke view
