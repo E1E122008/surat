@@ -10,7 +10,8 @@
                     <div>
                         <h3 class="h4 fw-bold text-primary mb-0">
                             Selamat Datang di Sistem Informasi Administrasi Persuratan Biro Hukum
-                            <span class="d-block small text-secondary mt-1">Sekretariat Daerah Provinsi Sulawesi Tenggara</span>
+                            <span class="d-block small text-secondary mt-1">Sekretariat Daerah Provinsi
+                                Sulawesi Tenggara</span>
                         </h3>
                     </div>
                     <div class="text-secondary">
@@ -26,7 +27,10 @@
                     <div class="d-flex">
                         <i class="fas fa-balance-scale fs-4 text-primary me-3 mt-1"></i>
                         <p class="text-muted mb-0 fs-6 lh-base">
-                            Biro hukum mempunyai tugas membantu asisten pemerintahan dan kesejahteraan rakyat dalam penyiapan perumusan kebijakan daerah, pengoordinasian pelaksanaan tugas perangkat daerah, pemantauan dan evaluasi pelaksanaan kebijakan di bidang peraturan perundang-undangan provinsi, peraturan perundang-undangan kabupaten/kota dan bantuan hukum.
+                            Biro hukum mempunyai tugas membantu asisten pemerintahan dan kesejahteraan rakyat dalam
+                            penyiapan perumusan kebijakan daerah, pengoordinasian pelaksanaan tugas perangkat daerah,
+                            pemantauan dan evaluasi pelaksanaan kebijakan di bidang peraturan perundang-undangan provinsi,
+                            peraturan perundang-undangan kabupaten/kota dan bantuan hukum.
                         </p>
                     </div>
                 </div>
@@ -35,536 +39,579 @@
     </div>
 
     @auth
-    @if(in_array(Auth::user()->role, ['admin', 'monitor']))
-    <!-- Charts Section -->
-    <div class="row mb-5 mt-4">
-        <!-- Grafik Statistik -->
-        <div class="mb-4">
-            <div class="card h-100 bg-white shadow-sm">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card-body">
-                            <h5 class="card-title mb-4">Statistik Surat yang diterima</h5>
-                            <canvas id="incomingDocumentsChart"></canvas>
+        @if (in_array(Auth::user()->role, ['admin', 'monitor']))
+            <!-- Charts Section -->
+            <div class="row mb-5 mt-4">
+                <!-- Grafik Statistik -->
+                <div class="mb-4">
+                    <div class="card h-100 bg-white shadow-sm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card-body">
+                                    <canvas id="incomingDocumentsChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card-body">
+                                    <canvas id="outgoingDocumentsChart"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="card-body">
-                            <h5 class="card-title mb-4">Statistik Surat yang dikeluarkan</h5>
-                            <canvas id="outgoingDocumentsChart"></canvas>
+                </div>
+
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-5 g-4 pb-2">
+                    <div class="col">
+                        <div class="dashboard-card surat-masuk p-4 bg-white shadow-sm h-100">
+                            <h2 class="card-value">{{ $jumlahSuratMasuk }}</h2>
+                            <p class="card-title">Surat Masuk</p>
+                            <i class="fas fa-envelope fa-2x card-icon"></i>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="dashboard-card surat-keluar p-4 bg-white shadow-sm h-100">
+                            <h2 class="card-value">{{ $jumlahSuratKeluar }}</h2>
+                            <p class="card-title">Surat Keluar</p>
+                            <i class="fas fa-paper-plane fa-2x card-icon"></i>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="dashboard-card draft-phd p-4 bg-white shadow-sm h-100">
+                            <h2 class="card-value">{{ $draftphd }}</h2>
+                            <p class="card-title">Registrasi Draft PHD</p>
+                            <i class="fas fa-file-alt fa-2x card-icon"></i>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="dashboard-card spt p-4 bg-white shadow-sm h-100">
+                            <h2 class="card-value">{{ $sptCount }}</h2>
+                            <p class="card-title">Surat Perintah Tugas</p>
+                            <i class="fas fa-file-signature fa-2x card-icon"></i>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="dashboard-card sppd p-4 bg-white shadow-sm h-100">
+                            <h2 class="card-value">{{ $sppdCount }}</h2>
+                            <p class="card-title">Surat Perintah Perjalanan Dinas</p>
+                            <i class="fas fa-plane fa-2x card-icon"></i>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Statistik Card -->
-        <div class="d-flex gap-4 overflow-x-auto pb-2">
-            <div class="dashboard-card surat-masuk p-4 bg-white shadow-sm" style="min-width: 240px;">
-                <h2 class="card-value">{{ $jumlahSuratMasuk }}</h2>
-                <p class="card-title">Surat Masuk</p>
-                <i class="fas fa-envelope fa-2x card-icon"></i>
-            </div>
-            <div class="dashboard-card surat-keluar p-4 bg-white shadow-sm" style="min-width: 240px;">
-                <h2 class="card-value">{{ $jumlahSuratKeluar }}</h2>
-                <p class="card-title">Surat Keluar</p>
-                <i class="fas fa-paper-plane fa-2x card-icon"></i>
-            </div>
-            <div class="dashboard-card draft-phd p-4 bg-white shadow-sm" style="min-width: 240px;">
-                <h2 class="card-value">{{ $draftphd }}</h2>
-                <p class="card-title">Registrasi Draft PHD</p>
-                <i class="fas fa-file-alt fa-2x card-icon"></i>
-            </div>
-            <div class="dashboard-card spt p-4 bg-white shadow-sm" style="min-width: 240px;">
-                <h2 class="card-value">{{ $sptCount }}</h2>
-                <p class="card-title">Surat Perintah Tugas</p>
-                <i class="fas fa-file-signature fa-2x card-icon"></i>
-            </div>
-            <div class="dashboard-card sppd p-4 bg-white shadow-sm" style="min-width: 240px;">
-                <h2 class="card-value">{{ $sppdCount }}</h2>
-                <p class="card-title">Surat Perintah Perjalanan Dinas</p>
-                <i class="fas fa-plane fa-2x card-icon"></i>
-            </div>
-        </div>
-    </div>
-    @endif
+        @endif
     @endauth
-    
-    
+
+
 
 
     <!-- Menu Cards -->
-    
 @endsection
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    let currentIncomingPeriod = 'bulan';
-    let currentOutgoingPeriod = 'bulan';
-    let incomingChart, outgoingChart;
+    document.addEventListener('DOMContentLoaded', function() {
+        let currentIncomingPeriod = 'bulan';
+        let currentOutgoingPeriod = 'bulan';
+        let incomingChart, outgoingChart;
 
-    // Fungsi untuk menghitung stepSize dinamis berdasarkan nilai maksimum
-    function calculateStepSize(maxValue) {
-        if (maxValue === 0) return 1;
-        if (maxValue <= 10) return 1;
-        if (maxValue <= 50) return 5;
-        if (maxValue <= 100) return 10;
-        if (maxValue <= 200) return 20;
-        if (maxValue <= 500) return 50;
-        return Math.ceil(maxValue / 10);
-    }
+        // Fungsi untuk menghitung stepSize dinamis berdasarkan nilai maksimum
+        function calculateStepSize(maxValue) {
+            if (maxValue === 0) return 1;
+            if (maxValue <= 10) return 1;
+            if (maxValue <= 50) return 5;
+            if (maxValue <= 100) return 10;
+            if (maxValue <= 200) return 20;
+            if (maxValue <= 500) return 50;
+            return Math.ceil(maxValue / 10);
+        }
 
-    // Fungsi untuk mendapatkan nilai maksimum dari semua dataset
-    function getMaxValue(datasets) {
-        let max = 0;
-        datasets.forEach(dataset => {
-            if (Array.isArray(dataset.data)) {
-                const datasetMax = Math.max(...dataset.data);
-                if (datasetMax > max) max = datasetMax;
+        // Fungsi untuk mendapatkan nilai maksimum dari semua dataset
+        function getMaxValue(datasets) {
+            let max = 0;
+            datasets.forEach(dataset => {
+                if (Array.isArray(dataset.data)) {
+                    const datasetMax = Math.max(...dataset.data);
+                    if (datasetMax > max) max = datasetMax;
+                }
+            });
+            return max;
+        }
+
+        async function fetchChartData(period) {
+            try {
+                const response = await fetch(`/dashboard/chart-data?period=${period}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                return null;
             }
-        });
-        return max;
-    }
+        }
 
-    async function fetchChartData(period) {
-        try {
-            const response = await fetch(`/dashboard/chart-data?period=${period}`);
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+        async function updateCharts(event, chartType) {
+            if (event && event.preventDefault) {
+                event.preventDefault();
             }
-            return await response.json();
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            return null;
-        }
-    }
 
-    async function updateCharts(event, chartType) {
-        if (event && event.preventDefault) {
-            event.preventDefault();
+            const form = document.getElementById(`form-${chartType}`);
+            if (!form) {
+                console.log(`Form for ${chartType} not found`);
+                return;
+            }
+            const period = new FormData(form).get('period');
+
+            // Simpan periode yang dipilih
+            if (chartType === 'incoming') {
+                currentIncomingPeriod = period;
+            } else {
+                currentOutgoingPeriod = period;
+            }
+
+            console.log(`Updating ${chartType} chart for period:`, period);
+
+            const data = await fetchChartData(period);
+            if (!data) return;
+
+            if (chartType === 'incoming' && incomingChart) {
+                incomingChart.data.labels = data.labels;
+                incomingChart.data.datasets[0].data = data.suratMasukData;
+                incomingChart.data.datasets[1].data = data.skData;
+                incomingChart.data.datasets[2].data = data.perdaData;
+                incomingChart.data.datasets[3].data = data.pergubData;
+
+                // Update skala Y-axis secara dinamis
+                const maxValue = getMaxValue(incomingChart.data.datasets);
+                const stepSize = calculateStepSize(maxValue);
+                incomingChart.options.scales.y.ticks.stepSize = stepSize;
+                incomingChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.1) : 10;
+
+                incomingChart.update();
+            }
+
+            if (chartType === 'outgoing' && outgoingChart) {
+                outgoingChart.data.labels = data.labels;
+                outgoingChart.data.datasets[0].data = data.suratKeluarData;
+                outgoingChart.data.datasets[1].data = data.sppdDalamData;
+                outgoingChart.data.datasets[2].data = data.sppdLuarData;
+                outgoingChart.data.datasets[3].data = data.sptDalamData;
+                outgoingChart.data.datasets[4].data = data.sptLuarData;
+
+                // Update skala Y-axis secara dinamis
+                const maxValue = getMaxValue(outgoingChart.data.datasets);
+                const stepSize = calculateStepSize(maxValue);
+                outgoingChart.options.scales.y.ticks.stepSize = stepSize;
+                outgoingChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.1) : 10;
+
+                outgoingChart.update();
+            }
+
+            // Set kembali nilai dropdown sesuai periode yang dipilih
+            const filterElement = document.getElementById(
+                `filter-waktu-${chartType === 'incoming' ? 'masuk' : 'keluar'}`);
+            if (filterElement) {
+                filterElement.value = period;
+            }
         }
-        
-        const form = document.getElementById(`form-${chartType}`);
-        if (!form) {
-            console.log(`Form for ${chartType} not found`);
-            return;
-        }
-        const period = new FormData(form).get('period');
-        
-        // Simpan periode yang dipilih
-        if (chartType === 'incoming') {
-            currentIncomingPeriod = period;
+
+        // Inisialisasi Chart Surat Masuk
+        const incomingChartElement = document.getElementById('incomingDocumentsChart');
+        if (!incomingChartElement) {
+            console.log('Chart element not found, skipping chart initialization');
         } else {
-            currentOutgoingPeriod = period;
-        }
-
-        console.log(`Updating ${chartType} chart for period:`, period);
-        
-        const data = await fetchChartData(period);
-        if (!data) return;
-
-        if (chartType === 'incoming' && incomingChart) {
-            incomingChart.data.labels = data.labels;
-            incomingChart.data.datasets[0].data = data.suratMasukData;
-            incomingChart.data.datasets[1].data = data.skData;
-            incomingChart.data.datasets[2].data = data.perdaData;
-            incomingChart.data.datasets[3].data = data.pergubData;
-            
-            // Update skala Y-axis secara dinamis
-            const maxValue = getMaxValue(incomingChart.data.datasets);
-            const stepSize = calculateStepSize(maxValue);
-            incomingChart.options.scales.y.ticks.stepSize = stepSize;
-            incomingChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.1) : 10;
-            
-            incomingChart.update();
-        }
-
-        if (chartType === 'outgoing' && outgoingChart) {
-            outgoingChart.data.labels = data.labels;
-            outgoingChart.data.datasets[0].data = data.suratKeluarData;
-            outgoingChart.data.datasets[1].data = data.sppdDalamData;
-            outgoingChart.data.datasets[2].data = data.sppdLuarData;
-            outgoingChart.data.datasets[3].data = data.sptDalamData;
-            outgoingChart.data.datasets[4].data = data.sptLuarData;
-            
-            // Update skala Y-axis secara dinamis
-            const maxValue = getMaxValue(outgoingChart.data.datasets);
-            const stepSize = calculateStepSize(maxValue);
-            outgoingChart.options.scales.y.ticks.stepSize = stepSize;
-            outgoingChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.1) : 10;
-            
-            outgoingChart.update();
-        }
-
-        // Set kembali nilai dropdown sesuai periode yang dipilih
-        const filterElement = document.getElementById(`filter-waktu-${chartType === 'incoming' ? 'masuk' : 'keluar'}`);
-        if (filterElement) {
-            filterElement.value = period;
-        }
-    }
-
-    // Inisialisasi Chart Surat Masuk
-    const incomingChartElement = document.getElementById('incomingDocumentsChart');
-    if (!incomingChartElement) {
-        console.log('Chart element not found, skipping chart initialization');
-    } else {
-    const ctxIncoming = incomingChartElement.getContext('2d');
-    // Hitung stepSize dinamis untuk grafik incoming
-    const incomingDatasets = [
-        { data: @json($suratMasukData) },
-        { data: @json($skData) },
-        { data: @json($perdaData) },
-        { data: @json($pergubData) }
-    ];
-    const incomingMaxValue = Math.max(
-        ...incomingDatasets.flatMap(d => d.data || [0])
-    );
-    const incomingStepSize = incomingMaxValue <= 10 ? 1 : 
-                            incomingMaxValue <= 50 ? 5 : 
-                            incomingMaxValue <= 100 ? 10 : 
-                            Math.ceil(incomingMaxValue / 10);
-
-    incomingChart = new Chart(ctxIncoming, {
-        type: 'line',
-        data: {
-            labels: @json($labels),
-            datasets: [{
-                label: 'Surat Masuk',
-                data: @json($suratMasukData),
-                borderColor: '#4C1D95',
-                backgroundColor: 'rgba(76, 29, 149, 0.1)',
-                fill: false,
-                tension: 0.1,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                pointBackgroundColor: '#4C1D95',
-                pointBorderColor: '#ffffff',
-                pointBorderWidth: 2
-            }, {
-                label: 'Surat Keputusan',
-                data: @json($skData),
-                borderColor: '#713F12',
-                backgroundColor: 'rgba(113, 63, 18, 0.1)',
-                fill: false,
-                tension: 0.1,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                pointBackgroundColor: '#713F12',
-                pointBorderColor: '#ffffff',
-                pointBorderWidth: 2
-            }, {
-                label: 'Perda',
-                data: @json($perdaData),
-                borderColor: '#FEF08A',
-                backgroundColor: 'rgba(254, 240, 138, 0.1)',
-                fill: false,
-                tension: 0.1,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                pointBackgroundColor: '#FEF08A',
-                pointBorderColor: '#ffffff',
-                pointBorderWidth: 2
-            }, {
-                label: 'Pergub',
-                data: @json($pergubData),
-                borderColor: '#FFD700',
-                backgroundColor: 'rgba(255, 215, 0, 0.1)',
-                fill: false,
-                tension: 0.1,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                pointBackgroundColor: '#FFD700',
-                pointBorderColor: '#ffffff',
-                pointBorderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: { 
-                    position: 'top',
-                    display: true
+            const ctxIncoming = incomingChartElement.getContext('2d');
+            // Hitung stepSize dinamis untuk grafik incoming
+            const incomingDatasets = [{
+                    data: @json($suratMasukData)
                 },
-                title: {
-                    display: true,
-                    text: 'Dokumen Surat Masuk per Bulan'
+                {
+                    data: @json($skData)
                 },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false
+                {
+                    data: @json($perdaData)
+                },
+                {
+                    data: @json($pergubData)
                 }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { 
-                        stepSize: incomingStepSize,
-                        precision: 0
-                    },
-                    max: incomingMaxValue > 0 ? Math.ceil(incomingMaxValue * 1.1) : 10
+            ];
+            const incomingMaxValue = Math.max(
+                ...incomingDatasets.flatMap(d => d.data || [0])
+            );
+            const incomingStepSize = incomingMaxValue <= 10 ? 1 :
+                incomingMaxValue <= 50 ? 5 :
+                incomingMaxValue <= 100 ? 10 :
+                Math.ceil(incomingMaxValue / 10);
+
+            incomingChart = new Chart(ctxIncoming, {
+                type: 'line',
+                data: {
+                    labels: @json($labels),
+                    datasets: [{
+                        label: 'Surat Masuk',
+                        data: @json($suratMasukData),
+                        borderColor: '#4C1D95',
+                        backgroundColor: 'rgba(76, 29, 149, 0.1)',
+                        fill: false,
+                        tension: 0.1,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#4C1D95',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }, {
+                        label: 'Surat Keputusan',
+                        data: @json($skData),
+                        borderColor: '#713F12',
+                        backgroundColor: 'rgba(113, 63, 18, 0.1)',
+                        fill: false,
+                        tension: 0.1,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#713F12',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }, {
+                        label: 'Perda',
+                        data: @json($perdaData),
+                        borderColor: '#FEF08A',
+                        backgroundColor: 'rgba(254, 240, 138, 0.1)',
+                        fill: false,
+                        tension: 0.1,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#FEF08A',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }, {
+                        label: 'Pergub',
+                        data: @json($pergubData),
+                        borderColor: '#FFD700',
+                        backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                        fill: false,
+                        tension: 0.1,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#FFD700',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }]
                 },
-                x: {
-                    display: true,
-                    grid: {
-                        display: false
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            display: true,
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 8,
+                                boxHeight: 8,
+                                padding: 20,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Dokumen Surat Masuk per Bulan'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: incomingStepSize,
+                                precision: 0
+                            },
+                            max: incomingMaxValue > 0 ? Math.ceil(incomingMaxValue * 1.1) : 10
+                        },
+                        x: {
+                            display: true,
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
                     }
                 }
-            },
-            interaction: {
-                mode: 'nearest',
-                axis: 'x',
-                intersect: false
-            }
+            });
         }
-    });
-    }
 
-    // Inisialisasi Chart Surat Keluar
-    const outgoingChartElement = document.getElementById('outgoingDocumentsChart');
-    if (!outgoingChartElement) {
-        console.log('Chart element not found, skipping chart initialization');
-    } else {
-    const ctxOutgoing = outgoingChartElement.getContext('2d');
-    // Hitung stepSize dinamis untuk grafik outgoing
-    const outgoingDatasets = [
-        { data: @json($suratKeluarData) },
-        { data: @json($sppdDalamData) },
-        { data: @json($sppdLuarData) },
-        { data: @json($sptDalamData) },
-        { data: @json($sptLuarData) }
-    ];
-    const outgoingMaxValue = Math.max(
-        ...outgoingDatasets.flatMap(d => d.data || [0])
-    );
-    const outgoingStepSize = outgoingMaxValue <= 10 ? 1 : 
-                             outgoingMaxValue <= 50 ? 5 : 
-                             outgoingMaxValue <= 100 ? 10 : 
-                             Math.ceil(outgoingMaxValue / 10);
-
-    outgoingChart = new Chart(ctxOutgoing, {
-        type: 'line',
-        data: {
-            labels: @json($labels),
-            datasets: [{
-                label: 'Surat Keluar',
-                data: @json($suratKeluarData),
-                borderColor: '#22c55e',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                fill: false,
-                tension: 0.1,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                pointBackgroundColor: '#22c55e',
-                pointBorderColor: '#ffffff',
-                pointBorderWidth: 2
-            }, {
-                label: 'SPPD DD',
-                data: @json($sppdDalamData),
-                borderColor: '#3b82f6',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                fill: false,
-                tension: 0.1,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                pointBackgroundColor: '#3b82f6',
-                pointBorderColor: '#ffffff',
-                pointBorderWidth: 2
-            }, {
-                label: 'SPPD LD',
-                data: @json($sppdLuarData),
-                borderColor: '#ef4444',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                fill: false,
-                tension: 0.1,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                pointBackgroundColor: '#ef4444',
-                pointBorderColor: '#ffffff',
-                pointBorderWidth: 2
-            }, {
-                label: 'SPT DD',
-                data: @json($sptDalamData),
-                borderColor: '#f97316',
-                backgroundColor: 'rgba(249, 115, 22, 0.1)',
-                fill: false,
-                tension: 0.1,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                pointBackgroundColor: '#f97316',
-                pointBorderColor: '#ffffff',
-                pointBorderWidth: 2
-            }, {
-                label: 'SPT LD',
-                data: @json($sptLuarData),
-                borderColor: '#06b6d4',
-                backgroundColor: 'rgba(6, 182, 212, 0.1)',
-                fill: false,
-                tension: 0.1,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                pointBackgroundColor: '#06b6d4',
-                pointBorderColor: '#ffffff',
-                pointBorderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: { 
-                    position: 'top',
-                    display: true
+        // Inisialisasi Chart Surat Keluar
+        const outgoingChartElement = document.getElementById('outgoingDocumentsChart');
+        if (!outgoingChartElement) {
+            console.log('Chart element not found, skipping chart initialization');
+        } else {
+            const ctxOutgoing = outgoingChartElement.getContext('2d');
+            // Hitung stepSize dinamis untuk grafik outgoing
+            const outgoingDatasets = [{
+                    data: @json($suratKeluarData)
                 },
-                title: {
-                    display: true,
-                    text: 'Dokumen Surat yang dikeluarkan per Bulan'
+                {
+                    data: @json($sppdDalamData)
                 },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false
+                {
+                    data: @json($sppdLuarData)
+                },
+                {
+                    data: @json($sptDalamData)
+                },
+                {
+                    data: @json($sptLuarData)
                 }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { 
-                        stepSize: outgoingStepSize,
-                        precision: 0
-                    },
-                    max: outgoingMaxValue > 0 ? Math.ceil(outgoingMaxValue * 1.1) : 10
+            ];
+            const outgoingMaxValue = Math.max(
+                ...outgoingDatasets.flatMap(d => d.data || [0])
+            );
+            const outgoingStepSize = outgoingMaxValue <= 10 ? 1 :
+                outgoingMaxValue <= 50 ? 5 :
+                outgoingMaxValue <= 100 ? 10 :
+                Math.ceil(outgoingMaxValue / 10);
+
+            outgoingChart = new Chart(ctxOutgoing, {
+                type: 'line',
+                data: {
+                    labels: @json($labels),
+                    datasets: [{
+                        label: 'Surat Keluar',
+                        data: @json($suratKeluarData),
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        fill: false,
+                        tension: 0.1,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#22c55e',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }, {
+                        label: 'SPPD DD',
+                        data: @json($sppdDalamData),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: false,
+                        tension: 0.1,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }, {
+                        label: 'SPPD LD',
+                        data: @json($sppdLuarData),
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        fill: false,
+                        tension: 0.1,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#ef4444',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }, {
+                        label: 'SPT DD',
+                        data: @json($sptDalamData),
+                        borderColor: '#f97316',
+                        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                        fill: false,
+                        tension: 0.1,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#f97316',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }, {
+                        label: 'SPT LD',
+                        data: @json($sptLuarData),
+                        borderColor: '#06b6d4',
+                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                        fill: false,
+                        tension: 0.1,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#06b6d4',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }]
                 },
-                x: {
-                    display: true,
-                    grid: {
-                        display: false
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            display: true,
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 8,
+                                boxHeight: 8,
+                                padding: 20,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Dokumen Surat yang dikeluarkan per Bulan'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: outgoingStepSize,
+                                precision: 0
+                            },
+                            max: outgoingMaxValue > 0 ? Math.ceil(outgoingMaxValue * 1.1) : 10
+                        },
+                        x: {
+                            display: true,
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
                     }
                 }
-            },
-            interaction: {
-                mode: 'nearest',
-                axis: 'x',
-                intersect: false
-            }
+            });
+        }
+
+        // Load data awal (hanya jika chart elements ada)
+        if (incomingChartElement && outgoingChartElement) {
+            updateCharts({
+                preventDefault: () => {}
+            }, 'incoming');
+            updateCharts({
+                preventDefault: () => {}
+            }, 'outgoing');
         }
     });
-    }
-
-    // Load data awal (hanya jika chart elements ada)
-    if (incomingChartElement && outgoingChartElement) {
-        updateCharts({ preventDefault: () => {} }, 'incoming');
-        updateCharts({ preventDefault: () => {} }, 'outgoing');
-    }
-});
 </script>
 
 @push('scripts')
-@endpush 
+@endpush
 
 <style>
-.dashboard-welcome {
-    background: linear-gradient(to right bottom, #ffffff, #f8f9fa);
-}
+    .dashboard-welcome {
+        background: linear-gradient(to right bottom, #ffffff, #f8f9fa);
+    }
 
-.date-badge {
-    min-width: 120px;
-    border-left: 4px solid var(--bs-primary);
-}
+    .date-badge {
+        min-width: 120px;
+        border-left: 4px solid var(--bs-primary);
+    }
 
-.function-icon {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(var(--bs-primary-rgb), 0.1);
-    border-radius: 50%;
-}
+    .function-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(var(--bs-primary-rgb), 0.1);
+        border-radius: 50%;
+    }
 
-.list-group-item {
-    transition: transform 0.2s ease;
-}
+    .list-group-item {
+        transition: transform 0.2s ease;
+    }
 
-.list-group-item:hover {
-    transform: translateX(10px);
-}
+    .list-group-item:hover {
+        transform: translateX(10px);
+    }
 
-.dashboard-card {
-    flex: 1;
-    min-width: 240px;
-    position: relative;
-    border-radius: 10px;
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+    .dashboard-card {
+        position: relative;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-.dashboard-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
-.card-value {
-    font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-    color: #ffffff;
-}
+    .card-value {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: #ffffff;
+    }
 
-.card-title {
-    font-size: 0.875rem;
-    color: #64748b;
-    margin-bottom: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+    .card-title {
+        font-size: 0.875rem;
+        color: #64748b;
+        margin-bottom: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 
-.card-icon {
-    position: absolute;
-    right: 1.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #ffffff;
-    opacity: 0.2;
-}
+    .card-icon {
+        position: absolute;
+        right: 1.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #ffffff;
+        opacity: 0.2;
+    }
 
-.bg-gray-100 {
-    background-color: #f3f4f6 !important;
-}
+    .bg-gray-100 {
+        background-color: #f3f4f6 !important;
+    }
 
-.shadow-sm {
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-}
+    .shadow-sm {
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    }
 
-.card {
-    border: none !important;
-    border-radius: 10px;
-    overflow: hidden;
-}
+    .card {
+        border: none !important;
+        border-radius: 10px;
+        overflow: hidden;
+    }
 
-.card-body {
-    padding: 1.5rem;
-}
+    .card-body {
+        padding: 1.5rem;
+    }
 
-/* Add styles for horizontal scrolling */
-.overflow-x-auto {
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    scrollbar-color: #cbd5e1 transparent;
-}
+    /* Add styles for horizontal scrolling */
+    .overflow-x-auto {
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: #cbd5e1 transparent;
+    }
 
-.overflow-x-auto::-webkit-scrollbar {
-    height: 6px;
-}
+    .overflow-x-auto::-webkit-scrollbar {
+        height: 6px;
+    }
 
-.overflow-x-auto::-webkit-scrollbar-track {
-    background: transparent;
-}
+    .overflow-x-auto::-webkit-scrollbar-track {
+        background: transparent;
+    }
 
-.overflow-x-auto::-webkit-scrollbar-thumb {
-    background-color: #cbd5e1;
-    border-radius: 3px;
-}
-</style> 
+    .overflow-x-auto::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1;
+        border-radius: 3px;
+    }
+</style>
