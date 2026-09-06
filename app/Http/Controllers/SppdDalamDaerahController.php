@@ -43,7 +43,7 @@ class SppdDalamDaerahController extends Controller
             'tujuan' => 'required|string|max:255',
             'perihal' => 'required|string|max:255',
             'nama_petugas' => 'required|string',
-                'lampiran' => 'required|array',
+                'lampiran' => 'nullable|array',
                 'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2147483648',
         ]);
 

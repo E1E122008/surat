@@ -39,7 +39,7 @@ class SuratKeluarController extends Controller
                 'no_surat' => 'required|string|max:255',
                 'tanggal' => 'required|date',
                 'perihal' => 'required|string|max:255',
-                'lampiran' => 'required|array',
+                'lampiran' => 'nullable|array',
                 'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2147483648',
             ]);
 

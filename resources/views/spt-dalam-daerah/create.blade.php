@@ -8,14 +8,13 @@
 
         <form action="{{ route('spt-dalam-daerah.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
-            
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                
+
                 <div class="form-group">
                     <label for="no_surat" class="form-label">Nomor Surat</label>
-                    <input type="text" name="no_surat" id="no_surat" 
-                        class="form-control @error('no_surat') is-invalid @enderror"
-                        value="{{ $nomorSurat }}" readonly>
+                    <input type="text" name="no_surat" id="no_surat"
+                        class="form-control @error('no_surat') is-invalid @enderror" value="{{ $nomorSurat }}" readonly>
                     @error('no_surat')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -23,7 +22,7 @@
 
                 <div class="form-group">
                     <label for="tanggal" class="form-label">Tanggal</label>
-                    <input type="date" name="tanggal" id="tanggal" 
+                    <input type="date" name="tanggal" id="tanggal"
                         class="form-control @error('tanggal') is-invalid @enderror"
                         value="{{ old('tanggal', date('Y-m-d')) }}" required>
                     @error('tanggal')
@@ -33,21 +32,19 @@
 
                 <div class="form-group">
                     <label for="tujuan" class="form-label">Tujuan</label>
-                    <input type="text" name="tujuan" id="tujuan" 
-                        class="form-control @error('tujuan') is-invalid @enderror"
-                        value="{{ old('tujuan') }}" required>
+                    <input type="text" name="tujuan" id="tujuan"
+                        class="form-control @error('tujuan') is-invalid @enderror" value="{{ old('tujuan') }}" required>
                     @error('tujuan')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
                 </div>
-            </div>  
+            </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                 <div class="form-group ">
                     <label for="perihal" class="form-label">Perihal</label>
-                    <textarea name="perihal" id="perihal" rows="3" 
-                        class="form-control @error('perihal') is-invalid @enderror"
+                    <textarea name="perihal" id="perihal" rows="3" class="form-control @error('perihal') is-invalid @enderror"
                         required>{{ old('perihal') }}</textarea>
                     @error('perihal')
                         <div class="form-error">{{ $message }}</div>
@@ -56,9 +53,8 @@
 
                 <div class="form-group">
                     <label for="nama_petugas" class="form-label">Nama Petugas</label>
-                    <textarea name="nama_petugas" id="nama_petugas" rows="3" 
-                        class="form-control @error('nama_petugas') is-invalid @enderror"
-                        required>{{ old('nama_petugas') }}</textarea>
+                    <textarea name="nama_petugas" id="nama_petugas" rows="3"
+                        class="form-control @error('nama_petugas') is-invalid @enderror" required>{{ old('nama_petugas') }}</textarea>
                     @error('nama_petugas')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -66,7 +62,7 @@
 
                 <div class="form-group form-grid-full">
                     <label for="lampiran" class="form-label">Lampiran</label>
-                    
+
                     <!-- Drag & Drop Zone -->
                     <div id="drag-drop-zone" class="drag-drop-zone">
                         <div class="drag-drop-content">
@@ -83,13 +79,14 @@
                             </p>
                         </div>
                     </div>
-                    
+
                     <!-- Hidden file input -->
-                    <input type="file" name="lampiran[]" id="lampiran" class="hidden" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
-                    
+                    <input type="file" name="lampiran[]" id="lampiran" class="hidden" multiple
+                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+
                     <!-- File preview container -->
                     <div id="file-preview" class="mt-4 space-y-2"></div>
-                    
+
                     @error('lampiran')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -113,18 +110,18 @@
             background-color: #f9fafb;
             cursor: pointer;
         }
-        
+
         .drag-drop-zone.dragover {
             border-color: #3b82f6;
             background-color: #eff6ff;
             transform: scale(1.02);
         }
-        
+
         .drag-drop-zone:hover {
             border-color: #9ca3af;
             background-color: #f3f4f6;
         }
-        
+
         .file-item {
             display: flex;
             align-items: center;
@@ -134,32 +131,32 @@
             border-radius: 6px;
             border: 1px solid #e5e7eb;
         }
-        
+
         .file-item .file-info {
             display: flex;
             align-items: center;
             flex: 1;
         }
-        
+
         .file-item .file-icon {
             margin-right: 0.75rem;
             font-size: 1.25rem;
         }
-        
+
         .file-item .file-details {
             flex: 1;
         }
-        
+
         .file-item .file-name {
             font-weight: 500;
             color: #374151;
         }
-        
+
         .file-item .file-size {
             font-size: 0.875rem;
             color: #6b7280;
         }
-        
+
         .file-item .remove-btn {
             padding: 0.25rem;
             color: #ef4444;
@@ -169,7 +166,7 @@
             border: none;
             cursor: pointer;
         }
-        
+
         .file-item .remove-btn:hover {
             background-color: #fef2f2;
         }
@@ -182,40 +179,40 @@
             const fileInput = document.getElementById('lampiran');
             const browseBtn = document.getElementById('browse-btn');
             const filePreview = document.getElementById('file-preview');
-            
+
             let selectedFiles = [];
-            
+
             // Browse button click
             browseBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 fileInput.click();
             });
-            
+
             // File input change
             fileInput.addEventListener('change', function(e) {
                 handleFiles(e.target.files);
             });
-            
+
             // Drag and drop events
             dragZone.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 dragZone.classList.add('dragover');
             });
-            
+
             dragZone.addEventListener('dragleave', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 dragZone.classList.remove('dragover');
             });
-            
+
             dragZone.addEventListener('drop', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 dragZone.classList.remove('dragover');
                 handleFiles(e.dataTransfer.files);
             });
-            
+
             // Click on drag zone
             dragZone.addEventListener('click', function(e) {
                 if (e.target.closest('#browse-btn')) {
@@ -223,41 +220,46 @@
                 }
                 fileInput.click();
             });
-            
+
             function handleFiles(files) {
                 for (let file of files) {
                     // Validate file type
-                    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/jpg', 'image/png'];
-                    
+                    const allowedTypes = ['application/pdf', 'application/msword',
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg',
+                        'image/jpg', 'image/png'
+                    ];
+
                     if (!allowedTypes.includes(file.type)) {
-                        showError(`File "${file.name}" tidak didukung. Hanya PDF, DOC, DOCX, JPG, JPEG, PNG yang diizinkan.`);
+                        showError(
+                            `File "${file.name}" tidak didukung. Hanya PDF, DOC, DOCX, JPG, JPEG, PNG yang diizinkan.`
+                            );
                         continue;
                     }
-                    
+
                     // Validate file size (2GB = 2 * 1024 * 1024 * 1024 bytes)
                     if (file.size > 2 * 1024 * 1024 * 1024) {
                         showError(`File "${file.name}" terlalu besar. Maksimal 2GB per file.`);
                         continue;
                     }
-                    
+
                     // Add file to selected files
                     selectedFiles.push(file);
                     addFilePreview(file);
                 }
-                
+
                 // Update file input
                 updateFileInput();
             }
-            
+
             function addFilePreview(file) {
                 const fileItem = document.createElement('div');
                 fileItem.className = 'file-item';
                 fileItem.dataset.name = file.name;
-                
+
                 const fileIcon = getFileIcon(file.type);
                 const fileSize = formatFileSize(file.size);
                 const fileExt = file.name.split('.').pop().toUpperCase();
-                
+
                 fileItem.innerHTML = `
                     <div class="file-info">
                         <i class="file-icon ${fileIcon}"></i>
@@ -270,33 +272,33 @@
                         <i class="fas fa-times"></i>
                     </button>
                 `;
-                
+
                 filePreview.appendChild(fileItem);
             }
-            
+
             function removeFile(fileName) {
                 // Remove from selected files
                 selectedFiles = selectedFiles.filter(file => file.name !== fileName);
-                
+
                 // Remove from preview
                 const fileItem = filePreview.querySelector(`[data-name="${fileName}"]`);
                 if (fileItem) {
                     fileItem.remove();
                 }
-                
+
                 // Update file input
                 updateFileInput();
             }
-            
+
             function updateFileInput() {
                 // Create new FileList-like object
                 const dt = new DataTransfer();
                 selectedFiles.forEach(file => dt.items.add(file));
                 fileInput.files = dt.files;
             }
-            
+
             function getFileIcon(fileType) {
-                switch(fileType) {
+                switch (fileType) {
                     case 'application/pdf':
                         return 'fas fa-file-pdf text-red-500';
                     case 'application/msword':
@@ -310,7 +312,7 @@
                         return 'fas fa-file text-gray-500';
                 }
             }
-            
+
             function formatFileSize(bytes) {
                 if (bytes === 0) return '0 Bytes';
                 const k = 1024;
@@ -318,7 +320,7 @@
                 const i = Math.floor(Math.log(bytes) / Math.log(k));
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
             }
-            
+
             function showError(message) {
                 Swal.fire({
                     title: 'Error',
@@ -327,9 +329,9 @@
                     confirmButtonText: 'OK'
                 });
             }
-            
+
             // Make removeFile function global
             window.removeFile = removeFile;
         });
     </script>
-@endsection 
+@endsection
