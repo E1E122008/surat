@@ -46,6 +46,75 @@
             </span>
         </div>
         <div class="navbar-nav me-4">
+            <!-- Notification Dropdown -->
+            <div class="nav-item dropdown me-3 d-flex align-items-center">
+                <a class="nav-link position-relative py-0" href="#" id="notificationDropdown" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-bell fs-5 text-white"></i>
+                    @if (Auth::user()->unreadNotifications->count() > 0)
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                            style="font-size: 0.6rem; margin-top: 5px; margin-left: -5px;">
+                            {{ Auth::user()->unreadNotifications->count() }}
+                        </span>
+                    @endif
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationDropdown"
+                    style="width: 320px; max-height: 400px; overflow-y: auto;">
+                    <li class="dropdown-header">
+                        <h6 class="mb-0 fw-bold">Pemberitahuan Sistem</h6>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    @forelse(Auth::user()->unreadNotifications as $notification)
+                        <li>
+                            <a class="dropdown-item py-2 {{ isset($notification->data['type']) && $notification->data['type'] == 'error' ? 'text-danger' : (isset($notification->data['type']) && $notification->data['type'] == 'success' ? 'text-success' : 'text-primary') }}"
+                                href="{{ route('notifications.read', $notification->id) }}"
+                                style="white-space: normal;">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <small><i class="fas fa-circle me-1" style="font-size:8px;"></i>
+                                        @if (isset($notification->data['type']) && $notification->data['type'] == 'info')
+                                            Permintaan Baru
+                                        @else
+                                            Pembaruan Status
+                                        @endif
+                                    </small>
+                                    <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
+                                </div>
+                                <p class="mb-0 mt-1" style="font-size: 0.85rem; white-space: pre-wrap;">
+                                    {{ $notification->data['message'] ?? 'Ada pemberitahuan baru' }}</p>
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                    @empty
+                        <li><span class="dropdown-item text-center text-muted py-3">Tidak ada notifikasi baru</span>
+                        </li>
+                    @endforelse
+
+                    @if (Auth::user()->unreadNotifications->count() > 0)
+                        <li>
+                            <form action="{{ route('notifications.read.all') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="dropdown-item text-center text-primary fw-bold"
+                                    style="font-size: 0.9rem;">Tandai Semua Dibaca</button>
+                            </form>
+                        </li>
+                    @endif
+
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li>
+                        <a href="{{ route('notifications.index') }}" class="dropdown-item text-center text-secondary"
+                            style="font-size: 0.9rem;">
+                            Tampilkan Semua Notifikasi
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
             <!-- Profile Dropdown -->
             <div class="nav-item dropdown">

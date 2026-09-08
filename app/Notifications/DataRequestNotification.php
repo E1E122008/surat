@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class DataRequestNotification extends Notification implements ShouldQueue
+class DataRequestNotification extends Notification
 {
     use Queueable;
 

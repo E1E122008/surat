@@ -108,9 +108,9 @@ class DataRequestController extends Controller
         Log::info('Data Request created:', $dataRequest->toArray());
 
         // Notify admin
-        $admin = \App\Models\User::where('role', 'admin')->first();
-        if ($admin) {
-            $admin->notify(new DataRequestNotification($dataRequest));
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        if ($admins->count() > 0) {
+            \Illuminate\Support\Facades\Notification::send($admins, new DataRequestNotification($dataRequest));
         }
 
         Log::info('Redirecting to data-requests.index');

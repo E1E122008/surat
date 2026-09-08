@@ -162,6 +162,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/buku-agenda/kategori-keluar/export-pdf', [KategoriKeluarController::class, 'exportPDF'])
         ->name('buku-agenda.kategori-keluar.export-pdf')->middleware('preventMonitor');
     Route::get('/buku-agenda/export-pdf', [BukuAgendaController::class, 'exportPDF'])->name('buku-agenda.export-pdf')->middleware('preventMonitor');
+
+
+
     Route::get('/profile', [UserProfileController::class, 'index'])->name('profile');
     Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [UserProfileController::class, 'updatePassword'])->name('profile.password');
@@ -271,6 +274,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('data-requests/{dataRequest}', [DataRequestController::class, 'show'])->name('data-requests.show');
     Route::get('data-requests/create', [DataRequestController::class, 'create'])->name('data-requests.create')->middleware('checkRole:user,admin');
     Route::post('data-requests', [DataRequestController::class, 'store'])->name('data-requests.store')->middleware('checkRole:user,admin');
+    Route::get('data-requests/{dataRequest}/edit', [DataRequestController::class, 'edit'])->name('data-requests.edit');
+    Route::put('data-requests/{dataRequest}', [DataRequestController::class, 'update'])->name('data-requests.update');
     Route::delete('/data-requests/{dataRequest}/cancel', [DataRequestController::class, 'cancel'])->name('data-requests.cancel')->middleware('checkRole:user,admin');
 
 });
@@ -319,3 +324,9 @@ Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->name('admin.')-
     Route::post('/approval-requests', [ApprovalRequestController::class, 'store'])->name('approval-requests.store');
     Route::post('/approval-requests/{id}/toggle-fisik', [ApprovalRequestController::class, 'toggleFisik'])->name('admin.approval-requests.toggle-fisik');
 });
+Route::middleware(['auth'])->group(function () {
+    Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/read/{id}', [App\Http\Controllers\NotificationController::class, 'read'])->name('notifications.read');
+    Route::post('/notifications/read-all', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.read.all');
+});
+

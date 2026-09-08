@@ -165,7 +165,7 @@ class ApprovalRequestController extends Controller
             ]);
 
             // Send notification to user
-            $approvalRequest->user->notify(new ApprovalRequestNotification($approvalRequest));
+            $approvalRequest->user->notify(new ApprovalRequestNotification($approvalRequest, 'approved'));
 
             return redirect()->back()->with('success', 'Data surat berhasil di simpan.');
         } catch (\Exception $e) {
@@ -200,7 +200,7 @@ class ApprovalRequestController extends Controller
 
         
         // Send notification to user
-        $approvalRequest->user->notify(new ApprovalRequestNotification($approvalRequest));
+        $approvalRequest->user->notify(new ApprovalRequestNotification($approvalRequest, 'rejected'));
 
         return redirect()->back()->with('success', 'Permintaan berhasil ditolak');
     }

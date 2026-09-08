@@ -8,6 +8,7 @@ use App\Models\SppdDalamDaerah;
 use App\Models\SppdLuarDaerah;
 use App\Models\SptDalamDaerah;
 use App\Models\SptLuarDaerah;
+use App\Models\SkKaro;
 use Carbon\Carbon;
 use App\Exports\AgendaKeluarExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -50,6 +51,7 @@ class KategoriKeluarController extends Controller
         $querySppdLuarDaerah = SppdLuarDaerah::query();
         $querySptDalamDaerah = SptDalamDaerah::query();
         $querySptLuarDaerah = SptLuarDaerah::query();
+        $querySkKaro = SkKaro::query();
 
         // Logika pencarian
         if ($request->has('search')) {
@@ -92,6 +94,12 @@ class KategoriKeluarController extends Controller
                   ->orWhere('tujuan', 'LIKE', "%{$search}%")
                   ->orWhere('nama_petugas', 'LIKE', "%{$search}%");
             });
+            // Pencarian untuk SK KARO
+            $querySkKaro->where(function($q) use ($search) {
+                $q->where('no_sk', 'LIKE', "%{$search}%")
+                  ->orWhere('perihal', 'LIKE', "%{$search}%")
+                  ->orWhere('pejabat_ttd', 'LIKE', "%{$search}%");
+            });
         }
 
         // Handle filter dari modal
@@ -125,6 +133,7 @@ class KategoriKeluarController extends Controller
                     $querySppdLuarDaerah->whereBetween('tanggal', [$startDate, $endDate]);
                     $querySptDalamDaerah->whereBetween('tanggal', [$startDate, $endDate]);
                     $querySptLuarDaerah->whereBetween('tanggal', [$startDate, $endDate]);
+                    $querySkKaro->whereBetween('tanggal_sk', [$startDate, $endDate]);
                     break;
 
                 case 'bulan':
@@ -137,8 +146,8 @@ class KategoriKeluarController extends Controller
                                     ->whereYear('tanggal', now()->year);
                     $querySptDalamDaerah->whereMonth('tanggal', $month)
                                     ->whereYear('tanggal', now()->year);
-                    $querySptLuarDaerah->whereMonth('tanggal', $month)
-                                    ->whereYear('tanggal', now()->year);
+                    $querySptLuarDaerah->whereMonth('tanggal', $month)->whereYear('tanggal', now()->year);
+                    $querySkKaro->whereMonth('tanggal_sk', $month)->whereYear('tanggal_sk', now()->year);
                     break;
 
                 case 'tahun':
@@ -148,6 +157,7 @@ class KategoriKeluarController extends Controller
                     $querySppdLuarDaerah->whereYear('tanggal', $year); 
                     $querySptDalamDaerah->whereYear('tanggal', $year);
                     $querySptLuarDaerah->whereYear('tanggal', $year);
+                    $querySkKaro->whereYear('tanggal_sk', $year);
                     break;
 
                 default:
@@ -162,6 +172,7 @@ class KategoriKeluarController extends Controller
         $sppdLuarDaerah = $querySppdLuarDaerah->orderBy('created_at', 'desc')->paginate(10, ['*'], 'sppd_luar_page');
         $sptDalamDaerah = $querySptDalamDaerah->orderBy('created_at', 'desc')->paginate(10, ['*'], 'spt_dalam_page');
         $sptLuarDaerah = $querySptLuarDaerah->orderBy('created_at', 'desc')->paginate(10, ['*'], 'spt_luar_page');
+        $skKaro = $querySkKaro->orderBy('created_at', 'desc')->paginate(10, ['*'], 'sk_karo_page');
 
         // Hitung total surat
         $totalSurat = [
@@ -169,7 +180,8 @@ class KategoriKeluarController extends Controller
             'sppd_dalam' => $sppdDalamDaerah->total(),
             'sppd_luar' => $sppdLuarDaerah->total(),
             'spt_dalam' => $sptDalamDaerah->total(),
-            'spt_luar' => $sptLuarDaerah->total()
+            'spt_luar' => $sptLuarDaerah->total(),
+            'sk_karo' => $skKaro->total()
         ];
 
         // Kirim data ke view
@@ -179,6 +191,7 @@ class KategoriKeluarController extends Controller
             'sppdLuarDaerah',
             'sptDalamDaerah',
             'sptLuarDaerah',
+            'skKaro',
             'activeTab',
             'filterInfo',
             'totalSurat'
@@ -200,7 +213,7 @@ class KategoriKeluarController extends Controller
         ]);
 
         // Validasi tab yang valid
-        if (!in_array($tab, ['surat-keluar', 'sppd-dalam', 'sppd-luar', 'spt-dalam', 'spt-luar'])) {
+        if (!in_array($tab, ['surat-keluar', 'sppd-dalam', 'sppd-luar', 'spt-dalam', 'spt-luar', 'sk-karo'])) {
             $tab = 'surat-keluar';
         }
         
@@ -210,6 +223,7 @@ class KategoriKeluarController extends Controller
             'sppd-luar' => 'sppd-luar-daerah',
             'spt-dalam' => 'spt-dalam-daerah',
             'spt-luar' => 'spt-luar-daerah',
+            'sk-karo' => 'sk-karo',
             default => 'surat-keluar'
         };
         
@@ -260,6 +274,10 @@ class KategoriKeluarController extends Controller
                 $query = SptLuarDaerah::query();
                 $title = 'Arsip SPT Luar Daerah';
                 break;
+            case 'sk-karo':
+                $query = SkKaro::query();
+                $title = 'Arsip SK KARO';
+                break;
             default:
                 $query = SuratKeluar::query();
                 $title = 'Arsip Surat Keluar';
@@ -294,21 +312,23 @@ class KategoriKeluarController extends Controller
                             $endDate = $currentMonth->copy()->endOfMonth();
                     }
                     
-                    $query->whereBetween('tanggal', [$startDate, $endDate]);
+                    $dateCol = ($tab == 'sk-karo') ? 'tanggal_sk' : 'tanggal';
+                    $query->whereBetween($dateCol, [$startDate, $endDate]);
                     $filterInfo = "Minggu ke-{$weekNumber} Bulan " . $currentMonth->format('F Y');
                     break;
 
                 case 'bulan':
                     $month = $request->bulan;
                     $year = $request->tahun ?? now()->year;
-                    $query->whereMonth('tanggal', $month)
-                          ->whereYear('tanggal', $year);
+                    $dateCol = ($tab == 'sk-karo') ? 'tanggal_sk' : 'tanggal';
+                    $query->whereMonth($dateCol, $month)->whereYear($dateCol, $year);
                     $filterInfo = "Bulan " . Carbon::create(null, $month, 1)->format('F') . " {$year}";
                     break;
 
                 case 'tahun':
                     $year = $request->tahun;
-                    $query->whereYear('tanggal', $year);
+                    $dateCol = ($tab == 'sk-karo') ? 'tanggal_sk' : 'tanggal';
+                    $query->whereYear($dateCol, $year);
                     $filterInfo = "Tahun {$year}";
                     break;
 
@@ -320,7 +340,8 @@ class KategoriKeluarController extends Controller
         }
 
         // Ambil data
-        $data = $query->orderBy('tanggal', 'desc')->get();
+        $data = $dateCol = ($tab == 'sk-karo') ? 'tanggal_sk' : 'tanggal';
+        $data = $query->orderBy($dateCol, 'desc')->get();
 
         // Generate PDF
         $pdf = PDF::loadView('layouts.buku-agenda.pdf-keluar', [
