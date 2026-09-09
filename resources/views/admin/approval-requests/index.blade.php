@@ -3,626 +3,710 @@
 
 
 @section('content')
-<div class="container-fluid">
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-envelope-open-text me-2"></i>Daftar Data Persetujuan</h1>
-        <div class="d-flex gap-2 align-items-center">
-            <form method="GET" class="d-flex">
-                <select name="status" id="statusFilter" class="form-control form-control-sm mr-2" onchange="this.form.submit()">
-                    <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>Semua Status</option>
-                    <option value="pending_review" {{ request('status') == 'pending_review' ? 'selected' : '' }}>Menunggu Review</option>
-                    <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
-                    <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
-                </select>
-                <input type="text" name="search" id="search" placeholder="Cari data surat..." class="form-control form-control-sm mr-2" value="{{ request('search') }}">
-                <button type="submit" class="btn btn-primary btn-sm">
-                    <i class="fas fa-search"></i>
-                </button>
-            </form>
-            
-        </div>
-    </div>
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show auto-dismiss-alert" role="alert">
-            {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show auto-dismiss-alert" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <div>
-                        <span class="surat-badge surat-badge-sm mt-2 d-inline-block">
-                            <i class="fas fa-envelope"></i> Jumlah Surat: {{ $totalFiltered < $totalAll ? $totalFiltered . ' (Total: ' . $totalAll . ')' : $totalAll }}
-                        </span>
-                    </div>
-                    
+    <div class="container-fluid">
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-envelope-open-text me-2"></i>Daftar Data Persetujuan</h1>
+            <div class="d-flex gap-2 align-items-center">
+                <!-- Menu Urutkan Data -->
+                @php $sortOrder = request('sort', 'asc'); @endphp
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle btn-sm h-100" type="button" id="sortDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false" title="Urutkan">
+                        <i class="fas fa-sort-amount-{{ $sortOrder == 'desc' ? 'down' : 'up' }}"></i>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                        <li>
+                            <a class="dropdown-item {{ $sortOrder == 'desc' ? 'active bg-primary text-white' : '' }}"
+                                href="{{ request()->fullUrlWithQuery(['sort' => 'desc']) }}">
+                                Terbaru ke Terlama
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item {{ $sortOrder == 'asc' ? 'active bg-primary text-white' : '' }}"
+                                href="{{ request()->fullUrlWithQuery(['sort' => 'asc']) }}">
+                                Terlama ke Terbaru
+                            </a>
+                        </li>
+                    </ul>
                 </div>
-                <div class="card-body">
-                    
-                    <div class="table-responsive">
-                        <table class="table" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Jenis Surat</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Dinas</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Permintaan</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Fisik</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($approvalRequests as $index => $request)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $index + 1 + ($approvalRequests->currentPage() - 1) * $approvalRequests->perPage() }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-                                            @php
-                                                $letterTypes = [
-                                                    'surat_masuk' => 'Surat Masuk',
-                                                    'sk' => 'SK',
-                                                    'perda' => 'PERDA',
-                                                    'pergub' => 'PERGUB',
-                                                ];
-                                            @endphp
-                                            {{ $letterTypes[$request->letter_type] ?? $request->letter_type }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $request->sender }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $request->user->dinas ?? '-' }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-                                            @if($request->created_at)
-                                                {{ $request->created_at instanceof \Illuminate\Support\Carbon ? $request->created_at->format('d/m/Y') : \Carbon\Carbon::parse($request->created_at)->format('d/m/Y') }}
-                                            @else
-                                                -
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-                                            @if($request->status === 'pending')
-                                                <span class="badge bg-warning">Menunggu Review</span>
-                                            @elseif($request->status === 'approved')
-                                                <span class="badge bg-success">Disetujui</span>
-                                            @elseif($request->status === 'rejected')
-                                                <span class="badge bg-danger"><i class="fas fa-times me-1"></i> Ditolak</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-                                            @if($request->status === 'approved')
-                                                <span id="fisik-badge-{{ $request->id }}" style="cursor:pointer" onclick="toggleFisik({{ $request->id }})">
-                                                    @if($request->fisik_diterima)
-                                                        <span class="badge bg-success"><i class="fas fa-check"></i> Sudah</span>
-                                                    @else
-                                                        <span class="badge bg-secondary">Belum</span>
-                                                    @endif
-                                                </span>
-                                            @else
-                                                -
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-                                            <button type="button" class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#detailRequestModal{{ $request->id }}" title="Detail">
-                                                <i class="fas fa-eye me-2"></i> Detail
-                                            </button>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" class="text-center py-4">Tidak ada permintaan persetujuan</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                @if(isset($approvalRequests) && method_exists($approvalRequests, 'links'))
-                    <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top">
-                        <div class="text-sm text-gray-600">
-                            Menampilkan {{ $approvalRequests->firstItem() ?? 0 }} sampai {{ $approvalRequests->lastItem() ?? 0 }} dari {{ $approvalRequests->total() }} data
+
+                <form method="GET" class="d-flex">
+                    <select name="status" id="statusFilter" class="form-control form-control-sm mr-2"
+                        onchange="this.form.submit()">
+                        <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>Semua Status</option>
+                        <option value="pending_review" {{ request('status') == 'pending_review' ? 'selected' : '' }}>
+                            Menunggu Review</option>
+                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
+                        <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                    </select>
+                    <input type="text" name="search" id="search" placeholder="Cari data surat..."
+                        class="form-control form-control-sm mr-2" value="{{ request('search') }}">
+                    @if (request('sort'))
+                        <input type="hidden" name="sort" value="{{ request('sort') }}">
+                    @endif
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show auto-dismiss-alert" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show auto-dismiss-alert" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <div>
+                            <span class="surat-badge surat-badge-sm mt-2 d-inline-block">
+                                <i class="fas fa-envelope"></i> Jumlah Surat:
+                                {{ $totalFiltered < $totalAll ? $totalFiltered . ' (Total: ' . $totalAll . ')' : $totalAll }}
+                            </span>
                         </div>
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination mb-0">
-                                {{-- Previous Page Link --}}
-                                @if ($approvalRequests->onFirstPage())
-                                    <li class="page-item disabled">
-                                        <span class="page-link">
-                                            <i class="fas fa-chevron-left"></i> Sebelumnya
-                                        </span>
-                                    </li>
-                                @else
-                                    <li class="page-item">
-                                        <a class="page-link" href="{{ $approvalRequests->previousPageUrl() }}" rel="prev">
-                                            <i class="fas fa-chevron-left"></i> Sebelumnya
-                                        </a>
-                                    </li>
-                                @endif
 
-                                {{-- Pagination Elements --}}
-                                @php
-                                    $currentPage = $approvalRequests->currentPage();
-                                    $lastPage = $approvalRequests->lastPage();
-                                    $startPage = max(1, $currentPage - 2);
-                                    $endPage = min($lastPage, $currentPage + 2);
-                                @endphp
+                    </div>
+                    <div class="card-body">
 
-                                @if ($startPage > 1)
-                                    <li class="page-item">
-                                        <a class="page-link" href="{{ $approvalRequests->url(1) }}">1</a>
-                                    </li>
-                                    @if ($startPage > 2)
+                        <div class="table-responsive">
+                            <table class="table" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            No</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Jenis Surat</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Pengirim</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Dinas</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Tanggal Permintaan</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Status</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Fisik</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($approvalRequests as $index => $request)
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                                {{ $index + 1 + ($approvalRequests->currentPage() - 1) * $approvalRequests->perPage() }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                                @php
+                                                    $letterTypes = [
+                                                        'surat_masuk' => 'Surat Masuk',
+                                                        'sk' => 'SK',
+                                                        'perda' => 'PERDA',
+                                                        'pergub' => 'PERGUB',
+                                                    ];
+                                                @endphp
+                                                {{ $letterTypes[$request->letter_type] ?? $request->letter_type }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                                {{ $request->sender }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                                {{ $request->user->dinas ?? '-' }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                                @if ($request->created_at)
+                                                    {{ $request->created_at instanceof \Illuminate\Support\Carbon ? $request->created_at->format('d/m/Y') : \Carbon\Carbon::parse($request->created_at)->format('d/m/Y') }}
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                                @if ($request->status === 'pending')
+                                                    <span class="badge bg-warning">Menunggu Review</span>
+                                                @elseif($request->status === 'approved')
+                                                    <span class="badge bg-success">Disetujui</span>
+                                                @elseif($request->status === 'rejected')
+                                                    <span class="badge bg-danger"><i class="fas fa-times me-1"></i>
+                                                        Ditolak</span>
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                                @if ($request->status === 'approved')
+                                                    <span id="fisik-badge-{{ $request->id }}" style="cursor:pointer"
+                                                        onclick="toggleFisik({{ $request->id }})">
+                                                        @if ($request->fisik_diterima)
+                                                            <span class="badge bg-success"><i class="fas fa-check"></i>
+                                                                Sudah</span>
+                                                        @else
+                                                            <span class="badge bg-secondary">Belum</span>
+                                                        @endif
+                                                    </span>
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                                <button type="button" class="btn btn-sm btn-light" data-bs-toggle="modal"
+                                                    data-bs-target="#detailRequestModal{{ $request->id }}" title="Detail">
+                                                    <i class="fas fa-eye me-2"></i> Detail
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="8" class="text-center py-4">Tidak ada permintaan persetujuan
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @if (isset($approvalRequests) && method_exists($approvalRequests, 'links'))
+                        <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top">
+                            <div class="text-sm text-gray-600">
+                                Menampilkan {{ $approvalRequests->firstItem() ?? 0 }} sampai
+                                {{ $approvalRequests->lastItem() ?? 0 }} dari {{ $approvalRequests->total() }} data
+                            </div>
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination mb-0">
+                                    {{-- Previous Page Link --}}
+                                    @if ($approvalRequests->onFirstPage())
                                         <li class="page-item disabled">
-                                            <span class="page-link">...</span>
-                                        </li>
-                                    @endif
-                                @endif
-
-                                @for ($page = $startPage; $page <= $endPage; $page++)
-                                    @if ($page == $currentPage)
-                                        <li class="page-item active">
-                                            <span class="page-link">{{ $page }}</span>
+                                            <span class="page-link">
+                                                <i class="fas fa-chevron-left"></i> Sebelumnya
+                                            </span>
                                         </li>
                                     @else
                                         <li class="page-item">
-                                            <a class="page-link" href="{{ $approvalRequests->url($page) }}">{{ $page }}</a>
-                                        </li>
-                                    @endif
-                                @endfor
-
-                                @if ($endPage < $lastPage)
-                                    @if ($endPage < $lastPage - 1)
-                                        <li class="page-item disabled">
-                                            <span class="page-link">...</span>
-                                        </li>
-                                    @endif
-                                    <li class="page-item">
-                                        <a class="page-link" href="{{ $approvalRequests->url($lastPage) }}">{{ $lastPage }}</a>
-                                    </li>
-                                @endif
-
-                                {{-- Next Page Link --}}
-                                @if ($approvalRequests->hasMorePages())
-                                    <li class="page-item">
-                                        <a class="page-link" href="{{ $approvalRequests->nextPageUrl() }}" rel="next">
-                                            Selanjutnya <i class="fas fa-chevron-right"></i>
-                                        </a>
-                                    </li>
-                                @else
-                                    <li class="page-item disabled">
-                                        <span class="page-link">
-                                            Selanjutnya <i class="fas fa-chevron-right"></i>
-                                        </span>
-                                    </li>
-                                @endif
-                            </ul>
-                        </nav>
-                    </div>
-                @endif
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Detail Request Modal -->
-@foreach($approvalRequests as $request)
-<div class="modal fade" id="detailRequestModal{{ $request->id }}" tabindex="-1" aria-labelledby="detailRequestModalLabel{{ $request->id }}" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="detailRequestModalLabel{{ $request->id }}">Detail Permintaan Tambah Surat</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Nama User</label>
-                            <p>{{ $request->user->name }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Pengirim</label>
-                            <p>{{ $request->sender }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Jenis Surat</label>
-                             @php
-                                 $letterTypes = [
-                                     'surat_masuk' => 'Surat Masuk',
-                                     'sk' => 'SK',
-                                     'perda' => 'PERDA',
-                                     'pergub' => 'PERGUB',
-                                 ];
-                             @endphp
-                            <p>{{ $letterTypes[$request->letter_type] ?? $request->letter_type }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">No. Surat</label>
-                            <p>{{ $request->no_surat }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">No. HP</label>
-                            <p>{{ $request->no_hp }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Tanggal Permintaan</label>
-                            <p>
-                                @if($request->created_at)
-                                    {{ $request->created_at instanceof \Illuminate\Support\Carbon ? $request->created_at->format('d M Y') : \Carbon\Carbon::parse($request->created_at)->format('d M Y') }}
-                                @else
-                                    -
-                                @endif
-                            </p>
-                        </div>
-                         <div class="mb-3">
-                            <label class="form-label fw-bold">Tanggal Surat</label>
-                            <p>
-                                @if($request->tanggal_surat)
-                                    {{ $request->tanggal_surat instanceof \Illuminate\Support\Carbon ? $request->tanggal_surat->format('d M Y') : \Carbon\Carbon::parse($request->tanggal_surat)->format('d M Y') }}
-                                @else
-                                    -
-                                @endif
-                            </p>
-                        </div>
-                        
-                    </div>
-                    <div class="col-md-6">
-                         <div class="mb-3">
-                            <label class="form-label fw-bold">Perihal</label>
-                            <p>{{ $request->perihal }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Lampiran</label>
-                            @php
-                                $lampiran = $request->lampiran;
-                                if (is_string($lampiran)) {
-                                    $lampiran = trim($lampiran);
-                                    if ($lampiran === '' || $lampiran === 'null') {
-                                        $lampiran = [];
-                                    } else {
-                                        $decoded = json_decode($lampiran, true);
-                                        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                                            $lampiran = $decoded;
-                                        } else {
-                                            $lampiran = [ ['path' => $lampiran, 'name' => basename($lampiran)] ];
-                                        }
-                                    }
-                                }
-                            @endphp
-                            @if($lampiran && count($lampiran))
-                                <div class="row">
-                                    @foreach($lampiran as $file)
-                                        @php
-                                            if (is_string($file)) {
-                                                $file = ['path' => $file, 'name' => basename($file)];
-                                            }
-                                            $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-                                            $iconClass = 'fa-file-alt text-secondary';
-                                            if(in_array($ext, ['jpg','jpeg','png','gif'])) $iconClass = 'fa-file-image text-info';
-                                            elseif($ext === 'pdf') $iconClass = 'fa-file-pdf text-danger';
-                                            elseif(in_array($ext, ['doc','docx'])) $iconClass = 'fa-file-word text-primary';
-                                        @endphp
-                                        <div class="col-12 mb-2 d-flex align-items-center gap-2">
-                                            <a href="{{ asset('storage/' . $file['path']) }}" target="_blank" class="fs-4 me-2" title="Lihat file">
-                                                <i class="fas {{ $iconClass }}"></i>
+                                            <a class="page-link" href="{{ $approvalRequests->previousPageUrl() }}"
+                                                rel="prev">
+                                                <i class="fas fa-chevron-left"></i> Sebelumnya
                                             </a>
-                                            <span class="fw-bold small lampiran-filename" title="{{ $file['name'] }}">
-                                                {{ $file['name'] }}
-                                            </span>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @else
-                                <p>-</p>
-                            @endif
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Deskripsi (Catatan User)</label>
-                            <p>{{ $request->notes ?: '-' }}</p>
-                        </div>
-                         <div class="mb-3">
-                            <label class="form-label fw-bold">Status Saat Ini</label>
-                            <p>
-                                @if($request->status === 'pending')
-                                    <span class="badge bg-warning"><i class="fas fa-clock me-1"></i> Menunggu Persetujuan</span>
-                                @elseif($request->status === 'approved')
-                                    <span class="badge bg-success"><i class="fas fa-check me-1"></i> Disetujui</span>
-                                @else
-                                    <span class="badge bg-danger"><i class="fas fa-times me-1"></i> Ditolak</span>
-                                @endif
-                            </p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Status Fisik</label>
-                            @if($request->status === 'approved')
-                                <span id="fisik-status-{{ $request->id }}">
-                                    @if($request->fisik_diterima)
-                                        <span class="badge bg-success"><i class="fas fa-check"></i> Sudah diterima</span>
-                                        <div class="text-muted small">
-                                            Diterima pada:
-                                            @if($request->fisik_diterima_at)
-                                                {{ $request->fisik_diterima_at instanceof \Illuminate\Support\Carbon ? $request->fisik_diterima_at->format('d M Y H:i') : \Carbon\Carbon::parse($request->fisik_diterima_at)->format('d M Y H:i') }}
-                                            @else
-                                                -
-                                            @endif
-                                        </div>
-                                    @else
-                                        <span class="badge bg-secondary">Belum</span>
+                                        </li>
                                     @endif
-                                </span>
-                            @else
-                                -
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                 @if($request->status === 'pending')
-                    <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#approveModal{{ $request->id }}" data-bs-dismiss="modal">
-                       <i class="fas fa-check me-1"></i> Setujui
-                    </button>
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal{{ $request->id }}" data-bs-dismiss="modal">
-                       <i class="fas fa-times me-1"></i> Tolak
-                    </button>
-                 @else
-                     <span class="text-muted me-2">Permintaan sudah diproses.</span>
-                 @endif
-                
-            </div>
-        </div>
-    </div>
-</div>
-@endforeach
 
-<!-- Approve Modal -->
-@foreach($approvalRequests as $request)
-<div class="modal fade " id="approveModal{{ $request->id }}" tabindex="-1" aria-labelledby="approveModalLabel{{ $request->id }}" aria-hidden="true">
-    <div class="modal-dialog bg-white shadow-lg shadow-lg rounded-2">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="approveModalLabel{{ $request->id }}">Setujui Permintaan Data</h5>
-            </div>
-            <form action="{{ route('admin.approval-requests.approve', $request->id) }}" method="POST">
-                @csrf
-                <div class="modal-body">
-                    <p>Permintaan dari: <strong>{{ $request->user->name }}</strong> ({{ $request->letter_type }})</p>
-                    <div class="mb-3">
-                        <label for="no_agenda{{ $request->id }}" class="form-label">No. Agenda</label>
-                        <input type="text" class="form-control" id="no_agenda{{ $request->id }}" name="no_agenda" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="tanggal_diterima{{ $request->id }}" class="form-label">Tanggal Diterima</label>
-                        <input type="date" class="form-control" id="tanggal_diterima{{ $request->id }}" name="tanggal_diterima" value="{{ old('tanggal_diterima', date('Y-m-d')) }}" required>
-                    </div>
-                    @if($errors->any())
-                        <div class="alert alert-danger">
-                            <ul>
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
+                                    {{-- Pagination Elements --}}
+                                    @php
+                                        $currentPage = $approvalRequests->currentPage();
+                                        $lastPage = $approvalRequests->lastPage();
+                                        $startPage = max(1, $currentPage - 2);
+                                        $endPage = min($lastPage, $currentPage + 2);
+                                    @endphp
+
+                                    @if ($startPage > 1)
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $approvalRequests->url(1) }}">1</a>
+                                        </li>
+                                        @if ($startPage > 2)
+                                            <li class="page-item disabled">
+                                                <span class="page-link">...</span>
+                                            </li>
+                                        @endif
+                                    @endif
+
+                                    @for ($page = $startPage; $page <= $endPage; $page++)
+                                        @if ($page == $currentPage)
+                                            <li class="page-item active">
+                                                <span class="page-link">{{ $page }}</span>
+                                            </li>
+                                        @else
+                                            <li class="page-item">
+                                                <a class="page-link"
+                                                    href="{{ $approvalRequests->url($page) }}">{{ $page }}</a>
+                                            </li>
+                                        @endif
+                                    @endfor
+
+                                    @if ($endPage < $lastPage)
+                                        @if ($endPage < $lastPage - 1)
+                                            <li class="page-item disabled">
+                                                <span class="page-link">...</span>
+                                            </li>
+                                        @endif
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                                href="{{ $approvalRequests->url($lastPage) }}">{{ $lastPage }}</a>
+                                        </li>
+                                    @endif
+
+                                    {{-- Next Page Link --}}
+                                    @if ($approvalRequests->hasMorePages())
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $approvalRequests->nextPageUrl() }}"
+                                                rel="next">
+                                                Selanjutnya <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    @else
+                                        <li class="page-item disabled">
+                                            <span class="page-link">
+                                                Selanjutnya <i class="fas fa-chevron-right"></i>
+                                            </span>
+                                        </li>
+                                    @endif
+                                </ul>
+                            </nav>
                         </div>
                     @endif
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-success">Simpan</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
-</div>
-@endforeach
 
-<!-- Reject Modal -->
-@foreach($approvalRequests as $request)
-<div class="modal fade" id="rejectModal{{ $request->id }}" tabindex="-1" aria-labelledby="rejectModalLabel{{ $request->id }}" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="rejectModalLabel{{ $request->id }}">Tolak Permintaan Data</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="{{ route('admin.approval-requests.reject', $request->id) }}" method="POST">
-                @csrf
-                <div class="modal-body">
-                     <p>Permintaan dari: <strong>{{ $request->user->name }}</strong> ({{ $request->letter_type }})</p>
-                    <div class="mb-3">
-                        <label for="admin_notes{{ $request->id }}" class="form-label">Alasan Penolakan</label>
-                        <textarea class="form-control" id="admin_notes{{ $request->id }}" name="admin_notes" rows="4" required></textarea>
+    <!-- Detail Request Modal -->
+    @foreach ($approvalRequests as $request)
+        <div class="modal fade" id="detailRequestModal{{ $request->id }}" tabindex="-1"
+            aria-labelledby="detailRequestModalLabel{{ $request->id }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="detailRequestModalLabel{{ $request->id }}">Detail Permintaan Tambah
+                            Surat</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Nama User</label>
+                                    <p>{{ $request->user->name }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Pengirim</label>
+                                    <p>{{ $request->sender }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Jenis Surat</label>
+                                    @php
+                                        $letterTypes = [
+                                            'surat_masuk' => 'Surat Masuk',
+                                            'sk' => 'SK',
+                                            'perda' => 'PERDA',
+                                            'pergub' => 'PERGUB',
+                                        ];
+                                    @endphp
+                                    <p>{{ $letterTypes[$request->letter_type] ?? $request->letter_type }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">No. Surat</label>
+                                    <p>{{ $request->no_surat }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">No. HP</label>
+                                    <p>{{ $request->no_hp }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Tanggal Permintaan</label>
+                                    <p>
+                                        @if ($request->created_at)
+                                            {{ $request->created_at instanceof \Illuminate\Support\Carbon ? $request->created_at->format('d M Y') : \Carbon\Carbon::parse($request->created_at)->format('d M Y') }}
+                                        @else
+                                            -
+                                        @endif
+                                    </p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Tanggal Surat</label>
+                                    <p>
+                                        @if ($request->tanggal_surat)
+                                            {{ $request->tanggal_surat instanceof \Illuminate\Support\Carbon ? $request->tanggal_surat->format('d M Y') : \Carbon\Carbon::parse($request->tanggal_surat)->format('d M Y') }}
+                                        @else
+                                            -
+                                        @endif
+                                    </p>
+                                </div>
+
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Perihal</label>
+                                    <p>{{ $request->perihal }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Lampiran</label>
+                                    @php
+                                        $lampiran = $request->lampiran;
+                                        if (is_string($lampiran)) {
+                                            $lampiran = trim($lampiran);
+                                            if ($lampiran === '' || $lampiran === 'null') {
+                                                $lampiran = [];
+                                            } else {
+                                                $decoded = json_decode($lampiran, true);
+                                                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                                    $lampiran = $decoded;
+                                                } else {
+                                                    $lampiran = [['path' => $lampiran, 'name' => basename($lampiran)]];
+                                                }
+                                            }
+                                        }
+                                    @endphp
+                                    @if ($lampiran && count($lampiran))
+                                        <div class="row">
+                                            @foreach ($lampiran as $file)
+                                                @php
+                                                    if (is_string($file)) {
+                                                        $file = ['path' => $file, 'name' => basename($file)];
+                                                    }
+                                                    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                                                    $iconClass = 'fa-file-alt text-secondary';
+                                                    if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif'])) {
+                                                        $iconClass = 'fa-file-image text-info';
+                                                    } elseif ($ext === 'pdf') {
+                                                        $iconClass = 'fa-file-pdf text-danger';
+                                                    } elseif (in_array($ext, ['doc', 'docx'])) {
+                                                        $iconClass = 'fa-file-word text-primary';
+                                                    }
+                                                @endphp
+                                                <div class="col-12 mb-2 d-flex align-items-center gap-2">
+                                                    <a href="{{ asset('storage/' . $file['path']) }}" target="_blank"
+                                                        class="fs-4 me-2" title="Lihat file">
+                                                        <i class="fas {{ $iconClass }}"></i>
+                                                    </a>
+                                                    <span class="fw-bold small lampiran-filename"
+                                                        title="{{ $file['name'] }}">
+                                                        {{ $file['name'] }}
+                                                    </span>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <p>-</p>
+                                    @endif
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Deskripsi (Catatan User)</label>
+                                    <p>{{ $request->notes ?: '-' }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Status Saat Ini</label>
+                                    <p>
+                                        @if ($request->status === 'pending')
+                                            <span class="badge bg-warning"><i class="fas fa-clock me-1"></i> Menunggu
+                                                Persetujuan</span>
+                                        @elseif($request->status === 'approved')
+                                            <span class="badge bg-success"><i class="fas fa-check me-1"></i>
+                                                Disetujui</span>
+                                        @else
+                                            <span class="badge bg-danger"><i class="fas fa-times me-1"></i> Ditolak</span>
+                                        @endif
+                                    </p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Status Fisik</label>
+                                    @if ($request->status === 'approved')
+                                        <span id="fisik-status-{{ $request->id }}">
+                                            @if ($request->fisik_diterima)
+                                                <span class="badge bg-success"><i class="fas fa-check"></i> Sudah
+                                                    diterima</span>
+                                                <div class="text-muted small">
+                                                    Diterima pada:
+                                                    @if ($request->fisik_diterima_at)
+                                                        {{ $request->fisik_diterima_at instanceof \Illuminate\Support\Carbon ? $request->fisik_diterima_at->format('d M Y H:i') : \Carbon\Carbon::parse($request->fisik_diterima_at)->format('d M Y H:i') }}
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </div>
+                                            @else
+                                                <span class="badge bg-secondary">Belum</span>
+                                            @endif
+                                        </span>
+                                    @else
+                                        -
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        @if ($request->status === 'pending')
+                            <button type="button" class="btn btn-success me-2" data-bs-toggle="modal"
+                                data-bs-target="#approveModal{{ $request->id }}" data-bs-dismiss="modal">
+                                <i class="fas fa-check me-1"></i> Setujui
+                            </button>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                data-bs-target="#rejectModal{{ $request->id }}" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-1"></i> Tolak
+                            </button>
+                        @else
+                            <span class="text-muted me-2">Permintaan sudah diproses.</span>
+                        @endif
+
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-danger">Tolak</button>
-                </div>
-            </form>
+            </div>
         </div>
-    </div>
-</div>
-@endforeach
+    @endforeach
+
+    <!-- Approve Modal -->
+    @foreach ($approvalRequests as $request)
+        <div class="modal fade " id="approveModal{{ $request->id }}" tabindex="-1"
+            aria-labelledby="approveModalLabel{{ $request->id }}" aria-hidden="true">
+            <div class="modal-dialog bg-white shadow-lg shadow-lg rounded-2">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="approveModalLabel{{ $request->id }}">Setujui Permintaan Data</h5>
+                    </div>
+                    <form action="{{ route('admin.approval-requests.approve', $request->id) }}" method="POST">
+                        @csrf
+                        <div class="modal-body">
+                            <p>Permintaan dari: <strong>{{ $request->user->name }}</strong> ({{ $request->letter_type }})
+                            </p>
+                            <div class="mb-3">
+                                <label for="no_agenda{{ $request->id }}" class="form-label">No. Agenda</label>
+                                <input type="text" class="form-control" id="no_agenda{{ $request->id }}"
+                                    name="no_agenda" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tanggal_diterima{{ $request->id }}" class="form-label">Tanggal
+                                    Diterima</label>
+                                <input type="date" class="form-control" id="tanggal_diterima{{ $request->id }}"
+                                    name="tanggal_diterima" value="{{ old('tanggal_diterima', date('Y-m-d')) }}"
+                                    required>
+                            </div>
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <ul>
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-success">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endforeach
+
+    <!-- Reject Modal -->
+    @foreach ($approvalRequests as $request)
+        <div class="modal fade" id="rejectModal{{ $request->id }}" tabindex="-1"
+            aria-labelledby="rejectModalLabel{{ $request->id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="rejectModalLabel{{ $request->id }}">Tolak Permintaan Data</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('admin.approval-requests.reject', $request->id) }}" method="POST">
+                        @csrf
+                        <div class="modal-body">
+                            <p>Permintaan dari: <strong>{{ $request->user->name }}</strong> ({{ $request->letter_type }})
+                            </p>
+                            <div class="mb-3">
+                                <label for="admin_notes{{ $request->id }}" class="form-label">Alasan Penolakan</label>
+                                <textarea class="form-control" id="admin_notes{{ $request->id }}" name="admin_notes" rows="4" required></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-danger">Tolak</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endforeach
 
 @endsection
 
 <style>
-.surat-badge {
-    display: inline-flex;
-    align-items: center;
-    background: linear-gradient(90deg, #5b7ef1 0%, #6ea8fe 100%);
-    color: #fff;
-    font-weight: 500;
-    border-radius: 2rem;
-    padding: 0.3rem 1rem;
-    font-size: 1rem;
-    box-shadow: 0 2px 8px rgba(91,126,241,0.08);
-    gap: 0.5rem;
-}
-.surat-badge-sm {
-    font-size: 0.95rem;
-    padding: 0.2rem 0.8rem;
-}
-.surat-badge i {
-    font-size: 1em;
-    margin-right: 0.5rem;
-}
-.lampiran-filename {
-    max-width: 250px;
-    display: inline-block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: middle;
-}
+    .surat-badge {
+        display: inline-flex;
+        align-items: center;
+        background: linear-gradient(90deg, #5b7ef1 0%, #6ea8fe 100%);
+        color: #fff;
+        font-weight: 500;
+        border-radius: 2rem;
+        padding: 0.3rem 1rem;
+        font-size: 1rem;
+        box-shadow: 0 2px 8px rgba(91, 126, 241, 0.08);
+        gap: 0.5rem;
+    }
 
-/* Table Styling */
-.table {
-    border: none !important;
-    margin-bottom: 0 !important;
-}
+    .surat-badge-sm {
+        font-size: 0.95rem;
+        padding: 0.2rem 0.8rem;
+    }
 
-.table thead tr {
-    background-color: #4a69bd !important;
-    color: white;
-}
+    .surat-badge i {
+        font-size: 1em;
+        margin-right: 0.5rem;
+    }
 
-.table th {
-    border: none !important;
-    font-weight: 500;
-    text-transform: uppercase;
-    font-size: 0.875rem;
-    padding: 0.75rem;
-}
+    .lampiran-filename {
+        max-width: 250px;
+        display: inline-block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+    }
 
-.table td {
-    border: none !important;
-    padding: 0.75rem;
-}
+    /* Table Styling */
+    .table {
+        border: none !important;
+        margin-bottom: 0 !important;
+    }
 
-.table tbody tr {
-    border-bottom: 1px solid #f3f4f6;
-}
+    .table thead tr {
+        background-color: #4a69bd !important;
+        color: white;
+    }
 
-.table tbody tr:last-child {
-    border-bottom: 2px solid #000;
-}
+    .table th {
+        border: none !important;
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.875rem;
+        padding: 0.75rem;
+    }
 
-.table tbody tr:hover {
-    background-color: #f9fafb;
-}
+    .table td {
+        border: none !important;
+        padding: 0.75rem;
+    }
 
-/* Pagination Styling */
-.pagination {
-    display: flex;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    gap: 0.25rem;
-}
+    .table tbody tr {
+        border-bottom: 1px solid #f3f4f6;
+    }
 
-.pagination .page-item {
-    margin: 0;
-}
+    .table tbody tr:last-child {
+        border-bottom: 2px solid #000;
+    }
 
-.pagination .page-link {
-    padding: 0.5rem 0.75rem;
-    color: #374151;
-    background-color: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.375rem;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-}
+    .table tbody tr:hover {
+        background-color: #f9fafb;
+    }
 
-.pagination .page-link:hover {
-    background-color: #f3f4f6;
-    border-color: #d1d5db;
-    color: #111827;
-}
+    /* Pagination Styling */
+    .pagination {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        gap: 0.25rem;
+    }
 
-.pagination .page-item.active .page-link {
-    background-color: #4a69bd;
-    border-color: #4a69bd;
-    color: white;
-    font-weight: 600;
-}
+    .pagination .page-item {
+        margin: 0;
+    }
 
-.pagination .page-item.disabled .page-link {
-    color: #9ca3af;
-    background-color: #f9fafb;
-    border-color: #e5e7eb;
-    cursor: not-allowed;
-    opacity: 0.6;
-}
+    .pagination .page-link {
+        padding: 0.5rem 0.75rem;
+        color: #374151;
+        background-color: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.375rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
 
-.pagination .page-link i {
-    font-size: 0.75rem;
-}
+    .pagination .page-link:hover {
+        background-color: #f3f4f6;
+        border-color: #d1d5db;
+        color: #111827;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #4a69bd;
+        border-color: #4a69bd;
+        color: white;
+        font-weight: 600;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #9ca3af;
+        background-color: #f9fafb;
+        border-color: #e5e7eb;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .pagination .page-link i {
+        font-size: 0.75rem;
+    }
 </style>
 
 @push('scripts')
-<script>
-function konfirmasiFisik(id) {
-    fetch('/admin/approval-requests/' + id + '/fisik-ajax', {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if(data.status === 'success') {
-            document.getElementById('fisik-status-' + id).innerHTML =
-                `<span class='badge bg-success'><i class='fas fa-check'></i> Sudah diterima</span>
+    <script>
+        function konfirmasiFisik(id) {
+            fetch('/admin/approval-requests/' + id + '/fisik-ajax', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('fisik-status-' + id).innerHTML =
+                            `<span class='badge bg-success'><i class='fas fa-check'></i> Sudah diterima</span>
                 <div class='text-muted small'>Diterima pada: ${data.fisik_diterima_at}</div>`;
+                    }
+                });
         }
-    });
-}
 
-function toggleFisik(id) {
-    fetch('/admin/approval-requests/' + id + '/toggle-fisik', {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
+        function toggleFisik(id) {
+            fetch('/admin/approval-requests/' + id + '/toggle-fisik', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    let badge = '';
+                    if (data.fisik_diterima) {
+                        badge = `<span class='badge bg-success'><i class='fas fa-check'></i> Sudah</span>`;
+                    } else {
+                        badge = `<span class='badge bg-secondary'>Belum</span>`;
+                    }
+                    document.getElementById('fisik-badge-' + id).innerHTML = badge;
+                    document.getElementById('fisik-status-' + id).innerHTML = badge + (data.fisik_diterima_at ?
+                        `<div class='text-muted small'>Diterima pada: ${data.fisik_diterima_at}</div>` : '');
+                });
         }
-    })
-    .then(response => response.json())
-    .then(data => {
-        let badge = '';
-        if(data.fisik_diterima) {
-            badge = `<span class='badge bg-success'><i class='fas fa-check'></i> Sudah</span>`;
-        } else {
-            badge = `<span class='badge bg-secondary'>Belum</span>`;
-        }
-        document.getElementById('fisik-badge-' + id).innerHTML = badge;
-        document.getElementById('fisik-status-' + id).innerHTML = badge + (data.fisik_diterima_at ? `<div class='text-muted small'>Diterima pada: ${data.fisik_diterima_at}</div>` : '');
-    });
-}
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(function() {
-            document.querySelectorAll('.auto-dismiss-alert').forEach(function(alert) {
-                // Bootstrap 5 way to close alert
-                if (window.bootstrap && bootstrap.Alert) {
-                    var bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
-                    bsAlert.close();
-                } else {
-                    alert.style.display = 'none';
-                }
-            });
-        }, 5000);
-    });
-</script>
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                document.querySelectorAll('.auto-dismiss-alert').forEach(function(alert) {
+                    // Bootstrap 5 way to close alert
+                    if (window.bootstrap && bootstrap.Alert) {
+                        var bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                        bsAlert.close();
+                    } else {
+                        alert.style.display = 'none';
+                    }
+                });
+            }, 5000);
+        });
+    </script>
 @endpush

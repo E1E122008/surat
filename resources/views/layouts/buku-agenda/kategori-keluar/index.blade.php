@@ -210,8 +210,31 @@
             <div class="col-md-9">
                 <h2 class="mb-4"><strong>📂 Arsip</strong> / <span style="color: gray;"> Arsip Surat Keluar</span></h2>
             </div>
-            <div class="col-md-3">
-                <form action="{{ route('buku-agenda.kategori-keluar.index') }}" method="GET" class="d-flex">
+            <div class="col-md-3 d-flex align-items-center">
+                <!-- Menu Urutkan Data -->
+                @php $sortOrder = request('sort', 'asc'); @endphp
+                <div class="dropdown me-2">
+                    <button class="btn btn-outline-secondary dropdown-toggle h-100" type="button" id="sortDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false" title="Urutkan">
+                        <i class="fas fa-sort-amount-{{ $sortOrder == 'desc' ? 'down' : 'up' }}"></i>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                        <li>
+                            <a class="dropdown-item {{ $sortOrder == 'desc' ? 'active bg-primary text-white' : '' }}"
+                                href="{{ request()->fullUrlWithQuery(['sort' => 'desc']) }}">
+                                Terbaru ke Terlama
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item {{ $sortOrder == 'asc' ? 'active bg-primary text-white' : '' }}"
+                                href="{{ request()->fullUrlWithQuery(['sort' => 'asc']) }}">
+                                Terlama ke Terbaru
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <form action="{{ route('buku-agenda.kategori-keluar.index') }}" method="GET" class="d-flex w-100">
                     <input type="text" name="search" placeholder="Cari arsip..." class="form-control me-2"
                         value="{{ request('search') }}">
                     <button type="submit" class="btn btn-primary">
@@ -219,6 +242,9 @@
                     </button>
                     <!-- Menyimpan tab yang aktif -->
                     <input type="hidden" name="tab" value="{{ request('tab', 'surat-keluar') }}">
+                    @if (request('sort'))
+                        <input type="hidden" name="sort" value="{{ request('sort') }}">
+                    @endif
                 </form>
             </div>
         </div>

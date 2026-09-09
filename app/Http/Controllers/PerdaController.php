@@ -38,10 +38,17 @@ class PerdaController extends Controller
                   ->orWhere('pengirim', 'LIKE', "%{$search}%");
             });
         }
-        
-        $perdas = $query->latest()->paginate(10);
 
-        return view('draft-phd.perda.index', compact('perdas'));
+        $sortOrder = $request->input('sort', 'asc');
+        if ($sortOrder === 'desc') {
+            $query->latest();
+        } else {
+            $query->oldest();
+        }
+        
+        $perdas = $query->paginate(10)->appends($request->query());
+
+        return view('draft-phd.perda.index', compact('perdas', 'sortOrder'));
     }
 
     public function create()
@@ -205,12 +212,6 @@ class PerdaController extends Controller
                 'message' => 'Gagal memperbarui catatan'
             ], 500);
         }
-    }
-
-    public function status($id)
-    {
-        $perda = Perda::findOrFail($id);
-        return view('draft-phd.perda.status', compact('perda'));
     }
 
     public function updateStatus(Request $request, $id)

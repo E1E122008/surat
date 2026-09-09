@@ -36,9 +36,16 @@ class PergubController extends Controller
                   ->orWhere('perihal', 'LIKE', "%{$search}%");
             });
         }
+
+        $sortOrder = $request->input('sort', 'asc');
+        if ($sortOrder === 'desc') {
+            $query->latest();
+        } else {
+            $query->oldest();
+        }
         
-        $pergubs = $query->latest()->paginate(10);
-        return view('draft-phd.pergub.index', compact('pergubs'));
+        $pergubs = $query->paginate(10)->appends($request->query());
+        return view('draft-phd.pergub.index', compact('pergubs', 'sortOrder'));
     }
 
     public function create()
@@ -206,12 +213,6 @@ class PergubController extends Controller
                 'message' => 'Gagal memperbarui catatan pergub'
             ], 500);
         }
-    }
-
-    public function status($id)
-    {
-        $pergub = Pergub::findOrFail($id);
-        return view('draft-phd.pergub.status', compact('pergub'));
     }
 
     public function updateStatus(Request $request, $id)

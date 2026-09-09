@@ -25,8 +25,15 @@ class SptDalamDaerahController extends Controller
             });
         }
 
-        $sptDalamDaerah = $query->latest()->paginate(10);
-        return view('spt-dalam-daerah.index', compact('sptDalamDaerah'));
+        $sortOrder = $request->input('sort', 'asc');
+        if ($sortOrder === 'desc') {
+            $query->latest();
+        } else {
+            $query->oldest();
+        }
+
+        $sptDalamDaerah = $query->paginate(10)->appends($request->query());
+        return view('spt-dalam-daerah.index', compact('sptDalamDaerah', 'sortOrder'));
     }
 
     public function create()

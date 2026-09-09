@@ -166,13 +166,16 @@ class KategoriKeluarController extends Controller
             }
         }
 
+        $sortOrder = $request->input('sort', 'asc');
+        $sortDir = ($sortOrder === 'desc') ? 'desc' : 'asc';
+
         // Eksekusi query
-        $suratKeluar = $querySuratKeluar->orderBy('created_at', 'desc')->paginate(10, ['*'], 'surat_keluar_page');
-        $sppdDalamDaerah = $querySppdDalamDaerah->orderBy('created_at', 'desc')->paginate(10, ['*'], 'sppd_dalam_page');
-        $sppdLuarDaerah = $querySppdLuarDaerah->orderBy('created_at', 'desc')->paginate(10, ['*'], 'sppd_luar_page');
-        $sptDalamDaerah = $querySptDalamDaerah->orderBy('created_at', 'desc')->paginate(10, ['*'], 'spt_dalam_page');
-        $sptLuarDaerah = $querySptLuarDaerah->orderBy('created_at', 'desc')->paginate(10, ['*'], 'spt_luar_page');
-        $skKaro = $querySkKaro->orderBy('created_at', 'desc')->paginate(10, ['*'], 'sk_karo_page');
+        $suratKeluar = $querySuratKeluar->orderBy('created_at', $sortDir)->paginate(10, ['*'], 'surat_keluar_page')->appends($request->query());
+        $sppdDalamDaerah = $querySppdDalamDaerah->orderBy('created_at', $sortDir)->paginate(10, ['*'], 'sppd_dalam_page')->appends($request->query());
+        $sppdLuarDaerah = $querySppdLuarDaerah->orderBy('created_at', $sortDir)->paginate(10, ['*'], 'sppd_luar_page')->appends($request->query());
+        $sptDalamDaerah = $querySptDalamDaerah->orderBy('created_at', $sortDir)->paginate(10, ['*'], 'spt_dalam_page')->appends($request->query());
+        $sptLuarDaerah = $querySptLuarDaerah->orderBy('created_at', $sortDir)->paginate(10, ['*'], 'spt_luar_page')->appends($request->query());
+        $skKaro = $querySkKaro->orderBy('created_at', $sortDir)->paginate(10, ['*'], 'sk_karo_page')->appends($request->query());
 
         // Hitung total surat
         $totalSurat = [

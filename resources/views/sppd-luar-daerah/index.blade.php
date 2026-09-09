@@ -3,17 +3,18 @@
 @section('content')
     <div class="min-h-screen bg-gray-100" style="max-width: 1400px; margin: auto; padding: 20px;">
         <div class="mb-4">
-            <h2 class="header h2"><strong>📂 Surat Perintah Perjalanan Dinas</strong> / <span style="color: gray;"> SPPD Luar Daerah</span></h2>
+            <h2 class="header h2"><strong>📂 Surat Perintah Perjalanan Dinas</strong> / <span style="color: gray;"> SPPD Luar
+                    Daerah</span></h2>
         </div>
         <div class="bg-white shadow-sm rounded-lg">
             <div class="p-4">
-                @if(session('success'))
+                @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert" id="alertBox">
                         <i class="fas fa-check-circle me-2"></i>
                         {{ session('success') }}
                     </div>
                 @endif
-                @if(session('error'))
+                @if (session('error'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alertBox">
                         <i class="fas fa-exclamation-circle me-2"></i>
                         {{ session('error') }}
@@ -24,17 +25,40 @@
                         SPPD Luar Daerah
                     </h2>
                     <div class="flex space-x-2">
+                        <!-- Menu Urutkan Data -->
+                        <div class="dropdown me-2" style="margin-right: 8px;">
+                            <button class="btn btn-outline-secondary dropdown-toggle h-100" type="button" id="sortDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false" title="Urutkan">
+                                <i
+                                    class="fas fa-sort-amount-{{ isset($sortOrder) && $sortOrder == 'desc' ? 'down' : 'up' }}"></i>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                                <li>
+                                    <a class="dropdown-item {{ !isset($sortOrder) || $sortOrder == 'desc' ? 'active bg-primary text-white' : '' }}"
+                                        href="{{ route('sppd-luar-daerah.index', array_merge(request()->query(), ['sort' => 'desc'])) }}">
+                                        Terbaru ke Terlama
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item {{ isset($sortOrder) && $sortOrder == 'asc' ? 'active bg-primary text-white' : '' }}"
+                                        href="{{ route('sppd-luar-daerah.index', array_merge(request()->query(), ['sort' => 'asc'])) }}">
+                                        Terlama ke Terbaru
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
                         <form action="{{ route('sppd-luar-daerah.index') }}" method="GET" class="flex items-center">
-                            <input type="text" 
-                                   name="search" 
-                                   value="{{ request('search') }}"
-                                   placeholder="Cari SPPD Luar Daerah..." 
-                                   class="form-control">
+                            @if (request('sort'))
+                                <input type="hidden" name="sort" value="{{ request('sort') }}">
+                            @endif
+                            <input type="text" name="search" value="{{ request('search') }}"
+                                placeholder="Cari SPPD Luar Daerah..." class="form-control">
                             <button type="submit" class="btn btn-primary ml-2">
                                 <i class="fas fa-search"></i>
                             </button>
                         </form>
-                        @if(auth()->user()->role !== 'monitor')
+                        @if (auth()->user()->role !== 'monitor')
                             <a href="{{ route('sppd-luar-daerah.create') }}" class="btn btn-primary">
                                 <i class="fas fa-plus"></i> SPPD Baru
                             </a>
@@ -44,16 +68,21 @@
                         @endif
                     </div>
                 </div>
-                
+
                 <div class="table-responsive" style="max-width: 1200px; margin: auto;">
                     <table class="table" id="suratTable">
                         <thead>
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">No</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">No Surat</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">Tanggal</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">Tujuan</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">Aksi</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">No
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">No
+                                    Surat</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">
+                                    Tanggal</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">
+                                    Tujuan</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">Aksi
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -61,35 +90,44 @@
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $index + 1 }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->no_surat }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tanggal->format('d/m/Y') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        {{ $item->tanggal->format('d/m/Y') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $item->tujuan }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                         <div class="dropdown">
-                                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <button class="btn btn-light btn-sm dropdown-toggle" type="button"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class="fas fa-cog"></i> Aksi
                                             </button>
                                             <ul class="dropdown-menu">
                                                 <li>
-                                                    <a class="dropdown-item" href="{{ route('sppd-luar-daerah.detail', $item->id) }}">
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('sppd-luar-daerah.detail', $item->id) }}">
                                                         <i class="fas fa-eye fa-fw me-2 text-primary"></i>Detail
                                                     </a>
                                                 </li>
-                                                @if(auth()->user()->role !== 'monitor')
+                                                @if (auth()->user()->role !== 'monitor')
                                                     <li>
-                                                        <a class="dropdown-item" href="{{ route('sppd-luar-daerah.edit', $item->id) }}">
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('sppd-luar-daerah.edit', $item->id) }}">
                                                             <i class="fas fa-edit fa-fw me-2 text-warning"></i>Edit
                                                         </a>
                                                     </li>
-                                                    <li><hr class="dropdown-divider"></li>
                                                     <li>
-                                                        <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $item->id }})">
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" class="dropdown-item text-danger"
+                                                            onclick="confirmDelete({{ $item->id }})">
                                                             <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
-                                                    </button>
+                                                        </button>
                                                     </li>
                                                 @endif
                                             </ul>
                                         </div>
-                                        <form id="delete-form-{{ $item->id }}" action="{{ route('sppd-luar-daerah.destroy', $item->id) }}" method="POST" style="display: none;">
+                                        <form id="delete-form-{{ $item->id }}"
+                                            action="{{ route('sppd-luar-daerah.destroy', $item->id) }}" method="POST"
+                                            style="display: none;">
                                             @csrf
                                             @method('DELETE')
                                         </form>
@@ -112,7 +150,8 @@
                     </span>
                 </div>
                 <style>
-                    .pagination .page-item:first-child, .pagination .page-item:last-child {
+                    .pagination .page-item:first-child,
+                    .pagination .page-item:last-child {
                         display: none !important;
                     }
                 </style>
@@ -234,7 +273,8 @@
             font-size: 1rem !important;
         }
 
-        .btn-info, .btn-danger {
+        .btn-info,
+        .btn-danger {
             margin: 0 0.25rem;
         }
 
@@ -251,17 +291,20 @@
             border-radius: 2rem;
             padding: 0.3rem 1rem;
             font-size: 1rem;
-            box-shadow: 0 2px 8px rgba(91,126,241,0.08);
+            box-shadow: 0 2px 8px rgba(91, 126, 241, 0.08);
             gap: 0.5rem;
         }
+
         .surat-badge-sm {
             font-size: 0.95rem;
             padding: 0.2rem 0.8rem;
         }
+
         .surat-badge i {
             font-size: 1em;
             margin-right: 0.5rem;
         }
+
         /* Adjust the action buttons container */
         .flex.justify-center.items-center {
             gap: 0.5rem;
@@ -305,7 +348,7 @@
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
-            
+
         });
         document.addEventListener('DOMContentLoaded', function() {
             const banners = document.querySelectorAll('.alert');

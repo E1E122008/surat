@@ -34,15 +34,15 @@
         }
 
         /* Tooltip hover styles */
-        .text-truncate-custom:hover, 
-        .perihal-truncate:hover, 
+        .text-truncate-custom:hover,
+        .perihal-truncate:hover,
         .disposisi-truncate:hover {
             white-space: normal;
             overflow: visible;
             position: relative;
             z-index: 1;
             background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             padding: 4px 8px;
             border-radius: 4px;
             max-width: 400px;
@@ -107,7 +107,7 @@
             padding: 0.5rem 1rem;
             border-radius: 20px;
             font-size: 0.9rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
             margin-left: 10px;
             display: inline-block;
@@ -115,13 +115,13 @@
 
         .stats-badge:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
         }
 
         .alert {
             border-radius: 0.5rem;
             border: none;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
         .lampiran-container {
@@ -151,7 +151,7 @@
 
         .lampiran-badge:hover {
             transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .lampiran-dropdown {
@@ -176,18 +176,41 @@
             <div class="col-md-9">
                 <h2 class="mb-4"><strong>📂 Arsip</strong> / <span style="color: gray;"> Arsip Surat Masuk</span></h2>
             </div>
-            <div class="col-md-3">
-                <form action="{{ route('buku-agenda.index') }}" method="GET" class="d-flex">
-                    <input type="text" 
-                           name="search" 
-                           placeholder="Cari arsip..." 
-                           class="form-control me-2"
-                           value="{{ request('search') }}">
+            <div class="col-md-3 d-flex align-items-center">
+                <!-- Menu Urutkan Data -->
+                @php $sortOrder = request('sort', 'asc'); @endphp
+                <div class="dropdown me-2">
+                    <button class="btn btn-outline-secondary dropdown-toggle h-100" type="button" id="sortDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false" title="Urutkan">
+                        <i class="fas fa-sort-amount-{{ $sortOrder == 'desc' ? 'down' : 'up' }}"></i>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                        <li>
+                            <a class="dropdown-item {{ $sortOrder == 'desc' ? 'active bg-primary text-white' : '' }}"
+                                href="{{ request()->fullUrlWithQuery(['sort' => 'desc']) }}">
+                                Terbaru ke Terlama
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item {{ $sortOrder == 'asc' ? 'active bg-primary text-white' : '' }}"
+                                href="{{ request()->fullUrlWithQuery(['sort' => 'asc']) }}">
+                                Terlama ke Terbaru
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <form action="{{ route('buku-agenda.index') }}" method="GET" class="d-flex w-100">
+                    <input type="text" name="search" placeholder="Cari arsip..." class="form-control me-2"
+                        value="{{ request('search') }}">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-search"></i>
                     </button>
-                    <!-- Menyimpan tab yang aktif -->
+                    <!-- Menyimpan tab dan sort yang aktif -->
                     <input type="hidden" name="tab" value="{{ request('tab', 'surat-masuk') }}">
+                    @if (request('sort'))
+                        <input type="hidden" name="sort" value="{{ request('sort') }}">
+                    @endif
                 </form>
             </div>
         </div>
@@ -199,47 +222,50 @@
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
                             <a class="nav-link {{ request('tab', 'surat-masuk') == 'surat-masuk' ? 'active' : '' }}"
-                               href="{{ route('buku-agenda.index', ['tab' => 'surat-masuk']) }}">
+                                href="{{ route('buku-agenda.index', ['tab' => 'surat-masuk']) }}">
                                 Surat Masuk
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request('tab') == 'surat-keputusan' ? 'active' : '' }}"
-                               href="{{ route('buku-agenda.index', ['tab' => 'surat-keputusan']) }}">
+                                href="{{ route('buku-agenda.index', ['tab' => 'surat-keputusan']) }}">
                                 Surat Keputusan
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request('tab') == 'perda' ? 'active' : '' }}"
-                               href="{{ route('buku-agenda.index', ['tab' => 'perda']) }}">
+                                href="{{ route('buku-agenda.index', ['tab' => 'perda']) }}">
                                 Peraturan Daerah
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request('tab') == 'pergub' ? 'active' : '' }}"
-                               href="{{ route('buku-agenda.index', ['tab' => 'pergub']) }}">
+                                href="{{ route('buku-agenda.index', ['tab' => 'pergub']) }}">
                                 Peraturan Gubernur
                             </a>
                         </li>
-                        
+
                     </ul>
                 </div>
 
-                @if($filterInfo)
-                <div class="alert alert-info mt-3">
-                    <i class="fas fa-filter"></i> Filter Aktif: {{ $filterInfo }}
-                    <a href="{{ request()->url() }}?tab={{ request('tab', 'surat-masuk') }}" class="float-end text-decoration-none">
-                        <i class="fas fa-times"></i> Hapus Filter
-                    </a>
-                </div>
+                @if ($filterInfo)
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-filter"></i> Filter Aktif: {{ $filterInfo }}
+                        <a href="{{ request()->url() }}?tab={{ request('tab', 'surat-masuk') }}"
+                            class="float-end text-decoration-none">
+                            <i class="fas fa-times"></i> Hapus Filter
+                        </a>
+                    </div>
                 @endif
 
                 <div class="tab-content mt-3">
                     <!-- Tab Surat Masuk -->
-                    <div class="tab-pane fade {{ request('tab', 'surat-masuk') == 'surat-masuk' ? 'show active' : '' }}" id="surat-masuk">
+                    <div class="tab-pane fade {{ request('tab', 'surat-masuk') == 'surat-masuk' ? 'show active' : '' }}"
+                        id="surat-masuk">
                         <h4>📥 Surat Masuk</h4>
                         <div class="mb-3">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
                             <a href="{{ route('buku-agenda.export', [
@@ -247,8 +273,9 @@
                                 'mingguKe' => request('mingguKe'),
                                 'bulan' => request('bulan'),
                                 'tahun' => request('tahun'),
-                                'tab' => 'surat-masuk'
-                            ]) }}" class="btn btn-success">
+                                'tab' => 'surat-masuk',
+                            ]) }}"
+                                class="btn btn-success">
                                 <i class="fas fa-file-excel"></i> Export Excel
                             </a>
                             <a href="{{ route('buku-agenda.export-pdf', [
@@ -256,8 +283,9 @@
                                 'mingguKe' => request('mingguKe'),
                                 'bulan' => request('bulan'),
                                 'tahun' => request('tahun'),
-                                'tab' => 'surat-masuk'
-                            ]) }}" class="btn btn-danger">
+                                'tab' => 'surat-masuk',
+                            ]) }}"
+                                class="btn btn-danger">
                                 <i class="fas fa-file-pdf"></i> Export PDF
                             </a>
                             <span class="stats-badge">
@@ -265,28 +293,47 @@
                                 Jumlah Surat: {{ $totalSurat['surat_masuk'] }}
                             </span>
                         </div>
-                        
+
                         <div class="overflow-x-auto">
                             <table class="table table-bordered mt-4">
                                 <thead class="thead-dark">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No.Agenda</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No. Surat</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Terima</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Perihal</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Lampiran</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            No</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            No.Agenda</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            No. Surat</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Tanggal Terima</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Pengirim</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Perihal</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Disposisi</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Lampiran</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     @forelse($suratMasuk as $index => $surat)
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_agenda }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_surat }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->tanggal_terima->format('d/m/Y') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                                {{ $surat->no_agenda }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                                {{ $surat->no_surat }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                                {{ $surat->tanggal_terima->format('d/m/Y') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                                                 <span class="text-truncate-custom" title="{{ $surat->pengirim }}">
                                                     {{ $surat->pengirim }}
@@ -304,40 +351,61 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
                                                 @php
-                                                    $lampiran = is_array($surat->lampiran) ? $surat->lampiran : json_decode($surat->lampiran, true);
+                                                    $lampiran = is_array($surat->lampiran)
+                                                        ? $surat->lampiran
+                                                        : json_decode($surat->lampiran, true);
                                                 @endphp
-                                                @if($lampiran && count($lampiran) > 0)
+                                                @if ($lampiran && count($lampiran) > 0)
                                                     <div class="lampiran-container position-relative d-inline-block">
                                                         <span class="badge bg-primary lampiran-badge">
                                                             <i class="fas fa-paperclip me-1"></i>
-                                                            {{ count($lampiran) }} {{ count($lampiran) == 1 ? 'file' : 'files' }}
+                                                            {{ count($lampiran) }}
+                                                            {{ count($lampiran) == 1 ? 'file' : 'files' }}
                                                         </span>
-                                                        <div class="lampiran-dropdown position-absolute bg-white p-2" 
-                                                             style="z-index: 1000; min-width: 280px; max-width: 400px; top: 100%; left: 0;">
-                                                            @foreach($lampiran as $file)
+                                                        <div class="lampiran-dropdown position-absolute bg-white p-2"
+                                                            style="z-index: 1000; min-width: 280px; max-width: 400px; top: 100%; left: 0;">
+                                                            @foreach ($lampiran as $file)
                                                                 @php
                                                                     if (is_string($file)) {
-                                                                        $file = ['path' => $file, 'name' => basename($file)];
+                                                                        $file = [
+                                                                            'path' => $file,
+                                                                            'name' => basename($file),
+                                                                        ];
                                                                     }
-                                                                    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                                                                    $ext = strtolower(
+                                                                        pathinfo($file['name'], PATHINFO_EXTENSION),
+                                                                    );
                                                                     $iconClass = 'fa-file-alt text-gray-500';
-                                                                    if(in_array($ext, ['jpg','jpeg','png','gif'])) $iconClass = 'fa-file-image text-blue-500';
-                                                                    elseif($ext === 'pdf') $iconClass = 'fa-file-pdf text-red-500';
-                                                                    elseif(in_array($ext, ['doc','docx'])) $iconClass = 'fa-file-word text-blue-600';
+                                                                    if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif'])) {
+                                                                        $iconClass = 'fa-file-image text-blue-500';
+                                                                    } elseif ($ext === 'pdf') {
+                                                                        $iconClass = 'fa-file-pdf text-red-500';
+                                                                    } elseif (in_array($ext, ['doc', 'docx'])) {
+                                                                        $iconClass = 'fa-file-word text-blue-600';
+                                                                    }
                                                                     // Encode path dengan benar
                                                                     $pathParts = explode('/', $file['path']);
-                                                                    $encodedParts = array_map('rawurlencode', $pathParts);
-                                                                    $fileUrl = asset('storage/' . implode('/', $encodedParts));
+                                                                    $encodedParts = array_map(
+                                                                        'rawurlencode',
+                                                                        $pathParts,
+                                                                    );
+                                                                    $fileUrl = asset(
+                                                                        'storage/' . implode('/', $encodedParts),
+                                                                    );
                                                                 @endphp
-                                                                <a href="{{ $fileUrl }}" target="_blank" 
-                                                                   class="d-flex align-items-center text-decoration-none text-dark">
-                                                                    <i class="fas {{ $iconClass }} me-2 flex-shrink-0"></i>
-                                                                    <span class="text-truncate flex-grow-1" style="max-width: 280px;" title="{{ $file['name'] }}">
+                                                                <a href="{{ $fileUrl }}" target="_blank"
+                                                                    class="d-flex align-items-center text-decoration-none text-dark">
+                                                                    <i
+                                                                        class="fas {{ $iconClass }} me-2 flex-shrink-0"></i>
+                                                                    <span class="text-truncate flex-grow-1"
+                                                                        style="max-width: 280px;"
+                                                                        title="{{ $file['name'] }}">
                                                                         {{ $file['name'] }}
                                                                     </span>
-                                                                    <i class="fas fa-external-link-alt ms-2 text-muted flex-shrink-0" style="font-size: 0.75rem;"></i>
+                                                                    <i class="fas fa-external-link-alt ms-2 text-muted flex-shrink-0"
+                                                                        style="font-size: 0.75rem;"></i>
                                                                 </a>
-                                                                @if(!$loop->last)
+                                                                @if (!$loop->last)
                                                                     <hr class="my-1" style="margin: 0.5rem 0;">
                                                                 @endif
                                                             @endforeach
@@ -363,10 +431,12 @@
                     </div>
 
                     <!-- Tab Surat Keputusan -->
-                    <div class="tab-pane fade {{ request('tab') == 'surat-keputusan' ? 'show active' : '' }}" id="surat-keputusan">
+                    <div class="tab-pane fade {{ request('tab') == 'surat-keputusan' ? 'show active' : '' }}"
+                        id="surat-keputusan">
                         <h4>📄 Surat Keputusan</h4>
                         <div class="mb-3">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
                             <a href="{{ route('buku-agenda.export', [
@@ -374,8 +444,9 @@
                                 'mingguKe' => request('mingguKe'),
                                 'bulan' => request('bulan'),
                                 'tahun' => request('tahun'),
-                                'tab' => 'surat-keputusan'
-                            ]) }}" class="btn btn-success">
+                                'tab' => 'surat-keputusan',
+                            ]) }}"
+                                class="btn btn-success">
                                 <i class="fas fa-file-excel"></i> Export Excel
                             </a>
                             <a href="{{ route('buku-agenda.export-pdf', [
@@ -383,8 +454,9 @@
                                 'mingguKe' => request('mingguKe'),
                                 'bulan' => request('bulan'),
                                 'tahun' => request('tahun'),
-                                'tab' => 'surat-keputusan'
-                            ]) }}" class="btn btn-danger">
+                                'tab' => 'surat-keputusan',
+                            ]) }}"
+                                class="btn btn-danger">
                                 <i class="fas fa-file-pdf"></i> Export PDF
                             </a>
                             <span class="stats-badge">
@@ -392,34 +464,54 @@
                                 Jumlah SK: {{ $totalSurat['sk'] }}
                             </span>
                         </div>
-                        
+
                         <div class="overflow-x-auto">
                             <table class="table table-bordered mt-4">
                                 <thead class="thead-dark">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No. Agenda</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No. Surat</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Terima</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Perihal</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Lampiran</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            No</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            No. Agenda</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            No. Surat</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Tanggal Terima</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Pengirim</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Perihal</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Disposisi</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Lampiran</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     @forelse($sks as $index => $surat)
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_agenda }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_surat }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->tanggal_terima->format('d/m/Y') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                                {{ $surat->no_agenda }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                                {{ $surat->no_surat }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                                {{ $surat->tanggal_terima->format('d/m/Y') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                                                 <span class="text-truncate-custom" title="{{ $surat->pengirim }}">
                                                     {{ $surat->pengirim }}
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap break-words text-sm text-gray-500 text-center">
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap break-words text-sm text-gray-500 text-center">
                                                 <span class="perihal-truncate" title="{{ $surat->perihal }}">
                                                     {{ $surat->perihal }}
                                                 </span>
@@ -431,40 +523,61 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
                                                 @php
-                                                    $lampiran = is_array($surat->lampiran) ? $surat->lampiran : json_decode($surat->lampiran, true);
+                                                    $lampiran = is_array($surat->lampiran)
+                                                        ? $surat->lampiran
+                                                        : json_decode($surat->lampiran, true);
                                                 @endphp
-                                                @if($lampiran && count($lampiran) > 0)
+                                                @if ($lampiran && count($lampiran) > 0)
                                                     <div class="lampiran-container position-relative d-inline-block">
                                                         <span class="badge bg-primary lampiran-badge">
                                                             <i class="fas fa-paperclip me-1"></i>
-                                                            {{ count($lampiran) }} {{ count($lampiran) == 1 ? 'file' : 'files' }}
+                                                            {{ count($lampiran) }}
+                                                            {{ count($lampiran) == 1 ? 'file' : 'files' }}
                                                         </span>
-                                                        <div class="lampiran-dropdown position-absolute bg-white p-2" 
-                                                             style="z-index: 1000; min-width: 280px; max-width: 400px; top: 100%; left: 0;">
-                                                            @foreach($lampiran as $file)
+                                                        <div class="lampiran-dropdown position-absolute bg-white p-2"
+                                                            style="z-index: 1000; min-width: 280px; max-width: 400px; top: 100%; left: 0;">
+                                                            @foreach ($lampiran as $file)
                                                                 @php
                                                                     if (is_string($file)) {
-                                                                        $file = ['path' => $file, 'name' => basename($file)];
+                                                                        $file = [
+                                                                            'path' => $file,
+                                                                            'name' => basename($file),
+                                                                        ];
                                                                     }
-                                                                    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                                                                    $ext = strtolower(
+                                                                        pathinfo($file['name'], PATHINFO_EXTENSION),
+                                                                    );
                                                                     $iconClass = 'fa-file-alt text-gray-500';
-                                                                    if(in_array($ext, ['jpg','jpeg','png','gif'])) $iconClass = 'fa-file-image text-blue-500';
-                                                                    elseif($ext === 'pdf') $iconClass = 'fa-file-pdf text-red-500';
-                                                                    elseif(in_array($ext, ['doc','docx'])) $iconClass = 'fa-file-word text-blue-600';
+                                                                    if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif'])) {
+                                                                        $iconClass = 'fa-file-image text-blue-500';
+                                                                    } elseif ($ext === 'pdf') {
+                                                                        $iconClass = 'fa-file-pdf text-red-500';
+                                                                    } elseif (in_array($ext, ['doc', 'docx'])) {
+                                                                        $iconClass = 'fa-file-word text-blue-600';
+                                                                    }
                                                                     // Encode path dengan benar
                                                                     $pathParts = explode('/', $file['path']);
-                                                                    $encodedParts = array_map('rawurlencode', $pathParts);
-                                                                    $fileUrl = asset('storage/' . implode('/', $encodedParts));
+                                                                    $encodedParts = array_map(
+                                                                        'rawurlencode',
+                                                                        $pathParts,
+                                                                    );
+                                                                    $fileUrl = asset(
+                                                                        'storage/' . implode('/', $encodedParts),
+                                                                    );
                                                                 @endphp
-                                                                <a href="{{ $fileUrl }}" target="_blank" 
-                                                                   class="d-flex align-items-center text-decoration-none text-dark">
-                                                                    <i class="fas {{ $iconClass }} me-2 flex-shrink-0"></i>
-                                                                    <span class="text-truncate flex-grow-1" style="max-width: 280px;" title="{{ $file['name'] }}">
+                                                                <a href="{{ $fileUrl }}" target="_blank"
+                                                                    class="d-flex align-items-center text-decoration-none text-dark">
+                                                                    <i
+                                                                        class="fas {{ $iconClass }} me-2 flex-shrink-0"></i>
+                                                                    <span class="text-truncate flex-grow-1"
+                                                                        style="max-width: 280px;"
+                                                                        title="{{ $file['name'] }}">
                                                                         {{ $file['name'] }}
                                                                     </span>
-                                                                    <i class="fas fa-external-link-alt ms-2 text-muted flex-shrink-0" style="font-size: 0.75rem;"></i>
+                                                                    <i class="fas fa-external-link-alt ms-2 text-muted flex-shrink-0"
+                                                                        style="font-size: 0.75rem;"></i>
                                                                 </a>
-                                                                @if(!$loop->last)
+                                                                @if (!$loop->last)
                                                                     <hr class="my-1" style="margin: 0.5rem 0;">
                                                                 @endif
                                                             @endforeach
@@ -492,7 +605,8 @@
                     <div class="tab-pane fade {{ request('tab') == 'perda' ? 'show active' : '' }}" id="perda">
                         <h4>📋 Peraturan Daerah</h4>
                         <div class="mb-3">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
                             <a href="{{ route('buku-agenda.export', [
@@ -500,8 +614,9 @@
                                 'mingguKe' => request('mingguKe'),
                                 'bulan' => request('bulan'),
                                 'tahun' => request('tahun'),
-                                'tab' => 'perda'
-                            ]) }}" class="btn btn-success">
+                                'tab' => 'perda',
+                            ]) }}"
+                                class="btn btn-success">
                                 <i class="fas fa-file-excel"></i> Export Excel
                             </a>
                             <a href="{{ route('buku-agenda.export-pdf', [
@@ -509,8 +624,9 @@
                                 'mingguKe' => request('mingguKe'),
                                 'bulan' => request('bulan'),
                                 'tahun' => request('tahun'),
-                                'tab' => 'perda'
-                            ]) }}" class="btn btn-danger">
+                                'tab' => 'perda',
+                            ]) }}"
+                                class="btn btn-danger">
                                 <i class="fas fa-file-pdf"></i> Export PDF
                             </a>
                             <span class="stats-badge">
@@ -522,29 +638,49 @@
                             <table class="table table-bordered mt-4">
                                 <thead class="thead-dark">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No. Agenda</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No. Surat</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Terima</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Perihal</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Lampiran</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            No</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            No. Agenda</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            No. Surat</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Tanggal Terima</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Pengirim</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Perihal</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Disposisi</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Lampiran</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     @forelse($perda as $index => $surat)
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_agenda }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_surat }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->tanggal_terima->format('d/m/Y') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                                {{ $surat->no_agenda }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                                {{ $surat->no_surat }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                                {{ $surat->tanggal_terima->format('d/m/Y') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                                                 <span class="text-truncate-custom" title="{{ $surat->pengirim }}">
                                                     {{ $surat->pengirim }}
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap break-words text-sm text-gray-500 text-center">
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap break-words text-sm text-gray-500 text-center">
                                                 <span class="perihal-truncate" title="{{ $surat->perihal }}">
                                                     {{ $surat->perihal }}
                                                 </span>
@@ -556,40 +692,61 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
                                                 @php
-                                                    $lampiran = is_array($surat->lampiran) ? $surat->lampiran : json_decode($surat->lampiran, true);
+                                                    $lampiran = is_array($surat->lampiran)
+                                                        ? $surat->lampiran
+                                                        : json_decode($surat->lampiran, true);
                                                 @endphp
-                                                @if($lampiran && count($lampiran) > 0)
+                                                @if ($lampiran && count($lampiran) > 0)
                                                     <div class="lampiran-container position-relative d-inline-block">
                                                         <span class="badge bg-primary lampiran-badge">
                                                             <i class="fas fa-paperclip me-1"></i>
-                                                            {{ count($lampiran) }} {{ count($lampiran) == 1 ? 'file' : 'files' }}
+                                                            {{ count($lampiran) }}
+                                                            {{ count($lampiran) == 1 ? 'file' : 'files' }}
                                                         </span>
-                                                        <div class="lampiran-dropdown position-absolute bg-white p-2" 
-                                                             style="z-index: 1000; min-width: 280px; max-width: 400px; top: 100%; left: 0;">
-                                                            @foreach($lampiran as $file)
+                                                        <div class="lampiran-dropdown position-absolute bg-white p-2"
+                                                            style="z-index: 1000; min-width: 280px; max-width: 400px; top: 100%; left: 0;">
+                                                            @foreach ($lampiran as $file)
                                                                 @php
                                                                     if (is_string($file)) {
-                                                                        $file = ['path' => $file, 'name' => basename($file)];
+                                                                        $file = [
+                                                                            'path' => $file,
+                                                                            'name' => basename($file),
+                                                                        ];
                                                                     }
-                                                                    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                                                                    $ext = strtolower(
+                                                                        pathinfo($file['name'], PATHINFO_EXTENSION),
+                                                                    );
                                                                     $iconClass = 'fa-file-alt text-gray-500';
-                                                                    if(in_array($ext, ['jpg','jpeg','png','gif'])) $iconClass = 'fa-file-image text-blue-500';
-                                                                    elseif($ext === 'pdf') $iconClass = 'fa-file-pdf text-red-500';
-                                                                    elseif(in_array($ext, ['doc','docx'])) $iconClass = 'fa-file-word text-blue-600';
+                                                                    if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif'])) {
+                                                                        $iconClass = 'fa-file-image text-blue-500';
+                                                                    } elseif ($ext === 'pdf') {
+                                                                        $iconClass = 'fa-file-pdf text-red-500';
+                                                                    } elseif (in_array($ext, ['doc', 'docx'])) {
+                                                                        $iconClass = 'fa-file-word text-blue-600';
+                                                                    }
                                                                     // Encode path dengan benar
                                                                     $pathParts = explode('/', $file['path']);
-                                                                    $encodedParts = array_map('rawurlencode', $pathParts);
-                                                                    $fileUrl = asset('storage/' . implode('/', $encodedParts));
+                                                                    $encodedParts = array_map(
+                                                                        'rawurlencode',
+                                                                        $pathParts,
+                                                                    );
+                                                                    $fileUrl = asset(
+                                                                        'storage/' . implode('/', $encodedParts),
+                                                                    );
                                                                 @endphp
-                                                                <a href="{{ $fileUrl }}" target="_blank" 
-                                                                   class="d-flex align-items-center text-decoration-none text-dark">
-                                                                    <i class="fas {{ $iconClass }} me-2 flex-shrink-0"></i>
-                                                                    <span class="text-truncate flex-grow-1" style="max-width: 280px;" title="{{ $file['name'] }}">
+                                                                <a href="{{ $fileUrl }}" target="_blank"
+                                                                    class="d-flex align-items-center text-decoration-none text-dark">
+                                                                    <i
+                                                                        class="fas {{ $iconClass }} me-2 flex-shrink-0"></i>
+                                                                    <span class="text-truncate flex-grow-1"
+                                                                        style="max-width: 280px;"
+                                                                        title="{{ $file['name'] }}">
                                                                         {{ $file['name'] }}
                                                                     </span>
-                                                                    <i class="fas fa-external-link-alt ms-2 text-muted flex-shrink-0" style="font-size: 0.75rem;"></i>
+                                                                    <i class="fas fa-external-link-alt ms-2 text-muted flex-shrink-0"
+                                                                        style="font-size: 0.75rem;"></i>
                                                                 </a>
-                                                                @if(!$loop->last)
+                                                                @if (!$loop->last)
                                                                     <hr class="my-1" style="margin: 0.5rem 0;">
                                                                 @endif
                                                             @endforeach
@@ -617,7 +774,8 @@
                     <div class="tab-pane fade {{ request('tab') == 'pergub' ? 'show active' : '' }}" id="pergub">
                         <h4>📋 Peraturan Gubernur</h4>
                         <div class="mb-3">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
                             <a href="{{ route('buku-agenda.export', [
@@ -625,8 +783,9 @@
                                 'mingguKe' => request('mingguKe'),
                                 'bulan' => request('bulan'),
                                 'tahun' => request('tahun'),
-                                'tab' => 'pergub'
-                            ]) }}" class="btn btn-success">
+                                'tab' => 'pergub',
+                            ]) }}"
+                                class="btn btn-success">
                                 <i class="fas fa-file-excel"></i> Export Excel
                             </a>
                             <a href="{{ route('buku-agenda.export-pdf', [
@@ -634,8 +793,9 @@
                                 'mingguKe' => request('mingguKe'),
                                 'bulan' => request('bulan'),
                                 'tahun' => request('tahun'),
-                                'tab' => 'pergub'
-                            ]) }}" class="btn btn-danger">
+                                'tab' => 'pergub',
+                            ]) }}"
+                                class="btn btn-danger">
                                 <i class="fas fa-file-pdf"></i> Export PDF
                             </a>
                             <span class="stats-badge">
@@ -647,29 +807,49 @@
                             <table class="table table-bordered mt-4">
                                 <thead class="thead-dark">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No. Agenda</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No. Surat</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Terima</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Perihal</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
-                                        <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Lampiran</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            No</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            No. Agenda</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            No. Surat</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Tanggal Terima</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Pengirim</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Perihal</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Disposisi</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                            Lampiran</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     @forelse($pergub as $index => $surat)
                                         <tr>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $index + 1 }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_agenda }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_surat }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->tanggal_terima->format('d/m/Y') }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                                {{ $surat->no_agenda }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                                {{ $surat->no_surat }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                                {{ $surat->tanggal_terima->format('d/m/Y') }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                                                 <span class="text-truncate-custom" title="{{ $surat->pengirim }}">
                                                     {{ $surat->pengirim }}
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap break-words text-sm text-gray-500 text-center">
+                                            <td
+                                                class="px-6 py-4 whitespace-nowrap break-words text-sm text-gray-500 text-center">
                                                 <span class="perihal-truncate" title="{{ $surat->perihal }}">
                                                     {{ $surat->perihal }}
                                                 </span>
@@ -681,40 +861,61 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
                                                 @php
-                                                    $lampiran = is_array($surat->lampiran) ? $surat->lampiran : json_decode($surat->lampiran, true);
+                                                    $lampiran = is_array($surat->lampiran)
+                                                        ? $surat->lampiran
+                                                        : json_decode($surat->lampiran, true);
                                                 @endphp
-                                                @if($lampiran && count($lampiran) > 0)
+                                                @if ($lampiran && count($lampiran) > 0)
                                                     <div class="lampiran-container position-relative d-inline-block">
                                                         <span class="badge bg-primary lampiran-badge">
                                                             <i class="fas fa-paperclip me-1"></i>
-                                                            {{ count($lampiran) }} {{ count($lampiran) == 1 ? 'file' : 'files' }}
+                                                            {{ count($lampiran) }}
+                                                            {{ count($lampiran) == 1 ? 'file' : 'files' }}
                                                         </span>
-                                                        <div class="lampiran-dropdown position-absolute bg-white p-2" 
-                                                             style="z-index: 1000; min-width: 280px; max-width: 400px; top: 100%; left: 0;">
-                                                            @foreach($lampiran as $file)
+                                                        <div class="lampiran-dropdown position-absolute bg-white p-2"
+                                                            style="z-index: 1000; min-width: 280px; max-width: 400px; top: 100%; left: 0;">
+                                                            @foreach ($lampiran as $file)
                                                                 @php
                                                                     if (is_string($file)) {
-                                                                        $file = ['path' => $file, 'name' => basename($file)];
+                                                                        $file = [
+                                                                            'path' => $file,
+                                                                            'name' => basename($file),
+                                                                        ];
                                                                     }
-                                                                    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                                                                    $ext = strtolower(
+                                                                        pathinfo($file['name'], PATHINFO_EXTENSION),
+                                                                    );
                                                                     $iconClass = 'fa-file-alt text-gray-500';
-                                                                    if(in_array($ext, ['jpg','jpeg','png','gif'])) $iconClass = 'fa-file-image text-blue-500';
-                                                                    elseif($ext === 'pdf') $iconClass = 'fa-file-pdf text-red-500';
-                                                                    elseif(in_array($ext, ['doc','docx'])) $iconClass = 'fa-file-word text-blue-600';
+                                                                    if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif'])) {
+                                                                        $iconClass = 'fa-file-image text-blue-500';
+                                                                    } elseif ($ext === 'pdf') {
+                                                                        $iconClass = 'fa-file-pdf text-red-500';
+                                                                    } elseif (in_array($ext, ['doc', 'docx'])) {
+                                                                        $iconClass = 'fa-file-word text-blue-600';
+                                                                    }
                                                                     // Encode path dengan benar
                                                                     $pathParts = explode('/', $file['path']);
-                                                                    $encodedParts = array_map('rawurlencode', $pathParts);
-                                                                    $fileUrl = asset('storage/' . implode('/', $encodedParts));
+                                                                    $encodedParts = array_map(
+                                                                        'rawurlencode',
+                                                                        $pathParts,
+                                                                    );
+                                                                    $fileUrl = asset(
+                                                                        'storage/' . implode('/', $encodedParts),
+                                                                    );
                                                                 @endphp
-                                                                <a href="{{ $fileUrl }}" target="_blank" 
-                                                                   class="d-flex align-items-center text-decoration-none text-dark">
-                                                                    <i class="fas {{ $iconClass }} me-2 flex-shrink-0"></i>
-                                                                    <span class="text-truncate flex-grow-1" style="max-width: 280px;" title="{{ $file['name'] }}">
+                                                                <a href="{{ $fileUrl }}" target="_blank"
+                                                                    class="d-flex align-items-center text-decoration-none text-dark">
+                                                                    <i
+                                                                        class="fas {{ $iconClass }} me-2 flex-shrink-0"></i>
+                                                                    <span class="text-truncate flex-grow-1"
+                                                                        style="max-width: 280px;"
+                                                                        title="{{ $file['name'] }}">
                                                                         {{ $file['name'] }}
                                                                     </span>
-                                                                    <i class="fas fa-external-link-alt ms-2 text-muted flex-shrink-0" style="font-size: 0.75rem;"></i>
+                                                                    <i class="fas fa-external-link-alt ms-2 text-muted flex-shrink-0"
+                                                                        style="font-size: 0.75rem;"></i>
                                                                 </a>
-                                                                @if(!$loop->last)
+                                                                @if (!$loop->last)
                                                                     <hr class="my-1" style="margin: 0.5rem 0;">
                                                                 @endif
                                                             @endforeach
@@ -753,7 +954,7 @@
                 <form id="filterForm" method="GET">
                     <!-- Hidden input untuk menyimpan tab yang sedang aktif -->
                     <input type="hidden" name="tab" value="{{ request('tab', 'surat-masuk') }}">
-                    
+
                     <div class="modal-body">
                         <!-- Main Filter -->
                         <div class="mb-3">
@@ -775,7 +976,7 @@
                                 <option value="4">Minggu ke 4</option>
                             </select>
 
-                            
+
                         </div>
 
                         <!-- Subpoint Bulan -->
@@ -795,23 +996,23 @@
                                 <option value="11">November</option>
                                 <option value="12">Desember</option>
                             </select>
-                            
+
                             <label for="tahun" class="form-label">Tahun</label>
-                            <input type="number" class="form-control" name="tahun" 
-                                   min="2000" max="2099" value="{{ date('Y') }}">
+                            <input type="number" class="form-control" name="tahun" min="2000" max="2099"
+                                value="{{ date('Y') }}">
                         </div>
 
                         <!-- Subpoint Tahun -->
                         <div class="mb-3" id="tahunSubpoint" style="display: none;">
                             <label for="tahun" class="form-label">Masukkan Tahun</label>
-                            <input type="number" class="form-control" name="tahun" min="2000" max="2099" 
-                                   value="{{ date('Y') }}">
+                            <input type="number" class="form-control" name="tahun" min="2000" max="2099"
+                                value="{{ date('Y') }}">
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                        <a href="{{ route('buku-agenda.index', ['tab' => request('tab')]) }}" 
-                           class="btn btn-warning">Tampilkan Semua</a>
+                        <a href="{{ route('buku-agenda.index', ['tab' => request('tab')]) }}"
+                            class="btn btn-warning">Tampilkan Semua</a>
                         <button type="submit" class="btn btn-primary">Terapkan Filter</button>
                     </div>
                 </form>
@@ -820,77 +1021,77 @@
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const filterType = document.getElementById('filterType');
-        const mingguSubpoint = document.getElementById('mingguSubpoint');
-        const bulanSubpoint = document.getElementById('bulanSubpoint');
-        const tahunSubpoint = document.getElementById('tahunSubpoint');
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterType = document.getElementById('filterType');
+            const mingguSubpoint = document.getElementById('mingguSubpoint');
+            const bulanSubpoint = document.getElementById('bulanSubpoint');
+            const tahunSubpoint = document.getElementById('tahunSubpoint');
 
-        const showDefaultSubpoint = () => {
-            // Sembunyikan semua subpoint terlebih dahulu
-            mingguSubpoint.style.display = 'none';
-            bulanSubpoint.style.display = 'none';
-            tahunSubpoint.style.display = 'none';
+            const showDefaultSubpoint = () => {
+                // Sembunyikan semua subpoint terlebih dahulu
+                mingguSubpoint.style.display = 'none';
+                bulanSubpoint.style.display = 'none';
+                tahunSubpoint.style.display = 'none';
 
-            // Tampilkan subpoint yang dipilih
-            switch(filterType.value) {
-                case 'minggu':
-                    mingguSubpoint.style.display = 'block';
-                    break;
-                case 'bulan':
-                    bulanSubpoint.style.display = 'block';
-                    break;
-                case 'tahun':
-                    tahunSubpoint.style.display = 'block';
-                    break;
-            }
-        };
+                // Tampilkan subpoint yang dipilih
+                switch (filterType.value) {
+                    case 'minggu':
+                        mingguSubpoint.style.display = 'block';
+                        break;
+                    case 'bulan':
+                        bulanSubpoint.style.display = 'block';
+                        break;
+                    case 'tahun':
+                        tahunSubpoint.style.display = 'block';
+                        break;
+                }
+            };
 
-        // Tampilkan subpoint default saat halaman dimuat
-        showDefaultSubpoint();
-
-        // Handler untuk perubahan filter
-        filterType.addEventListener('change', showDefaultSubpoint);
-
-        // Set nilai awal dari URL jika ada
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('filterType')) {
-            filterType.value = urlParams.get('filterType');
+            // Tampilkan subpoint default saat halaman dimuat
             showDefaultSubpoint();
-            
-            // Set nilai subpoint
-            if (urlParams.has('mingguKe')) {
-                document.querySelector('select[name="mingguKe"]').value = urlParams.get('mingguKe');
-            }
-            if (urlParams.has('bulan')) {
-                document.querySelector('select[name="bulan"]').value = urlParams.get('bulan');
-            }
-            if (urlParams.has('tahun')) {
-                document.querySelector('input[name="tahun"]').value = urlParams.get('tahun');
-            }
-        }
 
-        // Dropdown tetap terbuka saat hover ke dalam dropdown
-        document.querySelectorAll('.lampiran-container').forEach(function(container) {
-            const dropdown = container.querySelector('.lampiran-dropdown');
-            const badge = container.querySelector('.lampiran-badge');
-            
-            let timeout;
-            
-            function showDropdown() {
-                clearTimeout(timeout);
-                dropdown.style.display = 'block';
+            // Handler untuk perubahan filter
+            filterType.addEventListener('change', showDefaultSubpoint);
+
+            // Set nilai awal dari URL jika ada
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('filterType')) {
+                filterType.value = urlParams.get('filterType');
+                showDefaultSubpoint();
+
+                // Set nilai subpoint
+                if (urlParams.has('mingguKe')) {
+                    document.querySelector('select[name="mingguKe"]').value = urlParams.get('mingguKe');
+                }
+                if (urlParams.has('bulan')) {
+                    document.querySelector('select[name="bulan"]').value = urlParams.get('bulan');
+                }
+                if (urlParams.has('tahun')) {
+                    document.querySelector('input[name="tahun"]').value = urlParams.get('tahun');
+                }
             }
-            
-            function hideDropdown() {
-                timeout = setTimeout(function() {
-                    dropdown.style.display = 'none';
-                }, 100);
-            }
-            
-            container.addEventListener('mouseenter', showDropdown);
-            container.addEventListener('mouseleave', hideDropdown);
+
+            // Dropdown tetap terbuka saat hover ke dalam dropdown
+            document.querySelectorAll('.lampiran-container').forEach(function(container) {
+                const dropdown = container.querySelector('.lampiran-dropdown');
+                const badge = container.querySelector('.lampiran-badge');
+
+                let timeout;
+
+                function showDropdown() {
+                    clearTimeout(timeout);
+                    dropdown.style.display = 'block';
+                }
+
+                function hideDropdown() {
+                    timeout = setTimeout(function() {
+                        dropdown.style.display = 'none';
+                    }, 100);
+                }
+
+                container.addEventListener('mouseenter', showDropdown);
+                container.addEventListener('mouseleave', hideDropdown);
+            });
         });
-    });
     </script>
 @endsection

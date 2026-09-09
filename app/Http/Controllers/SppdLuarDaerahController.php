@@ -24,8 +24,15 @@ class SppdLuarDaerahController extends Controller
             });
         }
         
-        $sppdLuarDaerah = $query->latest()->paginate(10);
-        return view('sppd-luar-daerah.index', compact('sppdLuarDaerah'));
+        $sortOrder = $request->input('sort', 'asc');
+        if ($sortOrder === 'desc') {
+            $query->latest();
+        } else {
+            $query->oldest();
+        }
+
+        $sppdLuarDaerah = $query->paginate(10)->appends($request->query());
+        return view('sppd-luar-daerah.index', compact('sppdLuarDaerah', 'sortOrder'));
     }
 
     public function create()

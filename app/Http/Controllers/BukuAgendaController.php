@@ -146,11 +146,14 @@ class BukuAgendaController extends Controller
             }
         }
 
+        $sortOrder = $request->input('sort', 'asc');
+        $sortDir = ($sortOrder === 'desc') ? 'desc' : 'asc';
+
         // Eksekusi query
-        $suratMasuk = $query->orderBy('created_at', 'desc')->paginate(10, ['*'], 'surat_masuk_page');
-        $sks = $querysks->orderBy('created_at', 'desc')->paginate(10, ['*'], 'sk_page');
-        $perda = $queryPerda->orderBy('created_at', 'desc')->paginate(10, ['*'], 'perda_page');
-        $pergub = $queryPergub->orderBy('created_at', 'desc')->paginate(10, ['*'], 'pergub_page');
+        $suratMasuk = $query->orderBy('created_at', $sortDir)->paginate(10, ['*'], 'surat_masuk_page')->appends($request->query());
+        $sks = $querysks->orderBy('created_at', $sortDir)->paginate(10, ['*'], 'sk_page')->appends($request->query());
+        $perda = $queryPerda->orderBy('created_at', $sortDir)->paginate(10, ['*'], 'perda_page')->appends($request->query());
+        $pergub = $queryPergub->orderBy('created_at', $sortDir)->paginate(10, ['*'], 'pergub_page')->appends($request->query());
 
         // Tambahkan perhitungan total surat
         $totalSurat = [

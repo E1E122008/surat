@@ -29,7 +29,15 @@ class SuratMasukController extends Controller
 
     public function index(Request $request)
     {
-        $query = SuratMasuk::latest();
+        $query = SuratMasuk::query();
+
+        // Fitur Sorting Dinamis
+        $sortOrder = $request->input('sort', 'asc');
+        if ($sortOrder === 'asc') {
+            $query->oldest();
+        } else {
+            $query->latest();
+        }
 
         if ($request->has('search')) {
             $search = $request->search;
@@ -40,8 +48,8 @@ class SuratMasukController extends Controller
             });
         }
 
-        $suratMasuk = $query->latest()->paginate(10);
-        return view('surat-masuk.index', compact('suratMasuk'));
+        $suratMasuk = $query->paginate(10)->appends($request->query());
+        return view('surat-masuk.index', compact('suratMasuk', 'sortOrder'));
     }
 
     public function create()

@@ -3,12 +3,13 @@
 @section('content')
     <div class="min-h-screen bg-gray-100" style="max-width: 1400px; margin: auto; padding: 20px;">
         <div class="mb-4">
-            <h2 class="header h2"><strong>📂 Registrasi Draft PHD </strong> / <span style="color: gray;"> Surat Keputusan</span></h2>
+            <h2 class="header h2"><strong>📂 Registrasi Draft PHD </strong> / <span style="color: gray;"> Surat
+                    Keputusan</span></h2>
         </div>
         <div class="bg-white shadow-sm rounded-lg">
             <div class="p-4">
                 <!-- Alert Section -->
-                @if(session('success'))
+                @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <i class="fas fa-check-circle me-2"></i>
                         {{ session('success') }}
@@ -16,7 +17,7 @@
                     </div>
                 @endif
 
-                @if(session('error'))
+                @if (session('error'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <i class="fas fa-exclamation-circle me-2"></i>
                         {{ session('error') }}
@@ -24,11 +25,11 @@
                     </div>
                 @endif
 
-                @if($errors->any())
+                @if ($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <i class="fas fa-exclamation-triangle me-2"></i>
                         <ul class="mb-0">
-                            @foreach($errors->all() as $error)
+                            @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
                             @endforeach
                         </ul>
@@ -41,52 +42,96 @@
                         Surat Keputusan
                     </h2>
                     <div class="flex space-x-2">
-                            <form action="{{ route('draft-phd.sk.index') }}" method="GET" class="flex items-center">
-                                <input type="text" 
-                                       name="search" 
-                                       placeholder="Cari SK..." 
-                                   class="form-control"
-                                   value="{{ request('search') }}"> 
-                                <button type="submit" class="btn btn-primary ml-2">
-                                <i class="fas fa-search"></i>
-                                </button>
-                            </form>
-                            @if(auth()->user()->role !== 'monitor')
-                                <a href="{{ route('draft-phd.sk.create') }}" class="btn btn-primary">
-                                    <i class="fas fa-plus"></i> Tambah SK
-                                </a>
-                                <a href="{{ route('draft-phd.sk.export') }}" class="btn btn-success">
-                                    <i class="fas fa-file-excel"></i> Export Excel
-                                </a>
-                            @endif
+                        <!-- Menu Urutkan Data -->
+                        <div class="dropdown me-2" style="margin-right: 8px;">
+                            <button class="btn btn-outline-secondary dropdown-toggle h-100" type="button" id="sortDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false" title="Urutkan">
+                                <i
+                                    class="fas fa-sort-amount-{{ isset($sortOrder) && $sortOrder == 'desc' ? 'down' : 'up' }}"></i>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                                <li>
+                                    <a class="dropdown-item {{ !isset($sortOrder) || $sortOrder == 'desc' ? 'active bg-primary text-white' : '' }}"
+                                        href="{{ route('draft-phd.sk.index', array_merge(request()->query(), ['sort' => 'desc'])) }}">
+                                        Terbaru ke Terlama
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item {{ isset($sortOrder) && $sortOrder == 'asc' ? 'active bg-primary text-white' : '' }}"
+                                        href="{{ route('draft-phd.sk.index', array_merge(request()->query(), ['sort' => 'asc'])) }}">
+                                        Terlama ke Terbaru
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
+
+                        <form action="{{ route('draft-phd.sk.index') }}" method="GET" class="flex items-center">
+                            @if (request('sort'))
+                                <input type="hidden" name="sort" value="{{ request('sort') }}">
+                            @endif
+                            <input type="text" name="search" placeholder="Cari SK..." class="form-control"
+                                value="{{ request('search') }}">
+                            <button type="submit" class="btn btn-primary ml-2">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                        @if (auth()->user()->role !== 'monitor')
+                            <a href="{{ route('draft-phd.sk.create') }}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Tambah SK
+                            </a>
+                            <a href="{{ route('draft-phd.sk.export') }}" class="btn btn-success">
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </a>
+                        @endif
                     </div>
                 </div>
-                
-                <div class="table-responsive" style="max-width: 1200px; margin: auto;">
-                    <table class="table" id="suratTable">
-                        <thead>
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Terima</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
-                            </tr>
-                        </thead>
+            </div>
+
+            <div class="table-responsive" style="max-width: 1200px; margin: auto;">
+                <table class="table" id="suratTable">
+                    <thead>
+                        <tr>
+                            <th
+                                class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                No</th>
+                            <th
+                                class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                No Agenda</th>
+                            <th
+                                class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                No Surat</th>
+                            <th
+                                class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                Pengirim</th>
+                            <th
+                                class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                Tanggal Terima</th>
+                            <th
+                                class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                Disposisi</th>
+                            <th
+                                class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                Status</th>
+                            <th
+                                class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                Aksi</th>
+                        </tr>
+                    </thead>
                     <tbody>
                         @forelse($sks as $index => $item)
                             <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $index + 1 + ($sks->currentPage() - 1) * $sks->perPage() }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $item->no_agenda }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $item->no_surat }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $item->pengirim }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $item->tanggal_terima->format('d/m/Y') }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-                                    @if($item->disposisi)
+                                    {{ $index + 1 + ($sks->currentPage() - 1) * $sks->perPage() }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                    {{ $item->no_agenda }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                    {{ $item->no_surat }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                    {{ $item->pengirim }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                    {{ $item->tanggal_terima->format('d/m/Y') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                    @if ($item->disposisi)
                                         @php
                                             $disposisiParts = explode('|', $item->disposisi);
                                             $persetujuanKetua = null;
@@ -97,16 +142,25 @@
                                             $otherParts = [];
 
                                             // Pisahkan status persetujuan dan bagian lainnya
-                                            foreach($disposisiParts as $index => $part) {
+                                            foreach ($disposisiParts as $index => $part) {
                                                 $trimmedPart = trim($part);
-                                                if (preg_match('/(Sudah|Belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i', $trimmedPart)) {
+                                                if (
+                                                    preg_match(
+                                                        '/(Sudah|Belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i',
+                                                        $trimmedPart,
+                                                    )
+                                                ) {
                                                     $persetujuanKetua = $trimmedPart;
-                                                } elseif (strpos($trimmedPart, 'Persetujuan Kepala Biro Hukum:') !== false) {
+                                                } elseif (
+                                                    strpos($trimmedPart, 'Persetujuan Kepala Biro Hukum:') !== false
+                                                ) {
                                                     // Fallback format lama
                                                     $persetujuanKetua = $trimmedPart;
                                                 } elseif (strpos($trimmedPart, 'Diteruskan ke:') !== false) {
                                                     // Extract sub disposisi
-                                                    $subDisposisi = trim(str_replace('Diteruskan ke:', '', $trimmedPart));
+                                                    $subDisposisi = trim(
+                                                        str_replace('Diteruskan ke:', '', $trimmedPart),
+                                                    );
                                                 } elseif (strpos($trimmedPart, 'Tanggal:') !== false) {
                                                     // Extract tanggal disposisi
                                                     $tanggalDisposisi = trim(str_replace('Tanggal:', '', $trimmedPart));
@@ -128,48 +182,51 @@
                                         @endphp
                                         <div class="text-center">
                                             {{-- Status Persetujuan --}}
-                                            @if($persetujuanKetua)
+                                            @if ($persetujuanKetua)
                                                 <div class="mb-2">
-                                                    <span class="badge {{ (stripos($persetujuanKetua, 'Sudah') !== false) ? 'bg-success' : 'bg-warning' }}">
+                                                    <span
+                                                        class="badge {{ stripos($persetujuanKetua, 'Sudah') !== false ? 'bg-success' : 'bg-warning' }}">
                                                         {{ $persetujuanKetua }}
                                                     </span>
                                                 </div>
                                             @endif
 
                                             {{-- Tujuan Disposisi Utama --}}
-                                            @if($tujuanDisposisi)
+                                            @if ($tujuanDisposisi)
                                                 <div class="mb-1">
                                                     <strong>{{ $tujuanDisposisi }}</strong>
                                                 </div>
                                             @endif
 
                                             {{-- Tampilkan Diteruskan ke --}}
-                                            @if($subDisposisi)
+                                            @if ($subDisposisi)
                                                 <div class="mb-1 text-sm">
                                                     <strong>Diteruskan ke:</strong> {{ $subDisposisi }}
                                                 </div>
                                             @endif
 
                                             {{-- Tampilkan Tanggal --}}
-                                            @if($tanggalDisposisi)
+                                            @if ($tanggalDisposisi)
                                                 <div class="mb-1 text-sm">
                                                     <strong>Tanggal:</strong> {{ $tanggalDisposisi }}
                                                 </div>
                                             @endif
 
                                             {{-- Tampilkan Catatan --}}
-                                            @if($catatan)
+                                            @if ($catatan)
                                                 <div class="mb-1 text-sm">
                                                     <strong>Catatan:</strong> {{ $catatan }}
                                                 </div>
                                             @endif
 
                                             {{-- Informasi Lainnya (fallback untuk data lama) --}}
-                                            @if(count($otherParts) > 0)
+                                            @if (count($otherParts) > 0)
                                                 <small class="text-muted d-block">
-                                                    @foreach($otherParts as $part)
+                                                    @foreach ($otherParts as $part)
                                                         {{ $part }}
-                                                        @if(!$loop->last)<br>@endif
+                                                        @if (!$loop->last)
+                                                            <br>
+                                                        @endif
                                                     @endforeach
                                                 </small>
                                             @endif
@@ -178,85 +235,95 @@
                                         -
                                     @endif
                                 </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-                                        @if($item->status == 'tercatat')
-                                            <span class="bg-tercatat">Tercatat</span>
-                                        @elseif($item->status == 'terdisposisi')
-                                            <span class="bg-terdisposisi">Terdisposisi</span>
-                                        @elseif($item->status == 'diproses')
-                                            <span class="bg-diproses">Diproses</span>
-                                        @elseif($item->status == 'koreksi')
-                                            <span class="bg-koreksi">Koreksi</span>
-                                        @elseif($item->status == 'diambil')
-                                            <span class="bg-diambil">Diambil</span>
-                                        @elseif($item->status == 'selesai')
-                                            <span class="bg-selesai">Selesai</span>
-                                        @endif
-                                    </td>  
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-                                        <div class="dropdown">
-                                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class="fas fa-cog"></i> Aksi
-                                            </button>
-                                            <ul class="dropdown-menu">
-                                                @if(auth()->user()->role !== 'monitor')
-                                                    <li>
-                                                        <button 
-                                                            class="dropdown-item" 
-                                                            type="button" 
-                                                            data-surat-id="{{ $item->id }}"
-                                                            data-persetujuan="{{ isset($persetujuanKetua) && $persetujuanKetua ? $persetujuanKetua : 'Belum' }}"
-                                                            data-tujuan="{{ isset($tujuanDisposisi) && $tujuanDisposisi ? htmlspecialchars($tujuanDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
-                                                            data-sub-disposisi="{{ isset($subDisposisi) && $subDisposisi ? htmlspecialchars($subDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
-                                                            data-tanggal="{{ isset($tanggalDisposisi) && $tanggalDisposisi ? htmlspecialchars($tanggalDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
-                                                            data-catatan="{{ isset($catatan) && $catatan ? htmlspecialchars($catatan, ENT_QUOTES, 'UTF-8') : '' }}"
-                                                            onclick="openDisposisiModal({{ $item->id }}, this)">
-                                                            <i class="fas fa-sync-alt fa-fw me-2 text-warning"></i>Disposisi
-                                                        </button>
-                                                    </li>
-                                                    <li><button class="dropdown-item" type="button" onclick="openStatusModal({{ $item->id }}, '{{ $item->status }}')"><i class="fas fa-check-circle fa-fw me-2 text-success"></i>Status</button></li>
-                                                @endif
-                                                <li><a class="dropdown-item" href="{{ route('draft-phd.sk.detail', $item->id) }}"><i class="fas fa-eye fa-fw me-2 text-primary"></i>Detail</a></li>
-                                                @if(auth()->user()->role !== 'monitor')
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    <li>
-                                                        <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $item->id }})">
-                                                            <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
-                                                        </button>
-                                                    </li>
-                                                @endif
-                                            </ul>
-                                        </div>
-                                        <form id="delete-form-{{ $item->id }}" action="{{ route('draft-phd.sk.destroy', $item->id) }}" method="POST" style="display: none;">
-                                            @csrf
-                                            @method('DELETE')
-                                        </form>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="8" class="text-center">Belum ada data surat</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="mt-4 d-flex justify-content-center">
-                    {{ $sks->links('pagination::bootstrap-4') }}
-                </div>
-                <div class="d-flex justify-content-center">
-                    <span class="surat-badge surat-badge-sm mt-2 d-inline-block">
-                        <i class="fas fa-envelope"></i> Jumlah Surat Keputusan: {{ $sks->total() }}
-                    </span>
-                </div>
-                <style>
-                    .pagination .page-item:first-child, .pagination .page-item:last-child {
-                        display: none !important;
-                    }
-                </style>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                    @if ($item->status == 'tercatat')
+                                        <span class="bg-tercatat">Tercatat</span>
+                                    @elseif($item->status == 'terdisposisi')
+                                        <span class="bg-terdisposisi">Terdisposisi</span>
+                                    @elseif($item->status == 'diproses')
+                                        <span class="bg-diproses">Diproses</span>
+                                    @elseif($item->status == 'koreksi')
+                                        <span class="bg-koreksi">Koreksi</span>
+                                    @elseif($item->status == 'diambil')
+                                        <span class="bg-diambil">Diambil</span>
+                                    @elseif($item->status == 'selesai')
+                                        <span class="bg-selesai">Selesai</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                    <div class="dropdown">
+                                        <button class="btn btn-light btn-sm dropdown-toggle" type="button"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-cog"></i> Aksi
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            @if (auth()->user()->role !== 'monitor')
+                                                <li>
+                                                    <button class="dropdown-item" type="button"
+                                                        data-surat-id="{{ $item->id }}"
+                                                        data-persetujuan="{{ isset($persetujuanKetua) && $persetujuanKetua ? $persetujuanKetua : 'Belum' }}"
+                                                        data-tujuan="{{ isset($tujuanDisposisi) && $tujuanDisposisi ? htmlspecialchars($tujuanDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
+                                                        data-sub-disposisi="{{ isset($subDisposisi) && $subDisposisi ? htmlspecialchars($subDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
+                                                        data-tanggal="{{ isset($tanggalDisposisi) && $tanggalDisposisi ? htmlspecialchars($tanggalDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
+                                                        data-catatan="{{ isset($catatan) && $catatan ? htmlspecialchars($catatan, ENT_QUOTES, 'UTF-8') : '' }}"
+                                                        onclick="openDisposisiModal({{ $item->id }}, this)">
+                                                        <i class="fas fa-sync-alt fa-fw me-2 text-warning"></i>Disposisi
+                                                    </button>
+                                                </li>
+                                                <li><button class="dropdown-item" type="button"
+                                                        onclick="openStatusModal({{ $item->id }}, '{{ $item->status }}')"><i
+                                                            class="fas fa-check-circle fa-fw me-2 text-success"></i>Status</button>
+                                                </li>
+                                            @endif
+                                            <li><a class="dropdown-item"
+                                                    href="{{ route('draft-phd.sk.detail', $item->id) }}"><i
+                                                        class="fas fa-eye fa-fw me-2 text-primary"></i>Detail</a></li>
+                                            @if (auth()->user()->role !== 'monitor')
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                <li>
+                                                    <button type="button" class="dropdown-item text-danger"
+                                                        onclick="confirmDelete({{ $item->id }})">
+                                                        <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
+                                                    </button>
+                                                </li>
+                                            @endif
+                                        </ul>
+                                    </div>
+                                    <form id="delete-form-{{ $item->id }}"
+                                        action="{{ route('draft-phd.sk.destroy', $item->id) }}" method="POST"
+                                        style="display: none;">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center">Belum ada data surat</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
+
+            <div class="mt-4 d-flex justify-content-center">
+                {{ $sks->links('pagination::bootstrap-4') }}
+            </div>
+            <div class="d-flex justify-content-center">
+                <span class="surat-badge surat-badge-sm mt-2 d-inline-block">
+                    <i class="fas fa-envelope"></i> Jumlah Surat Keputusan: {{ $sks->total() }}
+                </span>
+            </div>
+            <style>
+                .pagination .page-item:first-child,
+                .pagination .page-item:last-child {
+                    display: none !important;
+                }
+            </style>
         </div>
+    </div>
     </div>
 
     <!-- Modal Update Status -->
@@ -305,11 +372,13 @@
                         <!-- STATUS PERSETUJUAN KEPALA BIRO HUKUM -->
                         <div class="mb-3">
                             <label class="form-label"><strong>Status Persetujuan Kepala Biro Hukum:</strong></label>
-                            @if(auth()->user() && auth()->user()->role === 'admin')
+                            @if (auth()->user() && auth()->user()->role === 'admin')
                                 <div id="radioPersetujuanGroupSk" class="mb-2">
-                                    <input class="form-check-input" type="radio" name="persetujuan_ketua" id="radioSkDisetujui" value="Sudah">
+                                    <input class="form-check-input" type="radio" name="persetujuan_ketua"
+                                        id="radioSkDisetujui" value="Sudah">
                                     <label class="form-check-label me-3" for="radioSkDisetujui">Sudah Disetujui</label>
-                                    <input class="form-check-input" type="radio" name="persetujuan_ketua" id="radioSkBelum" value="Belum" checked>
+                                    <input class="form-check-input" type="radio" name="persetujuan_ketua"
+                                        id="radioSkBelum" value="Belum" checked>
                                     <label class="form-check-label" for="radioSkBelum">Belum Disetujui</label>
                                 </div>
                             @else
@@ -321,9 +390,11 @@
                             <label for="disposisi" class="form-label">Tujuan Disposisi</label>
                             <select class="form-select" id="disposisi" name="disposisi" required>
                                 <option value="">Pilih Tujuan Disposisi</option>
-                                <option value="Kabag Peraturan Perundang-Undangan Kabupaten/Kota">Kabag Peraturan Perundang-Undangan Kabupaten/Kota</option>
+                                <option value="Kabag Peraturan Perundang-Undangan Kabupaten/Kota">Kabag Peraturan
+                                    Perundang-Undangan Kabupaten/Kota</option>
                                 <option value="Kabag Bantuan Hukum dan HAM">Kabag Bantuan Hukum dan HAM</option>
-                                <option value="Ketua Tim Kerja Peraturan Perundang-Undangan Provinsi">Ketua Tim Kerja Peraturan Perundang-Undangan Provinsi</option>
+                                <option value="Ketua Tim Kerja Peraturan Perundang-Undangan Provinsi">Ketua Tim Kerja
+                                    Peraturan Perundang-Undangan Provinsi</option>
                                 <option value="Kasubag Tata Usaha">Kasubag Tata Usaha</option>
                             </select>
                         </div>
@@ -342,7 +413,8 @@
 
                         <div class="mb-3">
                             <label for="tanggal_disposisi" class="form-label">Tanggal Disposisi</label>
-                            <input type="date" class="form-control" id="tanggal_disposisi" name="tanggal_disposisi" required>
+                            <input type="date" class="form-control" id="tanggal_disposisi" name="tanggal_disposisi"
+                                required>
                         </div>
                         <input type="hidden" id="disposisiSuratIdSk" name="disposisiSuratId" />
                     </div>
@@ -385,21 +457,21 @@
             color: red;
             padding: 2px 5px;
             border-radius: 3px;
-        }   
+        }
 
         .bg-sekretaris {
             background-color: rgba(0, 0, 255, 0.2);
             color: blue;
             padding: 2px 5px;
             border-radius: 3px;
-        }       
+        }
 
         .bg-kepala {
             background-color: rgba(0, 255, 0, 0.2);
             color: green;
             padding: 2px 5px;
             border-radius: 3px;
-        }   
+        }
 
         .bg-kasubag {
             background-color: rgba(255, 165, 0, 0.2);
@@ -572,7 +644,7 @@
             padding: 1rem 1.5rem;
             margin-bottom: 1.5rem;
             font-weight: 500;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .alert-success {
@@ -602,6 +674,7 @@
         .btn-close:hover {
             opacity: 1;
         }
+
         .surat-badge {
             display: inline-flex;
             align-items: center;
@@ -611,551 +684,564 @@
             border-radius: 2rem;
             padding: 0.3rem 1rem;
             font-size: 1rem;
-            box-shadow: 0 2px 8px rgba(91,126,241,0.08);
+            box-shadow: 0 2px 8px rgba(91, 126, 241, 0.08);
             gap: 0.5rem;
         }
+
         .surat-badge-sm {
             font-size: 0.95rem;
             padding: 0.2rem 0.8rem;
         }
+
         .surat-badge i {
             font-size: 1em;
             margin-right: 0.5rem;
-        } 
+        }
     </style>
 
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script>
-    function showSuccess(message) {
-        Swal.fire({
-            title: "Berhasil!",
-            text: message,
-            icon: "success",
-            showConfirmButton: false,
-            timer: 2000,
-            toast: true,
-            position: "top-end",
-            showClass: {
-                popup: 'animate__animated animate__fadeInRight'
-            },
-            hideClass: {
-                popup: 'animate__animated animate__fadeOutRight'
-            },
-            background: '#10B981',
-            color: '#ffffff'
-        });
-    }
-
-    function showError(message) {
-        Swal.fire({
-            title: "Error!",
-            text: message,
-            icon: "error",
-            showConfirmButton: false,
-            timer: 3000,
-            toast: true,
-            position: "top-end",
-            showClass: {
-                popup: 'animate__animated animate__fadeInRight'
-            },
-            hideClass: {
-                popup: 'animate__animated animate__fadeOutRight'
-            },
-            background: '#EF4444',
-            color: '#ffffff'
-        });
-    }
-
-    function confirmDelete(id) {
-        Swal.fire({
-            title: 'Apakah Anda yakin?',
-            text: "Data ini akan dihapus secara permanen!",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#FF4757',
-            cancelButtonColor: '#747D8C',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal',
-            showClass: {
-                popup: 'animate__animated animate__bounceIn'
-            },
-            hideClass: {
-                popup: 'animate__animated animate__fadeOut'
-            },
-            customClass: {
-                popup: 'rounded-lg shadow-lg',
-                confirmButton: 'rounded-md px-4 py-2',
-                cancelButton: 'rounded-md px-4 py-2'
-            },
-            background: '#FFFFFF',
-            backdrop: 'rgba(0,0,0,0.4)',
-            padding: '2em'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('delete-form-' + id).submit();
-            }
-        });
-    }
-
-    function editCatatan(suratId, currentCatatan) {
-        const container = document.querySelector(`[data-surat-id="${suratId}"]`);
-        const textarea = container.querySelector('.catatan-textarea');
-        
-        textarea.readOnly = !textarea.readOnly;
-        
-        if (!textarea.readOnly) {
-            textarea.focus();
-            container.querySelector('.btn-success i').classList.remove('fa-sync-alt');
-            container.querySelector('.btn-success i').classList.add('fa-save');
-        } else {
-            container.querySelector('.btn-success i').classList.remove('fa-save');
-            container.querySelector('.btn-success i').classList.add('fa-sync-alt');
-            
-            fetch(`/draft-phd/sk/${suratId}/update-catatan`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        function showSuccess(message) {
+            Swal.fire({
+                title: "Berhasil!",
+                text: message,
+                icon: "success",
+                showConfirmButton: false,
+                timer: 2000,
+                toast: true,
+                position: "top-end",
+                showClass: {
+                    popup: 'animate__animated animate__fadeInRight'
                 },
-                body: JSON.stringify({
-                    catatan: textarea.value
-                })
-            })
-            .then(response => {
-                console.log('Response:', response);
-                return response.json();
-            })
-            .then(data => {
-                console.log('Data:', data);
-                if (data.success) {
-                    showSuccess('Catatan berhasil diperbarui');
-                } else {
-                    showError('Gagal memperbarui catatan');
-                    textarea.value = currentCatatan;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showError('Terjadi kesalahan sistem');
-                textarea.value = currentCatatan;
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutRight'
+                },
+                background: '#10B981',
+                color: '#ffffff'
             });
         }
-    }
 
-    function openStatusModal(id, currentStatus) {
+        function showError(message) {
+            Swal.fire({
+                title: "Error!",
+                text: message,
+                icon: "error",
+                showConfirmButton: false,
+                timer: 3000,
+                toast: true,
+                position: "top-end",
+                showClass: {
+                    popup: 'animate__animated animate__fadeInRight'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutRight'
+                },
+                background: '#EF4444',
+                color: '#ffffff'
+            });
+        }
+
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data ini akan dihapus secara permanen!",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#FF4757',
+                cancelButtonColor: '#747D8C',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal',
+                showClass: {
+                    popup: 'animate__animated animate__bounceIn'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOut'
+                },
+                customClass: {
+                    popup: 'rounded-lg shadow-lg',
+                    confirmButton: 'rounded-md px-4 py-2',
+                    cancelButton: 'rounded-md px-4 py-2'
+                },
+                background: '#FFFFFF',
+                backdrop: 'rgba(0,0,0,0.4)',
+                padding: '2em'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-form-' + id).submit();
+                }
+            });
+        }
+
+        function editCatatan(suratId, currentCatatan) {
+            const container = document.querySelector(`[data-surat-id="${suratId}"]`);
+            const textarea = container.querySelector('.catatan-textarea');
+
+            textarea.readOnly = !textarea.readOnly;
+
+            if (!textarea.readOnly) {
+                textarea.focus();
+                container.querySelector('.btn-success i').classList.remove('fa-sync-alt');
+                container.querySelector('.btn-success i').classList.add('fa-save');
+            } else {
+                container.querySelector('.btn-success i').classList.remove('fa-save');
+                container.querySelector('.btn-success i').classList.add('fa-sync-alt');
+
+                fetch(`/draft-phd/sk/${suratId}/update-catatan`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            catatan: textarea.value
+                        })
+                    })
+                    .then(response => {
+                        console.log('Response:', response);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Data:', data);
+                        if (data.success) {
+                            showSuccess('Catatan berhasil diperbarui');
+                        } else {
+                            showError('Gagal memperbarui catatan');
+                            textarea.value = currentCatatan;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showError('Terjadi kesalahan sistem');
+                        textarea.value = currentCatatan;
+                    });
+            }
+        }
+
+        function openStatusModal(id, currentStatus) {
             document.getElementById('statusForm').action = `/sk/update-status/${id}`;
-        document.getElementById('status').value = currentStatus;
+            document.getElementById('status').value = currentStatus;
             document.getElementById('suratId').value = id;
             new bootstrap.Modal(document.getElementById('statusModal')).show();
-    }
+        }
 
-    document.getElementById('saveStatus').addEventListener('click', function() {
+        document.getElementById('saveStatus').addEventListener('click', function() {
             const id = document.getElementById('suratId').value;
-        const status = document.getElementById('status').value;
-        const token = document.querySelector('meta[name="csrf-token"]').content;
+            const status = document.getElementById('status').value;
+            const token = document.querySelector('meta[name="csrf-token"]').content;
 
-        // Create form and submit
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `/sk/update-status/${id}`;
-        
-        // Add CSRF token
-        const csrfInput = document.createElement('input');
-        csrfInput.type = 'hidden';
-        csrfInput.name = '_token';
-        csrfInput.value = token;
-        form.appendChild(csrfInput);
-        
-        // Add status
-        const statusInput = document.createElement('input');
-        statusInput.type = 'hidden';
-        statusInput.name = 'status';
-        statusInput.value = status;
-        form.appendChild(statusInput);
-        
-        document.body.appendChild(form);
-        form.submit();
-    });
+            // Create form and submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/sk/update-status/${id}`;
 
-    // Definisikan subDisposisiOptions di luar event listener
-    const subDisposisiOptions = {
-        'Kabag Peraturan Perundang-Undangan Kabupaten/Kota': [
-            'Belum/Tidak diteruskan',
-            'Fungsional Peraturan Per-UU, Wil. 1',
-            'Fungsional Peraturan Per-UU, Wil. 2',
-            'Fungsional Peraturan Per-UU, Wil. 3'
-        ],
-        'Kabag Bantuan Hukum dan HAM': [
-            'Belum/Tidak diteruskan',
-            'Fungsional Analis Hukum Litigasi',
-            'Fungsional Analis Hukum Non Litigasi',
-            'Kasubag Tata Usaha'
-        ],
-        'Ketua Tim Kerja Peraturan Perundang-Undangan Provinsi': [
-            'Belum/Tidak diteruskan',
-            'Fungsional Peraturan Per-UU (SK)',
-            'Fungsional Peraturan Per-UU (Perda & Pergub)',
-            'Fungsional Peraturan Per-UU (JDIH & NHL)'
-        ]
-        // Catatan: Kasubag Tata Usaha tidak memiliki sub disposisi
-    };
+            // Add CSRF token
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = token;
+            form.appendChild(csrfInput);
 
-    // Tambahkan fungsi untuk set tanggal otomatis
-    function setDefaultDate() {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('tanggal_disposisi').value = today;
-    }
+            // Add status
+            const statusInput = document.createElement('input');
+            statusInput.type = 'hidden';
+            statusInput.name = 'status';
+            statusInput.value = status;
+            form.appendChild(statusInput);
 
-    function openDisposisiModal(id, buttonElement) {
-        // Validasi parameter
-        if (!id) {
-            console.error('SK - ID tidak valid');
-            return;
-        }
-        
-        const form = document.getElementById('disposisiForm');
-        if (!form) {
-            console.error('SK - Form tidak ditemukan');
-            return;
-        }
-        
-        form.action = `/draft-phd/sk/${id}/disposisi`;
-        const suratIdInput = document.getElementById('disposisiSuratIdSk');
-        if (suratIdInput) {
-            suratIdInput.value = id;
-        }
-        
-        // Reset form terlebih dahulu
-        form.reset();
-        const subDisposisiContainer = document.getElementById('subDisposisiContainer');
-        if (subDisposisiContainer) {
-            subDisposisiContainer.style.display = 'none';
-        }
-        
-        // Ambil data dari data attribute button (tanpa API)
-        const persetujuan = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute('data-persetujuan') : 'Belum';
-        const tujuan = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute('data-tujuan') : '';
-        const subDisposisi = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute('data-sub-disposisi') : '';
-        const tanggal = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute('data-tanggal') : '';
-        const catatan = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute('data-catatan') : '';
-        
-        console.log('SK - Data from button attributes:', {
-            persetujuan,
-            tujuan,
-            subDisposisi,
-            tanggal,
-            catatan
+            document.body.appendChild(form);
+            form.submit();
         });
-        
-        let isAdmin = false;
-        @if(auth()->user() && auth()->user()->role === 'admin')
-            isAdmin = true;
-        @endif
-        
-        // 1. Set Status Persetujuan Kepala Biro Hukum
-        // Normalisasi persetujuan
-        let persetujuanValue = 'Belum';
-        if (persetujuan) {
-            if (persetujuan.toLowerCase().includes('sudah')) {
-                persetujuanValue = 'Sudah';
-            } else if (persetujuan.toLowerCase().includes('belum')) {
-                persetujuanValue = 'Belum';
-            } else {
-                persetujuanValue = persetujuan;
-            }
+
+        // Definisikan subDisposisiOptions di luar event listener
+        const subDisposisiOptions = {
+            'Kabag Peraturan Perundang-Undangan Kabupaten/Kota': [
+                'Belum/Tidak diteruskan',
+                'Fungsional Peraturan Per-UU, Wil. 1',
+                'Fungsional Peraturan Per-UU, Wil. 2',
+                'Fungsional Peraturan Per-UU, Wil. 3'
+            ],
+            'Kabag Bantuan Hukum dan HAM': [
+                'Belum/Tidak diteruskan',
+                'Fungsional Analis Hukum Litigasi',
+                'Fungsional Analis Hukum Non Litigasi',
+                'Kasubag Tata Usaha'
+            ],
+            'Ketua Tim Kerja Peraturan Perundang-Undangan Provinsi': [
+                'Belum/Tidak diteruskan',
+                'Fungsional Peraturan Per-UU (SK)',
+                'Fungsional Peraturan Per-UU (Perda & Pergub)',
+                'Fungsional Peraturan Per-UU (JDIH & NHL)'
+            ]
+            // Catatan: Kasubag Tata Usaha tidak memiliki sub disposisi
+        };
+
+        // Tambahkan fungsi untuk set tanggal otomatis
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tanggal_disposisi').value = today;
         }
-        
-        let status = persetujuanValue === 'Sudah' ? 'Sudah Disetujui' : 'Belum Disetujui';
-        console.log('SK - Setting persetujuan:', persetujuanValue, '->', status);
-        
-        if (isAdmin) {
-            const radioDisetujui = document.getElementById('radioSkDisetujui');
-            const radioBelum = document.getElementById('radioSkBelum');
-            if (radioDisetujui && radioBelum) {
-                if (persetujuanValue === 'Sudah') {
-                    radioDisetujui.checked = true;
-                    radioBelum.checked = false;
-                    console.log('SK - Radio Sudah checked');
+
+        function openDisposisiModal(id, buttonElement) {
+            // Validasi parameter
+            if (!id) {
+                console.error('SK - ID tidak valid');
+                return;
+            }
+
+            const form = document.getElementById('disposisiForm');
+            if (!form) {
+                console.error('SK - Form tidak ditemukan');
+                return;
+            }
+
+            form.action = `/draft-phd/sk/${id}/disposisi`;
+            const suratIdInput = document.getElementById('disposisiSuratIdSk');
+            if (suratIdInput) {
+                suratIdInput.value = id;
+            }
+
+            // Reset form terlebih dahulu
+            form.reset();
+            const subDisposisiContainer = document.getElementById('subDisposisiContainer');
+            if (subDisposisiContainer) {
+                subDisposisiContainer.style.display = 'none';
+            }
+
+            // Ambil data dari data attribute button (tanpa API)
+            const persetujuan = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute(
+                'data-persetujuan') : 'Belum';
+            const tujuan = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute('data-tujuan') : '';
+            const subDisposisi = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute(
+                'data-sub-disposisi') : '';
+            const tanggal = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute('data-tanggal') : '';
+            const catatan = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute('data-catatan') : '';
+
+            console.log('SK - Data from button attributes:', {
+                persetujuan,
+                tujuan,
+                subDisposisi,
+                tanggal,
+                catatan
+            });
+
+            let isAdmin = false;
+            @if (auth()->user() && auth()->user()->role === 'admin')
+                isAdmin = true;
+            @endif
+
+            // 1. Set Status Persetujuan Kepala Biro Hukum
+            // Normalisasi persetujuan
+            let persetujuanValue = 'Belum';
+            if (persetujuan) {
+                if (persetujuan.toLowerCase().includes('sudah')) {
+                    persetujuanValue = 'Sudah';
+                } else if (persetujuan.toLowerCase().includes('belum')) {
+                    persetujuanValue = 'Belum';
                 } else {
-                    radioDisetujui.checked = false;
-                    radioBelum.checked = true;
-                    console.log('SK - Radio Belum checked');
+                    persetujuanValue = persetujuan;
                 }
             }
-        } else {
-            const statusEl = document.getElementById('statusPersetujuanSk');
-            if (statusEl) {
-                statusEl.innerText = status;
-            }
-        }
-        
-        // 2. Set Tujuan Disposisi
-        if (tujuan) {
-            const disposisiSelect = document.getElementById('disposisi');
-            if (disposisiSelect) {
-                const tujuanValue = tujuan.trim();
-                console.log('SK - Setting tujuan disposisi:', tujuanValue);
-                
-                // Cari option yang cocok
-                let found = false;
-                for (let i = 0; i < disposisiSelect.options.length; i++) {
-                    const option = disposisiSelect.options[i];
-                    if (option.value === tujuanValue || option.textContent.trim() === tujuanValue) {
-                        disposisiSelect.value = option.value;
-                        found = true;
-                        console.log('SK - Found matching option:', option.value);
-                        break;
+
+            let status = persetujuanValue === 'Sudah' ? 'Sudah Disetujui' : 'Belum Disetujui';
+            console.log('SK - Setting persetujuan:', persetujuanValue, '->', status);
+
+            if (isAdmin) {
+                const radioDisetujui = document.getElementById('radioSkDisetujui');
+                const radioBelum = document.getElementById('radioSkBelum');
+                if (radioDisetujui && radioBelum) {
+                    if (persetujuanValue === 'Sudah') {
+                        radioDisetujui.checked = true;
+                        radioBelum.checked = false;
+                        console.log('SK - Radio Sudah checked');
+                    } else {
+                        radioDisetujui.checked = false;
+                        radioBelum.checked = true;
+                        console.log('SK - Radio Belum checked');
                     }
                 }
-                
-                // Jika tidak ditemukan exact match, coba partial match
-                if (!found) {
+            } else {
+                const statusEl = document.getElementById('statusPersetujuanSk');
+                if (statusEl) {
+                    statusEl.innerText = status;
+                }
+            }
+
+            // 2. Set Tujuan Disposisi
+            if (tujuan) {
+                const disposisiSelect = document.getElementById('disposisi');
+                if (disposisiSelect) {
+                    const tujuanValue = tujuan.trim();
+                    console.log('SK - Setting tujuan disposisi:', tujuanValue);
+
+                    // Cari option yang cocok
+                    let found = false;
                     for (let i = 0; i < disposisiSelect.options.length; i++) {
                         const option = disposisiSelect.options[i];
-                        if (option.value.includes(tujuanValue) || tujuanValue.includes(option.value) ||
-                            option.textContent.includes(tujuanValue) || tujuanValue.includes(option.textContent.trim())) {
+                        if (option.value === tujuanValue || option.textContent.trim() === tujuanValue) {
                             disposisiSelect.value = option.value;
                             found = true;
-                            console.log('SK - Found partial matching option:', option.value);
+                            console.log('SK - Found matching option:', option.value);
                             break;
                         }
                     }
-                }
-                
-                // Trigger change event untuk menampilkan sub disposisi jika ada
-                setTimeout(() => {
-                    const changeEvent = new Event('change', { bubbles: true });
-                    disposisiSelect.dispatchEvent(changeEvent);
-                    
-                    // 3. Set Diteruskan Kepada (sub_disposisi) setelah change event
-                    // Jangan tampilkan sub disposisi jika tujuan adalah "Kasubag Tata Usaha"
-                    const selectedTujuan = disposisiSelect.value;
-                    if (selectedTujuan !== 'Kasubag Tata Usaha' && subDisposisi && subDisposisi.trim()) {
-                        setTimeout(() => {
-                            const subDisposisiContainer = document.getElementById('subDisposisiContainer');
-                            const subDisposisiSelect = document.getElementById('sub_disposisi');
-                            
-                            console.log('SK - Setting sub_disposisi:', subDisposisi);
-                            
-                            if (subDisposisiContainer && subDisposisiSelect) {
-                                subDisposisiContainer.style.display = 'block';
-                                
-                                // Cari option yang cocok
-                                let found = false;
-                                const subDisposisiValue = subDisposisi.trim();
-                                
-                                for (let i = 0; i < subDisposisiSelect.options.length; i++) {
-                                    const option = subDisposisiSelect.options[i];
-                                    if (option.value === subDisposisiValue || 
-                                        option.textContent.trim() === subDisposisiValue ||
-                                        option.value.includes(subDisposisiValue) ||
-                                        option.textContent.includes(subDisposisiValue)) {
-                                        subDisposisiSelect.value = option.value;
-                                        found = true;
-                                        console.log('SK - Found matching sub_disposisi option:', option.value);
-                                        break;
-                                    }
-                                }
-                                
-                                if (!found && subDisposisiValue) {
-                                    // Tambahkan option baru jika tidak ada
-                                    const newOption = document.createElement('option');
-                                    newOption.value = subDisposisiValue;
-                                    newOption.textContent = subDisposisiValue;
-                                    subDisposisiSelect.appendChild(newOption);
-                                    subDisposisiSelect.value = subDisposisiValue;
-                                    console.log('SK - Added new sub_disposisi option:', subDisposisiValue);
-                                }
-                                
-                                // Jika tidak ada sub_disposisi yang ada, set default ke "Belum/Tidak diteruskan"
-                                if (!subDisposisiValue && subDisposisiSelect.options.length > 1) {
-                                    subDisposisiSelect.value = 'Belum/Tidak diteruskan';
-                                }
+
+                    // Jika tidak ditemukan exact match, coba partial match
+                    if (!found) {
+                        for (let i = 0; i < disposisiSelect.options.length; i++) {
+                            const option = disposisiSelect.options[i];
+                            if (option.value.includes(tujuanValue) || tujuanValue.includes(option.value) ||
+                                option.textContent.includes(tujuanValue) || tujuanValue.includes(option.textContent.trim())
+                                ) {
+                                disposisiSelect.value = option.value;
+                                found = true;
+                                console.log('SK - Found partial matching option:', option.value);
+                                break;
                             }
-                        }, 200);
-                    } else if (selectedTujuan !== 'Kasubag Tata Usaha') {
-                        // Jika tidak ada sub_disposisi yang ada, set default setelah change event
-                        setTimeout(() => {
-                            const subDisposisiContainer = document.getElementById('subDisposisiContainer');
-                            const subDisposisiSelect = document.getElementById('sub_disposisi');
-                            if (subDisposisiContainer && subDisposisiSelect && subDisposisiContainer.style.display === 'block') {
-                                subDisposisiSelect.value = 'Belum/Tidak diteruskan';
-                            }
-                        }, 250);
-                    } else if (selectedTujuan === 'Kasubag Tata Usaha') {
-                        // Pastikan sub disposisi disembunyikan jika tujuan adalah Kasubag Tata Usaha
-                        const subDisposisiContainer = document.getElementById('subDisposisiContainer');
-                        if (subDisposisiContainer) {
-                            subDisposisiContainer.style.display = 'none';
                         }
                     }
-                }, 100);
+
+                    // Trigger change event untuk menampilkan sub disposisi jika ada
+                    setTimeout(() => {
+                        const changeEvent = new Event('change', {
+                            bubbles: true
+                        });
+                        disposisiSelect.dispatchEvent(changeEvent);
+
+                        // 3. Set Diteruskan Kepada (sub_disposisi) setelah change event
+                        // Jangan tampilkan sub disposisi jika tujuan adalah "Kasubag Tata Usaha"
+                        const selectedTujuan = disposisiSelect.value;
+                        if (selectedTujuan !== 'Kasubag Tata Usaha' && subDisposisi && subDisposisi.trim()) {
+                            setTimeout(() => {
+                                const subDisposisiContainer = document.getElementById(
+                                    'subDisposisiContainer');
+                                const subDisposisiSelect = document.getElementById('sub_disposisi');
+
+                                console.log('SK - Setting sub_disposisi:', subDisposisi);
+
+                                if (subDisposisiContainer && subDisposisiSelect) {
+                                    subDisposisiContainer.style.display = 'block';
+
+                                    // Cari option yang cocok
+                                    let found = false;
+                                    const subDisposisiValue = subDisposisi.trim();
+
+                                    for (let i = 0; i < subDisposisiSelect.options.length; i++) {
+                                        const option = subDisposisiSelect.options[i];
+                                        if (option.value === subDisposisiValue ||
+                                            option.textContent.trim() === subDisposisiValue ||
+                                            option.value.includes(subDisposisiValue) ||
+                                            option.textContent.includes(subDisposisiValue)) {
+                                            subDisposisiSelect.value = option.value;
+                                            found = true;
+                                            console.log('SK - Found matching sub_disposisi option:', option
+                                                .value);
+                                            break;
+                                        }
+                                    }
+
+                                    if (!found && subDisposisiValue) {
+                                        // Tambahkan option baru jika tidak ada
+                                        const newOption = document.createElement('option');
+                                        newOption.value = subDisposisiValue;
+                                        newOption.textContent = subDisposisiValue;
+                                        subDisposisiSelect.appendChild(newOption);
+                                        subDisposisiSelect.value = subDisposisiValue;
+                                        console.log('SK - Added new sub_disposisi option:',
+                                            subDisposisiValue);
+                                    }
+
+                                    // Jika tidak ada sub_disposisi yang ada, set default ke "Belum/Tidak diteruskan"
+                                    if (!subDisposisiValue && subDisposisiSelect.options.length > 1) {
+                                        subDisposisiSelect.value = 'Belum/Tidak diteruskan';
+                                    }
+                                }
+                            }, 200);
+                        } else if (selectedTujuan !== 'Kasubag Tata Usaha') {
+                            // Jika tidak ada sub_disposisi yang ada, set default setelah change event
+                            setTimeout(() => {
+                                const subDisposisiContainer = document.getElementById(
+                                    'subDisposisiContainer');
+                                const subDisposisiSelect = document.getElementById('sub_disposisi');
+                                if (subDisposisiContainer && subDisposisiSelect && subDisposisiContainer
+                                    .style.display === 'block') {
+                                    subDisposisiSelect.value = 'Belum/Tidak diteruskan';
+                                }
+                            }, 250);
+                        } else if (selectedTujuan === 'Kasubag Tata Usaha') {
+                            // Pastikan sub disposisi disembunyikan jika tujuan adalah Kasubag Tata Usaha
+                            const subDisposisiContainer = document.getElementById('subDisposisiContainer');
+                            if (subDisposisiContainer) {
+                                subDisposisiContainer.style.display = 'none';
+                            }
+                        }
+                    }, 100);
+                }
             }
-        }
-        
-        // 4. Set Tanggal Disposisi
-        const tanggalInput = document.getElementById('tanggal_disposisi');
-        if (tanggalInput) {
-            if (tanggal && tanggal.trim()) {
-                let tanggalValue = tanggal.trim();
-                console.log('SK - Setting tanggal disposisi from data:', tanggalValue);
-                
-                // Jika format YYYY-MM-DD sudah benar, gunakan langsung
-                if (tanggalValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                    tanggalInput.value = tanggalValue;
-                    console.log('SK - Tanggal set to (YYYY-MM-DD):', tanggalValue);
-                } else {
-                    // Coba parse format lain
-                    const dateParts = tanggalValue.split(/[-\/]/);
-                    if (dateParts.length === 3) {
-                        let day, month, year;
-                        
-                        if (dateParts[2].length === 4) {
-                            // Format DD/MM/YYYY atau MM/DD/YYYY
-                            if (parseInt(dateParts[0]) > 12) {
+
+            // 4. Set Tanggal Disposisi
+            const tanggalInput = document.getElementById('tanggal_disposisi');
+            if (tanggalInput) {
+                if (tanggal && tanggal.trim()) {
+                    let tanggalValue = tanggal.trim();
+                    console.log('SK - Setting tanggal disposisi from data:', tanggalValue);
+
+                    // Jika format YYYY-MM-DD sudah benar, gunakan langsung
+                    if (tanggalValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                        tanggalInput.value = tanggalValue;
+                        console.log('SK - Tanggal set to (YYYY-MM-DD):', tanggalValue);
+                    } else {
+                        // Coba parse format lain
+                        const dateParts = tanggalValue.split(/[-\/]/);
+                        if (dateParts.length === 3) {
+                            let day, month, year;
+
+                            if (dateParts[2].length === 4) {
+                                // Format DD/MM/YYYY atau MM/DD/YYYY
+                                if (parseInt(dateParts[0]) > 12) {
+                                    day = dateParts[0].padStart(2, '0');
+                                    month = dateParts[1].padStart(2, '0');
+                                    year = dateParts[2];
+                                } else {
+                                    month = dateParts[0].padStart(2, '0');
+                                    day = dateParts[1].padStart(2, '0');
+                                    year = dateParts[2];
+                                }
+                            } else if (dateParts[0].length === 4) {
+                                // Format YYYY-MM-DD atau YYYY/MM/DD
+                                year = dateParts[0];
+                                month = dateParts[1].padStart(2, '0');
+                                day = dateParts[2].padStart(2, '0');
+                            } else {
                                 day = dateParts[0].padStart(2, '0');
                                 month = dateParts[1].padStart(2, '0');
                                 year = dateParts[2];
-                            } else {
-                                month = dateParts[0].padStart(2, '0');
-                                day = dateParts[1].padStart(2, '0');
-                                year = dateParts[2];
                             }
-                        } else if (dateParts[0].length === 4) {
-                            // Format YYYY-MM-DD atau YYYY/MM/DD
-                            year = dateParts[0];
-                            month = dateParts[1].padStart(2, '0');
-                            day = dateParts[2].padStart(2, '0');
+
+                            tanggalInput.value = `${year}-${month}-${day}`;
+                            console.log('SK - Converted tanggal:', tanggalInput.value);
                         } else {
-                            day = dateParts[0].padStart(2, '0');
-                            month = dateParts[1].padStart(2, '0');
-                            year = dateParts[2];
+                            console.log('SK - Invalid tanggal format, using default');
+                            setDefaultDate();
                         }
-                        
-                        tanggalInput.value = `${year}-${month}-${day}`;
-                        console.log('SK - Converted tanggal:', tanggalInput.value);
-                    } else {
-                        console.log('SK - Invalid tanggal format, using default');
-                        setDefaultDate();
                     }
-                }
-            } else {
-                console.log('SK - No tanggal data, using default');
-                setDefaultDate();
-            }
-        }
-        
-        // 5. Set Catatan (setelah semua field lain di-set, termasuk setelah change event disposisi)
-        setTimeout(() => {
-            const catatanInput = document.getElementById('catatan');
-            if (catatanInput) {
-                if (catatan && catatan.trim()) {
-                    catatanInput.value = catatan.trim();
-                    console.log('SK - Setting catatan:', catatan.trim());
                 } else {
-                    catatanInput.value = '';
-                    console.log('SK - No catatan data, clearing field');
+                    console.log('SK - No tanggal data, using default');
+                    setDefaultDate();
                 }
+            }
+
+            // 5. Set Catatan (setelah semua field lain di-set, termasuk setelah change event disposisi)
+            setTimeout(() => {
+                const catatanInput = document.getElementById('catatan');
+                if (catatanInput) {
+                    if (catatan && catatan.trim()) {
+                        catatanInput.value = catatan.trim();
+                        console.log('SK - Setting catatan:', catatan.trim());
+                    } else {
+                        catatanInput.value = '';
+                        console.log('SK - No catatan data, clearing field');
+                    }
+                } else {
+                    console.error('SK - Catatan input element not found');
+                }
+            }, 250);
+
+            // Tampilkan modal
+            setTimeout(() => {
+                const modalElement = document.getElementById('disposisiModal');
+                if (modalElement) {
+                    const modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+
+                    // Log final values setelah modal ditampilkan
+                    setTimeout(() => {
+                        console.log('SK - Modal shown, final values:');
+                        console.log('SK - Disposisi:', document.getElementById('disposisi')?.value);
+                        console.log('SK - Tanggal:', document.getElementById('tanggal_disposisi')?.value);
+                        console.log('SK - Catatan:', document.getElementById('catatan')?.value);
+                    }, 100);
+                }
+            }, 100);
+        }
+
+        // Event listener untuk perubahan disposisi
+        document.getElementById('disposisi').addEventListener('change', function() {
+            const selectedDisposisi = this.value;
+            const subDisposisiContainer = document.getElementById('subDisposisiContainer');
+            const subDisposisiSelect = document.getElementById('sub_disposisi');
+
+            // Reset sub disposisi
+            subDisposisiSelect.innerHTML = '<option value="">Pilih Tujuan</option>';
+
+            // Kasubag Tata Usaha tidak memiliki sub disposisi
+            if (selectedDisposisi === 'Kasubag Tata Usaha') {
+                subDisposisiContainer.style.display = 'none';
+                subDisposisiSelect.required = false;
+            } else if (selectedDisposisi && subDisposisiOptions[selectedDisposisi]) {
+                // Tampilkan container dan tambahkan opsi
+                subDisposisiContainer.style.display = 'block';
+
+                subDisposisiOptions[selectedDisposisi].forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    subDisposisiSelect.appendChild(optionElement);
+                });
+
+                // Set default value ke "Belum/Tidak diteruskan"
+                subDisposisiSelect.value = 'Belum/Tidak diteruskan';
+                subDisposisiSelect.required = true;
             } else {
-                console.error('SK - Catatan input element not found');
+                subDisposisiContainer.style.display = 'none';
+                subDisposisiSelect.required = false;
             }
-        }, 250);
-        
-        // Tampilkan modal
-        setTimeout(() => {
-            const modalElement = document.getElementById('disposisiModal');
-            if (modalElement) {
-                const modal = new bootstrap.Modal(modalElement);
-                modal.show();
-                
-                // Log final values setelah modal ditampilkan
-                setTimeout(() => {
-                    console.log('SK - Modal shown, final values:');
-                    console.log('SK - Disposisi:', document.getElementById('disposisi')?.value);
-                    console.log('SK - Tanggal:', document.getElementById('tanggal_disposisi')?.value);
-                    console.log('SK - Catatan:', document.getElementById('catatan')?.value);
-                }, 100);
+        });
+
+        // Handle form submission
+        document.getElementById('disposisiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const form = this;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn ? submitBtn.innerHTML : '';
+
+            const disposisi = document.getElementById('disposisi').value;
+            const subDisposisi = document.getElementById('sub_disposisi').value;
+            const subDisposisiContainer = document.getElementById('subDisposisiContainer');
+            const tanggalDisposisi = document.getElementById('tanggal_disposisi').value;
+
+            // Validasi sub disposisi jika container terlihat
+            if (disposisi !== 'Kasubag Tata Usaha' && subDisposisiContainer && subDisposisiContainer.style
+                .display !== 'none' && !subDisposisi) {
+                Swal.fire({
+                    title: 'Validasi Gagal',
+                    text: 'Silakan pilih sub disposisi',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                });
+                return;
             }
-        }, 100);
-    }
 
-    // Event listener untuk perubahan disposisi
-    document.getElementById('disposisi').addEventListener('change', function() {
-        const selectedDisposisi = this.value;
-        const subDisposisiContainer = document.getElementById('subDisposisiContainer');
-        const subDisposisiSelect = document.getElementById('sub_disposisi');
-        
-        // Reset sub disposisi
-        subDisposisiSelect.innerHTML = '<option value="">Pilih Tujuan</option>';
-        
-        // Kasubag Tata Usaha tidak memiliki sub disposisi
-        if (selectedDisposisi === 'Kasubag Tata Usaha') {
-            subDisposisiContainer.style.display = 'none';
-            subDisposisiSelect.required = false;
-        } else if (selectedDisposisi && subDisposisiOptions[selectedDisposisi]) {
-            // Tampilkan container dan tambahkan opsi
-            subDisposisiContainer.style.display = 'block';
-            
-            subDisposisiOptions[selectedDisposisi].forEach(option => {
-                const optionElement = document.createElement('option');
-                optionElement.value = option;
-                optionElement.textContent = option;
-                subDisposisiSelect.appendChild(optionElement);
-            });
-            
-            // Set default value ke "Belum/Tidak diteruskan"
-            subDisposisiSelect.value = 'Belum/Tidak diteruskan';
-            subDisposisiSelect.required = true;
-        } else {
-            subDisposisiContainer.style.display = 'none';
-            subDisposisiSelect.required = false;
-        }
-    });
+            // Validasi tanggal
+            if (!tanggalDisposisi) {
+                Swal.fire({
+                    title: 'Validasi Gagal',
+                    text: 'Silakan isi tanggal disposisi',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
 
-    // Handle form submission
-    document.getElementById('disposisiForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const form = this;
-        const submitBtn = form.querySelector('button[type="submit"]');
-        const originalBtnText = submitBtn ? submitBtn.innerHTML : '';
-        
-        const disposisi = document.getElementById('disposisi').value;
-        const subDisposisi = document.getElementById('sub_disposisi').value;
-        const subDisposisiContainer = document.getElementById('subDisposisiContainer');
-        const tanggalDisposisi = document.getElementById('tanggal_disposisi').value;
-        
-        // Validasi sub disposisi jika container terlihat
-        if (disposisi !== 'Kasubag Tata Usaha' && subDisposisiContainer && subDisposisiContainer.style.display !== 'none' && !subDisposisi) {
-            Swal.fire({
-                title: 'Validasi Gagal',
-                text: 'Silakan pilih sub disposisi',
-                icon: 'warning',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-        
-        // Validasi tanggal
-        if (!tanggalDisposisi) {
-            Swal.fire({
-                title: 'Validasi Gagal',
-                text: 'Silakan isi tanggal disposisi',
-                icon: 'warning',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-        
-        // Disable button dan tampilkan loading
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
-        }
-        
-        // Submit form
-        form.submit();
-    });
+            // Disable button dan tampilkan loading
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
+            }
+
+            // Submit form
+            form.submit();
+        });
     </script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
@@ -1167,10 +1253,10 @@
 
             // Automatically hide alerts after 5 seconds
             window.setTimeout(function() {
-                $(".alert-dismissible").fadeTo(500, 0).slideUp(500, function(){
+                $(".alert-dismissible").fadeTo(500, 0).slideUp(500, function() {
                     $(this).remove();
                 });
             }, 5000); // 5 seconds
         });
-    </script>   
+    </script>
 @endsection

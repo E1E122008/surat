@@ -8,27 +8,27 @@
         <div class="bg-white shadow-sm rounded-lg">
             <div class="p-4">
                 <!-- Alert Section -->
-                @if(session('success'))
+                @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <i class="fas fa-check-circle me-2"></i>
                         {{ session('success') }}
-                        
+
                     </div>
                 @endif
 
-                @if(session('error'))
+                @if (session('error'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <i class="fas fa-exclamation-circle me-2"></i>
                         {{ session('error') }}
-                        
+
                     </div>
                 @endif
 
-                @if($errors->any())
+                @if ($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <i class="fas fa-exclamation-triangle me-2"></i>
                         <ul class="mb-0">
-                            @foreach($errors->all() as $error)
+                            @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
                             @endforeach
                         </ul>
@@ -41,17 +41,40 @@
                         Surat Keluar
                     </h2>
                     <div class="flex space-x-2">
+                        <!-- Menu Urutkan Data -->
+                        <div class="dropdown me-2" style="margin-right: 8px;">
+                            <button class="btn btn-outline-secondary dropdown-toggle h-100" type="button" id="sortDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false" title="Urutkan">
+                                <i
+                                    class="fas fa-sort-amount-{{ isset($sortOrder) && $sortOrder == 'desc' ? 'down' : 'up' }}"></i>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                                <li>
+                                    <a class="dropdown-item {{ !isset($sortOrder) || $sortOrder == 'desc' ? 'active bg-primary text-white' : '' }}"
+                                        href="{{ route('surat-keluar.index', array_merge(request()->query(), ['sort' => 'desc'])) }}">
+                                        Terbaru ke Terlama
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item {{ isset($sortOrder) && $sortOrder == 'asc' ? 'active bg-primary text-white' : '' }}"
+                                        href="{{ route('surat-keluar.index', array_merge(request()->query(), ['sort' => 'asc'])) }}">
+                                        Terlama ke Terbaru
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
                         <form action="{{ route('surat-keluar.index') }}" method="GET" class="flex items-center">
-                            <input type="text" 
-                                   name="search" 
-                                   placeholder="Cari surat keluar..." 
-                                   class="form-control"
-                                   value="{{ request('search') }}">
+                            @if (request('sort'))
+                                <input type="hidden" name="sort" value="{{ request('sort') }}">
+                            @endif
+                            <input type="text" name="search" placeholder="Cari surat keluar..." class="form-control"
+                                value="{{ request('search') }}">
                             <button type="submit" class="btn btn-primary ml-2">
                                 <i class="fas fa-search"></i>
                             </button>
                         </form>
-                        @if(auth()->user()->role !== 'monitor')
+                        @if (auth()->user()->role !== 'monitor')
                             <a href="{{ route('surat-keluar.create') }}" class="btn btn-primary">
                                 <i class="fas fa-plus"></i> Surat Keluar
                             </a>
@@ -61,78 +84,112 @@
                         @endif
                     </div>
                 </div>
-                
+
                 <div class="table-responsive" style="max-width: 1200px; margin: auto;">
                     <table class="table" id="suratTable">
                         <thead>
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">No</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">No Surat</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">Tanggal</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">Perihal</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">Aksi</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">No
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">No
+                                    Surat</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">
+                                    Tanggal</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">
+                                    Perihal</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">Aksi
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($suratKeluar as $index => $surat)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $index + 1 + ($suratKeluar->currentPage() - 1) * $suratKeluar->perPage() }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        {{ $index + 1 + ($suratKeluar->currentPage() - 1) * $suratKeluar->perPage() }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->no_surat }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->tanggal->format('d/m/Y') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        {{ $surat->tanggal->format('d/m/Y') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->perihal }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                         <div class="dropdown">
-                                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <button class="btn btn-light btn-sm dropdown-toggle" type="button"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class="fas fa-cog"></i> Aksi
                                             </button>
                                             <ul class="dropdown-menu">
                                                 @php
-                                                    $lampiran = is_array($surat->lampiran) ? $surat->lampiran : json_decode($surat->lampiran, true);
+                                                    $lampiran = is_array($surat->lampiran)
+                                                        ? $surat->lampiran
+                                                        : json_decode($surat->lampiran, true);
                                                 @endphp
-                                                @if($lampiran && count($lampiran))
-                                                    @if(count($lampiran) == 1)
+                                                @if ($lampiran && count($lampiran))
+                                                    @if (count($lampiran) == 1)
                                                         @php
-                                                            $file = is_string($lampiran[0]) ? ['path' => $lampiran[0], 'name' => basename($lampiran[0])] : $lampiran[0];
+                                                            $file = is_string($lampiran[0])
+                                                                ? [
+                                                                    'path' => $lampiran[0],
+                                                                    'name' => basename($lampiran[0]),
+                                                                ]
+                                                                : $lampiran[0];
                                                         @endphp
-                                                <li>
-                                                            <a class="dropdown-item" href="{{ asset('storage/' . $file['path']) }}" target="_blank">
-                                                        <i class="fas fa-eye fa-fw me-2 text-primary"></i>Lihat Lampiran
-                                                    </a>
-                                                </li>
+                                                        <li>
+                                                            <a class="dropdown-item"
+                                                                href="{{ asset('storage/' . $file['path']) }}"
+                                                                target="_blank">
+                                                                <i class="fas fa-eye fa-fw me-2 text-primary"></i>Lihat
+                                                                Lampiran
+                                                            </a>
+                                                        </li>
                                                     @else
-                                                        <li><h6 class="dropdown-header">Lampiran ({{ count($lampiran) }})</h6></li>
-                                                        @foreach($lampiran as $file)
+                                                        <li>
+                                                            <h6 class="dropdown-header">Lampiran ({{ count($lampiran) }})
+                                                            </h6>
+                                                        </li>
+                                                        @foreach ($lampiran as $file)
                                                             @php
                                                                 if (is_string($file)) {
-                                                                    $file = ['path' => $file, 'name' => basename($file)];
+                                                                    $file = [
+                                                                        'path' => $file,
+                                                                        'name' => basename($file),
+                                                                    ];
                                                                 }
                                                             @endphp
                                                             <li>
-                                                                <a class="dropdown-item" href="{{ asset('storage/' . $file['path']) }}" target="_blank">
-                                                                    <i class="fas fa-file fa-fw me-2 text-primary"></i>{{ $file['name'] }}
+                                                                <a class="dropdown-item"
+                                                                    href="{{ asset('storage/' . $file['path']) }}"
+                                                                    target="_blank">
+                                                                    <i
+                                                                        class="fas fa-file fa-fw me-2 text-primary"></i>{{ $file['name'] }}
                                                                 </a>
                                                             </li>
                                                         @endforeach
                                                     @endif
                                                 @else
-                                                    <li><span class="dropdown-item-text text-muted">Tidak ada lampiran</span></li>
+                                                    <li><span class="dropdown-item-text text-muted">Tidak ada
+                                                            lampiran</span></li>
                                                 @endif
-                                                @if(auth()->user()->role !== 'monitor')
+                                                @if (auth()->user()->role !== 'monitor')
                                                     <li>
-                                                        <a class="dropdown-item" href="{{ route('surat-keluar.edit', $surat->id) }}">
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('surat-keluar.edit', $surat->id) }}">
                                                             <i class="fas fa-edit fa-fw me-2 text-warning"></i>Edit
                                                         </a>
                                                     </li>
-                                                    <li><hr class="dropdown-divider"></li>
                                                     <li>
-                                                        <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $surat->id }})">
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" class="dropdown-item text-danger"
+                                                            onclick="confirmDelete({{ $surat->id }})">
                                                             <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
                                                         </button>
                                                     </li>
                                                 @endif
                                             </ul>
                                         </div>
-                                        <form id="delete-form-{{ $surat->id }}" action="{{ route('surat-keluar.destroy', $surat->id) }}" method="POST" style="display: none;">
+                                        <form id="delete-form-{{ $surat->id }}"
+                                            action="{{ route('surat-keluar.destroy', $surat->id) }}" method="POST"
+                                            style="display: none;">
                                             @csrf
                                             @method('DELETE')
                                         </form>
@@ -155,7 +212,8 @@
                     </span>
                 </div>
                 <style>
-                    .pagination .page-item:first-child, .pagination .page-item:last-child {
+                    .pagination .page-item:first-child,
+                    .pagination .page-item:last-child {
                         display: none !important;
                     }
                 </style>
@@ -277,13 +335,15 @@
             font-size: 1rem !important;
         }
 
-        .btn-info, .btn-danger {
+        .btn-info,
+        .btn-danger {
             margin: 0 0.25rem;
         }
 
         .fas {
             font-size: 1rem;
         }
+
         .surat-badge {
             display: inline-flex;
             align-items: center;
@@ -293,13 +353,15 @@
             border-radius: 2rem;
             padding: 0.3rem 1rem;
             font-size: 1rem;
-            box-shadow: 0 2px 8px rgba(91,126,241,0.08);
+            box-shadow: 0 2px 8px rgba(91, 126, 241, 0.08);
             gap: 0.5rem;
         }
+
         .surat-badge-sm {
             font-size: 0.95rem;
             padding: 0.2rem 0.8rem;
         }
+
         .surat-badge i {
             font-size: 1em;
             margin-right: 0.5rem;
@@ -330,7 +392,7 @@
 
         function confirmDelete(id) {
             console.log('confirmDelete called with id:', id); // Debug log
-            
+
             Swal.fire({
                 title: 'Apakah Anda yakin?',
                 text: "Data ini akan dihapus secara permanen!",

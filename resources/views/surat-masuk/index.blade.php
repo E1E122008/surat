@@ -7,72 +7,114 @@
         </div>
         <div class="bg-white shadow-sm rounded-lg">
             <div class="p-4">
-                @if(session('success'))
+                @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <i class="fas fa-check-circle me-2"></i>
                         {{ session('success') }}
                     </div>
                 @endif
-                @if(session('error'))
+                @if (session('error'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <i class="fas fa-exclamation-circle me-2"></i>
                         {{ session('error') }}
                     </div>
                 @endif
-                
+
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-semibold text-gray-800 tracking-wide">
                         Surat Masuk
                     </h2>
                     <div class="flex space-x-2">
+                        <!-- Menu Urutkan Data -->
+                        <div class="dropdown me-2" style="margin-right: 8px;">
+                            <button class="btn btn-outline-secondary dropdown-toggle h-100" type="button" id="sortDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false" title="Urutkan">
+                                <i
+                                    class="fas fa-sort-amount-{{ isset($sortOrder) && $sortOrder == 'desc' ? 'down' : 'up' }}"></i>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                                <li>
+                                    <a class="dropdown-item {{ !isset($sortOrder) || $sortOrder == 'desc' ? 'active bg-primary text-white' : '' }}"
+                                        href="{{ route('surat-masuk.index', array_merge(request()->query(), ['sort' => 'desc'])) }}">
+                                        Terbaru ke Terlama
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item {{ isset($sortOrder) && $sortOrder == 'asc' ? 'active bg-primary text-white' : '' }}"
+                                        href="{{ route('surat-masuk.index', array_merge(request()->query(), ['sort' => 'asc'])) }}">
+                                        Terlama ke Terbaru
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
                         <form action="{{ route('surat-masuk.index') }}" method="GET" class="flex items-center">
-                            <input type="text" 
-                                   name="search" 
-                                   placeholder="Cari surat masuk..." 
-                                   class="form-control"
-                                   value="{{ request('search') }}"> 
+                            @if (request('sort'))
+                                <input type="hidden" name="sort" value="{{ request('sort') }}">
+                            @endif
+                            <input type="text" name="search" placeholder="Cari surat masuk..." class="form-control"
+                                value="{{ request('search') }}">
                             <button type="submit" class="btn btn-primary ml-2">
                                 <i class="fas fa-search"></i>
                             </button>
                         </form>
-                        @if(auth()->user()->role !== 'monitor')
-                            <a href="{{ route('surat-masuk.create') }}" 
-                               class="btn btn-primary">
+                        @if (auth()->user()->role !== 'monitor')
+                            <a href="{{ route('surat-masuk.create') }}" class="btn btn-primary">
                                 <i class="fas fa-plus"></i> Surat Masuk
                             </a>
-                            <a href="{{ route('surat-masuk.export') }}" 
-                               class="btn btn-success">
+                            <a href="{{ route('surat-masuk.export') }}" class="btn btn-success">
                                 <i class="fas fa-file-excel"></i> Export Excel
                             </a>
                         @endif
                     </div>
                 </div>
 
-                
+
                 <div class="table-responsive" style="max-width: 1200px; margin: auto;">
                     <table class="table" id="suratTable">
                         <thead>
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Terima</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    No</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    No Agenda</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    No Surat</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    Pengirim</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    Tanggal Terima</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    Disposisi</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    Status</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($suratMasuk as $index => $surat)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $index + 1 + ($suratMasuk->currentPage() - 1) * $suratMasuk->perPage() }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $surat->no_agenda }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $surat->no_surat }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $surat->pengirim }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $surat->tanggal_terima->format('d/m/Y') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-                                        @if($surat->disposisi)
+                                        {{ $index + 1 + ($suratMasuk->currentPage() - 1) * $suratMasuk->perPage() }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        {{ $surat->no_agenda }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        {{ $surat->no_surat }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        {{ $surat->pengirim }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        {{ $surat->tanggal_terima->format('d/m/Y') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        @if ($surat->disposisi)
                                             @php
                                                 $disposisiParts = explode('|', $surat->disposisi);
                                                 $persetujuanKetua = null;
@@ -81,22 +123,33 @@
                                                 $tanggalDisposisi = null;
                                                 $catatan = null;
                                                 $otherParts = [];
-                                                
+
                                                 // Pisahkan status persetujuan dari bagian lainnya
                                                 // Format baru: "Sudah di Setujui Kepala Biro Hukum" atau "Belum di Setujui Kepala Biro Hukum" (biasanya di bagian pertama)
-                                                foreach($disposisiParts as $index => $part) {
+                                                foreach ($disposisiParts as $index => $part) {
                                                     $trimmedPart = trim($part);
-                                                    if (preg_match('/(Sudah|Belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i', $trimmedPart)) {
+                                                    if (
+                                                        preg_match(
+                                                            '/(Sudah|Belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i',
+                                                            $trimmedPart,
+                                                        )
+                                                    ) {
                                                         $persetujuanKetua = $trimmedPart;
-                                                    } elseif (strpos($trimmedPart, 'Persetujuan Kepala Biro Hukum:') !== false) {
+                                                    } elseif (
+                                                        strpos($trimmedPart, 'Persetujuan Kepala Biro Hukum:') !== false
+                                                    ) {
                                                         // Fallback untuk format lama
                                                         $persetujuanKetua = $trimmedPart;
                                                     } elseif (strpos($trimmedPart, 'Diteruskan ke:') !== false) {
                                                         // Extract sub disposisi
-                                                        $subDisposisi = trim(str_replace('Diteruskan ke:', '', $trimmedPart));
+                                                        $subDisposisi = trim(
+                                                            str_replace('Diteruskan ke:', '', $trimmedPart),
+                                                        );
                                                     } elseif (strpos($trimmedPart, 'Tanggal:') !== false) {
                                                         // Extract tanggal disposisi
-                                                        $tanggalDisposisi = trim(str_replace('Tanggal:', '', $trimmedPart));
+                                                        $tanggalDisposisi = trim(
+                                                            str_replace('Tanggal:', '', $trimmedPart),
+                                                        );
                                                     } elseif (strpos($trimmedPart, 'Catatan:') !== false) {
                                                         // Extract catatan
                                                         $catatan = trim(str_replace('Catatan:', '', $trimmedPart));
@@ -107,8 +160,7 @@
                                                         $otherParts[] = $trimmedPart;
                                                     }
                                                 }
-                                                
-                                                
+
                                                 // Jika tidak ada tujuan disposisi yang terpisah, ambil dari otherParts
                                                 if (!$tujuanDisposisi && count($otherParts) > 0) {
                                                     $tujuanDisposisi = $otherParts[0];
@@ -117,48 +169,52 @@
                                             @endphp
                                             <div class="text-center">
                                                 {{-- Tampilkan Status Persetujuan Terlebih Dahulu --}}
-                                                @if($persetujuanKetua)
+                                                @if ($persetujuanKetua)
                                                     <div class="mb-2">
-                                                        <span class="badge {{ (stripos($persetujuanKetua, 'Sudah') !== false || stripos($persetujuanKetua, 'sudah') !== false) ? 'bg-success' : 'bg-warning' }}">
+                                                        <span
+                                                            class="badge {{ stripos($persetujuanKetua, 'Sudah') !== false || stripos($persetujuanKetua, 'sudah') !== false ? 'bg-success' : 'bg-warning' }}">
                                                             {{ $persetujuanKetua }}
                                                         </span>
                                                     </div>
                                                 @endif
-                                                
+
                                                 {{-- Tampilkan Tujuan Disposisi Utama --}}
-                                                @if($tujuanDisposisi)
+                                                @if ($tujuanDisposisi)
                                                     <div class="mb-1">
                                                         <strong>{{ $tujuanDisposisi }}</strong>
                                                     </div>
                                                 @endif
-                                                
+
                                                 {{-- Tampilkan Diteruskan ke --}}
-                                                @if($subDisposisi)
+                                                @if ($subDisposisi)
                                                     <div class="mb-1 text-sm">
                                                         <strong>Diteruskan ke:</strong> {{ $subDisposisi }}
                                                     </div>
                                                 @endif
-                                                
+
                                                 {{-- Tampilkan Tanggal --}}
-                                                @if($tanggalDisposisi)
+                                                @if ($tanggalDisposisi)
                                                     <div class="mb-1 text-sm">
                                                         <strong>Tanggal:</strong> {{ $tanggalDisposisi }}
                                                     </div>
                                                 @endif
-                                                
+
                                                 {{-- Tampilkan Catatan --}}
-                                                @if($catatan)
+                                                @if ($catatan)
                                                     <div class="mb-1 text-sm">
                                                         <strong>Catatan:</strong> {{ $catatan }}
                                                     </div>
                                                 @endif
-                                                
+
                                                 {{-- Tampilkan Informasi Lainnya (fallback untuk data lama) --}}
-                                                @if(count($otherParts) > 0)
-                                                    <small class="text-muted d-block text-left" style="text-align: left !important;">
-                                                        @foreach($otherParts as $part)
+                                                @if (count($otherParts) > 0)
+                                                    <small class="text-muted d-block text-left"
+                                                        style="text-align: left !important;">
+                                                        @foreach ($otherParts as $part)
                                                             {{ $part }}
-                                                            @if(!$loop->last)<br>@endif
+                                                            @if (!$loop->last)
+                                                                <br>
+                                                            @endif
                                                         @endforeach
                                                     </small>
                                                 @endif
@@ -169,7 +225,7 @@
                                     </td>
 
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-                                        @if($surat->status == 'tercatat')
+                                        @if ($surat->status == 'tercatat')
                                             <span class="bg-tercatat">Tercatat</span>
                                         @elseif($surat->status == 'terdisposisi')
                                             <span class="bg-terdisposisi">Terdisposisi</span>
@@ -185,13 +241,14 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                         <div class="dropdown">
-                                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <button class="btn btn-light btn-sm dropdown-toggle" type="button"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class="fas fa-cog"></i> Aksi
                                             </button>
                                             <ul class="dropdown-menu">
-                                                @if(auth()->user()->role !== 'monitor')
+                                                @if (auth()->user()->role !== 'monitor')
                                                     <li>
-                                                        <button class="dropdown-item" type="button" 
+                                                        <button class="dropdown-item" type="button"
                                                             data-surat-id="{{ $surat->id }}"
                                                             data-persetujuan="{{ isset($persetujuanKetua) && $persetujuanKetua ? $persetujuanKetua : 'Belum' }}"
                                                             data-tujuan="{{ isset($tujuanDisposisi) && $tujuanDisposisi ? htmlspecialchars($tujuanDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
@@ -200,31 +257,40 @@
                                                             data-catatan="{{ isset($catatan) && $catatan ? htmlspecialchars($catatan, ENT_QUOTES, 'UTF-8') : '' }}"
                                                             data-disposisi-full="{{ $surat->disposisi ? htmlspecialchars($surat->disposisi, ENT_QUOTES, 'UTF-8') : '' }}"
                                                             onclick="openDisposisiModal({{ $surat->id }}, this)">
-                                                            <i class="fas fa-sync-alt fa-fw me-2 text-warning"></i>Disposisi
+                                                            <i
+                                                                class="fas fa-sync-alt fa-fw me-2 text-warning"></i>Disposisi
                                                         </button>
                                                     </li>
                                                     <li>
-                                                        <button class="dropdown-item" type="button" onclick="openStatusModal({{ $surat->id }}, '{{ $surat->status }}')">
-                                                            <i class="fas fa-check-circle fa-fw me-2 text-success"></i>Status
+                                                        <button class="dropdown-item" type="button"
+                                                            onclick="openStatusModal({{ $surat->id }}, '{{ $surat->status }}')">
+                                                            <i
+                                                                class="fas fa-check-circle fa-fw me-2 text-success"></i>Status
                                                         </button>
                                                     </li>
                                                 @endif
                                                 <li>
-                                                    <a class="dropdown-item" href="{{ route('surat-masuk.detail', $surat->id) }}">
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('surat-masuk.detail', $surat->id) }}">
                                                         <i class="fas fa-eye fa-fw me-2 text-primary"></i>Detail
                                                     </a>
                                                 </li>
-                                                @if(auth()->user()->role !== 'monitor')
-                                                    <li><hr class="dropdown-divider"></li>
+                                                @if (auth()->user()->role !== 'monitor')
                                                     <li>
-                                                        <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $surat->id }})">
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" class="dropdown-item text-danger"
+                                                            onclick="confirmDelete({{ $surat->id }})">
                                                             <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
                                                         </button>
                                                     </li>
                                                 @endif
                                             </ul>
                                         </div>
-                                        <form id="delete-form-{{ $surat->id }}" action="{{ route('surat-masuk.destroy', $surat->id) }}" method="POST" style="display: none;">
+                                        <form id="delete-form-{{ $surat->id }}"
+                                            action="{{ route('surat-masuk.destroy', $surat->id) }}" method="POST"
+                                            style="display: none;">
                                             @csrf
                                             @method('DELETE')
                                         </form>
@@ -248,7 +314,8 @@
                     </span>
                 </div>
                 <style>
-                    .pagination .page-item:first-child, .pagination .page-item:last-child {
+                    .pagination .page-item:first-child,
+                    .pagination .page-item:last-child {
                         display: none !important;
                     }
                 </style>
@@ -301,27 +368,31 @@
                     <div class="modal-body">
                         <!-- STATUS PERSETUJUAN KEPALA BIRO HUKUM -->
                         <div class="mb-3">
-<label class="form-label"><strong>Status Persetujuan Kepala Biro Hukum:</strong></label>
-@if(auth()->user() && auth()->user()->role === 'admin')
-    <div id="radioPersetujuanGroup" class="mb-2">
-        <input class="form-check-input" type="radio" name="persetujuan_ketua" id="radioDisetujui" value="Sudah">
-        <label class="form-check-label me-3" for="radioDisetujui">Sudah Disetujui</label>
-        <input class="form-check-input" type="radio" name="persetujuan_ketua" id="radioBelum" value="Belum">
-        <label class="form-check-label" for="radioBelum">Belum Disetujui</label>
-    </div>
-@else
-    <span id="statusPersetujuan" class="badge bg-secondary"></span>
-@endif
-                        <input type="hidden" id="disposisiSuratId" name="disposisiSuratId" />
-                        <input type="hidden" id="currentDisposisi" name="currentDisposisi" />
+                            <label class="form-label"><strong>Status Persetujuan Kepala Biro Hukum:</strong></label>
+                            @if (auth()->user() && auth()->user()->role === 'admin')
+                                <div id="radioPersetujuanGroup" class="mb-2">
+                                    <input class="form-check-input" type="radio" name="persetujuan_ketua"
+                                        id="radioDisetujui" value="Sudah">
+                                    <label class="form-check-label me-3" for="radioDisetujui">Sudah Disetujui</label>
+                                    <input class="form-check-input" type="radio" name="persetujuan_ketua"
+                                        id="radioBelum" value="Belum">
+                                    <label class="form-check-label" for="radioBelum">Belum Disetujui</label>
+                                </div>
+                            @else
+                                <span id="statusPersetujuan" class="badge bg-secondary"></span>
+                            @endif
+                            <input type="hidden" id="disposisiSuratId" name="disposisiSuratId" />
+                            <input type="hidden" id="currentDisposisi" name="currentDisposisi" />
                         </div>
                         <div class="mb-3">
                             <label for="disposisi" class="form-label">Tujuan Disposisi</label>
                             <select class="form-select" id="disposisi" name="disposisi" required>
                                 <option value="">Pilih Tujuan Disposisi</option>
-                                <option value="Kabag Peraturan Perundang-Undangan Kabupaten/Kota">Kabag Peraturan Perundang-Undangan Kabupaten/Kota</option>
+                                <option value="Kabag Peraturan Perundang-Undangan Kabupaten/Kota">Kabag Peraturan
+                                    Perundang-Undangan Kabupaten/Kota</option>
                                 <option value="Kabag Bantuan Hukum dan HAM">Kabag Bantuan Hukum dan HAM</option>
-                                <option value="Ketua Tim Kerja Peraturan Perundang-Undangan Provinsi">Ketua Tim Kerja Peraturan Perundang-Undangan Provinsi</option>
+                                <option value="Ketua Tim Kerja Peraturan Perundang-Undangan Provinsi">Ketua Tim Kerja
+                                    Peraturan Perundang-Undangan Provinsi</option>
                                 <option value="Kasubag Tata Usaha">Kasubag Tata Usaha</option>
                             </select>
                         </div>
@@ -340,7 +411,8 @@
 
                         <div class="mb-3">
                             <label for="tanggal_disposisi" class="form-label">Tanggal Disposisi</label>
-                            <input type="date" class="form-control" id="tanggal_disposisi" name="tanggal_disposisi" required>
+                            <input type="date" class="form-control" id="tanggal_disposisi" name="tanggal_disposisi"
+                                required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -382,14 +454,14 @@
             color: red;
             padding: 2px 5px;
             border-radius: 3px;
-        }   
+        }
 
         .bg-sekretaris {
             background-color: rgba(0, 0, 255, 0.2);
             color: blue;
             padding: 2px 5px;
             border-radius: 3px;
-        }       
+        }
 
         .bg-kepala {
             background-color: rgba(0, 255, 0, 0.2);
@@ -397,8 +469,8 @@
             padding: 2px 5px;
             border-radius: 3px;
 
-            
-        }   
+
+        }
 
         .bg-kasubag {
             background-color: rgba(255, 165, 0, 0.2);
@@ -407,7 +479,7 @@
             border-radius: 3px;
         }
 
-        .bg-tercatat     {
+        .bg-tercatat {
             background-color: #D1D5DB;
             color: #374151;
             padding: 2px 5px;
@@ -537,13 +609,15 @@
             border-radius: 2rem;
             padding: 0.3rem 1rem;
             font-size: 1rem;
-            box-shadow: 0 2px 8px rgba(91,126,241,0.08);
+            box-shadow: 0 2px 8px rgba(91, 126, 241, 0.08);
             gap: 0.5rem;
         }
+
         .surat-badge-sm {
             font-size: 0.95rem;
             padding: 0.2rem 0.8rem;
         }
+
         .surat-badge i {
             font-size: 1em;
             margin-right: 0.5rem;
@@ -559,9 +633,11 @@
         function showSubpoints(select) {
             let selectedValue = select.value;
             let subpointSelect = select.parentElement.querySelector('.subpoint');
-            
+
             let subpoints = {
-                'kabag': ['Analisis Hukum ahli muda wilayah 1', 'Analisis Hukum ahli muda wilayah 2','Analisis Hukum ahli muda wilayah 3'],
+                'kabag': ['Analisis Hukum ahli muda wilayah 1', 'Analisis Hukum ahli muda wilayah 2',
+                    'Analisis Hukum ahli muda wilayah 3'
+                ],
                 'bankum': ['Litigasi', 'Non-litigasi', 'Kasubag Tata Usaha'],
                 'madya': ['Subker Penetapan', 'Subker Pengaturan']
             };
@@ -596,21 +672,21 @@
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = `/surat-masuk/${id}/update-status`;
-            
+
             // Add CSRF token
             const csrfInput = document.createElement('input');
             csrfInput.type = 'hidden';
             csrfInput.name = '_token';
             csrfInput.value = token;
             form.appendChild(csrfInput);
-            
+
             // Add status
             const statusInput = document.createElement('input');
             statusInput.type = 'hidden';
             statusInput.name = 'status';
             statusInput.value = status;
             form.appendChild(statusInput);
-            
+
             document.body.appendChild(form);
             form.submit();
         });
@@ -636,7 +712,7 @@
                 tr[i].style.display = found ? "" : "none";
             }
         }
-         
+
         // Fungsi untuk konfirmasi hapus dengan SweetAlert2
         function confirmDelete(id) {
             Swal.fire({
@@ -672,10 +748,10 @@
         function editCatatan(suratId, currentCatatan) {
             const container = document.querySelector(`[data-surat-id="${suratId}"]`);
             const textarea = container.querySelector('.catatan-textarea');
-            
+
             // Toggle readonly state
             textarea.readOnly = !textarea.readOnly;
-            
+
             if (!textarea.readOnly) {
                 // Enter edit mode
                 textarea.focus();
@@ -685,31 +761,31 @@
                 // Save mode
                 container.querySelector('.btn-success i').classList.remove('fa-save');
                 container.querySelector('.btn-success i').classList.add('fa-sync-alt');
-                
+
                 // Send AJAX request to update catatan
                 fetch(`/surat-masuk/${suratId}/update-catatan`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({
-                        catatan: textarea.value
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            catatan: textarea.value
+                        })
                     })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showSuccess('Catatan berhasil diperbarui');
-                    } else {
-                        showError('Gagal memperbarui catatan');
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showSuccess('Catatan berhasil diperbarui');
+                        } else {
+                            showError('Gagal memperbarui catatan');
+                            textarea.value = currentCatatan; // Revert to original value
+                        }
+                    })
+                    .catch(error => {
+                        showError('Terjadi kesalahan sistem');
                         textarea.value = currentCatatan; // Revert to original value
-                    }
-                })
-                .catch(error => {
-                    showError('Terjadi kesalahan sistem');
-                    textarea.value = currentCatatan; // Revert to original value
-                });
+                    });
             }
         }
 
@@ -776,18 +852,23 @@
             const form = document.getElementById('disposisiForm');
             form.action = `/surat-masuk/${id}/disposisi`;
             document.getElementById('disposisiSuratId').value = id;
-            
+
             // Ambil data dari data attribute button (tanpa API) SEBELUM reset form
-            const persetujuan = buttonElement && buttonElement.getAttribute('data-persetujuan') ? buttonElement.getAttribute('data-persetujuan') : 'Belum';
-            const tujuan = buttonElement && buttonElement.getAttribute('data-tujuan') ? buttonElement.getAttribute('data-tujuan') : '';
-            const subDisposisi = buttonElement && buttonElement.getAttribute('data-sub-disposisi') ? buttonElement.getAttribute('data-sub-disposisi') : '';
-            const tanggal = buttonElement && buttonElement.getAttribute('data-tanggal') ? buttonElement.getAttribute('data-tanggal') : '';
-            const catatan = buttonElement && buttonElement.getAttribute('data-catatan') ? buttonElement.getAttribute('data-catatan') : '';
-            
+            const persetujuan = buttonElement && buttonElement.getAttribute('data-persetujuan') ? buttonElement
+                .getAttribute('data-persetujuan') : 'Belum';
+            const tujuan = buttonElement && buttonElement.getAttribute('data-tujuan') ? buttonElement.getAttribute(
+                'data-tujuan') : '';
+            const subDisposisi = buttonElement && buttonElement.getAttribute('data-sub-disposisi') ? buttonElement
+                .getAttribute('data-sub-disposisi') : '';
+            const tanggal = buttonElement && buttonElement.getAttribute('data-tanggal') ? buttonElement.getAttribute(
+                'data-tanggal') : '';
+            const catatan = buttonElement && buttonElement.getAttribute('data-catatan') ? buttonElement.getAttribute(
+                'data-catatan') : '';
+
             // Reset form setelah mengambil data
             form.reset();
             document.getElementById('subDisposisiContainer').style.display = 'none';
-            
+
             console.log('Data from button attributes:', {
                 persetujuan,
                 tujuan,
@@ -795,7 +876,7 @@
                 tanggal,
                 catatan
             });
-            
+
             // Simpan disposisi lengkap untuk radio button listener
             const currentDisposisiInput = document.getElementById('currentDisposisi');
             if (currentDisposisiInput && buttonElement) {
@@ -817,12 +898,12 @@
                         });
                 }
             }
-            
+
             let isAdmin = false;
-            @if(auth()->user() && auth()->user()->role === 'admin')
+            @if (auth()->user() && auth()->user()->role === 'admin')
                 isAdmin = true;
             @endif
-            
+
             // 1. Set Status Persetujuan Kepala Biro Hukum
             // Normalisasi persetujuan (bisa "Sudah", "Belum", atau "Sudah di Setujui Kepala Biro Hukum", dll)
             let persetujuanValue = 'Belum';
@@ -835,10 +916,10 @@
                     persetujuanValue = persetujuan; // Ambil apa adanya jika tidak match
                 }
             }
-            
+
             let status = persetujuanValue === 'Sudah' ? 'Sudah Disetujui' : 'Belum Disetujui';
             console.log('Setting persetujuan:', persetujuanValue, '->', status);
-            
+
             if (isAdmin) {
                 const radioDisetujui = document.getElementById('radioDisetujui');
                 const radioBelum = document.getElementById('radioBelum');
@@ -859,14 +940,14 @@
                     statusEl.innerText = status;
                 }
             }
-            
+
             // 2. Set Tujuan Disposisi
             if (tujuan) {
                 const disposisiSelect = document.getElementById('disposisi');
                 if (disposisiSelect) {
                     const tujuanValue = tujuan.trim();
                     console.log('Setting tujuan disposisi:', tujuanValue);
-                    
+
                     // Cari option yang cocok
                     let found = false;
                     for (let i = 0; i < disposisiSelect.options.length; i++) {
@@ -878,13 +959,14 @@
                             break;
                         }
                     }
-                    
+
                     // Jika tidak ditemukan exact match, coba partial match
                     if (!found) {
                         for (let i = 0; i < disposisiSelect.options.length; i++) {
                             const option = disposisiSelect.options[i];
                             if (option.value.includes(tujuanValue) || tujuanValue.includes(option.value) ||
-                                option.textContent.includes(tujuanValue) || tujuanValue.includes(option.textContent.trim())) {
+                                option.textContent.includes(tujuanValue) || tujuanValue.includes(option.textContent.trim())
+                            ) {
                                 disposisiSelect.value = option.value;
                                 found = true;
                                 console.log('Found partial matching option:', option.value);
@@ -892,32 +974,36 @@
                             }
                         }
                     }
-                    
+
                     // Trigger change event untuk menampilkan sub disposisi jika ada
                     setTimeout(() => {
-                        const changeEvent = new Event('change', { bubbles: true });
+                        const changeEvent = new Event('change', {
+                            bubbles: true
+                        });
                         disposisiSelect.dispatchEvent(changeEvent);
-                        
+
                         // 3. Set Diteruskan Kepada (sub_disposisi) setelah change event
                         if (subDisposisi) {
                             setTimeout(() => {
-                                const subDisposisiContainer = document.getElementById('subDisposisiContainer');
+                                const subDisposisiContainer = document.getElementById(
+                                    'subDisposisiContainer');
                                 const subDisposisiSelect = document.getElementById('sub_disposisi');
-                                
+
                                 if (subDisposisiContainer && subDisposisiSelect) {
                                     subDisposisiContainer.style.display = 'block';
-                                    
+
                                     // Cari option yang cocok
                                     let found = false;
                                     for (let i = 0; i < subDisposisiSelect.options.length; i++) {
-                                        if (subDisposisiSelect.options[i].value === subDisposisi || 
-                                            subDisposisiSelect.options[i].textContent.trim() === subDisposisi) {
+                                        if (subDisposisiSelect.options[i].value === subDisposisi ||
+                                            subDisposisiSelect.options[i].textContent.trim() ===
+                                            subDisposisi) {
                                             subDisposisiSelect.value = subDisposisiSelect.options[i].value;
                                             found = true;
                                             break;
                                         }
                                     }
-                                    
+
                                     if (!found && subDisposisi) {
                                         // Tambahkan option baru jika tidak ada
                                         const newOption = document.createElement('option');
@@ -926,7 +1012,7 @@
                                         subDisposisiSelect.appendChild(newOption);
                                         subDisposisiSelect.value = subDisposisi;
                                     }
-                                    
+
                                     // Jika tidak ada sub_disposisi yang ada, set default ke "Belum/Tidak diteruskan"
                                     if (!subDisposisi && subDisposisiSelect.options.length > 1) {
                                         subDisposisiSelect.value = 'Belum/Tidak diteruskan';
@@ -936,9 +1022,11 @@
                         } else {
                             // Jika tidak ada sub_disposisi yang ada, set default setelah change event
                             setTimeout(() => {
-                                const subDisposisiContainer = document.getElementById('subDisposisiContainer');
+                                const subDisposisiContainer = document.getElementById(
+                                    'subDisposisiContainer');
                                 const subDisposisiSelect = document.getElementById('sub_disposisi');
-                                if (subDisposisiContainer && subDisposisiSelect && subDisposisiContainer.style.display === 'block') {
+                                if (subDisposisiContainer && subDisposisiSelect && subDisposisiContainer
+                                    .style.display === 'block') {
                                     subDisposisiSelect.value = 'Belum/Tidak diteruskan';
                                 }
                             }, 150);
@@ -946,14 +1034,14 @@
                     }, 50);
                 }
             }
-            
+
             // 4. Set Tanggal Disposisi (PENTING: gunakan data dari database jika ada)
             const tanggalInput = document.getElementById('tanggal_disposisi');
             if (tanggalInput) {
                 if (tanggal && tanggal.trim()) {
                     let tanggalValue = tanggal.trim();
                     console.log('Setting tanggal disposisi from data:', tanggalValue);
-                    
+
                     // Jika format YYYY-MM-DD sudah benar, gunakan langsung
                     if (tanggalValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
                         tanggalInput.value = tanggalValue;
@@ -963,7 +1051,7 @@
                         const dateParts = tanggalValue.split(/[-\/]/);
                         if (dateParts.length === 3) {
                             let day, month, year;
-                            
+
                             // Cek panjang tahun untuk menentukan format
                             if (dateParts[2].length === 4) {
                                 // Format DD/MM/YYYY atau MM/DD/YYYY
@@ -989,7 +1077,7 @@
                                 month = dateParts[1].padStart(2, '0');
                                 year = dateParts[2];
                             }
-                            
+
                             tanggalInput.value = `${year}-${month}-${day}`;
                             console.log('Converted tanggal:', tanggalInput.value);
                         } else {
@@ -1004,7 +1092,7 @@
                     setDefaultDate();
                 }
             }
-            
+
             // 5. Set Catatan (setelah semua field lain di-set, termasuk setelah change event disposisi)
             setTimeout(() => {
                 const catatanInput = document.getElementById('catatan');
@@ -1020,14 +1108,14 @@
                     console.error('Catatan input element not found');
                 }
             }, 250);
-            
+
             // Tampilkan modal
             setTimeout(() => {
                 const modalElement = document.getElementById('disposisiModal');
                 if (modalElement) {
                     const modal = new bootstrap.Modal(modalElement);
                     modal.show();
-                    
+
                     // Log final values setelah modal ditampilkan
                     setTimeout(() => {
                         console.log('Modal shown, final values:');
@@ -1046,7 +1134,7 @@
                 const currentDisposisiInput = document.getElementById('currentDisposisi');
                 let disposisiBaru = currentDisposisiInput ? currentDisposisiInput.value : '';
                 let statusSetuju = false;
-                
+
                 // Jika tidak ada disposisi di hidden input, ambil dari API (fallback)
                 if (!disposisiBaru) {
                     fetch(`/api/surat-masuk/${id}`)
@@ -1060,20 +1148,21 @@
                         });
                     return;
                 }
-                
+
                 updatePersetujuan(id, disposisiBaru);
             });
         }
-        
+
         function updatePersetujuan(id, disposisiBaru) {
             let statusSetuju = false;
-            
-            if(document.getElementById('radioDisetujui').checked) {
+
+            if (document.getElementById('radioDisetujui').checked) {
                 statusSetuju = true;
                 // Format baru: "Sudah di Setujui Kepala Biro Hukum"
                 const newFormat = 'Sudah di Setujui Kepala Biro Hukum';
                 if (disposisiBaru.match(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i)) {
-                    disposisiBaru = disposisiBaru.replace(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i, newFormat);
+                    disposisiBaru = disposisiBaru.replace(
+                        /(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i, newFormat);
                 } else if (disposisiBaru.includes('Persetujuan Kepala Biro Hukum:')) {
                     // Fallback format lama
                     disposisiBaru = disposisiBaru.replace(/Persetujuan Kepala Biro Hukum:[^|]*/g, newFormat);
@@ -1084,7 +1173,8 @@
                 // Format baru: "Belum di Setujui Kepala Biro Hukum"
                 const newFormat = 'Belum di Setujui Kepala Biro Hukum';
                 if (disposisiBaru.match(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i)) {
-                    disposisiBaru = disposisiBaru.replace(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i, newFormat);
+                    disposisiBaru = disposisiBaru.replace(
+                        /(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i, newFormat);
                 } else if (disposisiBaru.includes('Persetujuan Kepala Biro Hukum:')) {
                     // Fallback format lama
                     disposisiBaru = disposisiBaru.replace(/Persetujuan Kepala Biro Hukum:[^|]*/g, newFormat);
@@ -1092,53 +1182,55 @@
                     disposisiBaru = newFormat + (disposisiBaru ? ' | ' + disposisiBaru : '');
                 }
             }
-            
+
             // Update hidden input dengan disposisi baru
             const currentDisposisiInput = document.getElementById('currentDisposisi');
             if (currentDisposisiInput) {
                 currentDisposisiInput.value = disposisiBaru;
             }
-            
+
             sendUpdatePersetujuan(id, disposisiBaru, statusSetuju);
         }
 
         function sendUpdatePersetujuan(id, disposisiBaru, statusSetuju) {
             fetch(`/surat-masuk/${id}/update-disposisi`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({ disposisi: disposisiBaru })
-            })
-            .then((response) => response.json())
-            .then(data => {
-                if(data.success) {
-                    // Update tampilan status (jika ada untuk non-admin)
-                    const statusPersetujuanEl = document.getElementById('statusPersetujuan');
-                    if (statusPersetujuanEl) {
-                        statusPersetujuanEl.innerText = statusSetuju ? 'Sudah Disetujui' : 'Belum Disetujui';
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        disposisi: disposisiBaru
+                    })
+                })
+                .then((response) => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update tampilan status (jika ada untuk non-admin)
+                        const statusPersetujuanEl = document.getElementById('statusPersetujuan');
+                        if (statusPersetujuanEl) {
+                            statusPersetujuanEl.innerText = statusSetuju ? 'Sudah Disetujui' : 'Belum Disetujui';
+                        }
                     }
-                }
-            })
-            .catch(error => {
-                console.error('Error updating persetujuan:', error);
-            });
+                })
+                .catch(error => {
+                    console.error('Error updating persetujuan:', error);
+                });
         }
 
         document.getElementById('disposisiForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             const form = this;
             const submitBtn = form.querySelector('button[type="submit"]');
             const originalBtnText = submitBtn ? submitBtn.innerHTML : '';
-            
+
             // Validasi form
             const disposisi = document.getElementById('disposisi').value;
             const subDisposisi = document.getElementById('sub_disposisi').value;
             const subDisposisiContainer = document.getElementById('subDisposisiContainer');
             const tanggalDisposisi = document.getElementById('tanggal_disposisi').value;
-            
+
             // Validasi sub disposisi jika container terlihat
             if (subDisposisiContainer && subDisposisiContainer.style.display !== 'none' && !subDisposisi) {
                 Swal.fire({
@@ -1149,7 +1241,7 @@
                 });
                 return;
             }
-            
+
             // Validasi tanggal
             if (!tanggalDisposisi) {
                 Swal.fire({
@@ -1160,13 +1252,13 @@
                 });
                 return;
             }
-            
+
             // Disable button dan tampilkan loading
             if (submitBtn) {
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
             }
-            
+
             // Submit form
             form.submit();
         });
@@ -1207,21 +1299,21 @@
             color: green;
             padding: 2px 5px;
             border-radius: 3px;
-        }   
+        }
 
         .bg-sekretaris {
             background-color: rgba(0, 0, 255, 0.2);
             color: blue;
             padding: 2px 5px;
             border-radius: 3px;
-        }   
+        }
 
         .bg-kepala {
             background-color: rgba(255, 0, 0, 0.2);
             color: red;
             padding: 2px 5px;
-            border-radius: 3px; 
-        }   
+            border-radius: 3px;
+        }
 
         .bg-kasubag {
             background-color: rgba(255, 165, 0, 0.2);
@@ -1230,5 +1322,5 @@
             border-radius: 3px;
         }
     </style>
-    
+
 @endsection

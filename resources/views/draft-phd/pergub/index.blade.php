@@ -3,18 +3,19 @@
 @section('content')
     <div class="min-h-screen bg-gray-100" style="max-width: 1400px; margin: auto; padding: 20px;">
         <div class="mb-4">
-            <h2 class="header h2"><strong>📂 Registrasi Draft PHD </strong> / <span style="color: gray;"> Peraturan Gubernur</span></h2>
+            <h2 class="header h2"><strong>📂 Registrasi Draft PHD </strong> / <span style="color: gray;"> Peraturan
+                    Gubernur</span></h2>
         </div>
         <div class="bg-white shadow-sm rounded-lg">
             <div class="p-4">
                 {{-- ALERT SECTION --}}
-                @if(session('success'))
+                @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert" id="alertBox">
                         <i class="fas fa-check-circle me-2"></i>
                         {{ session('success') }}
                     </div>
                 @endif
-                @if(session('error'))
+                @if (session('error'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alertBox">
                         <i class="fas fa-exclamation-circle me-2"></i>
                         {{ session('error') }}
@@ -25,17 +26,40 @@
                         Peraturan Gubernur
                     </h2>
                     <div class="flex space-x-2">
+                        <!-- Menu Urutkan Data -->
+                        <div class="dropdown me-2" style="margin-right: 8px;">
+                            <button class="btn btn-outline-secondary dropdown-toggle h-100" type="button" id="sortDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false" title="Urutkan">
+                                <i
+                                    class="fas fa-sort-amount-{{ isset($sortOrder) && $sortOrder == 'desc' ? 'down' : 'up' }}"></i>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                                <li>
+                                    <a class="dropdown-item {{ !isset($sortOrder) || $sortOrder == 'desc' ? 'active bg-primary text-white' : '' }}"
+                                        href="{{ route('draft-phd.pergub.index', array_merge(request()->query(), ['sort' => 'desc'])) }}">
+                                        Terbaru ke Terlama
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item {{ isset($sortOrder) && $sortOrder == 'asc' ? 'active bg-primary text-white' : '' }}"
+                                        href="{{ route('draft-phd.pergub.index', array_merge(request()->query(), ['sort' => 'asc'])) }}">
+                                        Terlama ke Terbaru
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
                         <form action="{{ route('draft-phd.pergub.index') }}" method="GET" class="flex items-center">
-                            <input type="text" 
-                                   name="search" 
-                                   value="{{ request('search') }}"
-                                   placeholder="Cari..." 
-                                   class="form-control">
+                            @if (request('sort'))
+                                <input type="hidden" name="sort" value="{{ request('sort') }}">
+                            @endif
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari..."
+                                class="form-control">
                             <button type="submit" class="btn btn-primary ml-2">
                                 <i class="fas fa-search"></i>
                             </button>
                         </form>
-                        @if(auth()->user()->role !== 'monitor')
+                        @if (auth()->user()->role !== 'monitor')
                             <a href="{{ route('draft-phd.pergub.create') }}" class="btn btn-primary">
                                 <i class="fas fa-plus"></i> Tambah Pergub
                             </a>
@@ -43,33 +67,54 @@
                                 <i class="fas fa-file-excel"></i> Export Excel
                             </a>
                         @endif
-                    </div>  
+                    </div>
                 </div>
-                
+
                 <div class="table-responsive" style="max-width: 1200px; margin: auto;">
                     <table class="table" id="suratTable">
                         <thead>
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Tanggal Terima</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    No</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    No Agenda</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    No Surat</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    Pengirim</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    Tanggal Terima</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    Disposisi</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    Status</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($pergubs as $index => $pergub)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $index + 1 + ($pergubs->currentPage() - 1) * $pergubs->perPage() }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $pergub->no_agenda }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $pergub->no_surat }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $pergub->pengirim }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">{{ $pergub->tanggal_terima->format('d/m/Y') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-                                        @if($pergub->disposisi)
+                                        {{ $index + 1 + ($pergubs->currentPage() - 1) * $pergubs->perPage() }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        {{ $pergub->no_agenda }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        {{ $pergub->no_surat }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        {{ $pergub->pengirim }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        {{ $pergub->tanggal_terima->format('d/m/Y') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                        @if ($pergub->disposisi)
                                             @php
                                                 $disposisiParts = explode('|', $pergub->disposisi);
                                                 $persetujuanKetua = null;
@@ -80,19 +125,30 @@
                                                 $otherParts = [];
 
                                                 // Pisahkan status persetujuan dan bagian lainnya
-                                                foreach($disposisiParts as $index => $part) {
+                                                foreach ($disposisiParts as $index => $part) {
                                                     $trimmedPart = trim($part);
-                                                    if (preg_match('/(Sudah|Belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i', $trimmedPart)) {
+                                                    if (
+                                                        preg_match(
+                                                            '/(Sudah|Belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i',
+                                                            $trimmedPart,
+                                                        )
+                                                    ) {
                                                         $persetujuanKetua = $trimmedPart;
-                                                    } elseif (strpos($trimmedPart, 'Persetujuan Kepala Biro Hukum:') !== false) {
+                                                    } elseif (
+                                                        strpos($trimmedPart, 'Persetujuan Kepala Biro Hukum:') !== false
+                                                    ) {
                                                         // Fallback format lama
                                                         $persetujuanKetua = $trimmedPart;
                                                     } elseif (strpos($trimmedPart, 'Diteruskan ke:') !== false) {
                                                         // Extract sub disposisi
-                                                        $subDisposisi = trim(str_replace('Diteruskan ke:', '', $trimmedPart));
+                                                        $subDisposisi = trim(
+                                                            str_replace('Diteruskan ke:', '', $trimmedPart),
+                                                        );
                                                     } elseif (strpos($trimmedPart, 'Tanggal:') !== false) {
                                                         // Extract tanggal disposisi
-                                                        $tanggalDisposisi = trim(str_replace('Tanggal:', '', $trimmedPart));
+                                                        $tanggalDisposisi = trim(
+                                                            str_replace('Tanggal:', '', $trimmedPart),
+                                                        );
                                                     } elseif (strpos($trimmedPart, 'Catatan:') !== false) {
                                                         // Extract catatan
                                                         $catatan = trim(str_replace('Catatan:', '', $trimmedPart));
@@ -111,48 +167,51 @@
                                             @endphp
                                             <div class="text-center">
                                                 {{-- Status Persetujuan --}}
-                                                @if($persetujuanKetua)
+                                                @if ($persetujuanKetua)
                                                     <div class="mb-2">
-                                                        <span class="badge {{ (stripos($persetujuanKetua, 'Sudah') !== false) ? 'bg-success' : 'bg-warning' }}">
+                                                        <span
+                                                            class="badge {{ stripos($persetujuanKetua, 'Sudah') !== false ? 'bg-success' : 'bg-warning' }}">
                                                             {{ $persetujuanKetua }}
                                                         </span>
                                                     </div>
                                                 @endif
 
                                                 {{-- Tujuan Disposisi Utama --}}
-                                                @if($tujuanDisposisi)
+                                                @if ($tujuanDisposisi)
                                                     <div class="mb-1">
                                                         <strong>{{ $tujuanDisposisi }}</strong>
                                                     </div>
                                                 @endif
 
                                                 {{-- Tampilkan Diteruskan ke --}}
-                                                @if($subDisposisi)
+                                                @if ($subDisposisi)
                                                     <div class="mb-1 text-sm">
                                                         <strong>Diteruskan ke:</strong> {{ $subDisposisi }}
                                                     </div>
                                                 @endif
 
                                                 {{-- Tampilkan Tanggal --}}
-                                                @if($tanggalDisposisi)
+                                                @if ($tanggalDisposisi)
                                                     <div class="mb-1 text-sm">
                                                         <strong>Tanggal:</strong> {{ $tanggalDisposisi }}
                                                     </div>
                                                 @endif
 
                                                 {{-- Tampilkan Catatan --}}
-                                                @if($catatan)
+                                                @if ($catatan)
                                                     <div class="mb-1 text-sm">
                                                         <strong>Catatan:</strong> {{ $catatan }}
                                                     </div>
                                                 @endif
 
                                                 {{-- Informasi Lainnya (fallback untuk data lama) --}}
-                                                @if(count($otherParts) > 0)
+                                                @if (count($otherParts) > 0)
                                                     <small class="text-muted d-block">
-                                                        @foreach($otherParts as $part)
+                                                        @foreach ($otherParts as $part)
                                                             {{ $part }}
-                                                            @if(!$loop->last)<br>@endif
+                                                            @if (!$loop->last)
+                                                                <br>
+                                                            @endif
                                                         @endforeach
                                                     </small>
                                                 @endif
@@ -162,7 +221,7 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-                                        @if($pergub->status == 'tercatat')
+                                        @if ($pergub->status == 'tercatat')
                                             <span class="bg-tercatat">Tercatat</span>
                                         @elseif($pergub->status == 'terdisposisi')
                                             <span class="bg-terdisposisi">Terdisposisi</span>
@@ -178,15 +237,14 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                         <div class="dropdown">
-                                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <button class="btn btn-light btn-sm dropdown-toggle" type="button"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class="fas fa-cog"></i> Aksi
                                             </button>
                                             <ul class="dropdown-menu">
-                                                @if(auth()->user()->role !== 'monitor')
+                                                @if (auth()->user()->role !== 'monitor')
                                                     <li>
-                                                        <button 
-                                                            class="dropdown-item" 
-                                                            type="button" 
+                                                        <button class="dropdown-item" type="button"
                                                             data-surat-id="{{ $pergub->id }}"
                                                             data-persetujuan="{{ isset($persetujuanKetua) && $persetujuanKetua ? $persetujuanKetua : 'Belum' }}"
                                                             data-tujuan="{{ isset($tujuanDisposisi) && $tujuanDisposisi ? htmlspecialchars($tujuanDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
@@ -194,23 +252,34 @@
                                                             data-tanggal="{{ isset($tanggalDisposisi) && $tanggalDisposisi ? htmlspecialchars($tanggalDisposisi, ENT_QUOTES, 'UTF-8') : '' }}"
                                                             data-catatan="{{ isset($catatan) && $catatan ? htmlspecialchars($catatan, ENT_QUOTES, 'UTF-8') : '' }}"
                                                             onclick="openDisposisiModal({{ $pergub->id }}, this)">
-                                                            <i class="fas fa-sync-alt fa-fw me-2 text-warning"></i>Disposisi
+                                                            <i
+                                                                class="fas fa-sync-alt fa-fw me-2 text-warning"></i>Disposisi
                                                         </button>
                                                     </li>
-                                                    <li><button class="dropdown-item" type="button" onclick="openStatusModal({{ $pergub->id }}, '{{ $pergub->status }}')"><i class="fas fa-check-circle fa-fw me-2 text-success"></i>Status</button></li>
+                                                    <li><button class="dropdown-item" type="button"
+                                                            onclick="openStatusModal({{ $pergub->id }}, '{{ $pergub->status }}')"><i
+                                                                class="fas fa-check-circle fa-fw me-2 text-success"></i>Status</button>
+                                                    </li>
                                                 @endif
-                                                <li><a class="dropdown-item" href="{{ route('draft-phd.pergub.detail', $pergub->id) }}"><i class="fas fa-eye fa-fw me-2 text-primary"></i>Detail</a></li>
-                                                @if(auth()->user()->role !== 'monitor')
-                                                    <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item"
+                                                        href="{{ route('draft-phd.pergub.detail', $pergub->id) }}"><i
+                                                            class="fas fa-eye fa-fw me-2 text-primary"></i>Detail</a></li>
+                                                @if (auth()->user()->role !== 'monitor')
                                                     <li>
-                                                        <button type="button" class="dropdown-item text-danger" onclick="confirmDelete({{ $pergub->id }})">
+                                                        <hr class="dropdown-divider">
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" class="dropdown-item text-danger"
+                                                            onclick="confirmDelete({{ $pergub->id }})">
                                                             <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
                                                         </button>
                                                     </li>
                                                 @endif
                                             </ul>
                                         </div>
-                                        <form id="delete-form-{{ $pergub->id }}" action="{{ route('draft-phd.pergub.destroy', $pergub->id) }}" method="POST" style="display: none;">
+                                        <form id="delete-form-{{ $pergub->id }}"
+                                            action="{{ route('draft-phd.pergub.destroy', $pergub->id) }}" method="POST"
+                                            style="display: none;">
                                             @csrf
                                             @method('DELETE')
                                         </form>
@@ -233,7 +302,8 @@
                     </span>
                 </div>
                 <style>
-                    .pagination .page-item:first-child, .pagination .page-item:last-child {
+                    .pagination .page-item:first-child,
+                    .pagination .page-item:last-child {
                         display: none !important;
                     }
                 </style>
@@ -287,11 +357,13 @@
                         <!-- STATUS PERSETUJUAN KEPALA BIRO HUKUM -->
                         <div class="mb-3">
                             <label class="form-label"><strong>Status Persetujuan Kepala Biro Hukum:</strong></label>
-                            @if(auth()->user() && auth()->user()->role === 'admin')
+                            @if (auth()->user() && auth()->user()->role === 'admin')
                                 <div id="radioPersetujuanGroup" class="mb-2">
-                                    <input class="form-check-input" type="radio" name="persetujuan_ketua" id="radioDisetujui" value="Sudah">
+                                    <input class="form-check-input" type="radio" name="persetujuan_ketua"
+                                        id="radioDisetujui" value="Sudah">
                                     <label class="form-check-label me-3" for="radioDisetujui">Sudah Disetujui</label>
-                                    <input class="form-check-input" type="radio" name="persetujuan_ketua" id="radioBelum" value="Belum">
+                                    <input class="form-check-input" type="radio" name="persetujuan_ketua"
+                                        id="radioBelum" value="Belum">
                                     <label class="form-check-label" for="radioBelum">Belum Disetujui</label>
                                 </div>
                             @else
@@ -303,9 +375,11 @@
                             <label for="disposisi" class="form-label">Tujuan Disposisi</label>
                             <select class="form-select" id="disposisi" name="disposisi" required>
                                 <option value="">Pilih Tujuan Disposisi</option>
-                                <option value="Kabag Peraturan Perundang-Undangan Kabupaten/Kota">Kabag Peraturan Perundang-Undangan Kabupaten/Kota</option>
+                                <option value="Kabag Peraturan Perundang-Undangan Kabupaten/Kota">Kabag Peraturan
+                                    Perundang-Undangan Kabupaten/Kota</option>
                                 <option value="Kabag Bantuan Hukum dan HAM">Kabag Bantuan Hukum dan HAM</option>
-                                <option value="Ketua Tim Kerja Peraturan Perundang-Undangan Provinsi">Ketua Tim Kerja Peraturan Perundang-Undangan Provinsi</option>
+                                <option value="Ketua Tim Kerja Peraturan Perundang-Undangan Provinsi">Ketua Tim Kerja
+                                    Peraturan Perundang-Undangan Provinsi</option>
                                 <option value="Kasubag Tata Usaha">Kasubag Tata Usaha</option>
                             </select>
                         </div>
@@ -324,7 +398,8 @@
 
                         <div class="mb-3">
                             <label for="tanggal_disposisi" class="form-label">Tanggal Disposisi</label>
-                            <input type="date" class="form-control" id="tanggal_disposisi" name="tanggal_disposisi" required>
+                            <input type="date" class="form-control" id="tanggal_disposisi" name="tanggal_disposisi"
+                                required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -366,21 +441,21 @@
             color: red;
             padding: 2px 5px;
             border-radius: 3px;
-        }   
+        }
 
         .bg-sekretaris {
             background-color: rgba(0, 0, 255, 0.2);
             color: blue;
             padding: 2px 5px;
             border-radius: 3px;
-        }       
+        }
 
         .bg-kepala {
             background-color: rgba(0, 255, 0, 0.2);
             color: green;
             padding: 2px 5px;
             border-radius: 3px;
-        }   
+        }
 
         .bg-kasubag {
             background-color: rgba(255, 165, 0, 0.2);
@@ -519,13 +594,15 @@
             border-radius: 2rem;
             padding: 0.3rem 1rem;
             font-size: 1rem;
-            box-shadow: 0 2px 8px rgba(91,126,241,0.08);
+            box-shadow: 0 2px 8px rgba(91, 126, 241, 0.08);
             gap: 0.5rem;
         }
+
         .surat-badge-sm {
             font-size: 0.95rem;
             padding: 0.2rem 0.8rem;
         }
+
         .surat-badge i {
             font-size: 1em;
             margin-right: 0.5rem;
@@ -543,7 +620,7 @@
             const filter = input.value.toLowerCase();
             const table = document.querySelector('table');
             const tr = table.getElementsByTagName('tr');
-            
+
             for (let i = 1; i < tr.length; i++) {
                 const td = tr[i].getElementsByTagName('td');
                 let found = false;
@@ -597,7 +674,7 @@
             const form = document.getElementById('statusForm');
             form.action = `/draft-phd/pergub/${id}/update-status`;
             document.getElementById('status').value = currentStatus;
-            
+
             if (typeof bootstrap !== 'undefined') {
                 new bootstrap.Modal(modal).show();
             } else {
@@ -610,44 +687,44 @@
             this.submit();
         });
 
-        function editCatatan(suratId, currentCatatan) { 
+        function editCatatan(suratId, currentCatatan) {
             const container = document.querySelector(`[data-surat-id="${suratId}"]`);
             const textarea = container.querySelector('.catatan-textarea');
-            
-            textarea.readOnly = !textarea.readOnly;     
-            
+
+            textarea.readOnly = !textarea.readOnly;
+
             if (!textarea.readOnly) {
                 textarea.focus();
                 container.querySelector('.btn-success i').classList.remove('fa-sync-alt');
                 container.querySelector('.btn-success i').classList.add('fa-save');
-            } else {    
+            } else {
                 container.querySelector('.btn-success i').classList.remove('fa-save');
                 container.querySelector('.btn-success i').classList.add('fa-sync-alt');
-                
+
                 fetch(`/draft-phd/pergub/${suratId}/update-catatan`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({
-                        catatan: textarea.value
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            catatan: textarea.value
+                        })
                     })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // showSuccess('Catatan berhasil diperbarui');
-                    } else {
-                        // showError('Gagal memperbarui catatan');
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // showSuccess('Catatan berhasil diperbarui');
+                        } else {
+                            // showError('Gagal memperbarui catatan');
+                            textarea.value = currentCatatan;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // showError('Terjadi kesalahan sistem');
                         textarea.value = currentCatatan;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    // showError('Terjadi kesalahan sistem');
-                    textarea.value = currentCatatan;
-                });
+                    });
             }
         }
 
@@ -684,33 +761,35 @@
                 console.error('Pergub - ID tidak valid');
                 return;
             }
-            
+
             const form = document.getElementById('disposisiForm');
             if (!form) {
                 console.error('Pergub - Form tidak ditemukan');
                 return;
             }
-            
+
             form.action = `/draft-phd/pergub/${id}/disposisi`;
             const suratIdInput = document.getElementById('disposisiPergubId');
             if (suratIdInput) {
                 suratIdInput.value = id;
             }
-            
+
             // Reset form terlebih dahulu
             form.reset();
             const subDisposisiContainer = document.getElementById('subDisposisiContainer');
             if (subDisposisiContainer) {
                 subDisposisiContainer.style.display = 'none';
             }
-            
+
             // Ambil data dari data attribute button (tanpa API)
-            const persetujuan = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute('data-persetujuan') : 'Belum';
+            const persetujuan = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute(
+                'data-persetujuan') : 'Belum';
             const tujuan = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute('data-tujuan') : '';
-            const subDisposisi = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute('data-sub-disposisi') : '';
+            const subDisposisi = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute(
+                'data-sub-disposisi') : '';
             const tanggal = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute('data-tanggal') : '';
             const catatan = buttonElement && buttonElement.getAttribute ? buttonElement.getAttribute('data-catatan') : '';
-            
+
             console.log('Pergub - Data from button attributes:', {
                 persetujuan,
                 tujuan,
@@ -718,12 +797,12 @@
                 tanggal,
                 catatan
             });
-            
+
             let isAdmin = false;
-            @if(auth()->user() && auth()->user()->role === 'admin')
+            @if (auth()->user() && auth()->user()->role === 'admin')
                 isAdmin = true;
             @endif
-            
+
             // 1. Set Status Persetujuan Kepala Biro Hukum
             let persetujuanValue = 'Belum';
             if (persetujuan) {
@@ -735,10 +814,10 @@
                     persetujuanValue = persetujuan;
                 }
             }
-            
+
             let status = persetujuanValue === 'Sudah' ? 'Sudah Disetujui' : 'Belum Disetujui';
             console.log('Pergub - Setting persetujuan:', persetujuanValue, '->', status);
-            
+
             if (isAdmin) {
                 const radioDisetujui = document.getElementById('radioDisetujui');
                 const radioBelum = document.getElementById('radioBelum');
@@ -759,14 +838,14 @@
                     statusEl.innerText = status;
                 }
             }
-            
+
             // 2. Set Tujuan Disposisi
             if (tujuan) {
                 const disposisiSelect = document.getElementById('disposisi');
                 if (disposisiSelect) {
                     const tujuanValue = tujuan.trim();
                     console.log('Pergub - Setting tujuan disposisi:', tujuanValue);
-                    
+
                     // Cari option yang cocok
                     let found = false;
                     for (let i = 0; i < disposisiSelect.options.length; i++) {
@@ -778,13 +857,14 @@
                             break;
                         }
                     }
-                    
+
                     // Jika tidak ditemukan exact match, coba partial match
                     if (!found) {
                         for (let i = 0; i < disposisiSelect.options.length; i++) {
                             const option = disposisiSelect.options[i];
                             if (option.value.includes(tujuanValue) || tujuanValue.includes(option.value) ||
-                                option.textContent.includes(tujuanValue) || tujuanValue.includes(option.textContent.trim())) {
+                                option.textContent.includes(tujuanValue) || tujuanValue.includes(option.textContent.trim())
+                                ) {
                                 disposisiSelect.value = option.value;
                                 found = true;
                                 console.log('Pergub - Found partial matching option:', option.value);
@@ -792,42 +872,46 @@
                             }
                         }
                     }
-                    
+
                     // Trigger change event untuk menampilkan sub disposisi jika ada
                     setTimeout(() => {
-                        const changeEvent = new Event('change', { bubbles: true });
+                        const changeEvent = new Event('change', {
+                            bubbles: true
+                        });
                         disposisiSelect.dispatchEvent(changeEvent);
-                        
+
                         // 3. Set Diteruskan Kepada (sub_disposisi) setelah change event
                         // Jangan tampilkan sub disposisi jika tujuan adalah "Kasubag Tata Usaha"
                         const selectedTujuan = disposisiSelect.value;
                         if (selectedTujuan !== 'Kasubag Tata Usaha' && subDisposisi && subDisposisi.trim()) {
                             setTimeout(() => {
-                                const subDisposisiContainer = document.getElementById('subDisposisiContainer');
+                                const subDisposisiContainer = document.getElementById(
+                                    'subDisposisiContainer');
                                 const subDisposisiSelect = document.getElementById('sub_disposisi');
-                                
+
                                 console.log('Pergub - Setting sub_disposisi:', subDisposisi);
-                                
+
                                 if (subDisposisiContainer && subDisposisiSelect) {
                                     subDisposisiContainer.style.display = 'block';
-                                    
+
                                     // Cari option yang cocok
                                     let found = false;
                                     const subDisposisiValue = subDisposisi.trim();
-                                    
+
                                     for (let i = 0; i < subDisposisiSelect.options.length; i++) {
                                         const option = subDisposisiSelect.options[i];
-                                        if (option.value === subDisposisiValue || 
+                                        if (option.value === subDisposisiValue ||
                                             option.textContent.trim() === subDisposisiValue ||
                                             option.value.includes(subDisposisiValue) ||
                                             option.textContent.includes(subDisposisiValue)) {
                                             subDisposisiSelect.value = option.value;
                                             found = true;
-                                            console.log('Pergub - Found matching sub_disposisi option:', option.value);
+                                            console.log('Pergub - Found matching sub_disposisi option:',
+                                                option.value);
                                             break;
                                         }
                                     }
-                                    
+
                                     if (!found && subDisposisiValue) {
                                         // Tambahkan option baru jika tidak ada
                                         const newOption = document.createElement('option');
@@ -835,9 +919,10 @@
                                         newOption.textContent = subDisposisiValue;
                                         subDisposisiSelect.appendChild(newOption);
                                         subDisposisiSelect.value = subDisposisiValue;
-                                        console.log('Pergub - Added new sub_disposisi option:', subDisposisiValue);
+                                        console.log('Pergub - Added new sub_disposisi option:',
+                                            subDisposisiValue);
                                     }
-                                    
+
                                     // Jika tidak ada sub_disposisi yang ada, set default ke "Belum/Tidak diteruskan"
                                     if (!subDisposisiValue && subDisposisiSelect.options.length > 1) {
                                         subDisposisiSelect.value = 'Belum/Tidak diteruskan';
@@ -847,9 +932,11 @@
                         } else if (selectedTujuan !== 'Kasubag Tata Usaha') {
                             // Jika tidak ada sub_disposisi yang ada, set default setelah change event
                             setTimeout(() => {
-                                const subDisposisiContainer = document.getElementById('subDisposisiContainer');
+                                const subDisposisiContainer = document.getElementById(
+                                    'subDisposisiContainer');
                                 const subDisposisiSelect = document.getElementById('sub_disposisi');
-                                if (subDisposisiContainer && subDisposisiSelect && subDisposisiContainer.style.display === 'block') {
+                                if (subDisposisiContainer && subDisposisiSelect && subDisposisiContainer
+                                    .style.display === 'block') {
                                     subDisposisiSelect.value = 'Belum/Tidak diteruskan';
                                 }
                             }, 250);
@@ -863,14 +950,14 @@
                     }, 100);
                 }
             }
-            
+
             // 4. Set Tanggal Disposisi
             const tanggalInput = document.getElementById('tanggal_disposisi');
             if (tanggalInput) {
                 if (tanggal && tanggal.trim()) {
                     let tanggalValue = tanggal.trim();
                     console.log('Pergub - Setting tanggal disposisi from data:', tanggalValue);
-                    
+
                     // Jika format YYYY-MM-DD sudah benar, gunakan langsung
                     if (tanggalValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
                         tanggalInput.value = tanggalValue;
@@ -880,7 +967,7 @@
                         const dateParts = tanggalValue.split(/[-\/]/);
                         if (dateParts.length === 3) {
                             let day, month, year;
-                            
+
                             if (dateParts[2].length === 4) {
                                 if (parseInt(dateParts[0]) > 12) {
                                     day = dateParts[0].padStart(2, '0');
@@ -900,7 +987,7 @@
                                 month = dateParts[1].padStart(2, '0');
                                 year = dateParts[2];
                             }
-                            
+
                             tanggalInput.value = `${year}-${month}-${day}`;
                             console.log('Pergub - Converted tanggal:', tanggalInput.value);
                         } else {
@@ -913,7 +1000,7 @@
                     setDefaultDate();
                 }
             }
-            
+
             // 5. Set Catatan (setelah semua field lain di-set, termasuk setelah change event disposisi)
             setTimeout(() => {
                 const catatanInput = document.getElementById('catatan');
@@ -929,19 +1016,20 @@
                     console.error('Pergub - Catatan input element not found');
                 }
             }, 250);
-            
+
             // Tampilkan modal
             setTimeout(() => {
                 const modalElement = document.getElementById('disposisiModal');
                 if (modalElement) {
                     const modal = new bootstrap.Modal(modalElement);
                     modal.show();
-                    
+
                     // Log final values setelah modal ditampilkan
                     setTimeout(() => {
                         console.log('Pergub - Modal shown, final values:');
                         console.log('Pergub - Disposisi:', document.getElementById('disposisi')?.value);
-                        console.log('Pergub - Tanggal:', document.getElementById('tanggal_disposisi')?.value);
+                        console.log('Pergub - Tanggal:', document.getElementById('tanggal_disposisi')
+                            ?.value);
                         console.log('Pergub - Catatan:', document.getElementById('catatan')?.value);
                     }, 100);
                 }
@@ -957,27 +1045,35 @@
                     .then(data => {
                         let disposisiBaru = data.disposisi || '';
                         let statusSetuju = false;
-                        
-                        if(document.getElementById('radioDisetujui').checked) {
+
+                        if (document.getElementById('radioDisetujui').checked) {
                             statusSetuju = true;
                             // Format baru: "Sudah di Setujui Kepala Biro Hukum"
                             const newFormat = 'Sudah di Setujui Kepala Biro Hukum';
-                            if (disposisiBaru.match(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i)) {
-                                disposisiBaru = disposisiBaru.replace(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i, newFormat);
+                            if (disposisiBaru.match(
+                                    /(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i)) {
+                                disposisiBaru = disposisiBaru.replace(
+                                    /(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i,
+                                    newFormat);
                             } else if (disposisiBaru.includes('Persetujuan Kepala Biro Hukum:')) {
                                 // Fallback format lama
-                                disposisiBaru = disposisiBaru.replace(/Persetujuan Kepala Biro Hukum:[^|]*/g, newFormat);
+                                disposisiBaru = disposisiBaru.replace(/Persetujuan Kepala Biro Hukum:[^|]*/g,
+                                    newFormat);
                             } else {
                                 disposisiBaru = newFormat + (disposisiBaru ? ' | ' + disposisiBaru : '');
                             }
                         } else {
                             // Format baru: "Belum di Setujui Kepala Biro Hukum"
                             const newFormat = 'Belum di Setujui Kepala Biro Hukum';
-                            if (disposisiBaru.match(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i)) {
-                                disposisiBaru = disposisiBaru.replace(/(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i, newFormat);
+                            if (disposisiBaru.match(
+                                    /(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i)) {
+                                disposisiBaru = disposisiBaru.replace(
+                                    /(Sudah|Belum|sudah|belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i,
+                                    newFormat);
                             } else if (disposisiBaru.includes('Persetujuan Kepala Biro Hukum:')) {
                                 // Fallback format lama
-                                disposisiBaru = disposisiBaru.replace(/Persetujuan Kepala Biro Hukum:[^|]*/g, newFormat);
+                                disposisiBaru = disposisiBaru.replace(/Persetujuan Kepala Biro Hukum:[^|]*/g,
+                                    newFormat);
                             } else {
                                 disposisiBaru = newFormat + (disposisiBaru ? ' | ' + disposisiBaru : '');
                             }
@@ -989,49 +1085,51 @@
 
         function sendUpdatePersetujuanPergub(id, disposisiBaru, statusSetuju) {
             fetch(`/draft-phd/pergub/${id}/update-disposisi`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({ disposisi: disposisiBaru })
-            })
-            .then((response) => response.json())
-            .then(data => {
-                if(data.success) {
-                    // Update tampilan status (jika ada untuk non-admin)
-                    const statusPersetujuanEl = document.getElementById('statusPersetujuanPergub');
-                    if (statusPersetujuanEl) {
-                        statusPersetujuanEl.innerText = statusSetuju ? 'Sudah Disetujui' : 'Belum Disetujui';
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        disposisi: disposisiBaru
+                    })
+                })
+                .then((response) => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update tampilan status (jika ada untuk non-admin)
+                        const statusPersetujuanEl = document.getElementById('statusPersetujuanPergub');
+                        if (statusPersetujuanEl) {
+                            statusPersetujuanEl.innerText = statusSetuju ? 'Sudah Disetujui' : 'Belum Disetujui';
+                        }
                     }
-                }
-            })
-            .catch(error => {
-                console.error('Error updating persetujuan:', error);
-            });
+                })
+                .catch(error => {
+                    console.error('Error updating persetujuan:', error);
+                });
         }
 
         document.getElementById('disposisi').addEventListener('change', function() {
             const selectedDisposisi = this.value;
             const subDisposisiContainer = document.getElementById('subDisposisiContainer');
             const subDisposisiSelect = document.getElementById('sub_disposisi');
-            
+
             subDisposisiSelect.innerHTML = '<option value="">Pilih Tujuan</option>';
-            
+
             // Kasubag Tata Usaha tidak memiliki sub disposisi
             if (selectedDisposisi === 'Kasubag Tata Usaha') {
                 subDisposisiContainer.style.display = 'none';
                 subDisposisiSelect.required = false;
             } else if (selectedDisposisi && subDisposisiOptions[selectedDisposisi]) {
                 subDisposisiContainer.style.display = 'block';
-                
+
                 subDisposisiOptions[selectedDisposisi].forEach(option => {
                     const optionElement = document.createElement('option');
                     optionElement.value = option;
                     optionElement.textContent = option;
                     subDisposisiSelect.appendChild(optionElement);
                 });
-                
+
                 // Set default value ke "Belum/Tidak diteruskan"
                 subDisposisiSelect.value = 'Belum/Tidak diteruskan';
                 subDisposisiSelect.required = true;
@@ -1043,16 +1141,16 @@
 
         document.getElementById('disposisiForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             const form = this;
             const submitBtn = form.querySelector('button[type="submit"]');
             const originalBtnText = submitBtn ? submitBtn.innerHTML : '';
-            
+
             const disposisi = document.getElementById('disposisi').value;
             const subDisposisi = document.getElementById('sub_disposisi').value;
             const subDisposisiContainer = document.getElementById('subDisposisiContainer');
             const tanggalDisposisi = document.getElementById('tanggal_disposisi').value;
-            
+
             if (!disposisi) {
                 Swal.fire({
                     title: 'Validasi Gagal',
@@ -1062,8 +1160,9 @@
                 });
                 return;
             }
-            
-            if (disposisi !== 'Kasubag Tata Usaha' && subDisposisiContainer && subDisposisiContainer.style.display !== 'none' && !subDisposisi) {
+
+            if (disposisi !== 'Kasubag Tata Usaha' && subDisposisiContainer && subDisposisiContainer.style
+                .display !== 'none' && !subDisposisi) {
                 Swal.fire({
                     title: 'Validasi Gagal',
                     text: 'Silakan pilih sub disposisi',
@@ -1072,7 +1171,7 @@
                 });
                 return;
             }
-            
+
             if (!tanggalDisposisi) {
                 Swal.fire({
                     title: 'Validasi Gagal',
@@ -1082,13 +1181,13 @@
                 });
                 return;
             }
-            
+
             // Disable button dan tampilkan loading
             if (submitBtn) {
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
             }
-            
+
             // Submit form
             form.submit();
         });
@@ -1102,8 +1201,8 @@
                 }
             }, 5000);
         });
-    </script>  
-    
+    </script>
+
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
@@ -1113,4 +1212,4 @@
             // The search functionality is now handled by the PHP/Blade template.
         });
     </script>
-@endsection 
+@endsection

@@ -26,10 +26,17 @@ class SKController extends Controller
             });
         }
 
-        // Ambil data dengan pagination
-        $sks = $query->latest()->paginate(10);
+        $sortOrder = $request->input('sort', 'asc');
+        if ($sortOrder === 'desc') {
+            $query->latest();
+        } else {
+            $query->oldest();
+        }
 
-        return view('draft-phd.sk.index', compact('sks'));
+        // Ambil data dengan pagination
+        $sks = $query->paginate(10)->appends($request->query());
+
+        return view('draft-phd.sk.index', compact('sks', 'sortOrder'));
     }
     public function detail($id)
     {

@@ -12,7 +12,14 @@ class SuratKeluarController extends Controller
 {
     public function index(Request $request)
     {
-        $query = SuratKeluar::latest();
+        $query = SuratKeluar::query();
+        
+        $sortOrder = $request->input('sort', 'asc');
+        if ($sortOrder === 'asc') {
+            $query->oldest();
+        } else {
+            $query->latest();
+        }
         
         if ($request->has('search')) {
             $search = $request->search;
@@ -22,8 +29,8 @@ class SuratKeluarController extends Controller
             });
         }
         
-        $suratKeluar = $query->latest()->paginate(10);
-        return view('surat-keluar.index', compact('suratKeluar'));
+        $suratKeluar = $query->paginate(10)->appends($request->query());
+        return view('surat-keluar.index', compact('suratKeluar', 'sortOrder'));
     }
 
     public function create()
