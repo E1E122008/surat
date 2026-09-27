@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('approval_requests', function (Blueprint $table) {
-            $table->string('no_hp', 20)->nullable()->after('no_surat');
-        });
+        if (!Schema::hasColumn('approval_requests', 'no_hp')) {
+            Schema::table('approval_requests', function (Blueprint $table) {
+                $table->string('no_hp', 20)->nullable()->after('no_surat');
+            });
+        }
     }
 
     /**
