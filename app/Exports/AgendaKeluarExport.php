@@ -7,6 +7,7 @@ use App\Models\SppdDalamDaerah;
 use App\Models\SppdLuarDaerah;
 use App\Models\SptDalamDaerah;
 use App\Models\SptLuarDaerah;
+use App\Models\SkKaro;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -53,22 +54,22 @@ class AgendaKeluarExport implements FromCollection, WithHeadings, WithMapping
                         ? $currentMonth->copy()->endOfMonth()->endOfDay()
                         : $currentMonth->copy()->addDays($weekStart + 6)->endOfDay();
                     
-                    $query->whereBetween('tanggal', [$startDate, $endDate])
-                          ->whereYear('tanggal', $this->tahun);
+                    $query->whereBetween(isset(\->tab) && \->tab == \'sk-karo\' ? \'tanggal_sk\' : \'tanggal\', [$startDate, $endDate])
+                          ->whereYear(isset(\->tab) && \->tab == \'sk-karo\' ? \'tanggal_sk\' : \'tanggal\', $this->tahun);
                     break;
 
                 case 'bulan':
-                    $query->whereMonth('tanggal', $this->bulan)
-                          ->whereYear('tanggal', $this->tahun);
+                    $query->whereMonth(isset(\->tab) && \->tab == \'sk-karo\' ? \'tanggal_sk\' : \'tanggal\', $this->bulan)
+                          ->whereYear(isset(\->tab) && \->tab == \'sk-karo\' ? \'tanggal_sk\' : \'tanggal\', $this->tahun);
                     break;
 
                 case 'tahun':
-                    $query->whereYear('tanggal', $this->tahun);
+                    $query->whereYear(isset(\->tab) && \->tab == \'sk-karo\' ? \'tanggal_sk\' : \'tanggal\', $this->tahun);
                     break;
             }
         }
 
-        return $query->latest('tanggal')->get();
+        return $query->latest(isset(\->tab) && \->tab == \'sk-karo\' ? \'tanggal_sk\' : \'tanggal\')->get();
     }
 
     protected function getQueryByTab()
@@ -79,6 +80,7 @@ class AgendaKeluarExport implements FromCollection, WithHeadings, WithMapping
             'sppd-luar' => SppdLuarDaerah::query(),
             'spt-dalam' => SptDalamDaerah::query(),
             'spt-luar' => SptLuarDaerah::query(),
+            'sk-karo' => SkKaro::query(),
             default => SuratKeluar::query(),
         };
     }
@@ -101,6 +103,22 @@ class AgendaKeluarExport implements FromCollection, WithHeadings, WithMapping
                 'Nama Petugas',
                 'Perihal',
                 'Lampiran'
+            ],
+            'sk-karo' => [
+                'No',
+                'Nomor SK',
+                'Tanggal',
+                'Perihal',
+                'Pejabat TTD',
+                'Lampiran'
+            ],
+            'sk-karo' => [
+                ,
+                ->no_sk ?? '-',
+                ->tanggal_sk ? \Carbon\Carbon::parse(->tanggal_sk)->format('d/m/Y') : '-',
+                ->perihal ?? '-',
+                ->pejabat_ttd ?? '-',
+                ->file_surat ? asset('storage/' . json_decode(->file_surat, true)[0]['path']) : '-'
             ],
             'spt-dalam', 'spt-luar' => [
                 'No',
@@ -144,6 +162,22 @@ class AgendaKeluarExport implements FromCollection, WithHeadings, WithMapping
                 $row->nama_petugas ?? '-',
                 $row->perihal ?? '-',
                 $lampiran
+            ],
+            'sk-karo' => [
+                'No',
+                'Nomor SK',
+                'Tanggal',
+                'Perihal',
+                'Pejabat TTD',
+                'Lampiran'
+            ],
+            'sk-karo' => [
+                ,
+                ->no_sk ?? '-',
+                ->tanggal_sk ? \Carbon\Carbon::parse(->tanggal_sk)->format('d/m/Y') : '-',
+                ->perihal ?? '-',
+                ->pejabat_ttd ?? '-',
+                ->file_surat ? asset('storage/' . json_decode(->file_surat, true)[0]['path']) : '-'
             ],
             'spt-dalam', 'spt-luar' => [
                 $no,

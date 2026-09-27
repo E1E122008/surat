@@ -30,6 +30,7 @@ class SuratKeluarController extends Controller
         }
         
         $suratKeluar = $query->paginate(10)->appends($request->query());
+
         return view('surat-keluar.index', compact('suratKeluar', 'sortOrder'));
     }
 

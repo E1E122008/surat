@@ -169,6 +169,8 @@ class ApprovalRequestController extends Controller
             // Send notification to user
             $approvalRequest->user->notify(new ApprovalRequestNotification($approvalRequest, 'approved'));
 
+            \App\Models\ActivityLog::log('approval_accept', "Menyetujui permohonan surat (No: {$approvalRequest->no_surat})");
+
             return redirect()->back()->with('success', 'Data surat berhasil di simpan.');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -200,9 +202,10 @@ class ApprovalRequestController extends Controller
             'notes' => $request->admin_notes,
         ]);
 
-        
         // Send notification to user
         $approvalRequest->user->notify(new ApprovalRequestNotification($approvalRequest, 'rejected'));
+
+        \App\Models\ActivityLog::log('approval_reject', "Menolak permohonan surat (No: {$approvalRequest->no_surat})");
 
         return redirect()->back()->with('success', 'Permintaan berhasil ditolak');
     }
@@ -236,6 +239,10 @@ class ApprovalRequestController extends Controller
         $request->fisik_diterima = !$request->fisik_diterima;
         $request->fisik_diterima_at = $request->fisik_diterima ? now() : null;
         $request->save();
+
+        // Simpan log aktivitas
+        $statusFisik = $request->fisik_diterima ? 'Menerima' : 'Membatalkan penerimaan';
+        \App\Models\ActivityLog::log('FISIK_SURAT', "{$statusFisik} fisik surat (No: {$request->no_surat}) dari pengajuan", Auth::id());
 
         return response()->json([
             'status' => 'success',

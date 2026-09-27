@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@section('breadcrumb')
+    <i class="fas fa-chevron-right separator"></i> <a href="{{ route('roles.index') }}">Manajemen Role</a>
+    <i class="fas fa-chevron-right separator"></i> <span style="color: white; font-weight: 600;">Ubah Data</span>
+@endsection
+
+
 @section('content')
 <div class="container mx-auto px-4 py-6">
     <h1 class="text-2xl font-bold mb-4">Edit Role: {{ $role->name }}</h1>
@@ -18,3 +24,6 @@
     </form>
 </div>
 @endsection
+
+
+

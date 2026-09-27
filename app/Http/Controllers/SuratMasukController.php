@@ -102,6 +102,8 @@ class SuratMasukController extends Controller
 
             $suratMasuk = SuratMasuk::create($validated);
 
+            \App\Models\ActivityLog::log('document_create', "Menambahkan Surat Masuk (No: {$suratMasuk->no_surat})");
+
             $successMessage = 'Surat masuk berhasil ditambahkan.';
 
             return redirect()->route('surat-masuk.index')
@@ -187,6 +189,8 @@ class SuratMasukController extends Controller
 
             $suratMasuk->update($validated);
 
+            \App\Models\ActivityLog::log('document_update', "Melakukan update Surat Masuk (No: {$suratMasuk->no_surat})");
+
             return redirect()->route('surat-masuk.index')
                 ->with('success', 'Data surat masuk berhasil diperbarui!');
         } catch (\Exception $e) {
@@ -211,7 +215,10 @@ class SuratMasukController extends Controller
             }
                 
             // Delete the SuratMasuk record
+            $noSuratLama = $suratMasuk->no_surat;
             $suratMasuk->delete();
+
+            \App\Models\ActivityLog::log('document_delete', "Menghapus Surat Masuk (No: {$noSuratLama})");
 
             return redirect()->route('surat-masuk.index')
                 ->with('success', 'Data surat masuk berhasil dihapus!');
@@ -224,6 +231,7 @@ class SuratMasukController extends Controller
 
     public function export() 
     {
+        \App\Models\ActivityLog::log('document_export', "Mendownload Excel Surat Masuk");
         return Excel::download(new SuratMasukExport, 'surat-masuk.xlsx');
     }
 

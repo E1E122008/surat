@@ -29,15 +29,18 @@ class CheckRole
             return $next($request);
         }
 
-        // Redirect berdasarkan role
-        if ($userRole === 'admin') {
-            return redirect()->route('dashboard')
-                ->with('error', 'Anda tidak memiliki akses ke halaman ini.');
-        } elseif ($userRole === 'monitor') {
-            return redirect()->route('dashboard')
-                ->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        // Temukan superadmin untuk menyimpan log aktivitas kepadanya
+        $superadmin = \App\Models\User::where('role', 'superadmin')->first();
+        if ($superadmin) {
+            \App\Models\ActivityLog::log(
+                'Security Alert: Akses Ditolak',
+                "Pengguna '" . Auth::user()->name . "' (Role: " . Auth::user()->role . ") mencoba masuk ke rute terlarang secara paksa: " . $request->fullUrl(),
+                $superadmin->id
+            );
+            $superadmin->notify(new \App\Notifications\SecurityAlertNotification(Auth::user()->name, $request->fullUrl()));
         }
-        
+
+        // Redirect dengan alert
         return redirect()->route('dashboard')
             ->with('error', 'Anda tidak memiliki akses ke halaman ini.');
     }

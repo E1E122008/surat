@@ -1,55 +1,15 @@
 @extends('layouts.app')
 
-
+@section('breadcrumb')
+    <i class="fas fa-chevron-right separator"></i> <span style="color: white; font-weight: 600;"><i
+            class="fas fa-shield-alt me-1"></i> Data Persetujuan</span>
+@endsection
 
 @section('content')
     <div class="container-fluid">
-        <!-- Page Heading -->
-        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-envelope-open-text me-2"></i>Daftar Data Persetujuan</h1>
-            <div class="d-flex gap-2 align-items-center">
-                <!-- Menu Urutkan Data -->
-                @php $sortOrder = request('sort', 'asc'); @endphp
-                <div class="dropdown">
-                    <button class="btn btn-outline-secondary dropdown-toggle btn-sm h-100" type="button" id="sortDropdown"
-                        data-bs-toggle="dropdown" aria-expanded="false" title="Urutkan">
-                        <i class="fas fa-sort-amount-{{ $sortOrder == 'desc' ? 'down' : 'up' }}"></i>
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="sortDropdown">
-                        <li>
-                            <a class="dropdown-item {{ $sortOrder == 'desc' ? 'active bg-primary text-white' : '' }}"
-                                href="{{ request()->fullUrlWithQuery(['sort' => 'desc']) }}">
-                                Terbaru ke Terlama
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item {{ $sortOrder == 'asc' ? 'active bg-primary text-white' : '' }}"
-                                href="{{ request()->fullUrlWithQuery(['sort' => 'asc']) }}">
-                                Terlama ke Terbaru
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <form method="GET" class="d-flex">
-                    <select name="status" id="statusFilter" class="form-control form-control-sm mr-2"
-                        onchange="this.form.submit()">
-                        <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>Semua Status</option>
-                        <option value="pending_review" {{ request('status') == 'pending_review' ? 'selected' : '' }}>
-                            Menunggu Review</option>
-                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
-                        <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
-                    </select>
-                    <input type="text" name="search" id="search" placeholder="Cari data surat..."
-                        class="form-control form-control-sm mr-2" value="{{ request('search') }}">
-                    @if (request('sort'))
-                        <input type="hidden" name="sort" value="{{ request('sort') }}">
-                    @endif
-                    <button type="submit" class="btn btn-primary btn-sm">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </form>
-            </div>
+        <div class="mb-4">
+            <h2 class="header h2"><i class="fas fa-shield-alt text-primary me-2"></i> <strong>Daftar Data Persetujuan</strong>
+            </h2>
         </div>
         @if (session('error'))
             <div class="alert alert-danger alert-dismissible fade show auto-dismiss-alert" role="alert">
@@ -65,15 +25,83 @@
         @endif
         <div class="row">
             <div class="col-12">
+                <style>
+                    @media (min-width: 768px) {
+                        .fixed-action-width {
+                            width: 160px !important;
+                            flex: 0 0 160px !important;
+                        }
+                    }
+                </style>
                 <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <div>
-                            <span class="surat-badge surat-badge-sm mt-2 d-inline-block">
-                                <i class="fas fa-envelope"></i> Jumlah Surat:
+                    <div class="card-header py-3 bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3"
+                        style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                        <div class="d-flex flex-column flex-md-row w-100 align-items-stretch align-items-md-center flex-grow-1"
+                            style="gap: 12px;">
+                            <form method="GET" class="d-flex flex-column flex-md-row m-0 flex-grow-1" style="gap: 12px;">
+                                <!-- PENCARIAN -->
+                                <div class="position-relative flex-grow-1">
+                                    <i class="fas fa-search position-absolute text-muted"
+                                        style="top: 50%; left: 15px; transform: translateY(-50%); font-size: 1rem;"></i>
+                                    <input type="text" name="search" placeholder="Cari data surat..."
+                                        class="form-control shadow-sm w-100 custom-search-input"
+                                        style="padding-left: 45px; border-radius: 30px; height: 42px; font-size: 0.95rem; font-weight: 500;"
+                                        value="{{ request('search') }}">
+                                    @if (request('sort'))
+                                        <input type="hidden" name="sort" value="{{ request('sort') }}">
+                                    @endif
+                                </div>
+                                <!-- STATUS -->
+                                <div class="d-flex justify-content-stretch fixed-action-width">
+                                    <select name="status" id="statusFilter"
+                                        class="form-select shadow-sm w-100 custom-search-input"
+                                        style="border-radius: 30px; height: 42px; font-weight: 500;"
+                                        onchange="this.form.submit()">
+                                        <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>Semua
+                                            Status</option>
+                                        <option value="pending_review"
+                                            {{ request('status') == 'pending_review' ? 'selected' : '' }}>Menunggu Review
+                                        </option>
+                                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>
+                                            Disetujui</option>
+                                        <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>
+                                            Ditolak</option>
+                                    </select>
+                                </div>
+                            </form>
+                            @php $sortOrder = request('sort', 'asc'); @endphp
+                            <!-- SORTING -->
+                            <div class="dropdown d-flex justify-content-stretch fixed-action-width">
+                                <button class="btn btn-outline-secondary dropdown-toggle shadow-sm w-100 m-0 text-nowrap"
+                                    type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                                    title="Urutkan"
+                                    style="border-radius: 30px; height: 42px; display: inline-flex; align-items: center; justify-content: center; font-weight: 500;">
+                                    <i class="fas fa-sort-amount-{{ $sortOrder == 'desc' ? 'down' : 'up' }} me-2"></i>
+                                    Urutkan
+                                </button>
+                                <ul class="dropdown-menu shadow" aria-labelledby="sortDropdown">
+                                    <li>
+                                        <a class="dropdown-item {{ $sortOrder == 'desc' ? 'active bg-primary text-white' : '' }}"
+                                            href="{{ request()->fullUrlWithQuery(['sort' => 'desc']) }}">
+                                            Terbaru ke Terlama
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item {{ $sortOrder == 'asc' ? 'active bg-primary text-white' : '' }}"
+                                            href="{{ request()->fullUrlWithQuery(['sort' => 'asc']) }}">
+                                            Terlama ke Terbaru
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="d-none d-md-flex justify-content-center flex-shrink-0 fit-content-action">
+                            <span
+                                class="surat-badge surat-badge-sm w-100 d-inline-flex align-items-center justify-content-center m-0 px-3">
+                                <i class="fas fa-envelope me-1"></i> Jumlah Permintaan:
                                 {{ $totalFiltered < $totalAll ? $totalFiltered . ' (Total: ' . $totalAll . ')' : $totalAll }}
                             </span>
                         </div>
-
                     </div>
                     <div class="card-body">
 
@@ -81,28 +109,29 @@
                             <table class="table" width="100%" cellspacing="0">
                                 <thead>
                                     <tr>
-                                        <th
+                                        <th translate="no"
                                             class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
                                             No</th>
-                                        <th
+                                        <th translate="no"
                                             class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
                                             Jenis Surat</th>
-                                        <th
+                                        <th translate="no"
                                             class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
                                             Pengirim</th>
-                                        <th
+                                        <th translate="no"
                                             class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
                                             Dinas</th>
-                                        <th
+                                        <th translate="no"
                                             class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
                                             Tanggal Permintaan</th>
-                                        <th
+                                        <th translate="no"
                                             class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
                                             Status</th>
-                                        <th
+                                        <th translate="no"
                                             class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
-                                            Fisik</th>
-                                        <th
+                                            Fisik
+                                        </th>
+                                        <th translate="no"
                                             class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
                                             Aksi</th>
                                     </tr>
@@ -148,21 +177,25 @@
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                                 @if ($request->status === 'approved')
                                                     <span id="fisik-badge-{{ $request->id }}" style="cursor:pointer"
-                                                        onclick="toggleFisik({{ $request->id }})">
+                                                        onclick="toggleFisik({{ $request->id }})"
+                                                        title="Klik untuk toggle status penerimaan fisik">
                                                         @if ($request->fisik_diterima)
                                                             <span class="badge bg-success"><i class="fas fa-check"></i>
                                                                 Sudah</span>
                                                         @else
-                                                            <span class="badge bg-secondary">Belum</span>
+                                                            <span class="badge bg-secondary fisik-pulse">Belum</span>
                                                         @endif
+                                                        <div class="fisik-hint-text">klik untuk ubah</div>
                                                     </span>
                                                 @else
                                                     -
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
-                                                <button type="button" class="btn btn-sm btn-light" data-bs-toggle="modal"
-                                                    data-bs-target="#detailRequestModal{{ $request->id }}" title="Detail">
+                                                <button type="button" class="btn btn-sm btn-light"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#detailRequestModal{{ $request->id }}"
+                                                    title="Detail">
                                                     <i class="fas fa-eye me-2"></i> Detail
                                                 </button>
                                             </td>
@@ -178,90 +211,99 @@
                         </div>
                     </div>
                     @if (isset($approvalRequests) && method_exists($approvalRequests, 'links'))
-                        <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top">
-                            <div class="text-sm text-gray-600">
+                        <div class="d-flex flex-column justify-content-center w-100 px-4 py-3 border-top gap-3">
+                            <div class="d-flex flex-wrap w-100 justify-content-between align-items-center">
+                                <!-- DESKTOP PAGINATION -->
+                                <nav aria-label="Page navigation" class="d-none d-md-flex ms-auto">
+                                    <ul class="pagination mb-0">
+                                        @if ($approvalRequests->onFirstPage())
+                                            <li class="page-item disabled"><span class="page-link"><i
+                                                        class="fas fa-chevron-left"></i> Sebelumnya</span></li>
+                                        @else
+                                            <li class="page-item"><a class="page-link"
+                                                    href="{{ $approvalRequests->previousPageUrl() }}" rel="prev"><i
+                                                        class="fas fa-chevron-left"></i> Sebelumnya</a></li>
+                                        @endif
+
+                                        @php
+                                            $currentPage = $approvalRequests->currentPage();
+                                            $lastPage = $approvalRequests->lastPage();
+                                            $startPage = max(1, $currentPage - 2);
+                                            $endPage = min($lastPage, $currentPage + 2);
+                                        @endphp
+
+                                        @if ($startPage > 1)
+                                            <li class="page-item"><a class="page-link"
+                                                    href="{{ $approvalRequests->url(1) }}">1</a></li>
+                                            @if ($startPage > 2)
+                                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                                            @endif
+                                        @endif
+
+                                        @for ($page = $startPage; $page <= $endPage; $page++)
+                                            @if ($page == $currentPage)
+                                                <li class="page-item active"><span
+                                                        class="page-link">{{ $page }}</span></li>
+                                            @else
+                                                <li class="page-item"><a class="page-link"
+                                                        href="{{ $approvalRequests->url($page) }}">{{ $page }}</a>
+                                                </li>
+                                            @endif
+                                        @endfor
+
+                                        @if ($endPage < $lastPage)
+                                            @if ($endPage < $lastPage - 1)
+                                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                                            @endif
+                                            <li class="page-item"><a class="page-link"
+                                                    href="{{ $approvalRequests->url($lastPage) }}">{{ $lastPage }}</a>
+                                            </li>
+                                        @endif
+
+                                        @if ($approvalRequests->hasMorePages())
+                                            <li class="page-item"><a class="page-link"
+                                                    href="{{ $approvalRequests->nextPageUrl() }}"
+                                                    rel="next">Selanjutnya <i class="fas fa-chevron-right"></i></a>
+                                            </li>
+                                        @else
+                                            <li class="page-item disabled"><span class="page-link">Selanjutnya <i
+                                                        class="fas fa-chevron-right"></i></span></li>
+                                        @endif
+                                    </ul>
+                                </nav>
+
+                                <!-- MOBILE PAGINATION -->
+                                <div class="d-flex d-md-none justify-content-between align-items-center w-100 gap-2">
+                                    @if ($approvalRequests->onFirstPage())
+                                        <button class="btn btn-outline-secondary btn-sm disabled"
+                                            style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px;"><i
+                                                class="fas fa-chevron-left"></i></button>
+                                    @else
+                                        <a href="{{ $approvalRequests->previousPageUrl() }}"
+                                            class="btn btn-outline-secondary btn-sm"
+                                            style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px;"><i
+                                                class="fas fa-chevron-left"></i></a>
+                                    @endif
+                                    <span class="text-muted" style="font-size: 14px; font-weight: 500;">Halaman
+                                        {{ $approvalRequests->currentPage() }} dari
+                                        {{ $approvalRequests->lastPage() }}</span>
+                                    @if ($approvalRequests->hasMorePages())
+                                        <a href="{{ $approvalRequests->nextPageUrl() }}"
+                                            class="btn btn-outline-secondary btn-sm"
+                                            style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px;"><i
+                                                class="fas fa-chevron-right"></i></a>
+                                    @else
+                                        <button class="btn btn-outline-secondary btn-sm disabled"
+                                            style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px;"><i
+                                                class="fas fa-chevron-right"></i></button>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="w-100 text-center text-md-start mt-2 mt-md-0"
+                                style="color: #94a3b8; font-size: 12px; font-weight: 500;">
                                 Menampilkan {{ $approvalRequests->firstItem() ?? 0 }} sampai
                                 {{ $approvalRequests->lastItem() ?? 0 }} dari {{ $approvalRequests->total() }} data
                             </div>
-                            <nav aria-label="Page navigation">
-                                <ul class="pagination mb-0">
-                                    {{-- Previous Page Link --}}
-                                    @if ($approvalRequests->onFirstPage())
-                                        <li class="page-item disabled">
-                                            <span class="page-link">
-                                                <i class="fas fa-chevron-left"></i> Sebelumnya
-                                            </span>
-                                        </li>
-                                    @else
-                                        <li class="page-item">
-                                            <a class="page-link" href="{{ $approvalRequests->previousPageUrl() }}"
-                                                rel="prev">
-                                                <i class="fas fa-chevron-left"></i> Sebelumnya
-                                            </a>
-                                        </li>
-                                    @endif
-
-                                    {{-- Pagination Elements --}}
-                                    @php
-                                        $currentPage = $approvalRequests->currentPage();
-                                        $lastPage = $approvalRequests->lastPage();
-                                        $startPage = max(1, $currentPage - 2);
-                                        $endPage = min($lastPage, $currentPage + 2);
-                                    @endphp
-
-                                    @if ($startPage > 1)
-                                        <li class="page-item">
-                                            <a class="page-link" href="{{ $approvalRequests->url(1) }}">1</a>
-                                        </li>
-                                        @if ($startPage > 2)
-                                            <li class="page-item disabled">
-                                                <span class="page-link">...</span>
-                                            </li>
-                                        @endif
-                                    @endif
-
-                                    @for ($page = $startPage; $page <= $endPage; $page++)
-                                        @if ($page == $currentPage)
-                                            <li class="page-item active">
-                                                <span class="page-link">{{ $page }}</span>
-                                            </li>
-                                        @else
-                                            <li class="page-item">
-                                                <a class="page-link"
-                                                    href="{{ $approvalRequests->url($page) }}">{{ $page }}</a>
-                                            </li>
-                                        @endif
-                                    @endfor
-
-                                    @if ($endPage < $lastPage)
-                                        @if ($endPage < $lastPage - 1)
-                                            <li class="page-item disabled">
-                                                <span class="page-link">...</span>
-                                            </li>
-                                        @endif
-                                        <li class="page-item">
-                                            <a class="page-link"
-                                                href="{{ $approvalRequests->url($lastPage) }}">{{ $lastPage }}</a>
-                                        </li>
-                                    @endif
-
-                                    {{-- Next Page Link --}}
-                                    @if ($approvalRequests->hasMorePages())
-                                        <li class="page-item">
-                                            <a class="page-link" href="{{ $approvalRequests->nextPageUrl() }}"
-                                                rel="next">
-                                                Selanjutnya <i class="fas fa-chevron-right"></i>
-                                            </a>
-                                        </li>
-                                    @else
-                                        <li class="page-item disabled">
-                                            <span class="page-link">
-                                                Selanjutnya <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                        </li>
-                                    @endif
-                                </ul>
-                            </nav>
                         </div>
                     @endif
                 </div>
@@ -532,6 +574,40 @@
 @endsection
 
 <style>
+    /* Fisik Badge Interaktif */
+    @keyframes fisik-pulse {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.55;
+        }
+    }
+
+    .fisik-pulse {
+        animation: fisik-pulse 2s ease-in-out infinite;
+    }
+
+    .fisik-hint-text {
+        font-size: 0.68rem;
+        color: #94a3b8;
+        margin-top: 2px;
+        line-height: 1;
+    }
+
+    [id^="fisik-badge-"]:hover .badge {
+        filter: brightness(1.18);
+        transform: scale(1.08);
+        transition: all 0.15s ease;
+    }
+
+    [id^="fisik-badge-"] .badge {
+        transition: all 0.15s ease;
+    }
+
     .surat-badge {
         display: inline-flex;
         align-items: center;
@@ -682,15 +758,20 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    let badge = '';
+                    const wrapper = document.getElementById('fisik-badge-' + id);
+                    let badgeHtml = '';
                     if (data.fisik_diterima) {
-                        badge = `<span class='badge bg-success'><i class='fas fa-check'></i> Sudah</span>`;
+                        badgeHtml = `<span class='badge bg-success'><i class='fas fa-check'></i> Sudah</span>`;
                     } else {
-                        badge = `<span class='badge bg-secondary'>Belum</span>`;
+                        badgeHtml = `<span class='badge bg-secondary fisik-pulse'>Belum</span>`;
                     }
-                    document.getElementById('fisik-badge-' + id).innerHTML = badge;
-                    document.getElementById('fisik-status-' + id).innerHTML = badge + (data.fisik_diterima_at ?
-                        `<div class='text-muted small'>Diterima pada: ${data.fisik_diterima_at}</div>` : '');
+                    wrapper.innerHTML = badgeHtml + `<div class='fisik-hint-text'>klik untuk ubah</div>`;
+
+                    if (document.getElementById('fisik-status-' + id)) {
+                        document.getElementById('fisik-status-' + id).innerHTML = badgeHtml +
+                            (data.fisik_diterima_at ?
+                                `<div class='text-muted small'>Diterima pada: ${data.fisik_diterima_at}</div>` : '');
+                    }
                 });
         }
     </script>

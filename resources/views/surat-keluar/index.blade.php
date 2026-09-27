@@ -1,11 +1,65 @@
 @extends('layouts.app')
 
+@section('breadcrumb')
+    <i class="fas fa-chevron-right separator"></i>
+    <span style="color: white; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+        Surat Keluar
+    </span>
+@endsection
+
 @section('content')
+    <style>
+        .perihal-cell {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 1024px) {
+            .perihal-cell {
+                max-width: 320px;
+            }
+        }
+
+        .lampiran-dropdown {
+            max-width: 280px;
+        }
+
+        .lampiran-name-truncate {
+            display: inline-block;
+            max-width: 180px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: middle;
+        }
+    </style>
     <div class="min-h-screen bg-gray-100" style="max-width: 1400px; margin: auto; padding: 20px;">
         <div class="mb-4">
-            <h2 class="header h2"><strong>📂 Surat Umum</strong> / <span style="color: gray;"> Surat Keluar</span></h2>
+            <h2
+                style="display:flex; align-items:center; gap:10px; font-size:1.5rem; font-weight:700; color:#0d1b4b; margin:0;">
+                <div style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        style="flex-shrink:0;">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </div>
+                <strong>Surat Keluar</strong>
+            </h2>
         </div>
-        <div class="bg-white shadow-sm rounded-lg">
+        <div class="bg-white shadow-sm rounded-lg mb-4" style="border-radius: 12px;">
             <div class="p-4">
                 <!-- Alert Section -->
                 @if (session('success'))
@@ -36,68 +90,95 @@
                     </div>
                 @endif
 
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-semibold text-gray-800 tracking-wide">
-                        Surat Keluar
-                    </h2>
-                    <div class="flex space-x-2">
-                        <!-- Menu Urutkan Data -->
-                        <div class="dropdown me-2" style="margin-right: 8px;">
-                            <button class="btn btn-outline-secondary dropdown-toggle h-100" type="button" id="sortDropdown"
-                                data-bs-toggle="dropdown" aria-expanded="false" title="Urutkan">
-                                <i
-                                    class="fas fa-sort-amount-{{ isset($sortOrder) && $sortOrder == 'desc' ? 'down' : 'up' }}"></i>
+                <!-- STANDARDIZED ACTION BAR -->
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-4"
+                    style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+
+                    <span class="d-none d-md-block text-uppercase fw-bold flex-shrink-0"
+                        style="font-size: 12px; color: #94a3b8; letter-spacing: 1px;">Manajemen Surat Keluar</span>
+
+                    <div class="d-flex flex-column flex-md-row w-100 align-items-stretch align-items-md-center flex-grow-1"
+                        style="gap: 12px;">
+                        <form method="GET" action="{{ route('surat-keluar.index') }}"
+                            class="d-flex flex-column flex-md-row m-0 flex-grow-1" style="gap: 12px;">
+                            <!-- SEARCH -->
+                            <div class="position-relative flex-grow-1">
+                                <i class="fas fa-search position-absolute text-muted"
+                                    style="top: 50%; left: 15px; transform: translateY(-50%); font-size: 1rem;"></i>
+                                <input type="text" name="search" placeholder="Cari Surat Keluar..."
+                                    class="form-control shadow-sm w-100 custom-search-input"
+                                    style="padding-left: 45px; border-radius: 30px; height: 42px; font-size: 0.95rem; font-weight: 500;"
+                                    value="{{ request('search') }}">
+                                @if (request('sort'))
+                                    <input type="hidden" name="sort" value="{{ request('sort') }}">
+                                @endif
+                            </div>
+                        </form>
+
+                        @php $sortOrder = request('sort', 'desc'); @endphp
+                        <!-- SORT URUTKAN -->
+                        <div class="dropdown d-flex justify-content-stretch fixed-action-width">
+                            <button class="btn btn-outline-secondary dropdown-toggle shadow-sm w-100 m-0 text-nowrap"
+                                type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                                title="Urutkan"
+                                style="border-radius: 30px; height: 42px; display: inline-flex; align-items: center; justify-content: center; font-weight: 500;">
+                                <i class="fas fa-sort-amount-{{ $sortOrder == 'desc' ? 'down' : 'up' }} me-2"></i>
+                                Urutkan
                             </button>
-                            <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                            <ul class="dropdown-menu shadow" aria-labelledby="sortDropdown">
                                 <li>
-                                    <a class="dropdown-item {{ !isset($sortOrder) || $sortOrder == 'desc' ? 'active bg-primary text-white' : '' }}"
-                                        href="{{ route('surat-keluar.index', array_merge(request()->query(), ['sort' => 'desc'])) }}">
+                                    <a class="dropdown-item {{ $sortOrder == 'desc' ? 'active bg-primary text-white' : '' }}"
+                                        href="{{ request()->fullUrlWithQuery(['sort' => 'desc']) }}">
                                         Terbaru ke Terlama
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item {{ isset($sortOrder) && $sortOrder == 'asc' ? 'active bg-primary text-white' : '' }}"
-                                        href="{{ route('surat-keluar.index', array_merge(request()->query(), ['sort' => 'asc'])) }}">
+                                    <a class="dropdown-item {{ $sortOrder == 'asc' ? 'active bg-primary text-white' : '' }}"
+                                        href="{{ request()->fullUrlWithQuery(['sort' => 'asc']) }}">
                                         Terlama ke Terbaru
                                     </a>
                                 </li>
                             </ul>
                         </div>
 
-                        <form action="{{ route('surat-keluar.index') }}" method="GET" class="flex items-center">
-                            @if (request('sort'))
-                                <input type="hidden" name="sort" value="{{ request('sort') }}">
-                            @endif
-                            <input type="text" name="search" placeholder="Cari surat keluar..." class="form-control"
-                                value="{{ request('search') }}">
-                            <button type="submit" class="btn btn-primary ml-2">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </form>
+                        <!-- ACTION BUTTONS -->
                         @if (auth()->user()->role !== 'monitor')
-                            <a href="{{ route('surat-keluar.create') }}" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> Surat Keluar
-                            </a>
-                            <a href="{{ route('surat-keluar.export') }}" class="btn btn-success">
-                                <i class="fas fa-file-excel"></i> Export Excel
-                            </a>
+                            <div class="d-flex flex-column flex-sm-row justify-content-stretch" style="gap: 12px;">
+                                <a href="{{ route('surat-keluar.create') }}"
+                                    class="btn btn-primary shadow-sm flex-fill text-nowrap"
+                                    style="border-radius: 30px; height: 42px; display: inline-flex; align-items: center; justify-content: center; font-weight: 600;">
+                                    <i class="fas fa-plus me-2"></i> Tambah Surat Keluar
+                                </a>
+                                <a href="{{ route('surat-keluar.export') }}"
+                                    class="btn btn-success shadow-sm flex-fill text-nowrap"
+                                    style="border-radius: 30px; height: 42px; display: inline-flex; align-items: center; justify-content: center; font-weight: 600;">
+                                    <i class="fas fa-file-excel me-2"></i> Ekspor
+                                </a>
+                            </div>
                         @endif
                     </div>
+
+
                 </div>
 
                 <div class="table-responsive" style="max-width: 1200px; margin: auto;">
                     <table class="table" id="suratTable">
                         <thead>
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">No
+                                <th translate="no"
+                                    class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">No
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">No
+                                <th translate="no"
+                                    class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">No
                                     Surat</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">
+                                <th translate="no"
+                                    class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">
                                     Tanggal</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">
+                                <th translate="no"
+                                    class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">
                                     Perihal</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">Aksi
+                                <th translate="no"
+                                    class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-center">Aksi
                                 </th>
                             </tr>
                         </thead>
@@ -109,14 +190,18 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->no_surat }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
                                         {{ $surat->tanggal->format('d/m/Y') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $surat->perihal }}</td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="perihal-cell" title="{{ $surat->perihal }}">
+                                            {{ $surat->perihal }}
+                                        </div>
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                         <div class="dropdown">
                                             <button class="btn btn-light btn-sm dropdown-toggle" type="button"
                                                 data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class="fas fa-cog"></i> Aksi
                                             </button>
-                                            <ul class="dropdown-menu">
+                                            <ul class="dropdown-menu lampiran-dropdown">
                                                 @php
                                                     $lampiran = is_array($surat->lampiran)
                                                         ? $surat->lampiran
@@ -133,11 +218,11 @@
                                                                 : $lampiran[0];
                                                         @endphp
                                                         <li>
-                                                            <a class="dropdown-item"
+                                                            <a class="dropdown-item d-flex align-items-center"
                                                                 href="{{ asset('storage/' . $file['path']) }}"
-                                                                target="_blank">
-                                                                <i class="fas fa-eye fa-fw me-2 text-primary"></i>Lihat
-                                                                Lampiran
+                                                                target="_blank" title="{{ $file['name'] }}">
+                                                                <i class="fas fa-eye fa-fw me-2 text-primary"></i>
+                                                                <span class="lampiran-name-truncate">Lihat Lampiran</span>
                                                             </a>
                                                         </li>
                                                     @else
@@ -155,11 +240,17 @@
                                                                 }
                                                             @endphp
                                                             <li>
-                                                                <a class="dropdown-item"
+                                                                <a class="dropdown-item d-flex align-items-center justify-content-between"
                                                                     href="{{ asset('storage/' . $file['path']) }}"
-                                                                    target="_blank">
-                                                                    <i
-                                                                        class="fas fa-file fa-fw me-2 text-primary"></i>{{ $file['name'] }}
+                                                                    target="_blank" title="{{ $file['name'] }}">
+                                                                    <div class="d-flex align-items-center flex-grow-1">
+                                                                        <i
+                                                                            class="fas fa-file fa-fw me-2 text-primary flex-shrink-0"></i>
+                                                                        <span
+                                                                            class="lampiran-name-truncate">{{ $file['name'] }}</span>
+                                                                    </div>
+                                                                    <i class="fas fa-download fa-fw ms-2 text-secondary flex-shrink-0"
+                                                                        style="font-size: 0.8rem;"></i>
                                                                 </a>
                                                             </li>
                                                         @endforeach
@@ -180,7 +271,9 @@
                                                     </li>
                                                     <li>
                                                         <button type="button" class="dropdown-item text-danger"
-                                                            onclick="confirmDelete({{ $surat->id }})">
+                                                            onclick="confirmDelete({{ $surat->id }}, this)"
+                                                            data-no-surat="{{ $surat->no_surat }}"
+                                                            data-perihal="{{ e($surat->perihal) }}">
                                                             <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
                                                         </button>
                                                     </li>
@@ -206,11 +299,13 @@
                 <div class="mt-4 d-flex justify-content-center">
                     {{ $suratKeluar->links('pagination::bootstrap-4') }}
                 </div>
-                <div class="d-flex justify-content-center">
-                    <span class="surat-badge surat-badge-sm mt-2 d-inline-block">
-                        <i class="fas fa-envelope"></i> Jumlah Surat Keluar: {{ $suratKeluar->total() }}
+                <div class="mt-3 mb-2 d-flex justify-content-center">
+                    <span class="surat-badge surat-badge-sm d-inline-flex">
+                        <i class="fas fa-paper-plane me-2"></i> Jumlah Surat Keluar:
+                        {{ method_exists($suratKeluar, 'total') ? $suratKeluar->total() : $suratKeluar->count() }}
                     </span>
                 </div>
+
                 <style>
                     .pagination .page-item:first-child,
                     .pagination .page-item:last-child {
@@ -222,6 +317,18 @@
     </div>
 
     <style>
+        .custom-search-input {
+            border: 1px solid #cbd5e1 !important;
+            background-color: #fff !important;
+            transition: all 0.2s ease;
+        }
+
+        .custom-search-input:focus {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+            outline: none;
+        }
+
         body {
             background-color: #f3f4f6 !important;
             margin: 0;
@@ -390,46 +497,42 @@
             // Keeping it for now as it might be used elsewhere or for future reference.
         });
 
-        function confirmDelete(id) {
-            console.log('confirmDelete called with id:', id); // Debug log
+        function confirmDelete(id, el) {
+            const noSurat = el ? (el.dataset.noSurat || '-') : '-';
+            const perihal = el ? (el.dataset.perihal || '-') : '-';
 
             Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: "Data ini akan dihapus secara permanen!",
-                icon: 'question',
+                title: '<strong style="color:#ef4444;">Hapus Surat Ini?</strong>',
+                icon: 'warning',
+                html: `
+                    <div style="text-align:left; font-size:0.88rem; line-height:2;">
+                        <table style="width:100%; border-collapse:collapse;">
+                            <tr>
+                                <td style="color:#64748b; width:38%; padding:2px 0;">No. Surat</td>
+                                <td style="font-weight:600;">${noSurat}</td>
+                            </tr>
+                            <tr>
+                                <td style="color:#64748b; padding:2px 0;">Perihal</td>
+                                <td style="font-weight:600;">${perihal}</td>
+                            </tr>
+                        </table>
+                        <p style="margin-top:10px; color:#ef4444; font-size:0.82rem; font-weight:500;">
+                            ⚠️ Data ini akan dihapus secara permanen!
+                        </p>
+                    </div>`,
                 showCancelButton: true,
                 confirmButtonColor: '#FF4757',
                 cancelButtonColor: '#747D8C',
                 confirmButtonText: 'Ya, hapus!',
                 cancelButtonText: 'Batal',
-                showClass: {
-                    popup: 'animate__animated animate__bounceIn'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOut'
-                },
-                customClass: {
-                    popup: 'rounded-lg shadow-lg',
-                    confirmButton: 'rounded-md px-4 py-2',
-                    cancelButton: 'rounded-md px-4 py-2'
-                },
                 background: '#FFFFFF',
                 backdrop: 'rgba(0,0,0,0.4)',
                 padding: '2em'
             }).then((result) => {
-                console.log('SweetAlert result:', result); // Debug log
                 if (result.isConfirmed) {
-                    console.log('User confirmed delete, submitting form...'); // Debug log
                     const form = document.getElementById('delete-form-' + id);
-                    console.log('Form element:', form); // Debug log
-                    if (form) {
-                        form.submit();
-                    } else {
-                        console.error('Form not found for id:', id);
-                    }
+                    if (form) form.submit();
                 }
-            }).catch((error) => {
-                console.error('SweetAlert error:', error); // Debug log
             });
         }
 
@@ -458,10 +561,4 @@
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        // This script block is no longer needed as DataTables is removed.
-        // Keeping it for now as it might be used elsewhere or for future reference.
-    </script>
 @endsection

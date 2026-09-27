@@ -1,10 +1,15 @@
 @extends('layouts.app')
 
+@section('breadcrumb')
+    <i class="fas fa-chevron-right separator"></i> <span style="color: white; font-weight: 600;"><i
+            class="fas fa-file-invoice me-1"></i> Peraturan Gubernur</span>
+@endsection
+
 @section('content')
     <div class="min-h-screen bg-gray-100" style="max-width: 1400px; margin: auto; padding: 20px;">
         <div class="mb-4">
-            <h2 class="header h2"><strong>📂 Registrasi Draft PHD </strong> / <span style="color: gray;"> Peraturan
-                    Gubernur</span></h2>
+            <h2 class="header h2"><i class="fas fa-file-invoice text-primary me-2"></i> <strong>Draft PHD - Peraturan
+                    Gubernur</strong></h2>
         </div>
         <div class="bg-white shadow-sm rounded-lg">
             <div class="p-4">
@@ -21,51 +26,71 @@
                         {{ session('error') }}
                     </div>
                 @endif
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-semibold text-gray-800 tracking-wide">
-                        Peraturan Gubernur
-                    </h2>
-                    <div class="flex space-x-2">
-                        <!-- Menu Urutkan Data -->
-                        <div class="dropdown me-2" style="margin-right: 8px;">
-                            <button class="btn btn-outline-secondary dropdown-toggle h-100" type="button" id="sortDropdown"
-                                data-bs-toggle="dropdown" aria-expanded="false" title="Urutkan">
-                                <i
-                                    class="fas fa-sort-amount-{{ isset($sortOrder) && $sortOrder == 'desc' ? 'down' : 'up' }}"></i>
+                <!-- STANDARDIZED ACTION BAR -->
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-4"
+                    style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+
+                    <span class="d-none d-md-block text-uppercase fw-bold flex-shrink-0"
+                        style="font-size: 12px; color: #94a3b8; letter-spacing: 1px;">Manajemen Pergub</span>
+
+                    <div class="d-flex flex-column flex-md-row w-100 align-items-stretch align-items-md-center flex-grow-1"
+                        style="gap: 12px;">
+                        <form method="GET" action="{{ route('draft-phd.pergub.index') }}"
+                            class="d-flex flex-column flex-md-row m-0 flex-grow-1" style="gap: 12px;">
+                            <!-- SEARCH -->
+                            <div class="position-relative flex-grow-1">
+                                <i class="fas fa-search position-absolute text-muted"
+                                    style="top: 50%; left: 15px; transform: translateY(-50%); font-size: 1rem;"></i>
+                                <input type="text" name="search" placeholder="Cari Pergub..."
+                                    class="form-control shadow-sm w-100 custom-search-input"
+                                    style="padding-left: 45px; border-radius: 30px; height: 42px; font-size: 0.95rem; font-weight: 500;"
+                                    value="{{ request('search') }}">
+                                @if (request('sort'))
+                                    <input type="hidden" name="sort" value="{{ request('sort') }}">
+                                @endif
+                            </div>
+                        </form>
+
+                        @php $sortOrder = request('sort', 'desc'); @endphp
+                        <!-- SORT URUTKAN -->
+                        <div class="dropdown d-flex justify-content-stretch fixed-action-width">
+                            <button class="btn btn-outline-secondary dropdown-toggle shadow-sm w-100 m-0 text-nowrap"
+                                type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                                title="Urutkan"
+                                style="border-radius: 30px; height: 42px; display: inline-flex; align-items: center; justify-content: center; font-weight: 500;">
+                                <i class="fas fa-sort-amount-{{ $sortOrder == 'desc' ? 'down' : 'up' }} me-2"></i>
+                                Urutkan
                             </button>
-                            <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                            <ul class="dropdown-menu shadow" aria-labelledby="sortDropdown">
                                 <li>
-                                    <a class="dropdown-item {{ !isset($sortOrder) || $sortOrder == 'desc' ? 'active bg-primary text-white' : '' }}"
-                                        href="{{ route('draft-phd.pergub.index', array_merge(request()->query(), ['sort' => 'desc'])) }}">
+                                    <a class="dropdown-item {{ $sortOrder == 'desc' ? 'active bg-primary text-white' : '' }}"
+                                        href="{{ request()->fullUrlWithQuery(['sort' => 'desc']) }}">
                                         Terbaru ke Terlama
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item {{ isset($sortOrder) && $sortOrder == 'asc' ? 'active bg-primary text-white' : '' }}"
-                                        href="{{ route('draft-phd.pergub.index', array_merge(request()->query(), ['sort' => 'asc'])) }}">
+                                    <a class="dropdown-item {{ $sortOrder == 'asc' ? 'active bg-primary text-white' : '' }}"
+                                        href="{{ request()->fullUrlWithQuery(['sort' => 'asc']) }}">
                                         Terlama ke Terbaru
                                     </a>
                                 </li>
                             </ul>
                         </div>
 
-                        <form action="{{ route('draft-phd.pergub.index') }}" method="GET" class="flex items-center">
-                            @if (request('sort'))
-                                <input type="hidden" name="sort" value="{{ request('sort') }}">
-                            @endif
-                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari..."
-                                class="form-control">
-                            <button type="submit" class="btn btn-primary ml-2">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </form>
+                        <!-- ACTION BUTTONS -->
                         @if (auth()->user()->role !== 'monitor')
-                            <a href="{{ route('draft-phd.pergub.create') }}" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> Tambah Pergub
-                            </a>
-                            <a href="{{ route('draft-phd.pergub.export') }}" class="btn btn-success">
-                                <i class="fas fa-file-excel"></i> Export Excel
-                            </a>
+                            <div class="d-flex flex-column flex-sm-row justify-content-stretch" style="gap: 12px;">
+                                <a href="{{ route('draft-phd.pergub.create') }}"
+                                    class="btn btn-primary shadow-sm flex-fill text-nowrap"
+                                    style="border-radius: 30px; height: 42px; display: inline-flex; align-items: center; justify-content: center; font-weight: 600;">
+                                    <i class="fas fa-plus me-2"></i> Tambah Pergub
+                                </a>
+                                <a href="{{ route('draft-phd.pergub.export') }}"
+                                    class="btn btn-success shadow-sm flex-fill text-nowrap"
+                                    style="border-radius: 30px; height: 42px; display: inline-flex; align-items: center; justify-content: center; font-weight: 600;">
+                                    <i class="fas fa-file-excel me-2"></i> Ekspor
+                                </a>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -74,28 +99,28 @@
                     <table class="table" id="suratTable">
                         <thead>
                             <tr>
-                                <th
+                                <th translate="no"
                                     class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
                                     No</th>
-                                <th
+                                <th translate="no"
                                     class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
                                     No Agenda</th>
-                                <th
+                                <th translate="no"
                                     class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
                                     No Surat</th>
-                                <th
+                                <th translate="no"
                                     class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
                                     Pengirim</th>
-                                <th
+                                <th translate="no"
                                     class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
                                     Tanggal Terima</th>
-                                <th
+                                <th translate="no"
                                     class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
                                     Disposisi</th>
-                                <th
+                                <th translate="no"
                                     class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
                                     Status</th>
-                                <th
+                                <th translate="no"
                                     class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
                                     Aksi</th>
                             </tr>
@@ -270,7 +295,11 @@
                                                     </li>
                                                     <li>
                                                         <button type="button" class="dropdown-item text-danger"
-                                                            onclick="confirmDelete({{ $pergub->id }})">
+                                                            onclick="confirmDelete({{ $pergub->id }}, this)"
+                                                            data-no-agenda="{{ $pergub->no_agenda }}"
+                                                            data-no-surat="{{ $pergub->no_surat }}"
+                                                            data-pengirim="{{ e($pergub->pengirim) }}"
+                                                            data-status="{{ ucfirst($pergub->status) }}">
                                                             <i class="fas fa-trash-alt fa-fw me-2"></i>Hapus
                                                         </button>
                                                     </li>
@@ -296,9 +325,10 @@
                 <div class="mt-4 d-flex justify-content-center">
                     {{ $pergubs->links('pagination::bootstrap-4') }}
                 </div>
-                <div class="d-flex justify-content-center">
-                    <span class="surat-badge surat-badge-sm mt-2 d-inline-block">
-                        <i class="fas fa-envelope"></i> Jumlah Surat Peraturan Gubernur: {{ $pergubs->total() }}
+                <div class="mt-3 mb-2 d-flex justify-content-center">
+                    <span class="surat-badge surat-badge-sm d-inline-flex">
+                        <i class="fas fa-file-invoice me-2"></i> Jumlah Peraturan Gubernur:
+                        {{ method_exists($pergubs, 'total') ? $pergubs->total() : $pergubs->count() }}
                     </span>
                 </div>
                 <style>
@@ -637,27 +667,44 @@
             }
         }
 
-        function confirmDelete(id) {
+        function confirmDelete(id, el) {
+            const noAgenda = el ? (el.dataset.noAgenda || '-') : '-';
+            const noSurat = el ? (el.dataset.noSurat || '-') : '-';
+            const pengirim = el ? (el.dataset.pengirim || '-') : '-';
+            const status = el ? (el.dataset.status || '-') : '-';
+
             Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: "Data ini akan dihapus secara permanen!",
-                icon: 'question',
+                title: '<strong style="color:#ef4444;">Hapus Data Ini?</strong>',
+                icon: 'warning',
+                html: `
+                    <div style="text-align:left; font-size:0.88rem; line-height:2;">
+                        <table style="width:100%; border-collapse:collapse;">
+                            <tr>
+                                <td style="color:#64748b; width:38%; padding:2px 0;">No. Agenda</td>
+                                <td style="font-weight:600;">${noAgenda}</td>
+                            </tr>
+                            <tr>
+                                <td style="color:#64748b; padding:2px 0;">No. Surat</td>
+                                <td style="font-weight:600;">${noSurat}</td>
+                            </tr>
+                            <tr>
+                                <td style="color:#64748b; padding:2px 0;">Pengirim</td>
+                                <td style="font-weight:600;">${pengirim}</td>
+                            </tr>
+                            <tr>
+                                <td style="color:#64748b; padding:2px 0;">Status</td>
+                                <td style="font-weight:600;">${status}</td>
+                            </tr>
+                        </table>
+                        <p style="margin-top:10px; color:#ef4444; font-size:0.82rem; font-weight:500;">
+                            ⚠️ Data ini akan dihapus secara permanen!
+                        </p>
+                    </div>`,
                 showCancelButton: true,
-                confirmButtonColor: '#FF4757', // Merah yang lebih cerah
-                cancelButtonColor: '#747D8C', // Abu-abu yang lebih kontras
+                confirmButtonColor: '#FF4757',
+                cancelButtonColor: '#747D8C',
                 confirmButtonText: 'Ya, hapus!',
                 cancelButtonText: 'Batal',
-                showClass: {
-                    popup: 'animate__animated animate__bounceIn'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOut'
-                },
-                customClass: {
-                    popup: 'rounded-lg shadow-lg',
-                    confirmButton: 'rounded-md px-4 py-2',
-                    cancelButton: 'rounded-md px-4 py-2'
-                },
                 background: '#FFFFFF',
                 backdrop: 'rgba(0,0,0,0.4)',
                 padding: '2em'
@@ -864,7 +911,7 @@
                             const option = disposisiSelect.options[i];
                             if (option.value.includes(tujuanValue) || tujuanValue.includes(option.value) ||
                                 option.textContent.includes(tujuanValue) || tujuanValue.includes(option.textContent.trim())
-                                ) {
+                            ) {
                                 disposisiSelect.value = option.value;
                                 found = true;
                                 console.log('Pergub - Found partial matching option:', option.value);

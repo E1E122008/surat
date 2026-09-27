@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@section('breadcrumb')
+    <i class="fas fa-chevron-right separator"></i> <a href="{{ route('surat-keluar.index') }}">Surat Keluar</a>
+    <i class="fas fa-chevron-right separator"></i> <span style="color: white; font-weight: 600;">Ubah Data</span>
+@endsection
+
+
 @section('content')
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
         <div class="p-6 bg-white border-b border-gray-200">
@@ -457,4 +463,7 @@
         });
     </script>
 @endsection
+
+
+
 

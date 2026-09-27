@@ -12,10 +12,15 @@ class UserProfileController extends Controller
 {
     public function index()
     {
-        // Inisialisasi data aktivitas terbaru (kosong untuk sementara)
-        $recentActivities = collect([]); // Menggunakan collection kosong
+        // 3 recent activities (dengan rule yang sama dengan halaman Riwayat Global)
+        $query = \App\Models\ActivityLog::with('user')->latest();
+
+        if (auth()->user()->role !== 'superadmin') {
+            $query->where('user_id', auth()->id());
+        }
+
+        $recentActivities = $query->take(3)->get();
         
-        // Inisialisasi riwayat login (kosong untuk sementara)
         $loginHistory = collect([]); // Menggunakan collection kosong
 
         return view('profile', compact('recentActivities', 'loginHistory'));
@@ -47,6 +52,8 @@ class UserProfileController extends Controller
 
         auth()->user()->update($updateData);
 
+        \App\Models\ActivityLog::log('profile_update', "Melakukan pembaruan data profil");
+
         return redirect()->back()->with('success', 'Profil berhasil diperbarui');
     }
 
@@ -64,6 +71,8 @@ class UserProfileController extends Controller
         auth()->user()->update([
             'password' => Hash::make($request->password)
         ]);
+
+        \App\Models\ActivityLog::log('password_change', "Mengganti kata sandi akun");
 
         return redirect()->back()->with('success', 'Password berhasil diperbarui');
     }
@@ -85,11 +94,11 @@ class UserProfileController extends Controller
             
             auth()->user()->update(['avatar' => $path]);
 
+            \App\Models\ActivityLog::log('avatar_update', "Memperbarui foto profil");
+
             return redirect()->back()->with('success', 'Foto profil berhasil diperbarui');
         }
 
         return redirect()->back()->with('error', 'Terjadi kesalahan saat mengupload foto');
     }
-
-    // Anda bisa menghapus metode show jika tidak diperlukan
 } 

@@ -1,13 +1,18 @@
 @extends('layouts.app')
 
+@section('breadcrumb')
+    <i class="fas fa-chevron-right separator"></i> <span style="color: white; font-weight: 600;"><i
+            class="fas fa-share-square me-1"></i> Arsip Disposisi</span>
+@endsection
+
 @section('content')
     <div>
         <div class="container">
             <h2 class="header h2"><strong>📂 Disposisi</strong></h2>
         </div>
-        <div class="bg-white overflow-x-auto w-full shadow-sm sm:rounded-lg"    >
+        <div class="bg-white overflow-x-auto w-full shadow-sm sm:rounded-lg">
             <div class="p-6 bg-white border-b border-gray-200">
-                <div class="flex justify-between items-center mb-6">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-6 gap-3">
                     <h2 class="text-2xl font-semibold">Surat Masuk</h2>
                 </div>
                 <div class="overflow-x-auto">
@@ -20,25 +25,41 @@
                         <option value="kasubag">Kasubag</option>
                     </select>
                     <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="table-bordered">
+                        <th translate="no"ead class="table-bordered">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Agenda</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">No Surat</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Pengirim</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Disposisi</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">Aksi</th>
+                                <th translate="no"
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    No</th>
+                                <th translate="no"
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    No Agenda</th>
+                                <th translate="no"
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    No Surat</th>
+                                <th translate="no"
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    Pengirim</th>
+                                <th translate="no"
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    Disposisi</th>
+                                <th translate="no"
+                                    class="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider text-center">
+                                    Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach ($surat as $index => $surat)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $index + 1 }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_agenda }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->no_surat }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">{{ $surat->pengirim }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                        {{ $index + 1 }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                        {{ $surat->no_agenda }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                        {{ $surat->no_surat }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                        {{ $surat->pengirim }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        @if($surat->disposisi == 'ktu')
+                                        @if ($surat->disposisi == 'ktu')
                                             <span class="bg-ktu">KTU</span>
                                         @elseif($surat->disposisi == 'sekretaris')
                                             <span class="bg-sekretaris">Sekretaris</span>
@@ -52,10 +73,12 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex justify-center items-center">
-                                            <a href="{{ route('disposisi.edit', $surat->id) }}" class="btn btn-warning btn-sm">
+                                            <a href="{{ route('disposisi.edit', $surat->id) }}"
+                                                class="btn btn-warning btn-sm">
                                                 <i class="fas fa-edit"></i> Update Disposisi
                                             </a>
-                                            <a href="{{ route('disposisi.detail', $surat->id) }}" class="btn btn-info btn-sm detail-btn">
+                                            <a href="{{ route('disposisi.detail', $surat->id) }}"
+                                                class="btn btn-info btn-sm detail-btn">
                                                 <i class="fas fa-eye"></i> Detail
                                             </a>
                                         </div>
@@ -88,7 +111,7 @@
             // Event ketika filter diubah
             $('#filterDisposisi').on('change', function() {
                 let value = $(this).val();
-                table.column(4).search(value).draw();  // Kolom ke-5 (index dimulai dari 0)
+                table.column(4).search(value).draw(); // Kolom ke-5 (index dimulai dari 0)
             });
         });
     </script>
@@ -127,5 +150,6 @@
         }
     </style>
 @endsection
+
 
 

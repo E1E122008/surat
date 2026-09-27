@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@section('breadcrumb')
+    <i class="fas fa-chevron-right separator"></i> <a href="{{ route('sppd-luar-daerah.index') }}">SPPD Luar Daerah</a>
+    <i class="fas fa-chevron-right separator"></i> <span style="color: white; font-weight: 600;">Tambah Baru</span>
+@endsection
+
+
 @section('content')
     <div class="form-section">
         <div class="form-header">
@@ -315,3 +321,6 @@
         });
     </script>
 @endsection
+
+
+

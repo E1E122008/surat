@@ -25,6 +25,8 @@ class AuthenticatedSessionController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
+            \App\Models\ActivityLog::log('login', 'Melakukan login ke sistem', Auth::id());
+
             return redirect()->intended(RouteServiceProvider::HOME);
         }
 
@@ -35,6 +37,8 @@ class AuthenticatedSessionController extends Controller
 
     public function destroy(Request $request)
     {
+        \App\Models\ActivityLog::log('logout', 'Melakukan logout dari sistem', Auth::id());
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,58 +9,127 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap"
+        rel="stylesheet" />
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    
+
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
 
+    <!-- ANTI FOUC SIDEBAR: Render Blocking execution for sidebar state -->
+    <script>
+        // Dieksekusi sesecepat mungkin karena blocking; memeriksa preferensi user sebelum DOM me-render body.
+        const userPrefix = 'sidebarCollapsed';
+        if (localStorage.getItem(userPrefix) === 'true') {
+            document.documentElement.classList.add('sidebar-mode-collapsed');
+        }
+
+        // Anti-flicker: Matikan semua transisi pada paint frame awal
+        document.documentElement.classList.add('preload-no-transition');
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.documentElement.classList.remove('preload-no-transition');
+            }, 100); // Cabut batas aman
+        });
+    </script>
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Custom CSS -->
     <style>
+        /* Root Design System Tokens */
+        :root {
+            --navy-utama: #0f1b3d;
+            --gold-aksen: #eab308;
+            --gold-tint: rgba(234, 179, 8, 0.12);
+            --bg-halaman: #f1f3f7;
+            --putih-kartu: #ffffff;
+            --border-tipis: #e2e8f0;
+            --border-sangat-tipis: #eef2f7;
+            --bg-kotak: #f8fafc;
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-500: #64748b;
+            --slate-400: #94a3b8;
+            --font-heading: 'Poppins', sans-serif;
+            --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+            --sidebar-expanded-width: 250px;
+            --sidebar-collapsed-width: 72px;
+            --rail-slot-height: 56px;
+            --rail-header-height: 70px;
+            --sidebar-transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+            --chart-biru: #3b82f6;
+            --chart-teal: #0d9488;
+            --chart-amber: #d97706;
+            --chart-ungu: #7c3aed;
+            --chart-slate: #64748b;
+        }
+
         /* Reset link styles */
         a {
             text-decoration: none !important;
         }
 
+        body {
+            font-family: var(--font-body) !important;
+            background-color: var(--bg-halaman) !important;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .card-title,
+        .navbar-brand,
+        .dashboard-welcome .h4 {
+            font-family: var(--font-heading) !important;
+        }
+
         /* Navbar Styles */
         .navbar {
             padding: 0.5rem 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .navbar-logo {
-        padding-right: 10px; /* Jarak di sebelah kanan logo */
-}
+            padding-right: 10px;
+            /* Jarak di sebelah kanan logo */
+        }
 
         .navbar-dark .navbar-nav .nav-link {
-            color: rgba(255,255,255,.85);
+            color: rgba(255, 255, 255, .85);
             padding: 0.5rem 1rem;
             transition: all 0.3s ease;
         }
 
         .navbar-dark .navbar-nav .nav-link:hover {
             color: #fff;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .navbar-dark .navbar-nav .nav-link.active {
             color: #fff;
-            background: rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.15);
         }
 
         .navbar-nav .nav-item {
-        display: flex;
-        align-items: center;
+            display: flex;
+            align-items: center;
         }
 
         .navbar-nav .nav-item span {
-            margin-right: 10px; /* Jarak antara tanggal dan profil */
+            margin-right: 10px;
+            /* Jarak antara tanggal dan profil */
         }
 
         /* Button Styles */
@@ -92,7 +162,7 @@
         }
 
         /* Tombol Export */
-        .btn-success, 
+        .btn-success,
         .btn-success:hover,
         .btn-success:active,
         .btn-success:focus {
@@ -107,16 +177,16 @@
         }
 
         /* Spacing antara buttons */
-        .btn + .btn {
+        .btn+.btn {
             margin-left: 0.5rem;
         }
 
         .btn-outline-light {
-            border: 1px solid rgba(255,255,255,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
         .btn-outline-light:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
         }
 
         /* Table Styles */
@@ -124,9 +194,9 @@
         .table th,
         .table-bordered thead th,
         .table-bordered th {
-            background-color: #4F75E6 !important;
+            background-color: var(--navy-utama) !important;
             color: #FFFFFF !important;
-            border-bottom: 2px solid #4F75E6 !important;
+            border-bottom: 2px solid var(--navy-utama) !important;
             font-weight: 600;
             text-transform: uppercase;
             font-size: 0.875rem;
@@ -134,18 +204,18 @@
             padding: 1rem;
             vertical-align: middle;
         }
-        
+
         .table td,
         .table-bordered td {
             padding: 1rem;
             vertical-align: middle;
             border-bottom: 1px solid #dee2e6;
             color: #475569;
-            
+
         }
 
         .table tr:hover {
-            background-color: rgba(0,0,0,.01);
+            background-color: rgba(0, 0, 0, .01);
         }
 
         /* Action Buttons in Tables */
@@ -158,25 +228,33 @@
 
         /* Dashboard Specific Styles */
         .dashboard-card {
-            width: 100%; /* Atur lebar menjadi 100% dari kolom */
-            max-width: 300px; /* Atur lebar maksimum sesuai kebutuhan */
-            margin: 0 auto; /* Pusatkan kartu */
-            border-radius: 10px; /* Pastikan sudut kartu melengkung */
-            overflow: hidden; /* Sembunyikan konten yang melampaui batas */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Tambahkan bayangan untuk efek visual */
+            width: 100%;
+            /* Atur lebar menjadi 100% dari kolom */
+            max-width: 300px;
+            /* Atur lebar maksimum sesuai kebutuhan */
+            margin: 0 auto;
+            /* Pusatkan kartu */
+            border-radius: 10px;
+            /* Pastikan sudut kartu melengkung */
+            overflow: hidden;
+            /* Sembunyikan konten yang melampaui batas */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            /* Tambahkan bayangan untuk efek visual */
         }
 
         .dashboard-card h2 {
-            font-size: 2rem; /* Ukuran font untuk nilai kartu */
+            font-size: 2rem;
+            /* Ukuran font untuk nilai kartu */
         }
 
         .dashboard-card p {
-            font-size: 1rem; /* Ukuran font untuk judul kartu */
+            font-size: 1rem;
+            /* Ukuran font untuk judul kartu */
         }
 
         .dashboard-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .dashboard-card .card-body {
@@ -219,7 +297,7 @@
             border-radius: 10px;
             padding: 2rem;
             margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         .dashboard-welcome h2 {
@@ -284,7 +362,7 @@
             .dashboard-stats {
                 margin-bottom: 1rem;
             }
-            
+
             .dashboard-menu-card {
                 margin-bottom: 1rem;
             }
@@ -298,23 +376,21 @@
 
         /* Card styles */
         .card {
-            border: none;
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
-                       0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
             border-radius: 12px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 
-                       0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.07);
         }
 
         .card-header {
             background: none;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             padding: 1.5rem;
         }
 
@@ -324,15 +400,15 @@
 
         /* Utility classes */
         .shadow-sm {
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
         }
 
         /* Form Styles */
         .form-section {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
-                       0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
             padding: 2rem;
             margin-bottom: 2rem;
             backdrop-filter: blur(10px);
@@ -364,12 +440,13 @@
         }
 
         .form-select {
-        background-color: white !important;
-        border: 1px solid #e5e7eb !important;  /* Warna border abu-abu sangat terang */
-        border-radius: 6px !important;
-        padding: 8px 12px !important;
-        width: 100% !important;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+            background-color: white !important;
+            border: 1px solid #e5e7eb !important;
+            /* Warna border abu-abu sangat terang */
+            border-radius: 6px !important;
+            padding: 8px 12px !important;
+            width: 100% !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
         }
 
         .form-select:focus {
@@ -379,7 +456,8 @@
         }
 
         .form-select:hover {
-            border-color: #d1d5db !important;  /* Warna hover abu-abu medium */
+            border-color: #d1d5db !important;
+            /* Warna hover abu-abu medium */
         }
 
         /* Tambahan untuk memastikan border benar-benar abu-abu */
@@ -464,114 +542,161 @@
         }
 
         .btn-submit {
-            background-color: #4299e1;
+            background-color: var(--navy-utama);
             color: white;
         }
 
         .btn-submit:hover {
-            background-color: #3182ce;
+            background-color: #172a5a;
+            color: white;
+        }
+
+        .btn-primary {
+            background-color: var(--navy-utama) !important;
+            border-color: var(--navy-utama) !important;
+            color: #ffffff !important;
+        }
+
+        .btn-primary:hover {
+            background-color: #172a5a !important;
+            border-color: #172a5a !important;
+            color: #ffffff !important;
         }
 
         .sidebar {
-            width: 290px;
-            background: rgba(30, 59, 138, 0.678); /* Navy Blue dengan transparansi */
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            width: var(--sidebar-expanded-width);
+            background-color: var(--navy-utama);
             padding: 20px;
             position: fixed;
             top: 0;
-            left: -290px;
-            height: 100%;
-            transition: left 0.3s ease;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
+            left: 0;
+            /* Default Terbuka di Desktop */
+            height: 100vh;
+            overflow-y: auto;
+            padding-bottom: 80px;
+            transition: left var(--sidebar-transition), width var(--sidebar-transition);
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05);
+            z-index: 1050;
         }
 
-        .sidebar.active {
-            left: 0;
+        /* Responsive Sidebar Close on HP */
+        @media (max-width: 991px) {
+            .sidebar {
+                left: calc(var(--sidebar-expanded-width) * -1);
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+        }
+
+        /* Tweak margin pada layar lebar agar konten tak tertutup */
+        @media (min-width: 992px) {
+
+            #main-content,
+            .navbar {
+                margin-left: var(--sidebar-expanded-width) !important;
+                width: calc(100% - var(--sidebar-expanded-width)) !important;
+                transition: margin-left var(--sidebar-transition), width var(--sidebar-transition);
+            }
+
+            .navbar {
+                height: var(--rail-header-height) !important;
+                min-height: var(--rail-header-height) !important;
+            }
+
+            /* Sidebar Collapsed di Desktop */
+            .sidebar.collapsed,
+            html.sidebar-mode-collapsed body .sidebar {
+                width: var(--sidebar-collapsed-width, 72px) !important;
+                padding: 0 !important;
+            }
+
+            .sidebar.collapsed~#main-content,
+            .sidebar.collapsed~.navbar,
+            html.sidebar-mode-collapsed body #main-content,
+            html.sidebar-mode-collapsed body .navbar {
+                margin-left: var(--sidebar-collapsed-width, 72px) !important;
+                width: calc(100% - var(--sidebar-collapsed-width, 72px)) !important;
+            }
+
+            .close-sidebar {
+                display: none !important;
+            }
+
+            /* Sembunyikan ikon X di desktop */
+        }
+
+        .sidebar-toggler {
+            color: var(--gold-aksen) !important;
+            transition: color 0.3s ease;
+        }
+
+        .sidebar.active~#main-content .sidebar-toggler,
+        .sidebar.active~.navbar .sidebar-toggler {
+            color: #ffffff !important;
+        }
+
+        /* Responsive Mobile: Sidebar Tertutup secara default */
+        @media (max-width: 991px) {
+            .sidebar-toggler {
+                color: #ffffff !important;
+            }
+
+            .sidebar.active~#main-content .sidebar-toggler,
+            .sidebar.active~.navbar .sidebar-toggler {
+                color: var(--gold-aksen) !important;
+            }
         }
 
         .sidebar a {
-            color: rgba(255, 255, 255, 0.9);
+            color: #cbd5e1;
+            font-size: 13.5px;
+            font-weight: 400;
             text-decoration: none;
-            display: block;
-            padding: 12px 15px;
+            display: flex !important;
+            align-items: center;
+            padding: 10px 16px;
             border-radius: 8px;
-            transition: all 0.3s ease;
-            margin-bottom: 5px;
-            background: rgba(255, 255, 255, 0.05);
-            position: relative;
+            transition: all 0.2s ease-out;
+            margin-bottom: 4px;
         }
 
         .sidebar a:hover {
-            background-color: rgba(255, 255, 255, 0.1);
             color: #ffffff;
-            transform: translateX(5px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .sidebar a.active {
-            background-color: rgba(255, 255, 255, 0.15);
-            color: #FFD700;
-            font-weight: 500;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding-left: 20px;  /* Memberikan ruang untuk border */
-            border-left: 4px solid #FFD700;  /* Garis kuning di sisi kiri */
+            color: var(--gold-aksen) !important;
+            font-weight: 600;
         }
 
-        /* Styling untuk ikon di menu active */
         .sidebar a.active i,
         .sidebar a.active svg {
-            color: #FFD700;
-            transform: scale(1.1);  /* Membuat ikon sedikit lebih besar */
-            transition: transform 0.3s ease;
+            color: var(--gold-aksen) !important;
+            transform: scale(1.05);
         }
 
-        /* Menambahkan efek glow pada menu active */
-        .sidebar a.active::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);  /* Efek glow kuning */
-            pointer-events: none;
-        }
-
-        /* Menambahkan indikator kecil di sebelah kanan menu active */
-        .sidebar a.active::before {
-            content: '•';
-            position: absolute;
-            right: 15px;
-            color: #FFD700;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 0.5; }
-            50% { opacity: 1; }
-            100% { opacity: 0.5; }
-        }
-
-        /* Styling untuk ikon di sidebar */
-        .sidebar i, .sidebar svg {
-            color: #ffffff;
-            margin-right: 10px;
+        .sidebar i,
+        .sidebar svg {
+            color: var(--slate-500);
+            margin-right: 12px;
             width: 20px;
             text-align: center;
+            transition: all 0.2s ease-out;
         }
 
-        /* Styling untuk header sidebar */
         .sidebar .navbar-brand {
-            color: #ffffff !important;
-            font-size: 1.5rem;
-            padding: 20px 0;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f8fafc !important;
+            font-size: 18px;
+            padding: 10px 0;
+            margin-bottom: 25px;
             text-align: center;
             display: block;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+            /* Divider sidebar */
+            font-family: var(--font-heading);
+            font-weight: 700;
         }
 
         /* Hover effect untuk menu items */
@@ -582,9 +707,12 @@
         }
 
         .date-display {
-            white-space: nowrap; /* Mencegah text wrap ke bawah */
-            display: inline-block; /* Membuat elemen tetap dalam satu baris */
-            margin-right: 15px; /* Jarak dengan profil */
+            white-space: nowrap;
+            /* Mencegah text wrap ke bawah */
+            display: inline-block;
+            /* Membuat elemen tetap dalam satu baris */
+            margin-right: 15px;
+            /* Jarak dengan profil */
         }
 
         /* Styling untuk tanggal */
@@ -598,7 +726,8 @@
         .profile-container {
             position: relative;
             transition: all 0.3s ease;
-            padding: 3px; /* Menambah padding untuk ruang indikator */
+            padding: 3px;
+            /* Menambah padding untuk ruang indikator */
         }
 
         .profile-image {
@@ -608,12 +737,17 @@
             border: 2px solid rgba(255, 255, 255, 0.8);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
-            background: linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.3) 100%);
-            white-space: nowrap; /* Mencegah teks membungkus ke baris berikutnya */
-            overflow: hidden; /* Sembunyikan teks yang melampaui batas */
-            text-overflow: ellipsis; /* Tambahkan ellipsis (...) untuk teks yang terpotong */
-            max-width: 150px; /* Atur lebar maksimum sesuai kebutuhan */
-            display: inline-block; /* Pastikan elemen bersifat inline-block */
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.3) 100%);
+            white-space: nowrap;
+            /* Mencegah teks membungkus ke baris berikutnya */
+            overflow: hidden;
+            /* Sembunyikan teks yang melampaui batas */
+            text-overflow: ellipsis;
+            /* Tambahkan ellipsis (...) untuk teks yang terpotong */
+            max-width: 150px;
+            /* Atur lebar maksimum sesuai kebutuhan */
+            display: inline-block;
+            /* Pastikan elemen bersifat inline-block */
         }
 
         .profile-initial {
@@ -634,11 +768,16 @@
         .profile-name {
             font-weight: 500;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-            white-space: nowrap; /* Mencegah teks membungkus ke baris berikutnya */
-            overflow: hidden; /* Sembunyikan teks yang melampaui batas */
-            text-overflow: ellipsis; /* Tambahkan ellipsis (...) untuk teks yang terpotong */
-            max-width: 150px; /* Atur lebar maksimum sesuai kebutuhan */
-            display: inline-block; /* Pastikan elemen bersifat inline-block */
+            white-space: nowrap;
+            /* Mencegah teks membungkus ke baris berikutnya */
+            overflow: hidden;
+            /* Sembunyikan teks yang melampaui batas */
+            text-overflow: ellipsis;
+            /* Tambahkan ellipsis (...) untuk teks yang terpotong */
+            max-width: 150px;
+            /* Atur lebar maksimum sesuai kebutuhan */
+            display: inline-block;
+            /* Pastikan elemen bersifat inline-block */
         }
 
         /* Hover Effects */
@@ -727,7 +866,7 @@
             width: 48px;
             height: 48px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            background: var(--navy-utama);
             color: white;
             display: flex;
             align-items: center;
@@ -771,16 +910,19 @@
             border: 2px solid #ffffff;
             box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.3);
             animation: pulse 2s infinite;
-            transform: translate(25%, 25%); /* Menggeser indikator ke luar lingkaran */
+            transform: translate(25%, 25%);
+            /* Menggeser indikator ke luar lingkaran */
         }
 
         @keyframes pulse {
             0% {
                 box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4);
             }
+
             70% {
                 box-shadow: 0 0 0 6px rgba(46, 204, 113, 0);
             }
+
             100% {
                 box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
             }
@@ -816,16 +958,24 @@
 
         /* Navbar Styles */
         .navbar.navbar-dark.bg-primary {
-            background-color: #191970 !important;
+            background-color: var(--navy-utama) !important;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.15) !important;
+            padding: 0.5rem 1rem !important;
+            position: relative;
+            z-index: 999;
         }
 
-        /* Update warna text-primary jika digunakan */
-        .text-primary {
-            color: #191970 !important;
+        .navbar-dark .navbar-nav .nav-link {
+            color: #cbd5e1 !important;
+        }
+
+        .navbar-dark .navbar-nav .nav-link:hover {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.05);
         }
 
         body {
-            background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+            background: #f1f5f9;
         }
 
         /* Table container update */
@@ -839,7 +989,7 @@
 
         /* Dashboard Card Colors */
         .dashboard-card.surat-masuk {
-            background: linear-gradient(135deg,#4C1D95, #D8B4FE);
+            background: linear-gradient(135deg, #4C1D95, #D8B4FE);
             color: white;
         }
 
@@ -867,8 +1017,8 @@
         .dashboard-card {
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
-                       0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
             transition: all 0.3s ease;
             margin-bottom: 1rem;
             position: relative;
@@ -877,8 +1027,8 @@
 
         .dashboard-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 
-                       0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
         .dashboard-card .card-icon {
@@ -914,7 +1064,9 @@
         }
 
         /* Form Controls */
-        select, input, .btn {
+        select,
+        input,
+        .btn {
             border-radius: 8px;
             padding: 0.5rem 1rem;
             border: 1px solid #D1D5DB;
@@ -932,27 +1084,33 @@
 
         /* Style untuk dropdown Disposisi */
         select[name="disposisi"] {
-            background-color: #ffffff !important;  /* Light blue */
+            background-color: #ffffff !important;
+            /* Light blue */
             color: #1e3a8a !important;
-            border: 1px solid #D1D5DB !important; /* Added grey border */
+            border: 1px solid #D1D5DB !important;
+            /* Added grey border */
             border-radius: 8px;
             padding: 8px 16px;
         }
 
         /* Style untuk dropdown Subpoint */
         select[name="subpoint"] {
-            background-color: #f1c75b !important;  /* Light yellow */
-            color: #8a5e1e !important; 
+            background-color: #f1c75b !important;
+            /* Light yellow */
+            color: #8a5e1e !important;
             border: none !important;
         }
 
         /* Style untuk dropdown Status */
         select[name="status"] {
-            background-color: #ffffff !important;  /* Light green */
+            background-color: #ffffff !important;
+            /* Light green */
             color: #166534 !important;
-            border: 1px solid #D1D5DB !important; /* Added grey border */
+            border: 1px solid #D1D5DB !important;
+            /* Added grey border */
             border-radius: 8px;
-            padding: 8px 16px; /* Maintain border-radius */
+            padding: 8px 16px;
+            /* Maintain border-radius */
         }
 
         /* Hover effect untuk kedua dropdown */
@@ -1100,7 +1258,8 @@
 
         /* Textarea catatan styling */
         .catatan-textarea {
-            width: 200px !important; /* Memperlebar textarea */
+            width: 200px !important;
+            /* Memperlebar textarea */
             height: 60px !important;
             min-height: 60px !important;
             max-height: 60px !important;
@@ -1149,7 +1308,8 @@
             width: 32px !important;
             height: 32px !important;
             border-radius: 50% !important;
-            overflow: visible !important; /* Ubah dari hidden ke visible */
+            overflow: visible !important;
+            /* Ubah dari hidden ke visible */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
         }
 
@@ -1163,34 +1323,174 @@
             border-radius: 50% !important;
             bottom: 1px !important;
             right: 1px !important;
-            z-index: 10 !important; /* Memastikan dot muncul di atas */
+            z-index: 10 !important;
+            /* Memastikan dot muncul di atas */
         }
 
-        
+
 
         .header h2 {
-            border-bottom: 2px solid #ccc; /* Garis bawah */
-            padding-bottom: 5px; /* Jarak antara teks dan garis */
+            border-bottom: 2px solid #ccc;
+            /* Garis bawah */
+            padding-bottom: 5px;
+            /* Jarak antara teks dan garis */
         }
 
         .header h3 {
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Bayangan */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            /* Bayangan */
         }
 
         .table-container table td {
-            text-align: center; /* Rata tengah untuk semua sel */
+            text-align: center;
+            /* Rata tengah untuk semua sel */
         }
 
         #customSearch {
-            margin-bottom: 20px; /* Atur jarak sesuai kebutuhan */
+            margin-bottom: 20px;
+            /* Atur jarak sesuai kebutuhan */
         }
 
         .table-container th,
         .table-container td {
-            max-width: 200px; /* Adjust the width as needed */
-            overflow: hidden; /* Hide overflow content */
-            text-overflow: ellipsis; /* Add ellipsis for overflow text */
-            white-space: normal; /* Allow text to wrap */
+            max-width: 200px;
+            /* Adjust the width as needed */
+            overflow: hidden;
+            /* Hide overflow content */
+            text-overflow: ellipsis;
+            /* Add ellipsis for overflow text */
+            white-space: normal;
+            /* Allow text to wrap */
+        }
+
+        /* --- Scrollbar Customization --- */
+        .sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Body Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Breadcrumb UI */
+        .breadcrumb-custom {
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            color: #94a3b8;
+            background: #ffffff;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .breadcrumb-custom a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .breadcrumb-custom a:hover {
+            color: var(--navy-utama);
+        }
+
+        .breadcrumb-custom .separator {
+            margin: 0 0.5rem;
+            color: #cbd5e1;
+            font-size: 0.8em;
+        }
+
+
+        <style>.breadcrumb-navbar {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            color: rgba(255, 255, 255, 0.85);
+            white-space: nowrap;
+            overflow-x: auto;
+            max-width: 100%;
+            display: flex;
+            align-items: center;
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .breadcrumb-navbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .breadcrumb-navbar .separator {
+            margin: 0 0.5rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8) !important;
+            flex-shrink: 0;
+        }
+
+        .breadcrumb-navbar .hover-white:hover {
+            color: #ffffff !important;
+        }
+
+        .breadcrumb-navbar a {
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .breadcrumb-navbar span {
+            display: inline-flex;
+            white-space: nowrap;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .breadcrumb-navbar span i,
+        .breadcrumb-navbar a i {
+            margin-right: 0.5rem;
+            font-size: 1rem;
+        }
+
+        /* Responsive Table No Column Fix */
+        .table th:first-child,
+        .table td:first-child {
+            width: 5% !important;
+            min-width: 50px !important;
+            white-space: nowrap !important;
+        }
+
+        /* KELUARKAN TRANSISI DARI HTML JIKA PRELOAD AKTIF (Flicker prevention) */
+        html.preload-no-transition * {
+            transition: none !important;
         }
     </style>
 
@@ -1205,44 +1505,38 @@
     <!-- Load SweetAlert2 setelah Vite -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class="font-sans antialiased">
-    <div class="min-h-screen bg-gray-100">
-        <!-- Navigation -->
-        @include('layouts.navigation')
-        
+
+<body style="font-family: 'Plus Jakarta Sans', sans-serif;" class="antialiased font-sans bg-gray-50">
+    <div class="min-h-screen bg-gray-50" id="main-wrapper">
         <!-- Sidebar -->
         @include('layouts.sidebar')
-        
+
+        <!-- Navigation -->
+        @include('layouts.navigation')
+
         <!-- Page Content -->
-        <main class="container py-4" style="margin-top: 0;">
-            @yield('content')
+        <main id="main-content"
+            style="margin-top: 0; transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
+            <div class="container py-4">
+
+                @yield('content')
+            </div>
         </main>
     </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('main-content');
-
-        sidebar.classList.toggle('active'); // Menampilkan sidebar
-        
-        if (sidebar.classList.contains('active')) {
-            mainContent.style.marginLeft = "16rem"; // Geser konten utama ke kanan
-        } else {
-            mainContent.style.marginLeft = "0"; // Kembalikan ke posisi awal
-        }
-    }
+        // Toggle Sidebar Navigasi dihapus karena sudah di-handle oleh sidebar.blade.php
     </script>
 
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+
     <!-- Script untuk notifikasi -->
     <script>
         // Notifikasi sukses
-        @if(session('success'))
+        @if (session('success'))
             Swal.fire({
                 title: "Berhasil!",
                 text: "{{ session('success') }}",
@@ -1263,7 +1557,7 @@
         @endif
 
         // Notifikasi error
-        @if(session('error'))
+        @if (session('error'))
             Swal.fire({
                 title: "Error!",
                 text: "{{ session('error') }}",
@@ -1300,30 +1594,31 @@
                     popup: 'animate__animated animate__bounceIn'
                 }
             }).then((result) => {
-                if (result.isConfirmed) {
+                    if (result.isConfirmed) {
                         document.getElementById('delete-form-' + id).submit();
                     });
-                }
-            });
+            }
+        });
         }
     </script>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.sidebar a[href="#"]').forEach(item => {
-            item.addEventListener('click', function(event) {
-                event.preventDefault();
-                const submenu = item.nextElementSibling;
-                if (submenu) submenu.classList.toggle('hidden');
-                // Putar ikon chevron
-                const iconChevron = item.querySelector('.fa-chevron-down');
-                if (iconChevron) iconChevron.classList.toggle('rotate-180');
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.sidebar a[href="#"]').forEach(item => {
+                item.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const submenu = item.nextElementSibling;
+                    if (submenu) submenu.classList.toggle('hidden');
+                    // Putar ikon chevron
+                    const iconChevron = item.querySelector('.fa-chevron-down');
+                    if (iconChevron) iconChevron.classList.toggle('rotate-180');
+                });
             });
         });
-    });
     </script>
 
     @stack('scripts')
 
 </body>
-</html> 
+
+</html>

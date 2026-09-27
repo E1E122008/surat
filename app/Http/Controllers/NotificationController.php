@@ -21,6 +21,9 @@ class NotificationController extends Controller
         if (isset($notification->data['approval_request_id'])) {
             return redirect()->route('data-requests.show', $notification->data['approval_request_id']);
         }
+        if (isset($notification->data['help_request_id'])) {
+            return redirect(route('bantuan.index') . '#riwayat');
+        }
         
         return back();
     }

@@ -1,5 +1,10 @@
 @extends('layouts.app')
 
+@section('breadcrumb')
+    <i class="fas fa-chevron-right separator"></i> <span style="color: white; font-weight: 600;"><i
+            class="fas fa-folder-plus me-1"></i> Pengajuan Berkas Baru</span>
+@endsection
+
 @section('content')
     <div class="container-fluid">
         @if (session('error'))
@@ -26,7 +31,7 @@
         @endif
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-envelope-open-text me-2"></i>Permintaan Tambah Surat</h1>
+            <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-folder-plus me-2"></i>Pengajuan Berkas Baru</h1>
 
 
         </div>
@@ -35,60 +40,64 @@
         <div class="row">
             <div class="col-12">
                 <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <div>
+                    <div
+                        class="card-header py-3 d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+                        <div class="flex-shrink-0">
                             <span class="surat-badge surat-badge-sm d-inline-block align-middle">
                                 <i class="fas fa-envelope"></i> Jumlah Surat: {{ $approvalRequests->total() }}
                             </span>
                         </div>
-                        <div class="d-flex align-items-center gap-2">
+
+                        <div class="d-flex flex-grow-1 justify-content-lg-end w-100">
                             <form action="{{ route('data-requests.index') }}" method="GET"
-                                class="d-flex align-items-center gap-2 mb-0">
-                                <select name="status" id="statusFilter" class="form-control form-control-sm"
-                                    style="height: 38px; min-width: 130px; max-width: 150px;">
-                                    <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>Semua Status
-                                    </option>
-                                    <option value="pending_review"
-                                        {{ request('status') == 'pending_review' ? 'selected' : '' }}>Menunggu Review
-                                    </option>
-                                    <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>
-                                        Disetujui</option>
-                                    <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak
-                                    </option>
-                                </select>
-                                <input type="text" name="search" id="search" placeholder="Cari data surat..."
-                                    class="form-control form-control-sm"
-                                    style="height: 38px; min-width: 120px; max-width: 160px;"
-                                    value="{{ request('search') }}">
-                                <button type="submit"
-                                    class="btn btn-primary btn-sm d-flex align-items-center justify-content-center"
-                                    style="height: 38px; width: 38px; padding: 0;">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                                @if (auth()->user()->role !== 'monitor')
-                                    <button type="button"
-                                        class="btn btn-primary btn-sm shadow-sm d-flex align-items-center justify-content-center ms-2"
-                                        style="height: 38px; min-width: 180px; font-size: 0.95em; padding: 0 28px; white-space: nowrap;"
-                                        data-bs-toggle="modal" data-bs-target="#requestModal">
-                                        <i class="fas fa-plus fa-sm text-white me-2"></i>Tambah Data Surat
-                                    </button>
-                                @endif
+                                class="d-flex flex-column flex-md-row align-items-stretch align-items-md-center gap-2 mb-0 w-100 justify-content-md-end">
+
+                                <div class="position-relative flex-grow-1" style="max-width: 300px;">
+                                    <i class="fas fa-search position-absolute text-muted"
+                                        style="top: 50%; left: 15px; transform: translateY(-50%); font-size: 0.85rem;"></i>
+                                    <input type="text" id="search" name="search" placeholder="Cari data surat..."
+                                        class="form-control shadow-sm w-100"
+                                        style="padding-left: 36px; border-radius: 30px; height: 38px;"
+                                        value="{{ request('search') }}">
+                                </div>
+
+                                <div class="d-flex gap-2 flex-wrap flex-sm-nowrap">
+                                    <select name="status" id="statusFilter"
+                                        class="form-select form-select-sm shadow-sm flex-grow-1"
+                                        style="height: 38px; min-width: 140px; border-radius: 30px;">
+                                        <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>Semua
+                                            Status</option>
+                                        <option value="pending_review"
+                                            {{ request('status') == 'pending_review' ? 'selected' : '' }}>Menunggu Review
+                                        </option>
+                                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>
+                                            Disetujui</option>
+                                        <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>
+                                            Ditolak</option>
+                                    </select>
+
+                                    @if (auth()->user()->role !== 'monitor')
+                                        <button type="button"
+                                            class="btn btn-primary btn-sm shadow-sm flex-shrink-0 d-flex align-items-center justify-content-center"
+                                            style="height: 38px; border-radius: 30px; font-size: 0.9em; padding: 0 20px; white-space: nowrap;"
+                                            data-bs-toggle="modal" data-bs-target="#requestModal">
+                                            <i class="fas fa-plus fa-sm text-white me-2"></i>Tambah Data
+                                        </button>
+                                    @endif
+                                </div>
                             </form>
                         </div>
-
-
-
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-bordered" width="100%" cellspacing="0">
                                 <thead>
                                     <tr>
-                                        <th class="text-center">No</th>
-                                        <th class="text-center">Jenis Surat</th>
-                                        <th class="text-center">Tanggal Surat</th>
-                                        <th class="text-center">Status</th>
-                                        <th class="text-center">Aksi</th>
+                                        <th translate="no" class="text-center">No</th>
+                                        <th translate="no" class="text-center">Jenis Surat</th>
+                                        <th translate="no" class="text-center">Tanggal Surat</th>
+                                        <th translate="no" class="text-center">Status</th>
+                                        <th translate="no" class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -147,13 +156,14 @@
                         </div>
                     </div>
                     @if (isset($approvalRequests) && method_exists($approvalRequests, 'links'))
-                        <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top">
-                            <div class="text-sm text-gray-600">
+                        <div
+                            class="d-flex flex-column flex-md-row justify-content-between align-items-center px-4 py-3 border-top gap-3">
+                            <div class="text-sm text-gray-600 text-center text-md-start">
                                 Menampilkan {{ $approvalRequests->firstItem() ?? 0 }} sampai
                                 {{ $approvalRequests->lastItem() ?? 0 }} dari {{ $approvalRequests->total() }} data
                             </div>
-                            <nav aria-label="Page navigation">
-                                <ul class="pagination mb-0">
+                            <nav aria-label="Page navigation" class="w-100 w-md-auto">
+                                <ul class="pagination mb-0 justify-content-center justify-content-md-end flex-wrap">
                                     {{-- Previous Page Link --}}
                                     @if ($approvalRequests->onFirstPage())
                                         <li class="page-item disabled">
@@ -379,12 +389,12 @@
         </div>
     @endforeach
 
-    <!-- Modal Tambah Data Surat -->
+    <!-- Modal Pengajuan Berkas Baru -->
     <div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="requestModalLabel">Tambah Data Surat</h5>
+                    <h5 class="modal-title" id="requestModalLabel">Buat Pengajuan Berkas Baru</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="{{ route('data-requests.store') }}" method="POST" enctype="multipart/form-data">

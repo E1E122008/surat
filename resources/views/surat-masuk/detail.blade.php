@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@section('breadcrumb')
+    <i class="fas fa-chevron-right separator"></i> <a href="{{ route('surat-masuk.index') }}">Surat Masuk</a>
+    <i class="fas fa-chevron-right separator"></i> <span style="color: white; font-weight: 600;">Detail</span>
+@endsection
+
+
 @section('content')
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -143,3 +149,6 @@
     vertical-align: middle;
 }
 </style>
+
+
+

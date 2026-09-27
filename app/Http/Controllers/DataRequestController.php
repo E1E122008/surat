@@ -113,6 +113,9 @@ class DataRequestController extends Controller
             \Illuminate\Support\Facades\Notification::send($admins, new DataRequestNotification($dataRequest));
         }
 
+        // Simpan log aktivitas untuk Pengajuan Berkas Baru
+        \App\Models\ActivityLog::log('CREATE_PENGAJUAN', "Mengajukan berkas baru (Jenis: " . strtoupper($validated['letter_type']) . " - No: " . $validated['no_surat'] . ")", Auth::id());
+
         Log::info('Redirecting to data-requests.index');
         return redirect()->route('data-requests.index')
             ->with('success', 'Permintaan berhasil dikirim. Menunggu review admin.');
@@ -191,7 +194,12 @@ class DataRequestController extends Controller
                 }
             }
 
+            $noSurat = $dataRequest->no_surat;
             $dataRequest->delete();
+
+            // Simpan log aktivitas untuk pembatalan
+            \App\Models\ActivityLog::log('CANCEL_PENGAJUAN', "Membatalkan kiriman berkas (No: " . $noSurat . ")", Auth::id());
+
             return redirect()->route('data-requests.index')
                 ->with('success', 'Permintaan berhasil dibatalkan.');
         } catch (\Exception $e) {

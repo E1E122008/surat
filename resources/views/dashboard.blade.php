@@ -1,21 +1,58 @@
 @extends('layouts.app')
 
+@section('breadcrumb')
+    <i class="fas fa-chevron-right separator"></i> <span style="color: white; font-weight: 600;"><i
+            class="fas fa-chart-line me-1"></i> Dashboard Utama</span>
+@endsection
+
 @section('content')
     <!-- Welcome Section -->
-    <div class="dashboard-welcome p-4 bg-white rounded-lg shadow-sm">
+    <!-- Welcome Section -->
+    @if (session('error'))
+        <div id="auto-dismiss-alert"
+            class="alert alert-danger alert-dismissible fade show shadow-sm border-0 d-flex align-items-center mb-4"
+            role="alert"
+            style="background-color: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444 !important; border-radius: 8px;">
+            <i class="fas fa-exclamation-triangle me-3 fs-5" style="color: #ef4444;"></i>
+            <div>
+                <strong class="d-block mb-1">Akses Ditolak</strong>
+                <span style="font-size: 14.5px;">{{ session('error') }}</span>
+            </div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"
+                style="filter: invert(34%) sepia(85%) saturate(1915%) hue-rotate(338deg) brightness(97%) contrast(98%);"></button>
+        </div>
+    @endif
+    @if (session('success'))
+        <div id="auto-dismiss-alert-success"
+            class="alert alert-success alert-dismissible fade show shadow-sm border-0 d-flex align-items-center mb-4"
+            role="alert"
+            style="background-color: #dcfce7; color: #166534; border-left: 4px solid #22c55e !important; border-radius: 8px;">
+            <i class="fas fa-check-circle me-3 fs-5" style="color: #22c55e;"></i>
+            <div>
+                <span style="font-size: 14.5px;">{{ session('success') }}</span>
+            </div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    <div class="dashboard-welcome p-4 rounded-4 shadow-sm"
+        style="background-color: var(--putih-kartu); border: 1px solid var(--border-sangat-tipis);">
         <div class="row">
             <!-- Header Section -->
-            <div class="col-12 border-bottom pb-4 mb-4">
+            <div class="col-12 pb-3 mb-3">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
-                        <h3 class="h4 fw-bold text-primary mb-0">
+                        <h3 class="mb-0" style="color: var(--navy-utama); font-size: 20px; font-weight: 700;">
                             Selamat Datang di Sistem Informasi Administrasi Persuratan Biro Hukum
-                            <span class="d-block small text-secondary mt-1">Sekretariat Daerah Provinsi
-                                Sulawesi Tenggara</span>
+                            <span class="d-block mt-2"
+                                style="color: var(--slate-500); font-size: 14px; font-weight: 500;">Sekretariat
+                                Daerah
+                                Provinsi Sulawesi Tenggara</span>
                         </h3>
                     </div>
-                    <div class="text-secondary">
-                        <span class="small">{{ now()->format('d F Y') }}</span>
+                    <div>
+                        <span
+                            style="color: var(--slate-400); font-size: 13px; font-weight: 400;">{{ now()->format('d F Y') }}</span>
                     </div>
                 </div>
             </div>
@@ -23,15 +60,29 @@
             <!-- Main Content -->
             <div class="col-12">
                 <!-- Description Block -->
-                <div class="description-block mb-5 p-4 bg-light rounded-3">
-                    <div class="d-flex">
-                        <i class="fas fa-balance-scale fs-4 text-primary me-3 mt-1"></i>
-                        <p class="text-muted mb-0 fs-6 lh-base">
-                            Biro hukum mempunyai tugas membantu asisten pemerintahan dan kesejahteraan rakyat dalam
+                <div class="description-block p-4 rounded-4" style="background-color: var(--bg-kotak);">
+                    <div class="d-flex align-items-start">
+                        <i class="fas fa-balance-scale me-3 mt-1" style="color: var(--slate-500); font-size: 18px;"></i>
+                        <p class="mb-0"
+                            style="color: var(--slate-700); font-size: 13.5px; font-weight: 400; line-height: 1.7;">
+                            Biro Hukum mempunyai tugas membantu asisten pemerintahan dan kesejahteraan rakyat dalam
                             penyiapan perumusan kebijakan daerah, pengoordinasian pelaksanaan tugas perangkat daerah,
                             pemantauan dan evaluasi pelaksanaan kebijakan di bidang peraturan perundang-undangan provinsi,
-                            peraturan perundang-undangan kabupaten/kota dan bantuan hukum.
+                            peraturan perundang-undangan kabupaten/kota, dan bantuan hukum.
                         </p>
+                    </div>
+                </div>
+
+                <!-- Jam Layanan Operasional -->
+                <div class="mt-3 p-3 rounded-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center"
+                    style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                    <div class="d-flex align-items-center mb-2 mb-md-0" style="color: #3b82f6;">
+                        <i class="far fa-clock me-2"></i>
+                        <span style="font-size: 13px; font-weight: 500;">[Jam layanan operasional — Senin-Jumat, 08.00-16.00
+                            WITA]</span>
+                    </div>
+                    <div style="font-size: 12.5px; color: #64748b;">
+                        Diluar jam layanan, pesan tetap tersimpan dan akan direspons pada hari kerja berikutnya.
                     </div>
                 </div>
             </div>
@@ -39,7 +90,7 @@
     </div>
 
     @auth
-        @if (in_array(Auth::user()->role, ['admin', 'monitor']))
+        @if (in_array(Auth::user()->role, ['admin', 'monitor', 'superadmin']))
             <!-- Charts Section -->
             <div class="row mb-5 mt-4">
                 <!-- Grafik Statistik -->
@@ -48,12 +99,16 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="card-body">
-                                    <canvas id="incomingDocumentsChart"></canvas>
+                                    <div style="position: relative; height: 320px; width: 100%;">
+                                        <canvas id="incomingDocumentsChart"></canvas>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="card-body">
-                                    <canvas id="outgoingDocumentsChart"></canvas>
+                                    <div style="position: relative; height: 320px; width: 100%;">
+                                        <canvas id="outgoingDocumentsChart"></canvas>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -62,35 +117,35 @@
 
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-5 g-4 pb-2">
                     <div class="col">
-                        <div class="dashboard-card surat-masuk p-4 bg-white shadow-sm h-100">
+                        <div class="dashboard-card surat-masuk p-4 bg-white shadow-sm">
                             <h2 class="card-value">{{ $jumlahSuratMasuk }}</h2>
                             <p class="card-title">Surat Masuk</p>
                             <i class="fas fa-envelope fa-2x card-icon"></i>
                         </div>
                     </div>
                     <div class="col">
-                        <div class="dashboard-card surat-keluar p-4 bg-white shadow-sm h-100">
+                        <div class="dashboard-card surat-keluar p-4 bg-white shadow-sm">
                             <h2 class="card-value">{{ $jumlahSuratKeluar }}</h2>
                             <p class="card-title">Surat Keluar</p>
                             <i class="fas fa-paper-plane fa-2x card-icon"></i>
                         </div>
                     </div>
                     <div class="col">
-                        <div class="dashboard-card draft-phd p-4 bg-white shadow-sm h-100">
+                        <div class="dashboard-card draft-phd p-4 bg-white shadow-sm">
                             <h2 class="card-value">{{ $draftphd }}</h2>
                             <p class="card-title">Registrasi Draft PHD</p>
                             <i class="fas fa-file-alt fa-2x card-icon"></i>
                         </div>
                     </div>
                     <div class="col">
-                        <div class="dashboard-card spt p-4 bg-white shadow-sm h-100">
+                        <div class="dashboard-card spt p-4 bg-white shadow-sm">
                             <h2 class="card-value">{{ $sptCount }}</h2>
                             <p class="card-title">Surat Perintah Tugas</p>
                             <i class="fas fa-file-signature fa-2x card-icon"></i>
                         </div>
                     </div>
                     <div class="col">
-                        <div class="dashboard-card sppd p-4 bg-white shadow-sm h-100">
+                        <div class="dashboard-card sppd p-4 bg-white shadow-sm">
                             <h2 class="card-value">{{ $sppdCount }}</h2>
                             <p class="card-title">Surat Perintah Perjalanan Dinas</p>
                             <i class="fas fa-plane fa-2x card-icon"></i>
@@ -251,56 +306,56 @@
                     datasets: [{
                         label: 'Surat Masuk',
                         data: @json($suratMasukData),
-                        borderColor: '#4C1D95',
-                        backgroundColor: 'rgba(76, 29, 149, 0.1)',
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
                         fill: false,
                         tension: 0.1,
                         pointRadius: 4,
                         pointHoverRadius: 6,
-                        pointBackgroundColor: '#4C1D95',
+                        pointBackgroundColor: '#3b82f6',
                         pointBorderColor: '#ffffff',
                         pointBorderWidth: 2
                     }, {
                         label: 'Surat Keputusan',
                         data: @json($skData),
-                        borderColor: '#713F12',
-                        backgroundColor: 'rgba(113, 63, 18, 0.1)',
+                        borderColor: '#0d9488',
+                        backgroundColor: 'rgba(13, 148, 136, 0.1)',
                         fill: false,
                         tension: 0.1,
                         pointRadius: 4,
                         pointHoverRadius: 6,
-                        pointBackgroundColor: '#713F12',
+                        pointBackgroundColor: '#0d9488',
                         pointBorderColor: '#ffffff',
                         pointBorderWidth: 2
                     }, {
                         label: 'Perda',
                         data: @json($perdaData),
-                        borderColor: '#FEF08A',
-                        backgroundColor: 'rgba(254, 240, 138, 0.1)',
+                        borderColor: '#d97706',
+                        backgroundColor: 'rgba(217, 119, 6, 0.1)',
                         fill: false,
                         tension: 0.1,
                         pointRadius: 4,
                         pointHoverRadius: 6,
-                        pointBackgroundColor: '#FEF08A',
+                        pointBackgroundColor: '#d97706',
                         pointBorderColor: '#ffffff',
                         pointBorderWidth: 2
                     }, {
                         label: 'Pergub',
                         data: @json($pergubData),
-                        borderColor: '#FFD700',
-                        backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                        borderColor: '#7c3aed',
+                        backgroundColor: 'rgba(124, 58, 237, 0.1)',
                         fill: false,
                         tension: 0.1,
                         pointRadius: 4,
                         pointHoverRadius: 6,
-                        pointBackgroundColor: '#FFD700',
+                        pointBackgroundColor: '#7c3aed',
                         pointBorderColor: '#ffffff',
                         pointBorderWidth: 2
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
                             position: 'top',
@@ -310,14 +365,23 @@
                                 boxWidth: 8,
                                 boxHeight: 8,
                                 padding: 20,
+                                color: '#64748b',
                                 font: {
-                                    size: 11
+                                    family: "'Plus Jakarta Sans', sans-serif",
+                                    size: 11.5,
+                                    weight: 400
                                 }
                             }
                         },
                         title: {
                             display: true,
-                            text: 'Dokumen Surat Masuk per Bulan'
+                            text: 'Dokumen Surat Masuk per Bulan',
+                            color: '#1e293b',
+                            font: {
+                                family: "'Poppins', sans-serif",
+                                size: 14,
+                                weight: 700
+                            }
                         },
                         tooltip: {
                             mode: 'index',
@@ -387,18 +451,6 @@
                     datasets: [{
                         label: 'Surat Keluar',
                         data: @json($suratKeluarData),
-                        borderColor: '#22c55e',
-                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                        fill: false,
-                        tension: 0.1,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
-                        pointBackgroundColor: '#22c55e',
-                        pointBorderColor: '#ffffff',
-                        pointBorderWidth: 2
-                    }, {
-                        label: 'SPPD DD',
-                        data: @json($sppdDalamData),
                         borderColor: '#3b82f6',
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
                         fill: false,
@@ -409,46 +461,58 @@
                         pointBorderColor: '#ffffff',
                         pointBorderWidth: 2
                     }, {
-                        label: 'SPPD LD',
-                        data: @json($sppdLuarData),
-                        borderColor: '#ef4444',
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        label: 'SPPD DD',
+                        data: @json($sppdDalamData),
+                        borderColor: '#0d9488',
+                        backgroundColor: 'rgba(13, 148, 136, 0.1)',
                         fill: false,
                         tension: 0.1,
                         pointRadius: 4,
                         pointHoverRadius: 6,
-                        pointBackgroundColor: '#ef4444',
+                        pointBackgroundColor: '#0d9488',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }, {
+                        label: 'SPPD LD',
+                        data: @json($sppdLuarData),
+                        borderColor: '#d97706',
+                        backgroundColor: 'rgba(217, 119, 6, 0.1)',
+                        fill: false,
+                        tension: 0.1,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#d97706',
                         pointBorderColor: '#ffffff',
                         pointBorderWidth: 2
                     }, {
                         label: 'SPT DD',
                         data: @json($sptDalamData),
-                        borderColor: '#f97316',
-                        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                        borderColor: '#7c3aed',
+                        backgroundColor: 'rgba(124, 58, 237, 0.1)',
                         fill: false,
                         tension: 0.1,
                         pointRadius: 4,
                         pointHoverRadius: 6,
-                        pointBackgroundColor: '#f97316',
+                        pointBackgroundColor: '#7c3aed',
                         pointBorderColor: '#ffffff',
                         pointBorderWidth: 2
                     }, {
                         label: 'SPT LD',
                         data: @json($sptLuarData),
-                        borderColor: '#06b6d4',
-                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                        borderColor: '#64748b',
+                        backgroundColor: 'rgba(100, 116, 139, 0.1)',
                         fill: false,
                         tension: 0.1,
                         pointRadius: 4,
                         pointHoverRadius: 6,
-                        pointBackgroundColor: '#06b6d4',
+                        pointBackgroundColor: '#64748b',
                         pointBorderColor: '#ffffff',
                         pointBorderWidth: 2
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
                             position: 'top',
@@ -458,14 +522,23 @@
                                 boxWidth: 8,
                                 boxHeight: 8,
                                 padding: 20,
+                                color: '#64748b',
                                 font: {
-                                    size: 11
+                                    family: "'Plus Jakarta Sans', sans-serif",
+                                    size: 11.5,
+                                    weight: 400
                                 }
                             }
                         },
                         title: {
                             display: true,
-                            text: 'Dokumen Surat yang dikeluarkan per Bulan'
+                            text: 'Dokumen Surat yang Dikeluarkan per Bulan',
+                            color: '#1e293b',
+                            font: {
+                                family: "'Poppins', sans-serif",
+                                size: 14,
+                                weight: 700
+                            }
                         },
                         tooltip: {
                             mode: 'index',
@@ -615,3 +688,22 @@
         border-radius: 3px;
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            let errorAlert = document.getElementById('auto-dismiss-alert');
+            let successAlert = document.getElementById('auto-dismiss-alert-success');
+
+            if (errorAlert) {
+                let bsAlert = new bootstrap.Alert(errorAlert);
+                bsAlert.close();
+            }
+
+            if (successAlert) {
+                let bsAlert = new bootstrap.Alert(successAlert);
+                bsAlert.close();
+            }
+        }, 5000);
+    });
+</script>

@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@section('breadcrumb')
+    <i class="fas fa-chevron-right separator"></i> <a href="{{ route('draft-phd.pergub.index') }}">Draft Pergub</a>
+    <i class="fas fa-chevron-right separator"></i> <span style="color: white; font-weight: 600;">Ubah Data</span>
+@endsection
+
+
 @section('content')
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -456,6 +462,9 @@
 
                             
                             
+
+
+
 
 
 

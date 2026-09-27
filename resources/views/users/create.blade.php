@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@section('breadcrumb')
+    <i class="fas fa-chevron-right separator"></i> <a href="{{ route('users.index') }}">Management User</a>
+    <i class="fas fa-chevron-right separator"></i> <span style="color: white; font-weight: 600;">Tambah Baru</span>
+@endsection
+
+
 @section('content')
 <div class="container mx-auto px-4 py-6">
     <div class="mb-6">
@@ -40,6 +46,9 @@
                 <select name="role" id="role" class="w-full bg-white text-gray-900 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400" required>
                     <option value="user" selected>User</option>
                     <option value="admin">Admin</option>
+                    @if(auth()->user()->role === 'superadmin')
+                        <option value="superadmin">Superadmin</option>
+                    @endif
                     <option value="monitor">Monitor</option>
                 </select>
                 @error('role')
@@ -81,3 +90,7 @@
     </div>
 </div>
 @endsection 
+
+
+
+

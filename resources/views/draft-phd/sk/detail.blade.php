@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@section('breadcrumb')
+    <i class="fas fa-chevron-right separator"></i> <a href="{{ route('draft-phd.sk.index') }}">Draft SK</a>
+    <i class="fas fa-chevron-right separator"></i> <span style="color: white; font-weight: 600;">Detail</span>
+@endsection
+
+
 @php
 use Illuminate\Support\Facades\Storage;
 @endphp
@@ -140,3 +146,6 @@ use Illuminate\Support\Facades\Storage;
         </div>
     </div>
 @endsection
+
+
+

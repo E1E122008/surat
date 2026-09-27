@@ -1,5 +1,10 @@
 @extends('layouts.app')
 
+@section('breadcrumb')
+    <i class="fas fa-chevron-right separator"></i> <span style="color: white; font-weight: 600;"><i
+            class="fas fa-user-circle me-1"></i> Informasi Pribadi</span>
+@endsection
+
 @section('content')
     <style>
         .profile-page {
@@ -41,7 +46,7 @@
             right: 5px;
             width: 35px;
             height: 35px;
-            background: #4a69bd;
+            background: var(--navy-utama);
             border: none;
             color: white;
             border-radius: 50%;
@@ -53,7 +58,7 @@
         }
 
         .camera-btn:hover {
-            background: #3d5aa1;
+            background: #172a5a;
             transform: scale(1.1);
         }
 
@@ -80,7 +85,7 @@
 
         .info-header h5 {
             margin: 0;
-            color: #4a69bd;
+            color: var(--navy-utama);
             font-weight: 600;
         }
 
@@ -128,7 +133,7 @@
         }
 
         .modal-header {
-            background: #4a69bd;
+            background: var(--navy-utama);
             color: white;
             border-radius: 15px 15px 0 0;
         }
@@ -146,8 +151,8 @@
 
         .form-control:focus,
         .form-select:focus {
-            border-color: #4a69bd;
-            box-shadow: 0 0 0 0.2rem rgba(74, 105, 189, 0.25);
+            border-color: var(--navy-utama);
+            box-shadow: 0 0 0 0.2rem rgba(15, 27, 61, 0.25);
         }
     </style>
 
@@ -161,8 +166,8 @@
                             @if (auth()->user()->avatar && file_exists(public_path('storage/' . auth()->user()->avatar)))
                                 <img src="{{ asset('storage/' . auth()->user()->avatar) }}" class="rounded-circle">
                             @else
-                                <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary text-white"
-                                    style="width: 100%; height: 100%; font-size: 5rem; text-transform: uppercase;">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center text-white"
+                                    style="background-color: var(--navy-utama); width: 100%; height: 100%; font-size: 5rem; text-transform: uppercase;">
                                     {{ substr(auth()->user()->name, 0, 1) }}
                                 </div>
                             @endif
@@ -180,41 +185,41 @@
                         <div class="text-center mb-4">
                             <h4 class="mb-1">{{ auth()->user()->name }}</h4>
                             <p class="text-muted">{{ auth()->user()->role }}</p>
-                            <!-- Dropdown Action -->
-                            <div class="dropdown mt-3">
-                                <button class="btn btn-primary dropdown-toggle w-100" type="button"
-                                    id="profileActionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-cog me-2"></i> Aksi
+                            <!-- Action Buttons Stack -->
+                            <div class="d-flex flex-column mt-4" style="gap: 10px;">
+                                <!-- Edit Profil -->
+                                <button class="btn w-100 d-flex justify-content-center align-items-center"
+                                    data-bs-toggle="modal" data-bs-target="#editProfileModal"
+                                    style="background-color: #eab308; border: none; color: white; height: 44px; border-radius: 9px; font-weight: 600; font-size: 13.5px;">
+                                    <i class="fas fa-pencil-alt me-2"></i>Edit Profil
                                 </button>
-                                <ul class="dropdown-menu w-100 text-center" aria-labelledby="profileActionDropdown">
-                                    <li>
-                                        <button class="dropdown-item" data-bs-toggle="modal"
-                                            data-bs-target="#editProfileModal">
-                                            <i class="fas fa-edit me-2"></i>Edit Profil
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button class="dropdown-item" data-bs-toggle="modal"
-                                            data-bs-target="#changePasswordModal">
-                                            <i class="fas fa-key me-2"></i>Ganti Password
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-                                    <li>
-                                        <form method="POST" action="{{ route('logout') }}">
-                                            @csrf
-                                            <button type="submit" class="dropdown-item text-danger">
-                                                <i class="fas fa-sign-out-alt me-2"></i>Logout
-                                            </button>
-                                        </form>
-                                    </li>
-                                </ul>
+
+                                <!-- Ganti Password -->
+                                <button class="btn w-100 d-flex justify-content-center align-items-center"
+                                    data-bs-toggle="modal" data-bs-target="#changePasswordModal"
+                                    style="background-color: white; border: 1px solid #e2e8f0; color: #0f1b3d; height: 44px; border-radius: 9px; font-weight: 600; font-size: 13.5px;">
+                                    <i class="fas fa-lock me-2"></i>Ganti Kata Sandi
+                                </button>
+
+                                <!-- Kembali ke Beranda -->
+                                <a href="{{ route('dashboard') }}"
+                                    class="btn w-100 d-flex justify-content-center align-items-center"
+                                    style="background-color: white; border: 1px solid #e2e8f0; color: #0f1b3d; height: 44px; border-radius: 9px; font-weight: 600; font-size: 13.5px;">
+                                    <i class="fas fa-home me-2"></i>Kembali ke Beranda
+                                </a>
+
+                                <hr style="margin: 4px 0; border: none; border-top: 1px solid #f1f5f9;">
+
+                                <!-- Keluar -->
+                                <form method="POST" action="{{ route('logout') }}" class="m-0 p-0">
+                                    @csrf
+                                    <button type="submit"
+                                        class="btn w-100 d-flex justify-content-center align-items-center"
+                                        style="background-color: white; border: 1px solid #fecaca; color: #dc2626; height: 44px; border-radius: 9px; font-weight: 600; font-size: 13.5px;">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Keluar
+                                    </button>
+                                </form>
                             </div>
-                            <a href="{{ route('dashboard') }}" class="btn btn-info w-100 mt-2">
-                                <i class="fas fa-home me-2"></i>Kembali ke Beranda
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -268,149 +273,227 @@
                             </div>
                         </div>
 
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Edit Profil -->
-    <div class="modal fade" id="editProfileModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Profil</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form action="{{ route('profile.update') }}" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Nama Lengkap</label>
-                            <input type="text" class="form-control" name="name" value="{{ auth()->user()->name }}">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" name="email"
-                                value="{{ auth()->user()->email }}">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Nomor Telepon</label>
-                            <input type="text" class="form-control" name="phone"
-                                value="{{ auth()->user()->phone }}">
-                        </div>
-                        @if (auth()->user()->role === 'admin')
-                            <div class="mb-3">
-                                <label class="form-label">Role</label>
-                                <select class="form-select" name="role">
-                                    <option value="">Pilih Role</option>
-                                    <option value="admin" {{ auth()->user()->role == 'admin' ? 'selected' : '' }}>Admin
-                                    </option>
-                                    <option value="user" {{ auth()->user()->role == 'user' ? 'selected' : '' }}>User
-                                    </option>
-                                    <option value="monitor" {{ auth()->user()->role == 'monitor' ? 'selected' : '' }}>
-                                        Monitor</option>
-                                </select>
+                        {{-- ===== Kartu Aktivitas Terbaru ===== --}}
+                        <div class="profile-info-card mt-4">
+                            <div class="info-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Aktivitas Terbaru</h5>
+                                <a href="{{ route('profile.activity') }}" class="text-decoration-none fw-semibold"
+                                    style="color: #eab308; font-size: 13.5px;">Lihat semua &rarr;</a>
                             </div>
-                        @endif
-                        <div class="mb-3">
-                            <label class="form-label">NIP</label>
-                            <input type="text" class="form-control" name="nip"
-                                value="{{ auth()->user()->nip }}">
+                            <div class="info-body py-0 px-3">
+                                @forelse($recentActivities as $log)
+                                    @php
+                                        $icon = 'info-circle';
+                                        $iconColor = '#64748b';
+                                        $iconBg = '#f1f5f9';
+                                        if (
+                                            str_contains($log->action, 'login') ||
+                                            str_contains($log->action, 'logout')
+                                        ) {
+                                            $icon = 'sign-in-alt';
+                                            $iconColor = '#2563eb';
+                                            $iconBg = '#eff6ff';
+                                        } elseif (
+                                            str_contains($log->action, 'create') ||
+                                            str_contains($log->action, 'accept')
+                                        ) {
+                                            $icon = 'plus-circle';
+                                            $iconColor = '#16a34a';
+                                            $iconBg = '#f0fdf4';
+                                        } elseif (
+                                            str_contains($log->action, 'update') ||
+                                            str_contains($log->action, 'change') ||
+                                            str_contains($log->action, 'reset')
+                                        ) {
+                                            $icon = 'edit';
+                                            $iconColor = '#d97706';
+                                            $iconBg = '#fffbeb';
+                                        } elseif (
+                                            str_contains($log->action, 'delete') ||
+                                            str_contains($log->action, 'reject')
+                                        ) {
+                                            $icon = 'trash-alt';
+                                            $iconColor = '#dc2626';
+                                            $iconBg = '#fef2f2';
+                                        } elseif (str_contains($log->action, 'export')) {
+                                            $icon = 'download';
+                                            $iconColor = '#7c3aed';
+                                            $iconBg = '#f5f3ff';
+                                        }
+                                    @endphp
+                                    <div class="d-flex align-items-center py-3 {{ !$loop->last ? 'border-bottom' : '' }}"
+                                        style="border-color: #f1f5f9 !important;">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
+                                            style="width: 36px; height: 36px; background: {{ $iconBg }};">
+                                            <i class="fas fa-{{ $icon }}"
+                                                style="color: {{ $iconColor }}; font-size: 14px;"></i>
+                                        </div>
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <div class="fw-semibold text-dark"
+                                                style="font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                {{ $log->description ?? '-' }}
+                                            </div>
+                                            <div class="text-muted" style="font-size: 11.5px;">
+                                                {{ $log->created_at->diffForHumans() }}</div>
+                                        </div>
+                                        <div class="ms-3 text-muted text-end flex-shrink-0"
+                                            style="font-size: 11px; line-height: 1.4;">
+                                            {{ $log->created_at->format('d M Y') }}<br>
+                                            <span style="color: #94a3b8;">{{ $log->created_at->format('H:i') }} WIB</span>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="text-center py-4 text-muted">
+                                        <i class="fas fa-history mb-2" style="font-size: 2rem; opacity: 0.3;"></i>
+                                        <p class="mb-0 small">Belum ada aktivitas tercatat.</p>
+                                    </div>
+                                @endforelse
+                            </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Ganti Password -->
-    <div class="modal fade" id="changePasswordModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Ganti Password</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form action="{{ route('profile.password') }}" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Password Lama</label>
-                            <input type="password" class="form-control" name="current_password" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Password Baru</label>
-                            <input type="password" class="form-control" name="password" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Konfirmasi Password Baru</label>
-                            <input type="password" class="form-control" name="password_confirmation" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Simpan Password</button>
-                    </div>
-                </form>
             </div>
         </div>
-    </div>
 
-    <!-- Modal Upload Avatar -->
-    <div class="modal fade" id="avatarModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Ubah Foto Profil</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <!-- Modal Edit Profil -->
+        <div class="modal fade" id="editProfileModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Profil</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form action="{{ route('profile.update') }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Nama Lengkap</label>
+                                <input type="text" class="form-control" name="name"
+                                    value="{{ auth()->user()->name }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email"
+                                    value="{{ auth()->user()->email }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nomor Telepon</label>
+                                <input type="text" class="form-control" name="phone"
+                                    value="{{ auth()->user()->phone }}">
+                            </div>
+                            @if (auth()->user()->role === 'admin')
+                                <div class="mb-3">
+                                    <label class="form-label">Role</label>
+                                    <select class="form-select" name="role">
+                                        <option value="">Pilih Role</option>
+                                        <option value="admin" {{ auth()->user()->role == 'admin' ? 'selected' : '' }}>
+                                            Admin
+                                        </option>
+                                        <option value="user" {{ auth()->user()->role == 'user' ? 'selected' : '' }}>User
+                                        </option>
+                                        <option value="monitor" {{ auth()->user()->role == 'monitor' ? 'selected' : '' }}>
+                                            Monitor</option>
+                                    </select>
+                                </div>
+                            @endif
+                            <div class="mb-3">
+                                <label class="form-label">NIP</label>
+                                <input type="text" class="form-control" name="nip"
+                                    value="{{ auth()->user()->nip }}">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                        </div>
+                    </form>
                 </div>
-                <form action="{{ route('profile.avatar') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Pilih Foto</label>
-                            <input type="file" class="form-control" name="avatar" accept="image/*" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Upload</button>
-                    </div>
-                </form>
             </div>
         </div>
-    </div>
-@endsection
 
-@push('styles')
-    <style>
-        .timeline-icon {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        <!-- Modal Ganti Password -->
+        <div class="modal fade" id="changePasswordModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Ganti Password</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form action="{{ route('profile.password') }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Password Lama</label>
+                                <input type="password" class="form-control" name="current_password" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password Baru</label>
+                                <input type="password" class="form-control" name="password" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Konfirmasi Password Baru</label>
+                                <input type="password" class="form-control" name="password_confirmation" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary">Simpan Password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-        .timeline-item {
-            position: relative;
-        }
+        <!-- Modal Upload Avatar -->
+        <div class="modal fade" id="avatarModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Ubah Foto Profil</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form action="{{ route('profile.avatar') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Pilih Foto</label>
+                                <input type="file" class="form-control" name="avatar" accept="image/*" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary">Upload</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endsection
 
-        .timeline-item:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            left: 20px;
-            top: 40px;
-            bottom: 0;
-            width: 1px;
-            background: #dee2e6;
-        }
-    </style>
-@endpush
+    @push('styles')
+        <style>
+            .timeline-icon {
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .timeline-item {
+                position: relative;
+            }
+
+            .timeline-item:not(:last-child)::after {
+                content: '';
+                position: absolute;
+                left: 20px;
+                top: 40px;
+                bottom: 0;
+                width: 1px;
+                background: #dee2e6;
+            }
+        </style>
+    @endpush
