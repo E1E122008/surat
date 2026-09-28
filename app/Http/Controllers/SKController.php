@@ -27,10 +27,10 @@ class SKController extends Controller
         }
 
         $sortOrder = $request->input('sort', 'asc');
-        if ($sortOrder === 'desc') {
-            $query->latest();
-        } else {
+        if ($sortOrder === 'asc') {
             $query->oldest();
+        } else {
+            $query->latest();
         }
 
         // Ambil data dengan pagination

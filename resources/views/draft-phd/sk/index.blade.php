@@ -55,8 +55,10 @@
                             class="d-flex flex-column flex-md-row m-0 flex-grow-1" style="gap: 12px;">
                             <!-- SEARCH -->
                             <div class="position-relative flex-grow-1">
-                                <i class="fas fa-search position-absolute text-muted"
-                                    style="top: 50%; left: 15px; transform: translateY(-50%); font-size: 1rem;"></i>
+                                <button type="submit" class="position-absolute border-0 bg-transparent text-muted"
+                                    style="top: 50%; left: 15px; transform: translateY(-50%); z-index: 4;">
+                                    <i class="fas fa-search" style="font-size: 1rem;"></i>
+                                </button>
                                 <input type="text" name="search" placeholder="Cari SK..."
                                     class="form-control shadow-sm w-100 custom-search-input"
                                     style="padding-left: 45px; border-radius: 30px; height: 42px; font-size: 0.95rem; font-weight: 500;"
@@ -67,7 +69,7 @@
                             </div>
                         </form>
 
-                        @php $sortOrder = request('sort', 'desc'); @endphp
+                        @php $sortOrder = request('sort', 'asc'); @endphp
                         <!-- SORT URUTKAN -->
                         <div class="dropdown d-flex justify-content-stretch fixed-action-width">
                             <button class="btn btn-outline-secondary dropdown-toggle shadow-sm w-100 m-0 text-nowrap"
@@ -158,27 +160,28 @@
                                         @if ($item->disposisi)
                                             @php
                                                 $disposisiParts = explode('|', $item->disposisi);
-                                                $persetujuanKetua = null;
+                                                                                                $persetujuanKetua = null;
                                                 $tujuanDisposisi = null;
                                                 $subDisposisi = null;
                                                 $tanggalDisposisi = null;
                                                 $catatan = null;
                                                 $otherParts = [];
 
-                                                // Pisahkan status persetujuan dan bagian lainnya
+                                                // Pisahkan status persetujuan dari bagian lainnya
+                                                // Format baru: "Sudah di Setujui (Kepala|Ketua) Biro Hukum" atau "Belum di Setujui (Kepala|Ketua) Biro Hukum"
                                                 foreach ($disposisiParts as $index => $part) {
                                                     $trimmedPart = trim($part);
                                                     if (
                                                         preg_match(
-                                                            '/(Sudah|Belum)\s+di\s+Setujui\s+Kepala\s+Biro\s+Hukum/i',
+                                                            '/(Sudah|Belum)\s+di\s+Setujui\s+(Kepala|Ketua)\s+Biro\s+Hukum/i',
                                                             $trimmedPart,
                                                         )
                                                     ) {
                                                         $persetujuanKetua = $trimmedPart;
                                                     } elseif (
-                                                        strpos($trimmedPart, 'Persetujuan Kepala Biro Hukum:') !== false
+                                                        stripos($trimmedPart, 'Persetujuan Ke') !== false && stripos($trimmedPart, 'Biro Hukum:') !== false
                                                     ) {
-                                                        // Fallback format lama
+                                                        // Fallback untuk format lama
                                                         $persetujuanKetua = $trimmedPart;
                                                     } elseif (strpos($trimmedPart, 'Diteruskan ke:') !== false) {
                                                         // Extract sub disposisi
@@ -193,68 +196,76 @@
                                                     } elseif (strpos($trimmedPart, 'Catatan:') !== false) {
                                                         // Extract catatan
                                                         $catatan = trim(str_replace('Catatan:', '', $trimmedPart));
-                                                    } elseif ($index === 0 && !$tujuanDisposisi) {
+                                                    } elseif ($index === 0 && !$persetujuanKetua) {
+                                                        // Jika bagian pertama bukan persetujuan, berarti itu tujuan disposisi
                                                         $tujuanDisposisi = $trimmedPart;
                                                     } else {
                                                         $otherParts[] = $trimmedPart;
                                                     }
                                                 }
 
-                                                // Jika tujuan belum terisi, ambil dari otherParts
+                                                // Jika tidak ada tujuan disposisi yang terpisah, ambil dari otherParts
                                                 if (!$tujuanDisposisi && count($otherParts) > 0) {
                                                     $tujuanDisposisi = $otherParts[0];
                                                     $otherParts = array_slice($otherParts, 1);
                                                 }
                                             @endphp
-                                            <div class="text-center">
-                                                {{-- Status Persetujuan --}}
+                                            <div class="d-flex flex-column align-items-start text-start" style="gap: 8px; min-width: 240px; padding: 4px 0;">
+                                                {{-- Tampilkan Status Persetujuan Terlebih Dahulu --}}
                                                 @if ($persetujuanKetua)
-                                                    <div class="mb-2">
-                                                        <span
-                                                            class="badge {{ stripos($persetujuanKetua, 'Sudah') !== false ? 'bg-success' : 'bg-warning' }}">
-                                                            {{ $persetujuanKetua }}
-                                                        </span>
-                                                    </div>
+                                                    <span class="badge {{ stripos($persetujuanKetua, 'Sudah') !== false ? 'bg-success' : 'bg-warning text-dark' }} shadow-sm" style="font-size: 0.75rem; padding: 6px 12px; border-radius: 6px; font-weight: 500; letter-spacing: 0.3px;">
+                                                        <i class="fas {{ stripos($persetujuanKetua, 'Sudah') !== false ? 'fa-check' : 'fa-clock' }} me-1"></i> {{ $persetujuanKetua }}
+                                                    </span>
                                                 @endif
 
-                                                {{-- Tujuan Disposisi Utama --}}
+                                                {{-- Tampilkan Tujuan Disposisi Utama --}}
                                                 @if ($tujuanDisposisi)
-                                                    <div class="mb-1">
-                                                        <strong>{{ $tujuanDisposisi }}</strong>
+                                                    <div style="font-size: 0.85rem; font-weight: 600; color: #1e293b; display: flex; align-items: flex-start; gap: 8px; padding-top: 4px;">
+                                                        <i class="fas fa-level-down-alt text-primary mt-1" style="transform: rotate(90deg); font-size: 0.8rem; margin-left: 2px;"></i> 
+                                                        <span style="flex: 1; line-height: 1.4;">{{ $tujuanDisposisi }}</span>
                                                     </div>
                                                 @endif
 
                                                 {{-- Tampilkan Diteruskan ke --}}
                                                 @if ($subDisposisi)
-                                                    <div class="mb-1 text-sm">
-                                                        <strong>Diteruskan ke:</strong> {{ $subDisposisi }}
-                                                    </div>
-                                                @endif
-
-                                                {{-- Tampilkan Tanggal --}}
-                                                @if ($tanggalDisposisi)
-                                                    <div class="mb-1 text-sm">
-                                                        <strong>Tanggal:</strong> {{ $tanggalDisposisi }}
+                                                    <div style="font-size: 0.8rem; color: #475569; display: flex; align-items: flex-start; gap: 8px;">
+                                                        <i class="fas fa-angle-double-right text-muted mt-1" style="font-size: 0.75rem; margin-left: 1px;"></i>
+                                                        <span style="flex: 1; line-height: 1.4;">
+                                                            <span class="fw-bold" style="color: #334155;">Diteruskan:</span> {{ $subDisposisi }}
+                                                        </span>
                                                     </div>
                                                 @endif
 
                                                 {{-- Tampilkan Catatan --}}
                                                 @if ($catatan)
-                                                    <div class="mb-1 text-sm">
-                                                        <strong>Catatan:</strong> {{ $catatan }}
+                                                    <div class="w-100 mt-1" style="background-color: #f8fafc; border-left: 3px solid #3b82f6; padding: 8px 12px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                                                        <div style="font-size: 0.65rem; font-weight: 700; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">
+                                                            <i class="fas fa-comment-alt me-1"></i> Catatan
+                                                        </div>
+                                                        <div class="fst-italic" style="font-size: 0.8rem; color: #334155; line-height: 1.4;">
+                                                            {{ $catatan }}
+                                                        </div>
                                                     </div>
                                                 @endif
 
-                                                {{-- Informasi Lainnya (fallback untuk data lama) --}}
+                                                {{-- Tampilkan Tanggal --}}
+                                                @if ($tanggalDisposisi)
+                                                    <div class="mt-1" style="font-size: 0.75rem; color: #64748b; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                                                        <i class="far fa-calendar-alt" style="color: #94a3b8;"></i> 
+                                                        <span>{{ $tanggalDisposisi }}</span>
+                                                    </div>
+                                                @endif
+
+                                                {{-- Tampilkan Informasi Lainnya --}}
                                                 @if (count($otherParts) > 0)
-                                                    <small class="text-muted d-block">
+                                                    <div class="mt-1" style="font-size: 0.75rem; color: #64748b;">
                                                         @foreach ($otherParts as $part)
-                                                            {{ $part }}
-                                                            @if (!$loop->last)
-                                                                <br>
-                                                            @endif
+                                                            <div class="mb-1" style="display: flex; align-items: flex-start; gap: 6px;">
+                                                                <i class="fas fa-circle mt-1" style="font-size: 4px; color: #cbd5e1;"></i>
+                                                                <span>{{ $part }}</span>
+                                                            </div>
                                                         @endforeach
-                                                    </small>
+                                                    </div>
                                                 @endif
                                             </div>
                                         @else
@@ -348,13 +359,7 @@
                         {{ method_exists($sks, 'total') ? $sks->total() : $sks->count() }}
                     </span>
                 </div>
-                <style>
-                    .pagination .page-item:first-child,
-                    .pagination .page-item:last-child {
-                        display: none !important;
-                    }
-                </style>
-            </div>
+</div>
         </div>
     </div>
 
@@ -803,7 +808,7 @@
                             </tr>
                         </table>
                         <p style="margin-top:10px; color:#ef4444; font-size:0.82rem; font-weight:500;">
-                            ⚠️ Data ini akan dihapus secara permanen!
+                            ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Data ini akan dihapus secara permanen!
                         </p>
                     </div>`,
                 showCancelButton: true,

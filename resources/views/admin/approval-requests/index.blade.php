@@ -41,8 +41,10 @@
                             <form method="GET" class="d-flex flex-column flex-md-row m-0 flex-grow-1" style="gap: 12px;">
                                 <!-- PENCARIAN -->
                                 <div class="position-relative flex-grow-1">
-                                    <i class="fas fa-search position-absolute text-muted"
-                                        style="top: 50%; left: 15px; transform: translateY(-50%); font-size: 1rem;"></i>
+                                    <button type="submit" class="position-absolute border-0 bg-transparent text-muted"
+                                        style="top: 50%; left: 15px; transform: translateY(-50%); z-index: 4;">
+                                        <i class="fas fa-search" style="font-size: 1rem;"></i>
+                                    </button>
                                     <input type="text" name="search" placeholder="Cari data surat..."
                                         class="form-control shadow-sm w-100 custom-search-input"
                                         style="padding-left: 45px; border-radius: 30px; height: 42px; font-size: 0.95rem; font-weight: 500;"

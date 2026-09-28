@@ -25,10 +25,10 @@ class SppdDalamDaerahController extends Controller
         }
         
         $sortOrder = $request->input('sort', 'asc');
-        if ($sortOrder === 'desc') {
-            $query->latest();
-        } else {
+        if ($sortOrder === 'asc') {
             $query->oldest();
+        } else {
+            $query->latest();
         }
 
         $sppd = $query->paginate(10)->appends($request->query());

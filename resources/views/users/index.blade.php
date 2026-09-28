@@ -58,7 +58,7 @@
                         </select>
                     </form>
 
-                    @php $sortOrder = request('sort', 'desc'); @endphp
+                    @php $sortOrder = request('sort', 'asc'); @endphp
                     <!-- SORT URUTKAN -->
                     <div class="dropdown d-flex justify-content-stretch" style="min-width: 140px;">
                         <button class="btn btn-outline-secondary dropdown-toggle shadow-sm w-100 m-0 text-nowrap"
@@ -96,7 +96,7 @@
                                     <th translate="no"
                                         class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider"
                                         style="border: none !important;">
-                                        Name</th>
+                                        Nama</th>
                                     <th translate="no"
                                         class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider"
                                         style="border: none !important;">
@@ -104,11 +104,11 @@
                                     <th translate="no"
                                         class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider"
                                         style="border: none !important;">
-                                        Role</th>
+                                        Peran</th>
                                     <th translate="no"
                                         class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider"
                                         style="border: none !important;">
-                                        Created At</th>
+                                        Tanggal Dibuat</th>
                                     <th translate="no"
                                         class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider"
                                         style="border: none !important;">
@@ -116,7 +116,7 @@
                                     <th translate="no"
                                         class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider"
                                         style="border: none !important;">
-                                        Actions</th>
+                                        Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">

@@ -53,10 +53,12 @@
                                 class="d-flex flex-column flex-md-row align-items-stretch align-items-md-center gap-2 mb-0 w-100 justify-content-md-end">
 
                                 <div class="position-relative flex-grow-1" style="max-width: 300px;">
-                                    <i class="fas fa-search position-absolute text-muted"
-                                        style="top: 50%; left: 15px; transform: translateY(-50%); font-size: 0.85rem;"></i>
+                                    <button type="submit" class="position-absolute border-0 bg-transparent text-muted"
+                                        style="top: 50%; left: 15px; transform: translateY(-50%); z-index: 4;">
+                                        <i class="fas fa-search" style="font-size: 0.85rem;"></i>
+                                    </button>
                                     <input type="text" id="search" name="search" placeholder="Cari data surat..."
-                                        class="form-control shadow-sm w-100"
+                                        class="form-control shadow-sm w-100 custom-search-input"
                                         style="padding-left: 36px; border-radius: 30px; height: 38px;"
                                         value="{{ request('search') }}">
                                 </div>

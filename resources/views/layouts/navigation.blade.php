@@ -392,6 +392,20 @@
                             Pengaturan Akun
                         </a>
                     </li>
+                    @if (Auth::user()->role === 'superadmin')
+                        <li style="padding: 0 16px;">
+                            <hr class="dropdown-divider m-0" style="border-color: #f1f5f9;">
+                        </li>
+                        <li style="padding: 8px 16px;">
+                            <a class="dropdown-item d-flex align-items-center px-0 py-2"
+                                href="{{ route('system-settings.index') }}"
+                                style="color: #1e293b; font-size: 14px; font-weight: 500; background: transparent;">
+                                <i class="fas fa-cogs me-3"
+                                    style="color: #64748b; font-size: 16px; width: 20px; text-align: center;"></i>
+                                Pengaturan Sistem
+                            </a>
+                        </li>
+                    @endif
                     <li style="padding: 0 16px;">
                         <hr class="dropdown-divider m-0" style="border-color: #f1f5f9;">
                     </li>

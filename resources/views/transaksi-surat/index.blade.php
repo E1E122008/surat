@@ -27,7 +27,7 @@
         <div class="bg-white shadow-sm" style="border-radius: 12px;">
             <div class="p-4">
 
-                {{-- ─── TOOLBAR ─── --}}
+                {{-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ TOOLBAR Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ --}}
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-3 mb-3 pb-3"
                     style="border-bottom: 1px solid rgba(0,0,0,0.06);">
 
@@ -52,7 +52,7 @@
                     {{-- Right-side controls --}}
                     <div class="d-flex flex-wrap gap-2 align-items-center">
                         {{-- Urutkan --}}
-                        @php $sortOrder = request('sort', 'desc'); @endphp
+                        @php $sortOrder = request('sort', 'asc'); @endphp
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary dropdown-toggle text-nowrap" type="button"
                                 data-bs-toggle="dropdown"
@@ -70,7 +70,7 @@
                             </ul>
                         </div>
 
-                        {{-- Badge jumlah – desktop inline, mobile full-width row via CSS --}}
+                        {{-- Badge jumlah Ã¢â‚¬â€œ desktop inline, mobile full-width row via CSS --}}
                         @php
                             $activeTab = request('tab', 'surat-masuk');
                             $jumlahLabel = match ($activeTab) {
@@ -86,7 +86,7 @@
                     </div>
                 </div>
 
-                {{-- ─── TABS (scrollable on mobile) ─── --}}
+                {{-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ TABS (scrollable on mobile) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ --}}
                 <div class="arsip-tabs-wrap mb-3">
                     <ul class="nav nav-tabs flex-nowrap" style="border-bottom:1px solid #dee2e6; white-space:nowrap;">
                         <li class="nav-item">
@@ -116,7 +116,7 @@
                     </ul>
                 </div>
 
-                {{-- ─── TAB CONTENT ─── --}}
+                {{-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ TAB CONTENT Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ --}}
                 <div class="tab-content">
                     @include('transaksi-surat.partials.surat-masuk')
                     @include('transaksi-surat.partials.sk')
@@ -323,11 +323,82 @@
         // Detail modal logic (shared across all tabs)
         function openDetail(data) {
             const bd = document.getElementById('arsip-detail-backdrop');
-            document.getElementById('det-header').textContent = (data.no_surat || '-') + ' • ' + (data.tanggal || '-');
+            document.getElementById('det-header').textContent = (data.no_surat || '-') + ' Ã¢â‚¬Â¢ ' + (data.tanggal || '-');
             document.getElementById('det-agenda').textContent = data.no_agenda || '-';
             document.getElementById('det-pengirim').textContent = data.pengirim || '-';
             document.getElementById('det-perihal').textContent = data.perihal || '-';
-            document.getElementById('det-disposisi').textContent = data.disposisi || '-';
+                        // Format Disposisi Column UI (JS Parser Mirroring the Server UI)
+            const detDisp = document.getElementById('det-disposisi');
+            // Pastikan tidak ada border sisa teks jika null
+            if (!data.disposisi || data.disposisi.trim() === '-' || data.disposisi.trim() === '') {
+                detDisp.innerHTML = '-';
+            } else {
+                const parts = data.disposisi.split(/<br>|\|/i).map(p => p.trim()).filter(p => p.length > 0);
+                let persetujuanKetua = null;
+                let tujuanDisposisi = null;
+                let subDisposisi = null;
+                let tanggalDisposisi = null;
+                let catatan = null;
+                let otherParts = [];
+
+                parts.forEach((part, index) => {
+                    if (/(Sudah|Belum)\s+di\s+Setujui\s+(Kepala|Ketua)\s+Biro\s+Hukum/i.test(part)) {
+                        persetujuanKetua = part;
+                    } else if (/Persetujuan Ke/i.test(part) && /Biro Hukum:/i.test(part)) {
+                        persetujuanKetua = part;
+                    } else if (part.includes('Diteruskan ke:')) {
+                        subDisposisi = part.replace('Diteruskan ke:', '').trim();
+                    } else if (part.includes('Tanggal:')) {
+                        tanggalDisposisi = part.replace('Tanggal:', '').trim();
+                    } else if (part.includes('Catatan:')) {
+                        catatan = part.replace('Catatan:', '').trim();
+                    } else if (index === 0 && !persetujuanKetua) {
+                        tujuanDisposisi = part;
+                    } else {
+                        otherParts.push(part);
+                    }
+                });
+
+                if (!tujuanDisposisi && otherParts.length > 0) {
+                    tujuanDisposisi = otherParts.shift();
+                }
+
+                let html = '<div class="d-flex flex-column align-items-start text-start mt-2" style="gap: 8px; min-width: 240px; padding: 4px 0;">';
+                
+                if (persetujuanKetua) {
+                    const isSukses = persetujuanKetua.toLowerCase().includes('sudah');
+                    const bgClass = isSukses ? 'bg-success text-white' : 'bg-warning text-dark';
+                    const iconClass = isSukses ? 'fa-check' : 'fa-clock';
+                    html += `<span class="badge ${bgClass} shadow-sm" style="font-size: 0.75rem; padding: 6px 12px; border-radius: 6px; font-weight: 500; letter-spacing: 0.3px;"><i class="fas ${iconClass} me-1"></i> ${persetujuanKetua}</span>`;
+                }
+
+                if (tujuanDisposisi) {
+                    html += `<div style="font-size: 0.85rem; font-weight: 600; color: #1e293b; display: flex; align-items: flex-start; gap: 8px; padding-top: 4px;"><i class="fas fa-level-down-alt text-primary mt-1" style="transform: rotate(90deg); font-size: 0.8rem; margin-left: 2px;"></i> <span style="flex: 1; line-height: 1.4;">${tujuanDisposisi}</span></div>`;
+                }
+
+                if (subDisposisi) {
+                    html += `<div style="font-size: 0.8rem; color: #475569; display: flex; align-items: flex-start; gap: 8px;"><i class="fas fa-angle-double-right text-muted mt-1" style="font-size: 0.75rem; margin-left: 1px;"></i><span style="flex: 1; line-height: 1.4;"><span class="fw-bold" style="color: #334155;">Diteruskan:</span> ${subDisposisi}</span></div>`;
+                }
+
+                if (catatan) {
+                    html += `<div class="w-100 mt-1" style="background-color: #f8fafc; border-left: 3px solid #3b82f6; padding: 8px 12px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);"><div style="font-size: 0.65rem; font-weight: 700; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;"><i class="fas fa-comment-alt me-1"></i> Catatan</div><div class="fst-italic" style="font-size: 0.8rem; color: #334155; line-height: 1.4;">${catatan}</div></div>`;
+                }
+
+                if (tanggalDisposisi) {
+                    html += `<div class="mt-1" style="font-size: 0.75rem; color: #64748b; font-weight: 500; display: flex; align-items: center; gap: 6px;"><i class="far fa-calendar-alt" style="color: #94a3b8;"></i> <span>${tanggalDisposisi}</span></div>`;
+                }
+
+                if (otherParts.length > 0) {
+                    html += `<div class="mt-1" style="font-size: 0.75rem; color: #64748b;">`;
+                    otherParts.forEach(p => {
+                        html += `<div class="mb-1" style="display: flex; align-items: flex-start; gap: 6px;"><i class="fas fa-circle mt-1" style="font-size: 4px; color: #cbd5e1;"></i><span>${p}</span></div>`;
+                    });
+                    html += `</div>`;
+                }
+
+                html += `</div>`;
+                detDisp.innerHTML = html;
+            }
 
             const lampWrap = document.getElementById('det-lampiran-wrap');
             lampWrap.innerHTML = '';
@@ -367,7 +438,7 @@
         });
     </script>
 
-    {{-- ── SHARED DETAIL MODAL (single DOM element, data injected via JS) ── --}}
+    {{-- Ã¢â€â‚¬Ã¢â€â‚¬ SHARED DETAIL MODAL (single DOM element, data injected via JS) Ã¢â€â‚¬Ã¢â€â‚¬ --}}
     <div class="detail-modal-backdrop" id="arsip-detail-backdrop">
         <div class="detail-modal-box">
             <button class="detail-close-btn" onclick="closeDetail()" aria-label="Tutup">

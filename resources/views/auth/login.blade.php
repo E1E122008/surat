@@ -449,7 +449,8 @@
         <div class="info-side">
             <div class="info-content delay-info">
                 <div class="brand-header">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo Sultra" class="app-logo">
+                    <img src="{{ isset($systemSetting) && $systemSetting->logo ? asset('storage/' . $systemSetting->logo) : asset('images/logo.png') }}"
+                        alt="Logo Sultra" class="app-logo">
                     <h1 class="app-title">SIAP BROH!!!</h1>
                     <h3 class="app-subtitle">Sistem Informasi Administrasi Persuratan Biro Hukum</h3>
                 </div>

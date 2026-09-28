@@ -43,11 +43,32 @@
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
                         <h3 class="mb-0" style="color: var(--navy-utama); font-size: 20px; font-weight: 700;">
-                            Selamat Datang di Sistem Informasi Administrasi Persuratan Biro Hukum
-                            <span class="d-block mt-2"
-                                style="color: var(--slate-500); font-size: 14px; font-weight: 500;">Sekretariat
-                                Daerah
-                                Provinsi Sulawesi Tenggara</span>
+                            {!! nl2br(
+                                e(
+                                    explode(
+                                        "\n",
+                                        $systemSetting->headline ??
+                                            "Selamat Datang di Sistem Informasi Administrasi Persuratan Biro Hukum\nSekretariat Daerah Provinsi Sulawesi Tenggara",
+                                    )[0] ?? '',
+                                ),
+                            ) !!}
+                            <span class="d-block mt-2" style="color: var(--slate-500); font-size: 14px; font-weight: 500;">
+                                {!! nl2br(
+                                    e(
+                                        implode(
+                                            "\n",
+                                            array_slice(
+                                                explode(
+                                                    "\n",
+                                                    $systemSetting->headline ??
+                                                        "Selamat Datang di Sistem Informasi Administrasi Persuratan Biro Hukum\nSekretariat Daerah Provinsi Sulawesi Tenggara",
+                                                ),
+                                                1,
+                                            ),
+                                        ),
+                                    ),
+                                ) !!}
+                            </span>
                         </h3>
                     </div>
                     <div>
@@ -65,10 +86,7 @@
                         <i class="fas fa-balance-scale me-3 mt-1" style="color: var(--slate-500); font-size: 18px;"></i>
                         <p class="mb-0"
                             style="color: var(--slate-700); font-size: 13.5px; font-weight: 400; line-height: 1.7;">
-                            Biro Hukum mempunyai tugas membantu asisten pemerintahan dan kesejahteraan rakyat dalam
-                            penyiapan perumusan kebijakan daerah, pengoordinasian pelaksanaan tugas perangkat daerah,
-                            pemantauan dan evaluasi pelaksanaan kebijakan di bidang peraturan perundang-undangan provinsi,
-                            peraturan perundang-undangan kabupaten/kota, dan bantuan hukum.
+                            {{ $systemSetting->description ?? 'Biro Hukum mempunyai tugas membantu asisten pemerintahan dan kesejahteraan rakyat dalam penyiapan perumusan kebijakan daerah, pengoordinasian pelaksanaan tugas perangkat daerah, pemantauan dan evaluasi pelaksanaan kebijakan di bidang peraturan perundang-undangan provinsi, peraturan perundang-undangan kabupaten/kota, dan bantuan hukum.' }}
                         </p>
                     </div>
                 </div>
@@ -78,8 +96,8 @@
                     style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
                     <div class="d-flex align-items-center mb-2 mb-md-0" style="color: #3b82f6;">
                         <i class="far fa-clock me-2"></i>
-                        <span style="font-size: 13px; font-weight: 500;">[Jam layanan operasional — Senin-Jumat, 08.00-16.00
-                            WITA]</span>
+                        <span
+                            style="font-size: 13px; font-weight: 500;">{{ $systemSetting->operational_time ?? '[Jam layanan operasional — Senin-Jumat, 08.00-16.00 WITA]' }}</span>
                     </div>
                     <div style="font-size: 12.5px; color: #64748b;">
                         Diluar jam layanan, pesan tetap tersimpan dan akan direspons pada hari kerja berikutnya.

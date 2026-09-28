@@ -165,8 +165,10 @@
                             class="d-flex flex-column flex-md-row m-0 flex-grow-1" style="gap: 12px;">
                             <!-- SEARCH -->
                             <div class="position-relative flex-grow-1">
-                                <i class="fas fa-search position-absolute text-muted"
-                                    style="top: 50%; left: 15px; transform: translateY(-50%); font-size: 1rem;"></i>
+                                <button type="submit" class="position-absolute border-0 bg-transparent text-muted"
+                                    style="top: 50%; left: 15px; transform: translateY(-50%); z-index: 4;">
+                                    <i class="fas fa-search" style="font-size: 1rem;"></i>
+                                </button>
                                 <input type="text" name="search" placeholder="Cari SK KARO..."
                                     class="form-control shadow-sm w-100 custom-search-input"
                                     style="padding-left: 45px; border-radius: 30px; height: 42px; font-size: 0.95rem; font-weight: 500;"
@@ -177,7 +179,7 @@
                             </div>
                         </form>
 
-                        @php $sortOrder = request('sort', 'desc'); @endphp
+                        @php $sortOrder = request('sort', 'asc'); @endphp
                         <!-- SORT URUTKAN -->
                         <div class="dropdown d-flex justify-content-stretch fixed-action-width">
                             <button class="btn btn-outline-secondary dropdown-toggle shadow-sm w-100 m-0 text-nowrap"
@@ -417,12 +419,7 @@
             font-size: 1em;
             margin-right: 0.5rem;
         }
-
-        .pagination .page-item:first-child,
-        .pagination .page-item:last-child {
-            display: none !important;
-        }
-    </style>
+</style>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -460,7 +457,7 @@
                             </tr>
                         </table>
                         <p style="margin-top:10px; color:#ef4444; font-size:0.82rem; font-weight:500;">
-                            ⚠️ Data ini akan dihapus secara permanen!
+                            Ã¢Å¡Â Ã¯Â¸Â Data ini akan dihapus secara permanen!
                         </p>
                     </div>`,
                 showCancelButton: true,

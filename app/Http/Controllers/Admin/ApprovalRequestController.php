@@ -21,7 +21,7 @@ class ApprovalRequestController extends Controller
     public function index(Request $request)
     {
         $sortOrder = $request->input('sort', 'asc');
-        $sortDir = ($sortOrder === 'desc') ? 'desc' : 'asc';
+        $sortDir = ($sortOrder === 'asc') ? 'asc' : 'desc';
         $query = ApprovalRequest::with('user')->orderBy('created_at', $sortDir);
 
         // Filter status

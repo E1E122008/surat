@@ -103,8 +103,10 @@
                             class="d-flex flex-column flex-md-row m-0 flex-grow-1" style="gap: 12px;">
                             <!-- SEARCH -->
                             <div class="position-relative flex-grow-1">
-                                <i class="fas fa-search position-absolute text-muted"
-                                    style="top: 50%; left: 15px; transform: translateY(-50%); font-size: 1rem;"></i>
+                                <button type="submit" class="position-absolute"
+                                    style="top: 50%; left: 15px; transform: translateY(-50%); background: none; border: none; padding: 0;">
+                                    <i class="fas fa-search text-muted" style="font-size: 1rem; cursor: pointer;"></i>
+                                </button>
                                 <input type="text" name="search" placeholder="Cari Surat Keluar..."
                                     class="form-control shadow-sm w-100 custom-search-input"
                                     style="padding-left: 45px; border-radius: 30px; height: 42px; font-size: 0.95rem; font-weight: 500;"
@@ -115,7 +117,7 @@
                             </div>
                         </form>
 
-                        @php $sortOrder = request('sort', 'desc'); @endphp
+                        @php $sortOrder = request('sort', 'asc'); @endphp
                         <!-- SORT URUTKAN -->
                         <div class="dropdown d-flex justify-content-stretch fixed-action-width">
                             <button class="btn btn-outline-secondary dropdown-toggle shadow-sm w-100 m-0 text-nowrap"
@@ -306,12 +308,7 @@
                     </span>
                 </div>
 
-                <style>
-                    .pagination .page-item:first-child,
-                    .pagination .page-item:last-child {
-                        display: none !important;
-                    }
-                </style>
+
             </div>
         </div>
     </div>
@@ -517,7 +514,7 @@
                             </tr>
                         </table>
                         <p style="margin-top:10px; color:#ef4444; font-size:0.82rem; font-weight:500;">
-                            ⚠️ Data ini akan dihapus secara permanen!
+                            âš ï¸ Data ini akan dihapus secara permanen!
                         </p>
                     </div>`,
                 showCancelButton: true,
@@ -536,27 +533,7 @@
             });
         }
 
-        function searchTable() {
-            const input = document.getElementById('search');
-            const filter = input.value.toLowerCase();
-            const table = document.querySelector('table');
-            const tr = table.getElementsByTagName('tr');
-
-            for (let i = 1; i < tr.length; i++) {
-                const td = tr[i].getElementsByTagName('td');
-                let found = false;
-                for (let j = 0; j < td.length; j++) {
-                    if (td[j]) {
-                        const txtValue = td[j].textContent || td[j].innerText;
-                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-                tr[i].style.display = found ? "" : "none";
-            }
-        }
+        // Custom filtering has been replaced with server side filtering
     </script>
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">

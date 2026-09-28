@@ -1617,6 +1617,135 @@
         });
     </script>
 
+    <!-- SEAMLESS AJAX LIVE SEARCH & NAVIGATION -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Global listener untuk input ketikan (Search) dan Select (Filter Role/Aksi)
+            document.addEventListener('input', function(e) {
+                if (e.target.name === 'search' || e.target.tagName === 'SELECT') {
+                    const form = e.target.closest('form');
+                    // Pastikan ini adalah form pencarian (method GET)
+                    if (form && form.method.toUpperCase() === 'GET') {
+                        clearTimeout(window.liveSearchTimeout);
+
+                        // Berikan efek visual subtle
+                        e.target.style.transition = 'opacity 0.2s';
+                        e.target.style.opacity = '0.7';
+
+                        window.liveSearchTimeout = setTimeout(() => {
+                            const formData = new FormData(form);
+                            const query = new URLSearchParams(formData).toString();
+                            const url = form.action + (form.action.includes('?') ? '&' : '?') +
+                                query;
+
+                            window.history.pushState(null, '', url);
+
+                            // Simpan status fokus aktif pengguna
+                            const activeId = document.activeElement.id;
+                            const activeName = document.activeElement.name;
+                            let selStart = 0,
+                                selEnd = 0;
+                            try {
+                                selStart = document.activeElement.selectionStart;
+                                selEnd = document.activeElement.selectionEnd;
+                            } catch (err) {}
+
+                            fetch(url, {
+                                    headers: {
+                                        'X-Ajax-Live-Search': 'true'
+                                    }
+                                })
+                                .then(res => res.text())
+                                .then(html => {
+                                    const parser = new DOMParser();
+                                    const doc = parser.parseFromString(html, 'text/html');
+
+                                    const mainContent = document.getElementById('main-content');
+                                    const newMainContent = doc.getElementById('main-content');
+
+                                    if (mainContent && newMainContent) {
+                                        mainContent.innerHTML = newMainContent.innerHTML;
+                                    }
+
+                                    // Kembalikan fokus kursor agar nyaman dilanjut mengetik
+                                    let toFocus = null;
+                                    if (activeId) toFocus = document.getElementById(activeId);
+                                    if (!toFocus && activeName) toFocus = document
+                                        .querySelector(`input[name="${activeName}"]`);
+
+                                    if (toFocus) {
+                                        toFocus.focus();
+                                        try {
+                                            toFocus.setSelectionRange(selStart, selEnd);
+                                            toFocus.style.opacity = '1';
+                                        } catch (err) {}
+                                    }
+                                }).catch(err => {
+                                    console.error('Live Search Error:', err);
+                                    e.target.style.opacity = '1';
+                                });
+                        }, 400); // Debounce jeda 400ms 
+                    }
+                }
+            });
+
+            // Global listener untuk men-AJAX-kan click pada Sort Dropdown dan Pagination
+            document.addEventListener('click', function(e) {
+                const link = e.target.closest('.pagination a, .dropdown-menu .dropdown-item');
+                // Pengecualian batas aman: Jika link memiliki target/method/bukan GET biasa, abaikan
+                if (link && link.href && !link.href.includes('#') && !link.hasAttribute('data-bs-toggle') &&
+                    link.href.includes(window.location.origin)) {
+                    e.preventDefault();
+                    window.history.pushState(null, '', link.href);
+
+                    document.body.style.cursor = 'wait';
+                    if (e.target.style) e.target.style.opacity = '0.5';
+
+                    fetch(link.href, {
+                            headers: {
+                                'X-Ajax-Live-Search': 'true'
+                            }
+                        })
+                        .then(res => res.text())
+                        .then(html => {
+                            document.body.style.cursor = 'default';
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+
+                            const mainContent = document.getElementById('main-content');
+                            const newMainContent = doc.getElementById('main-content');
+
+                            if (mainContent && newMainContent) {
+                                mainContent.innerHTML = newMainContent.innerHTML;
+                                // Scroll lembut kembali ke atas daftar
+                                window.scrollTo({
+                                    top: 0,
+                                    behavior: 'auto'
+                                });
+                            }
+                        }).catch(err => {
+                            document.body.style.cursor = 'default';
+                            window.location.href = link.href; // Fallback jika gagal
+                        });
+                }
+            });
+
+            // Handle tombol back/forward di browser
+            window.addEventListener('popstate', function() {
+                fetch(window.location.href)
+                    .then(res => res.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const mainContent = document.getElementById('main-content');
+                        const newMainContent = doc.getElementById('main-content');
+                        if (mainContent && newMainContent) mainContent.innerHTML = newMainContent
+                            .innerHTML;
+                    });
+            });
+        });
+    </script>
+
     @stack('scripts')
 
 </body>

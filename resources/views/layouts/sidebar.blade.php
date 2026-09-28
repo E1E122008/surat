@@ -512,7 +512,8 @@
     <!-- 1. HEADER LOGO CONTAINER (TIDAK IKUT SCROLL) -->
     <div class="flex-shrink-0 logo-container rail-slot d-flex align-items-center position-relative"
         style="border-bottom: 1px solid rgba(148, 163, 184, 0.15); min-height: 70px; width: 100%; padding-bottom: 12px;">
-        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="rail-slot-logo"
+        <img src="{{ !empty($systemSetting) && $systemSetting->logo ? asset('storage/' . $systemSetting->logo) : asset('images/logo.png') }}"
+            alt="Logo" class="rail-slot-logo"
             style="height: 42px; width: auto; object-fit: contain; margin-right: 12px; margin-left: 0;">
         <a class="navbar-brand mb-0 pb-0 border-0 text-start overflow-hidden whitespace-nowrap"
             href="{{ route('dashboard') }}"
@@ -714,4 +715,3 @@
         });
     }
 </script>
-

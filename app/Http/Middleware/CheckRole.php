@@ -24,6 +24,11 @@ class CheckRole
 
         $userRole = Auth::user()->role;
         
+        // Superadmin bypasses all role restrictions (Hak akses penuh/God mode)
+        if ($userRole === 'superadmin') {
+            return $next($request);
+        }
+
         // Jika role user ada dalam daftar roles yang diizinkan
         if (in_array($userRole, $roles)) {
             return $next($request);

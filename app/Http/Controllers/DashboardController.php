@@ -145,7 +145,7 @@ class DashboardController extends Controller
             })->reverse();
             $labels = $months->map(function($date) {
                 return $date->format('d M');
-            });
+            })->values();
         } elseif ($period === 'tahun') {
             $startDate = Carbon::now()->subYears(1);
             $months = collect(range(0, 11))->map(function($i) {
@@ -153,7 +153,7 @@ class DashboardController extends Controller
             })->reverse();
             $labels = $months->map(function($date) {
                 return $date->format('M Y');
-            });
+            })->values();
         } else { // bulan
             // Mulai dari tahun 2026, menampilkan 5 bulan ke depan dari bulan sekarang
             // Jika sekarang Jan 2026 → tampilkan: Jan, Feb, Mar, Apr, Mei 2026 (5 bulan)
@@ -180,30 +180,21 @@ class DashboardController extends Controller
             }
         })->values();
         
-        // Query untuk SK, Perda, Pergub (hanya untuk periode bulan)
-        $skData = [];
-        $perdaData = [];
-        $pergubData = [];
+        // Query untuk SK, Perda, Pergub (sekarang seragam)
+        $skData = $months->map(function($date) use ($period) {
+            if ($period !== 'bulan') return 0;
+            return SK::whereYear('tanggal_terima', $date->year)->whereMonth('tanggal_terima', $date->month)->count();
+        })->values();
         
-        if ($period === 'bulan') {
-            $skData = $months->map(function($date) {
-                return SK::whereYear('tanggal_terima', $date->year)
-                        ->whereMonth('tanggal_terima', $date->month)
-                        ->count();
-            })->values();
-            
-            $perdaData = $months->map(function($date) {
-                return Perda::whereYear('tanggal_terima', $date->year)
-                        ->whereMonth('tanggal_terima', $date->month)
-                        ->count();
-            })->values();
-            
-            $pergubData = $months->map(function($date) {
-                return Pergub::whereYear('tanggal_terima', $date->year)
-                        ->whereMonth('tanggal_terima', $date->month)
-                        ->count();
-            })->values();
-        }
+        $perdaData = $months->map(function($date) use ($period) {
+            if ($period !== 'bulan') return 0;
+            return Perda::whereYear('tanggal_terima', $date->year)->whereMonth('tanggal_terima', $date->month)->count();
+        })->values();
+        
+        $pergubData = $months->map(function($date) use ($period) {
+            if ($period !== 'bulan') return 0;
+            return Pergub::whereYear('tanggal_terima', $date->year)->whereMonth('tanggal_terima', $date->month)->count();
+        })->values();
 
         // Lakukan hal yang sama untuk data lainnya
         $suratKeluarData = $months->map(function($date) use ($period) {

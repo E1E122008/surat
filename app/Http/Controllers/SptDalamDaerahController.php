@@ -12,7 +12,7 @@ class SptDalamDaerahController extends Controller
 {
     public function index(Request $request)
     {
-        $query = SptDalamDaerah::latest();
+        $query = SptDalamDaerah::query();
 
         if ($request->has('search')) {
             $search = $request->search;
@@ -26,10 +26,10 @@ class SptDalamDaerahController extends Controller
         }
 
         $sortOrder = $request->input('sort', 'asc');
-        if ($sortOrder === 'desc') {
-            $query->latest();
-        } else {
+        if ($sortOrder === 'asc') {
             $query->oldest();
+        } else {
+            $query->latest();
         }
 
         $sptDalamDaerah = $query->paginate(10)->appends($request->query());

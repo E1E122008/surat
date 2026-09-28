@@ -14,11 +14,11 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        //
+        if (\Illuminate\Support\Facades\Schema::hasTable('system_settings')) {
+            $systemSetting = \App\Models\SystemSetting::first();
+            \Illuminate\Support\Facades\View::share('systemSetting', $systemSetting);
+        }
     }
 }

@@ -147,7 +147,7 @@ class BukuAgendaController extends Controller
         }
 
         $sortOrder = $request->input('sort', 'asc');
-        $sortDir = ($sortOrder === 'desc') ? 'desc' : 'asc';
+        $sortDir = ($sortOrder === 'asc') ? 'asc' : 'desc';
 
         // Eksekusi query
         $suratMasuk = $query->orderBy('created_at', $sortDir)->paginate(10, ['*'], 'surat_masuk_page')->appends($request->query());

@@ -291,6 +291,10 @@ Route::middleware(['auth'])->group(function () {
     Route::put('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.resetPassword')->middleware('checkRole:admin,superadmin');
     Route::resource('roles', RoleController::class)->middleware('checkRole:superadmin');
 
+    // System Settings (Superadmin Only)
+    Route::get('system-settings', [\App\Http\Controllers\SystemSettingController::class, 'index'])->name('system-settings.index')->middleware('checkRole:superadmin');
+    Route::post('system-settings', [\App\Http\Controllers\SystemSettingController::class, 'update'])->name('system-settings.update')->middleware('checkRole:superadmin');
+
     // Transaksi Surat - hanya untuk user (bukan monitor)
     Route::get('/transaksi-surat', [TransaksiSuratController::class, 'index'])->name('transaksi-surat.index')->middleware('checkRole:user,admin');
 

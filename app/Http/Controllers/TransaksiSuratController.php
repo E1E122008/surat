@@ -46,47 +46,46 @@ class TransaksiSuratController extends Controller
 
             $suratKeluar->where(function($query) use ($search) {
                 $query->where('no_surat', 'like', "%{$search}%")
-                      ->orWhere('tujuan', 'like', "%{$search}%")
                       ->orWhere('perihal', 'like', "%{$search}%");
             });
 
             $sk->where(function($query) use ($search) {
-                $query->where('no_sk', 'like', "%{$search}%")
+                $query->where('no_surat', 'like', "%{$search}%")
                       ->orWhere('perihal', 'like', "%{$search}%");
             });
 
             $perda->where(function($query) use ($search) {
-                $query->where('no_perda', 'like', "%{$search}%")
+                $query->where('no_surat', 'like', "%{$search}%")
                       ->orWhere('perihal', 'like', "%{$search}%");
             });
 
             $pergub->where(function($query) use ($search) {
-                $query->where('no_pergub', 'like', "%{$search}%")
+                $query->where('no_surat', 'like', "%{$search}%")
                       ->orWhere('perihal', 'like', "%{$search}%");
             });
 
             $sppdDalam->where(function($query) use ($search) {
-                $query->where('no_sppd', 'like', "%{$search}%")
+                $query->where('no_surat', 'like', "%{$search}%")
                       ->orWhere('tujuan', 'like', "%{$search}%")
-                      ->orWhere('maksud', 'like', "%{$search}%");
+                      ->orWhere('perihal', 'like', "%{$search}%");
             });
 
             $sppdLuar->where(function($query) use ($search) {
-                $query->where('no_sppd', 'like', "%{$search}%")
+                $query->where('no_surat', 'like', "%{$search}%")
                       ->orWhere('tujuan', 'like', "%{$search}%")
-                      ->orWhere('maksud', 'like', "%{$search}%");
+                      ->orWhere('perihal', 'like', "%{$search}%");
             });
 
             $sptDalam->where(function($query) use ($search) {
-                $query->where('no_spt', 'like', "%{$search}%")
+                $query->where('no_surat', 'like', "%{$search}%")
                       ->orWhere('tujuan', 'like', "%{$search}%")
-                      ->orWhere('maksud', 'like', "%{$search}%");
+                      ->orWhere('perihal', 'like', "%{$search}%");
             });
 
             $sptLuar->where(function($query) use ($search) {
-                $query->where('no_spt', 'like', "%{$search}%")
+                $query->where('no_surat', 'like', "%{$search}%")
                       ->orWhere('tujuan', 'like', "%{$search}%")
-                      ->orWhere('maksud', 'like', "%{$search}%");
+                      ->orWhere('perihal', 'like', "%{$search}%");
             });
         }
 
