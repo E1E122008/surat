@@ -3,7 +3,7 @@
     $pendingApprovalCount = 0;
     $pendingHelpCount = 0;
 
-    if ($userRole === 'admin') {
+    if (in_array($userRole, ['admin', 'superadmin'])) {
         $pendingApprovalCount = \App\Models\ApprovalRequest::where('status', 'pending')->count();
         $pendingHelpCount = \App\Models\HelpRequest::where('status', 'menunggu')->count();
     }
@@ -174,8 +174,10 @@
                     'badgeClass' => 'bg-warning text-dark',
                 ],
                 [
-                    'title' => $userRole === 'admin' ? 'Pelaporan' : 'Bantuan & Kontak',
-                    'icon' => $userRole === 'admin' ? 'fas fa-bullhorn' : 'fas fa-question-circle',
+                    'title' => in_array($userRole, ['admin', 'superadmin']) ? 'Pelaporan' : 'Bantuan & Kontak',
+                    'icon' => in_array($userRole, ['admin', 'superadmin'])
+                        ? 'fas fa-bullhorn'
+                        : 'fas fa-question-circle',
                     'url' => route('bantuan.index'),
                     'active' => request()->routeIs('bantuan.index'),
                     'roles' => ['admin', 'monitor', 'user', 'superadmin'],

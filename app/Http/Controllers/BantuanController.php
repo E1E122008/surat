@@ -13,7 +13,7 @@ class BantuanController extends Controller
 {
     public function index()
     {
-        if (Auth::user()->role === 'admin') {
+        if (in_array(Auth::user()->role, ['admin', 'superadmin'])) {
             $query = HelpRequest::latest();
 
             if (request()->filled('search')) {
@@ -53,7 +53,7 @@ class BantuanController extends Controller
             'status' => 'menunggu'
         ]);
 
-        $admins = User::where('role', 'admin')->get();
+        $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
         Notification::send($admins, new HelpRequestNotification($helpRequest, 'new'));
 
         return redirect()->back()->with('success', 'Keluhan berhasil terkirim. Admin atau pihak Biro Hukum akan segera memeriksa permasalahan Anda.');
