@@ -1,8 +1,10 @@
 @extends('layouts.app')
 
 @section('breadcrumb')
-    <i class="fas fa-chevron-right separator"></i> <span style="color: white; font-weight: 600;"><i
-            class="fas fa-cogs me-1"></i> Pengaturan Sistem</span>
+    <i class="fas fa-chevron-right separator"></i>
+    <span style="color: rgba(255,255,255,0.65); font-weight: 500;">Superadmin</span>
+    <i class="fas fa-chevron-right separator mx-1" style="font-size: 10px; color: rgba(255,255,255,0.4);"></i>
+    <span style="color: white; font-weight: 600;"><i class="fas fa-cogs me-1"></i> Pengaturan Sistem</span>
 @endsection
 
 @section('content')

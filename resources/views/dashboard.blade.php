@@ -114,27 +114,7 @@
                 <!-- Chart: Surat Masuk -->
                 <div class="mb-4">
                     <div class="card bg-white shadow-sm border-0">
-                        <div
-                            class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pt-4 pb-0">
-                            <div>
-                                <h5 class="mb-0" style="font-weight: 700; color: #0f1b3d;">
-                                    <i class="fas fa-arrow-down-long me-2" style="color: #3b82f6;"></i>Dokumen Surat Masuk
-                                </h5>
-                                <p class="text-muted mb-0 mt-1" style="font-size: 12.5px;">Tren penerimaan dokumen berdasarkan
-                                    periode</p>
-                            </div>
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="text-muted d-inline-flex align-items-center"
-                                    style="font-size: 13px; font-weight: 500;"><i class="far fa-clock me-1"></i>Periode:</span>
-                                <select id="filter-waktu-masuk" class="form-select form-select-sm"
-                                    onchange="updateCharts(event, 'incoming')"
-                                    style="border-radius: 20px; font-size: 13px; font-weight: 600; padding: 5px 14px; border: 1.5px solid #e2e8f0; background-color: #f8fafc; min-width: 155px; cursor: pointer;">
-                                    <option value="minggu">📅 7 Minggu Terakhir</option>
-                                    <option value="bulan" selected>📅 6 Bulan Terakhir</option>
-                                    <option value="tahun">📅 12 Bulan Terakhir</option>
-                                </select>
-                            </div>
-                        </div>
+
                         <div class="card-body">
                             <div style="position: relative; height: 320px; width: 100%;">
                                 <canvas id="incomingDocumentsChart"></canvas>
@@ -146,27 +126,7 @@
                 <!-- Chart: Surat Keluar -->
                 <div class="mb-4">
                     <div class="card bg-white shadow-sm border-0">
-                        <div
-                            class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pt-4 pb-0">
-                            <div>
-                                <h5 class="mb-0" style="font-weight: 700; color: #0f1b3d;">
-                                    <i class="fas fa-arrow-up-long me-2" style="color: #0d9488;"></i>Dokumen Surat Keluar
-                                </h5>
-                                <p class="text-muted mb-0 mt-1" style="font-size: 12.5px;">Tren pengiriman dokumen berdasarkan
-                                    periode</p>
-                            </div>
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="text-muted d-inline-flex align-items-center"
-                                    style="font-size: 13px; font-weight: 500;"><i class="far fa-clock me-1"></i>Periode:</span>
-                                <select id="filter-waktu-keluar" class="form-select form-select-sm"
-                                    onchange="updateCharts(event, 'outgoing')"
-                                    style="border-radius: 20px; font-size: 13px; font-weight: 600; padding: 5px 14px; border: 1.5px solid #e2e8f0; background-color: #f8fafc; min-width: 155px; cursor: pointer;">
-                                    <option value="minggu">📅 7 Minggu Terakhir</option>
-                                    <option value="bulan" selected>📅 6 Bulan Terakhir</option>
-                                    <option value="tahun">📅 12 Bulan Terakhir</option>
-                                </select>
-                            </div>
-                        </div>
+
                         <div class="card-body">
                             <div style="position: relative; height: 320px; width: 100%;">
                                 <canvas id="outgoingDocumentsChart"></canvas>

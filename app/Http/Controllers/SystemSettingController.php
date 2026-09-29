@@ -3,17 +3,26 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SystemSettingController extends Controller
 {
     public function index()
     {
+        if (Auth::user()->role !== 'superadmin') {
+            abort(403, 'Akses ditolak. Halaman ini hanya untuk Superadmin.');
+        }
+
         $setting = \App\Models\SystemSetting::first();
         return view('admin.system-settings.index', compact('setting'));
     }
 
     public function update(Request $request)
     {
+        if (Auth::user()->role !== 'superadmin') {
+            abort(403, 'Akses ditolak. Halaman ini hanya untuk Superadmin.');
+        }
+
         $request->validate([
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
             'headline' => 'required|string|max:255',
