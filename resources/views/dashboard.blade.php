@@ -111,25 +111,21 @@
         @if (in_array(Auth::user()->role, ['admin', 'monitor', 'superadmin']))
             <!-- Charts Section -->
             <div class="row mb-5 mt-4">
-                <!-- Chart: Surat Masuk -->
+                <!-- Chart: Surat Masuk & Keluar (berdampingan) -->
                 <div class="mb-4">
                     <div class="card bg-white shadow-sm border-0">
-
                         <div class="card-body">
-                            <div style="position: relative; height: 320px; width: 100%;">
-                                <canvas id="incomingDocumentsChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chart: Surat Keluar -->
-                <div class="mb-4">
-                    <div class="card bg-white shadow-sm border-0">
-
-                        <div class="card-body">
-                            <div style="position: relative; height: 320px; width: 100%;">
-                                <canvas id="outgoingDocumentsChart"></canvas>
+                            <div class="row g-0">
+                                <div class="col-md-6">
+                                    <div style="position: relative; height: 320px; width: 100%;">
+                                        <canvas id="incomingDocumentsChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" style="border-left: 1px solid #f1f5f9;">
+                                    <div style="position: relative; height: 320px; width: 100%;">
+                                        <canvas id="outgoingDocumentsChart"></canvas>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
