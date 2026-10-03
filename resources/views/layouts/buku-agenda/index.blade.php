@@ -275,7 +275,6 @@
                     </div>
 
                     {{-- Right: Sort, Filter, Export (dropdown on mobile), Badge --}}
-                    @php $sortOrder = request('sort', 'asc'); @endphp
                     <div class="d-flex flex-wrap gap-2 align-items-center">
 
                         {{-- Sort --}}
@@ -302,29 +301,12 @@
                             <i class="fas fa-filter me-1"></i> Filter
                         </button>
 
-                        {{-- Export Dropdown (single button, both formats) --}}
-                        <div class="dropdown">
-                            <button class="btn btn-success dropdown-toggle text-nowrap" type="button"
-                                data-bs-toggle="dropdown"
-                                style="border-radius:30px; height:42px; padding:0 18px; font-weight:600;">
-                                <i class="fas fa-download me-1"></i>
-                                <span class="d-none d-sm-inline">Ekspor</span>
-                            </button>
-                            <ul class="dropdown-menu shadow">
-                                <li>
-                                    <a class="dropdown-item"
-                                        href="{{ route('buku-agenda.export', ['filterType' => request('filterType'), 'mingguKe' => request('mingguKe'), 'bulan' => request('bulan'), 'tahun' => request('tahun'), 'tab' => request('tab', 'surat-masuk')]) }}">
-                                        <i class="fas fa-file-excel me-2 text-success"></i>Export Excel
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item"
-                                        href="{{ route('buku-agenda.export-pdf', ['filterType' => request('filterType'), 'mingguKe' => request('mingguKe'), 'bulan' => request('bulan'), 'tahun' => request('tahun'), 'tab' => request('tab', 'surat-masuk')]) }}">
-                                        <i class="fas fa-file-pdf me-2 text-danger"></i>Export PDF
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+                        {{-- Export Button (Excel Only) --}}
+                        <a href="{{ route('buku-agenda.export', ['filterType' => request('filterType'), 'mingguKe' => request('mingguKe'), 'bulan' => request('bulan'), 'tahun' => request('tahun'), 'tab' => request('tab', 'surat-masuk'), 'search' => request('search'), 'sort' => request('sort')]) }}"
+                            class="btn btn-success text-nowrap"
+                            style="border-radius:30px; height:42px; padding:0 18px; font-weight:600; display:inline-flex; align-items:center; justify-content:center;">
+                            <i class="fas fa-file-excel me-2"></i> Ekspor
+                        </a>
 
                         {{-- Badge count --}}
                         @php
@@ -718,6 +700,175 @@
         </div>
     </div>
 
+    <script>
+        // Ã¢â€â‚¬Ã¢â€â‚¬ Detail panel Ã¢â€â‚¬Ã¢â€â‚¬
+        function openDetail(data) {
+            document.getElementById('det-header').textContent = (data.no_surat || '-') + ' Ã¢â‚¬Â¢ ' + (data.tanggal ||
+            '-');
+            document.getElementById('det-agenda').textContent = data.no_agenda || '-';
+            document.getElementById('det-pengirim').textContent = data.pengirim || '-';
+            document.getElementById('det-perihal').textContent = data.perihal || '-';
+            // Format Disposisi Column UI (JS Parser Mirroring the Server UI)
+            const detDisp = document.getElementById('det-disposisi');
+            // Pastikan tidak ada border sisa teks jika null
+            if (!data.disposisi || data.disposisi.trim() === '-' || data.disposisi.trim() === '') {
+                detDisp.innerHTML = '-';
+            } else {
+                const parts = data.disposisi.split(/<br>|\|/i).map(p => p.trim()).filter(p => p.length > 0);
+                let persetujuanKetua = null;
+                let tujuanDisposisi = null;
+                let subDisposisi = null;
+                let tanggalDisposisi = null;
+                let catatan = null;
+                let otherParts = [];
+
+                parts.forEach((part, index) => {
+                    if (/(Sudah|Belum)\s+di\s+Setujui\s+(Kepala|Ketua)\s+Biro\s+Hukum/i.test(part)) {
+                        persetujuanKetua = part;
+                    } else if (/Persetujuan Ke/i.test(part) && /Biro Hukum:/i.test(part)) {
+                        persetujuanKetua = part;
+                    } else if (part.includes('Diteruskan ke:')) {
+                        subDisposisi = part.replace('Diteruskan ke:', '').trim();
+                    } else if (part.includes('Tanggal:')) {
+                        tanggalDisposisi = part.replace('Tanggal:', '').trim();
+                    } else if (part.includes('Catatan:')) {
+                        catatan = part.replace('Catatan:', '').trim();
+                    } else if (index === 0 && !persetujuanKetua) {
+                        tujuanDisposisi = part;
+                    } else {
+                        otherParts.push(part);
+                    }
+                });
+
+                if (!tujuanDisposisi && otherParts.length > 0) {
+                    tujuanDisposisi = otherParts.shift();
+                }
+
+                let html =
+                    '<div class="d-flex flex-column align-items-start text-start mt-2" style="gap: 8px; min-width: 240px; padding: 4px 0;">';
+
+                if (persetujuanKetua) {
+                    const isSukses = persetujuanKetua.toLowerCase().includes('sudah');
+                    const bgClass = isSukses ? 'bg-success text-white' : 'bg-warning text-dark';
+                    const iconClass = isSukses ? 'fa-check' : 'fa-clock';
+                    html +=
+                        `<span class="badge ${bgClass} shadow-sm" style="font-size: 0.75rem; padding: 6px 12px; border-radius: 6px; font-weight: 500; letter-spacing: 0.3px;"><i class="fas ${iconClass} me-1"></i> ${persetujuanKetua}</span>`;
+                }
+
+                if (tujuanDisposisi) {
+                    html +=
+                        `<div style="font-size: 0.85rem; font-weight: 600; color: #1e293b; display: flex; align-items: flex-start; gap: 8px; padding-top: 4px;"><i class="fas fa-level-down-alt text-primary mt-1" style="transform: rotate(90deg); font-size: 0.8rem; margin-left: 2px;"></i> <span style="flex: 1; line-height: 1.4;">${tujuanDisposisi}</span></div>`;
+                }
+
+                if (subDisposisi) {
+                    html +=
+                        `<div style="font-size: 0.8rem; color: #475569; display: flex; align-items: flex-start; gap: 8px;"><i class="fas fa-angle-double-right text-muted mt-1" style="font-size: 0.75rem; margin-left: 1px;"></i><span style="flex: 1; line-height: 1.4;"><span class="fw-bold" style="color: #334155;">Diteruskan:</span> ${subDisposisi}</span></div>`;
+                }
+
+                if (catatan) {
+                    html +=
+                        `<div class="w-100 mt-1" style="background-color: #f8fafc; border-left: 3px solid #3b82f6; padding: 8px 12px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);"><div style="font-size: 0.65rem; font-weight: 700; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;"><i class="fas fa-comment-alt me-1"></i> Catatan</div><div class="fst-italic" style="font-size: 0.8rem; color: #334155; line-height: 1.4;">${catatan}</div></div>`;
+                }
+
+                if (tanggalDisposisi) {
+                    html +=
+                        `<div class="mt-1" style="font-size: 0.75rem; color: #64748b; font-weight: 500; display: flex; align-items: center; gap: 6px;"><i class="far fa-calendar-alt" style="color: #94a3b8;"></i> <span>${tanggalDisposisi}</span></div>`;
+                }
+
+                if (otherParts.length > 0) {
+                    html += `<div class="mt-1" style="font-size: 0.75rem; color: #64748b;">`;
+                    otherParts.forEach(p => {
+                        html +=
+                            `<div class="mb-1" style="display: flex; align-items: flex-start; gap: 6px;"><i class="fas fa-circle mt-1" style="font-size: 4px; color: #cbd5e1;"></i><span>${p}</span></div>`;
+                    });
+                    html += `</div>`;
+                }
+
+                html += `</div>`;
+                detDisp.innerHTML = html;
+            }
+
+            const lampWrap = document.getElementById('det-lampiran-wrap');
+            lampWrap.innerHTML = '';
+            if (data.isAdmin) {
+                if (data.lampiran && data.lampiran.length > 0) {
+                    data.lampiran.forEach(function(f) {
+                        const ext = f.name.split('.').pop().toLowerCase();
+                        const iconMap = {
+                            pdf: 'fa-file-pdf text-danger',
+                            doc: 'fa-file-word text-primary',
+                            docx: 'fa-file-word text-primary',
+                            jpg: 'fa-file-image text-info',
+                            jpeg: 'fa-file-image text-info',
+                            png: 'fa-file-image text-info'
+                        };
+                        const icon = iconMap[ext] || 'fa-file-alt text-secondary';
+                        lampWrap.innerHTML += `<div class="d-flex align-items-center justify-content-between py-2" style="border-bottom:1px solid #f1f5f9;">
+                        <span style="font-size:.875rem;"><i class="fas ${icon} me-2"></i>${f.name}</span>
+                        <a href="${f.url}" target="_blank" class="btn btn-sm btn-outline-primary ms-3" style="border-radius:20px;font-size:.8rem;">
+                            <i class="fas fa-download me-1"></i>Unduh
+                        </a>
+                    </div>`;
+                    });
+                } else {
+                    lampWrap.innerHTML = '<span class="text-muted" style="font-size:.875rem;">Tidak ada lampiran</span>';
+                }
+            } else {
+                lampWrap.innerHTML = `<div class="lampiran-lock">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Lampiran hanya dapat diakses oleh Admin Sistem
+            </div>`;
+            }
+            document.getElementById('arsip-detail-backdrop').classList.add('active');
+        }
+
+        function closeDetail() {
+            document.getElementById('arsip-detail-backdrop').classList.remove('active');
+        }
+
+        // Ã¢â€â‚¬Ã¢â€â‚¬ Filter modal logic Ã¢â€â‚¬Ã¢â€â‚¬
+        document.addEventListener('DOMContentLoaded', function() {
+            // Close detail on backdrop click
+            const bd = document.getElementById('arsip-detail-backdrop');
+            if (bd) bd.addEventListener('click', function(e) {
+                if (e.target === bd) closeDetail();
+            });
+
+            // Filter sub-sections
+            const filterType = document.getElementById('filterType');
+            const mingguSub = document.getElementById('mingguSubpoint');
+            const bulanSub = document.getElementById('bulanSubpoint');
+            const tahunSub = document.getElementById('tahunSubpoint');
+
+            function showFilterSub() {
+                mingguSub.style.display = 'none';
+                bulanSub.style.display = 'none';
+                tahunSub.style.display = 'none';
+                if (filterType.value === 'minggu') mingguSub.style.display = 'block';
+                if (filterType.value === 'bulan') bulanSub.style.display = 'block';
+                if (filterType.value === 'tahun') tahunSub.style.display = 'block';
+            }
+            showFilterSub();
+            filterType.addEventListener('change', showFilterSub);
+
+            // Restore from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('filterType')) {
+                filterType.value = urlParams.get('filterType');
+                showFilterSub();
+                if (urlParams.has('mingguKe')) document.querySelector('select[name="mingguKe"]').value = urlParams
+                    .get('mingguKe');
+                if (urlParams.has('bulan')) document.querySelector('#bulanSubpoint select[name="bulan"]').value =
+                    urlParams.get('bulan');
+                if (urlParams.has('tahun')) document.querySelectorAll('input[name="tahun"]').forEach(el => el
+                    .value = urlParams.get('tahun'));
+            }
+        });
+    </script>
+@endsection
+
+
+@section('modals')
     {{-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ FILTER MODAL Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ --}}
     <div class="modal fade" id="filterModal" tabindex="-1">
         <div class="modal-dialog">
@@ -809,162 +960,4 @@
             <div id="det-lampiran-wrap"></div>
         </div>
     </div>
-
-    <script>
-        // Ã¢â€â‚¬Ã¢â€â‚¬ Detail panel Ã¢â€â‚¬Ã¢â€â‚¬
-        function openDetail(data) {
-            document.getElementById('det-header').textContent = (data.no_surat || '-') + ' Ã¢â‚¬Â¢ ' + (data.tanggal || '-');
-            document.getElementById('det-agenda').textContent = data.no_agenda || '-';
-            document.getElementById('det-pengirim').textContent = data.pengirim || '-';
-            document.getElementById('det-perihal').textContent = data.perihal || '-';
-                        // Format Disposisi Column UI (JS Parser Mirroring the Server UI)
-            const detDisp = document.getElementById('det-disposisi');
-            // Pastikan tidak ada border sisa teks jika null
-            if (!data.disposisi || data.disposisi.trim() === '-' || data.disposisi.trim() === '') {
-                detDisp.innerHTML = '-';
-            } else {
-                const parts = data.disposisi.split(/<br>|\|/i).map(p => p.trim()).filter(p => p.length > 0);
-                let persetujuanKetua = null;
-                let tujuanDisposisi = null;
-                let subDisposisi = null;
-                let tanggalDisposisi = null;
-                let catatan = null;
-                let otherParts = [];
-
-                parts.forEach((part, index) => {
-                    if (/(Sudah|Belum)\s+di\s+Setujui\s+(Kepala|Ketua)\s+Biro\s+Hukum/i.test(part)) {
-                        persetujuanKetua = part;
-                    } else if (/Persetujuan Ke/i.test(part) && /Biro Hukum:/i.test(part)) {
-                        persetujuanKetua = part;
-                    } else if (part.includes('Diteruskan ke:')) {
-                        subDisposisi = part.replace('Diteruskan ke:', '').trim();
-                    } else if (part.includes('Tanggal:')) {
-                        tanggalDisposisi = part.replace('Tanggal:', '').trim();
-                    } else if (part.includes('Catatan:')) {
-                        catatan = part.replace('Catatan:', '').trim();
-                    } else if (index === 0 && !persetujuanKetua) {
-                        tujuanDisposisi = part;
-                    } else {
-                        otherParts.push(part);
-                    }
-                });
-
-                if (!tujuanDisposisi && otherParts.length > 0) {
-                    tujuanDisposisi = otherParts.shift();
-                }
-
-                let html = '<div class="d-flex flex-column align-items-start text-start mt-2" style="gap: 8px; min-width: 240px; padding: 4px 0;">';
-                
-                if (persetujuanKetua) {
-                    const isSukses = persetujuanKetua.toLowerCase().includes('sudah');
-                    const bgClass = isSukses ? 'bg-success text-white' : 'bg-warning text-dark';
-                    const iconClass = isSukses ? 'fa-check' : 'fa-clock';
-                    html += `<span class="badge ${bgClass} shadow-sm" style="font-size: 0.75rem; padding: 6px 12px; border-radius: 6px; font-weight: 500; letter-spacing: 0.3px;"><i class="fas ${iconClass} me-1"></i> ${persetujuanKetua}</span>`;
-                }
-
-                if (tujuanDisposisi) {
-                    html += `<div style="font-size: 0.85rem; font-weight: 600; color: #1e293b; display: flex; align-items: flex-start; gap: 8px; padding-top: 4px;"><i class="fas fa-level-down-alt text-primary mt-1" style="transform: rotate(90deg); font-size: 0.8rem; margin-left: 2px;"></i> <span style="flex: 1; line-height: 1.4;">${tujuanDisposisi}</span></div>`;
-                }
-
-                if (subDisposisi) {
-                    html += `<div style="font-size: 0.8rem; color: #475569; display: flex; align-items: flex-start; gap: 8px;"><i class="fas fa-angle-double-right text-muted mt-1" style="font-size: 0.75rem; margin-left: 1px;"></i><span style="flex: 1; line-height: 1.4;"><span class="fw-bold" style="color: #334155;">Diteruskan:</span> ${subDisposisi}</span></div>`;
-                }
-
-                if (catatan) {
-                    html += `<div class="w-100 mt-1" style="background-color: #f8fafc; border-left: 3px solid #3b82f6; padding: 8px 12px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);"><div style="font-size: 0.65rem; font-weight: 700; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;"><i class="fas fa-comment-alt me-1"></i> Catatan</div><div class="fst-italic" style="font-size: 0.8rem; color: #334155; line-height: 1.4;">${catatan}</div></div>`;
-                }
-
-                if (tanggalDisposisi) {
-                    html += `<div class="mt-1" style="font-size: 0.75rem; color: #64748b; font-weight: 500; display: flex; align-items: center; gap: 6px;"><i class="far fa-calendar-alt" style="color: #94a3b8;"></i> <span>${tanggalDisposisi}</span></div>`;
-                }
-
-                if (otherParts.length > 0) {
-                    html += `<div class="mt-1" style="font-size: 0.75rem; color: #64748b;">`;
-                    otherParts.forEach(p => {
-                        html += `<div class="mb-1" style="display: flex; align-items: flex-start; gap: 6px;"><i class="fas fa-circle mt-1" style="font-size: 4px; color: #cbd5e1;"></i><span>${p}</span></div>`;
-                    });
-                    html += `</div>`;
-                }
-
-                html += `</div>`;
-                detDisp.innerHTML = html;
-            }
-
-            const lampWrap = document.getElementById('det-lampiran-wrap');
-            lampWrap.innerHTML = '';
-            if (data.isAdmin) {
-                if (data.lampiran && data.lampiran.length > 0) {
-                    data.lampiran.forEach(function(f) {
-                        const ext = f.name.split('.').pop().toLowerCase();
-                        const iconMap = {
-                            pdf: 'fa-file-pdf text-danger',
-                            doc: 'fa-file-word text-primary',
-                            docx: 'fa-file-word text-primary',
-                            jpg: 'fa-file-image text-info',
-                            jpeg: 'fa-file-image text-info',
-                            png: 'fa-file-image text-info'
-                        };
-                        const icon = iconMap[ext] || 'fa-file-alt text-secondary';
-                        lampWrap.innerHTML += `<div class="d-flex align-items-center justify-content-between py-2" style="border-bottom:1px solid #f1f5f9;">
-                        <span style="font-size:.875rem;"><i class="fas ${icon} me-2"></i>${f.name}</span>
-                        <a href="${f.url}" target="_blank" class="btn btn-sm btn-outline-primary ms-3" style="border-radius:20px;font-size:.8rem;">
-                            <i class="fas fa-download me-1"></i>Unduh
-                        </a>
-                    </div>`;
-                    });
-                } else {
-                    lampWrap.innerHTML = '<span class="text-muted" style="font-size:.875rem;">Tidak ada lampiran</span>';
-                }
-            } else {
-                lampWrap.innerHTML = `<div class="lampiran-lock">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                Lampiran hanya dapat diakses oleh Admin Sistem
-            </div>`;
-            }
-            document.getElementById('arsip-detail-backdrop').classList.add('active');
-        }
-
-        function closeDetail() {
-            document.getElementById('arsip-detail-backdrop').classList.remove('active');
-        }
-
-        // Ã¢â€â‚¬Ã¢â€â‚¬ Filter modal logic Ã¢â€â‚¬Ã¢â€â‚¬
-        document.addEventListener('DOMContentLoaded', function() {
-            // Close detail on backdrop click
-            const bd = document.getElementById('arsip-detail-backdrop');
-            if (bd) bd.addEventListener('click', function(e) {
-                if (e.target === bd) closeDetail();
-            });
-
-            // Filter sub-sections
-            const filterType = document.getElementById('filterType');
-            const mingguSub = document.getElementById('mingguSubpoint');
-            const bulanSub = document.getElementById('bulanSubpoint');
-            const tahunSub = document.getElementById('tahunSubpoint');
-
-            function showFilterSub() {
-                mingguSub.style.display = 'none';
-                bulanSub.style.display = 'none';
-                tahunSub.style.display = 'none';
-                if (filterType.value === 'minggu') mingguSub.style.display = 'block';
-                if (filterType.value === 'bulan') bulanSub.style.display = 'block';
-                if (filterType.value === 'tahun') tahunSub.style.display = 'block';
-            }
-            showFilterSub();
-            filterType.addEventListener('change', showFilterSub);
-
-            // Restore from URL
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('filterType')) {
-                filterType.value = urlParams.get('filterType');
-                showFilterSub();
-                if (urlParams.has('mingguKe')) document.querySelector('select[name="mingguKe"]').value = urlParams
-                    .get('mingguKe');
-                if (urlParams.has('bulan')) document.querySelector('#bulanSubpoint select[name="bulan"]').value =
-                    urlParams.get('bulan');
-                if (urlParams.has('tahun')) document.querySelectorAll('input[name="tahun"]').forEach(el => el
-                    .value = urlParams.get('tahun'));
-            }
-        });
-    </script>
 @endsection

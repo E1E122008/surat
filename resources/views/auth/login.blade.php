@@ -451,7 +451,7 @@
                 <div class="brand-header">
                     <img src="{{ isset($systemSetting) && $systemSetting->logo ? asset('storage/' . $systemSetting->logo) : asset('images/logo.png') }}"
                         alt="Logo Sultra" class="app-logo">
-                    <h1 class="app-title">SIAP BROH!!!</h1>
+                    <h1 class="app-title">SIAP BROH !!!</h1>
                     <h3 class="app-subtitle">Sistem Informasi Administrasi Persuratan Biro Hukum</h3>
                 </div>
 
@@ -474,23 +474,22 @@
 
             <div class="form-container">
 
+                @if (session('success'))
+                    <div id="successAlert"
+                        class="alert alert-dismissible fade show p-3 mb-4 rounded-3 d-flex align-items-start animate-up delay-1"
+                        role="alert"
+                        style="background-color: rgba(20, 184, 166, 0.15); border: 1px solid rgba(20, 184, 166, 0.4); color: #5eead4; font-size: 0.9rem; font-weight: 500;">
+                        <i class="fas fa-check-circle fs-5 me-2 mt-1"></i>
+                        <div style="line-height: 1.5;">{{ session('success') }}</div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"
+                            aria-label="Close" style="opacity: 0.7; padding-top: 1.1rem;"></button>
+                    </div>
+                @endif
+
                 <div class="form-header animate-up delay-2">
                     <h2>Selamat Datang</h2>
                     <p>Silakan masuk menggunakan akun yang telah terdaftar</p>
                 </div>
-
-                @if (session('error'))
-                    <div class="alert animate-up delay-3 pb-2 pt-2 pr-4 pl-3 mb-4"
-                        style="border-radius:8px; font-size:14px; background:rgba(239, 68, 68, 0.1); border:1px solid #ef4444; color:#fca5a5;">
-                        <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
-                    </div>
-                @endif
-                @if (session('success'))
-                    <div class="alert animate-up delay-3 pb-2 pt-2 pr-4 pl-3 mb-4"
-                        style="border-radius:8px; font-size:14px; background:rgba(16, 185, 129, 0.1); border:1px solid #10b981; color:#34d399;">
-                        <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
-                    </div>
-                @endif
 
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
@@ -560,6 +559,15 @@
                 toggleIcon.classList.add('fa-eye');
             }
         });
+
+        // Hapus notifikasi sukses otomatis setelah 5 detik
+        const successAlert = document.getElementById('successAlert');
+        if (successAlert) {
+            setTimeout(() => {
+                const bsAlert = new bootstrap.Alert(successAlert);
+                bsAlert.close();
+            }, 5000);
+        }
     </script>
 </body>
 

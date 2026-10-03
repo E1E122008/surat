@@ -41,6 +41,7 @@ class DataRequestNotification extends Notification
         }
 
         return [
+            'title' => $this->approvalRequest->status == 'pending' ? 'Pengajuan Surat Baru' : 'Status Pengajuan Berkas',
             'message' => $message,
             'type' => $type,
             'approval_request_id' => $this->approvalRequest->id,

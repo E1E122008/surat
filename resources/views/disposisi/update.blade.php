@@ -13,12 +13,7 @@
                 <div class="p-6 bg-white border-b border-gray-200">
                     <h2 class="text-2xl font-semibold">Update Disposisi</h2>
                 </div>
-                <div class="p-6 bg-white border-b border-gray-200"> 
-                    @if(session('success'))
-                        <div class="bg-green-500 text-white p-4 rounded-lg mb-4">
-                            {{ session('success') }}
-                        </div>
-                    @endif
+                <div class="p-6 bg-white border-b border-gray-200">
                     <form action="{{ route('disposisi.update', $surat->id) }}" method="POST">
                         @csrf
                         @method('PUT')

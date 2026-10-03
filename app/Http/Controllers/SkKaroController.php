@@ -14,7 +14,11 @@ class SkKaroController extends Controller
     {
         $query = SkKaro::query();
         
-        $sortOrder = $request->input('sort', 'asc');
+        if ($request->has('sort')) {
+            session(['sk_karo_sort' => $request->sort]);
+        }
+        $sortOrder = session('sk_karo_sort', 'desc');
+
         if ($sortOrder === 'asc') {
             $query->oldest();
         } else {

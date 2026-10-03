@@ -67,6 +67,7 @@ Route::match(['get', 'post'], 'logout', [AuthenticatedSessionController::class, 
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/chart-data', [DashboardController::class, 'getChartData'])->name('dashboard.chart-data');
     Route::get('/bantuan/riwayat', [\App\Http\Controllers\BantuanController::class, 'riwayat'])->name('bantuan.riwayat');
     Route::get('/bantuan', [\App\Http\Controllers\BantuanController::class, 'index'])->name('bantuan.index');
     Route::post('/bantuan', [\App\Http\Controllers\BantuanController::class, 'store'])->name('bantuan.store');
@@ -295,17 +296,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('system-settings', [\App\Http\Controllers\SystemSettingController::class, 'index'])->name('system-settings.index')->middleware('checkRole:superadmin');
     Route::post('system-settings', [\App\Http\Controllers\SystemSettingController::class, 'update'])->name('system-settings.update')->middleware('checkRole:superadmin');
 
-    // Transaksi Surat - hanya untuk user (bukan monitor)
-    Route::get('/transaksi-surat', [TransaksiSuratController::class, 'index'])->name('transaksi-surat.index')->middleware('checkRole:user,admin');
+    // Transaksi Surat - hanya untuk user
+    Route::get('/transaksi-surat', [TransaksiSuratController::class, 'index'])->name('transaksi-surat.index')->middleware('checkRole:user,monitor');
 
-    // Data Request Routes - index dan detail untuk semua role (termasuk monitor), create/store/cancel hanya untuk user dan admin
-    Route::get('data-requests', [DataRequestController::class, 'index'])->name('data-requests.index');
-    Route::get('data-requests/{dataRequest}', [DataRequestController::class, 'show'])->name('data-requests.show');
-    Route::get('data-requests/create', [DataRequestController::class, 'create'])->name('data-requests.create')->middleware('checkRole:user,admin');
-    Route::post('data-requests', [DataRequestController::class, 'store'])->name('data-requests.store')->middleware('checkRole:user,admin');
-    Route::get('data-requests/{dataRequest}/edit', [DataRequestController::class, 'edit'])->name('data-requests.edit');
-    Route::put('data-requests/{dataRequest}', [DataRequestController::class, 'update'])->name('data-requests.update');
-    Route::delete('/data-requests/{dataRequest}/cancel', [DataRequestController::class, 'cancel'])->name('data-requests.cancel')->middleware('checkRole:user,admin');
+    // Data Request Routes - index dan detail untuk user saja, create/store/cancel/edit/update hanya untuk user
+    Route::get('data-requests', [DataRequestController::class, 'index'])->name('data-requests.index')->middleware('checkRole:user');
+    Route::get('data-requests/{dataRequest}', [DataRequestController::class, 'show'])->name('data-requests.show')->middleware('checkRole:user');
+    Route::get('data-requests/create', [DataRequestController::class, 'create'])->name('data-requests.create')->middleware('checkRole:user');
+    Route::post('data-requests', [DataRequestController::class, 'store'])->name('data-requests.store')->middleware('checkRole:user');
+    Route::get('data-requests/{dataRequest}/edit', [DataRequestController::class, 'edit'])->name('data-requests.edit')->middleware('checkRole:user');
+    Route::put('data-requests/{dataRequest}', [DataRequestController::class, 'update'])->name('data-requests.update')->middleware('checkRole:user');
+    Route::delete('/data-requests/{dataRequest}/cancel', [DataRequestController::class, 'cancel'])->name('data-requests.cancel')->middleware('checkRole:user');
 
 });
 
@@ -341,11 +342,15 @@ Route::post('/transaksi-surat/reject/{id}', [TransaksiSuratController::class, 'r
     ->name('transaksi-surat.reject')
     ->middleware(['auth', 'checkRole:admin']);
 
-// Admin Routes
-Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->name('admin.')->group(function () {
-    // Approval Requests
+// Akses Index Admin & Monitor (Monitor hanya read-only)
+Route::middleware(['auth', 'checkRole:admin,monitor,superadmin'])->prefix('admin')->name('admin.')->group(function () {
+    // Approval Requests Index
     Route::get('/approval-requests', [ApprovalRequestController::class, 'index'])
         ->name('approval-requests.index');
+});
+
+// Admin Only Routes, Edit, Post, Update Persetujuan
+Route::middleware(['auth', 'checkRole:admin,superadmin'])->prefix('admin')->name('admin.')->group(function () {
     Route::post('/approval-requests/{id}/approve', [ApprovalRequestController::class, 'approve'])
         ->name('approval-requests.approve');
     Route::post('/approval-requests/{id}/reject', [ApprovalRequestController::class, 'reject'])

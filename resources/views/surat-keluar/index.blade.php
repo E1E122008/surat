@@ -62,21 +62,6 @@
         <div class="bg-white shadow-sm rounded-lg mb-4" style="border-radius: 12px;">
             <div class="p-4">
                 <!-- Alert Section -->
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="fas fa-check-circle me-2"></i>
-                        {{ session('success') }}
-
-                    </div>
-                @endif
-
-                @if (session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        {{ session('error') }}
-
-                    </div>
-                @endif
 
                 @if ($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -117,7 +102,6 @@
                             </div>
                         </form>
 
-                        @php $sortOrder = request('sort', 'asc'); @endphp
                         <!-- SORT URUTKAN -->
                         <div class="dropdown d-flex justify-content-stretch fixed-action-width">
                             <button class="btn btn-outline-secondary dropdown-toggle shadow-sm w-100 m-0 text-nowrap"

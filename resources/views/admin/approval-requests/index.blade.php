@@ -11,18 +11,6 @@
             <h2 class="header h2"><i class="fas fa-shield-alt text-primary me-2"></i> <strong>Daftar Data Persetujuan</strong>
             </h2>
         </div>
-        @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show auto-dismiss-alert" role="alert">
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show auto-dismiss-alert" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
         <div class="row">
             <div class="col-12">
                 <style>
@@ -71,7 +59,6 @@
                                     </select>
                                 </div>
                             </form>
-                            @php $sortOrder = request('sort', 'asc'); @endphp
                             <!-- SORTING -->
                             <div class="dropdown d-flex justify-content-stretch fixed-action-width">
                                 <button class="btn btn-outline-secondary dropdown-toggle shadow-sm w-100 m-0 text-nowrap"
@@ -178,17 +165,30 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                                 @if ($request->status === 'approved')
-                                                    <span id="fisik-badge-{{ $request->id }}" style="cursor:pointer"
-                                                        onclick="toggleFisik({{ $request->id }})"
-                                                        title="Klik untuk toggle status penerimaan fisik">
-                                                        @if ($request->fisik_diterima)
-                                                            <span class="badge bg-success"><i class="fas fa-check"></i>
-                                                                Sudah</span>
-                                                        @else
-                                                            <span class="badge bg-secondary fisik-pulse">Belum</span>
-                                                        @endif
-                                                        <div class="fisik-hint-text">klik untuk ubah</div>
-                                                    </span>
+                                                    @if (in_array(Auth::user()->role, ['admin', 'superadmin']))
+                                                        <span id="fisik-badge-{{ $request->id }}" style="cursor:pointer"
+                                                            onclick="toggleFisik({{ $request->id }})"
+                                                            title="Klik untuk toggle status penerimaan fisik">
+                                                            @if ($request->fisik_diterima)
+                                                                <span class="badge bg-success"><i class="fas fa-check"></i>
+                                                                    Sudah</span>
+                                                            @else
+                                                                <span class="badge bg-secondary fisik-pulse">Belum</span>
+                                                            @endif
+                                                            <div class="fisik-hint-text">klik untuk ubah</div>
+                                                        </span>
+                                                    @else
+                                                        <span id="fisik-badge-{{ $request->id }}"
+                                                            title="Status penerimaan fisik">
+                                                            @if ($request->fisik_diterima)
+                                                                <span class="badge bg-success"><i
+                                                                        class="fas fa-check"></i>
+                                                                    Sudah</span>
+                                                            @else
+                                                                <span class="badge bg-secondary">Belum</span>
+                                                            @endif
+                                                        </span>
+                                                    @endif
                                                 @else
                                                     -
                                                 @endif
@@ -479,14 +479,18 @@
                     </div>
                     <div class="modal-footer">
                         @if ($request->status === 'pending')
-                            <button type="button" class="btn btn-success me-2" data-bs-toggle="modal"
-                                data-bs-target="#approveModal{{ $request->id }}" data-bs-dismiss="modal">
-                                <i class="fas fa-check me-1"></i> Setujui
-                            </button>
-                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                data-bs-target="#rejectModal{{ $request->id }}" data-bs-dismiss="modal">
-                                <i class="fas fa-times me-1"></i> Tolak
-                            </button>
+                            @if (in_array(Auth::user()->role, ['admin', 'superadmin']))
+                                <button type="button" class="btn btn-success me-2" data-bs-toggle="modal"
+                                    data-bs-target="#approveModal{{ $request->id }}" data-bs-dismiss="modal">
+                                    <i class="fas fa-check me-1"></i> Setujui
+                                </button>
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                    data-bs-target="#rejectModal{{ $request->id }}" data-bs-dismiss="modal">
+                                    <i class="fas fa-times me-1"></i> Tolak
+                                </button>
+                            @else
+                                <span class="text-muted me-2">Menunggu keputusan Admin.</span>
+                            @endif
                         @else
                             <span class="text-muted me-2">Permintaan sudah diproses.</span>
                         @endif

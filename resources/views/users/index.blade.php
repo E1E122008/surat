@@ -58,7 +58,6 @@
                         </select>
                     </form>
 
-                    @php $sortOrder = request('sort', 'asc'); @endphp
                     <!-- SORT URUTKAN -->
                     <div class="dropdown d-flex justify-content-stretch" style="min-width: 140px;">
                         <button class="btn btn-outline-secondary dropdown-toggle shadow-sm w-100 m-0 text-nowrap"
@@ -80,68 +79,57 @@
                 </div>
             </div>
 
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert" id="success-alert">
-                    <i class="fas fa-check-circle me-2"></i>
-                    {{ session('success') }}
-                </div>
-            @endif
-
             <div class="bg-white shadow-md rounded-lg overflow-hidden border">
-                <div class="max-h-96 overflow-y-auto">
-                    <div class="overflow-x-auto">
-                        <table class="table min-w-full divide-y divide-gray-200 m-0">
-                            <thead class="bg-gray-50" style="background-color: #0f1b3d; color: white;">
-                                <tr>
-                                    <th translate="no"
-                                        class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider"
-                                        style="border: none !important;">
-                                        Nama</th>
-                                    <th translate="no"
-                                        class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider"
-                                        style="border: none !important;">
-                                        Email</th>
-                                    <th translate="no"
-                                        class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider"
-                                        style="border: none !important;">
-                                        Peran</th>
-                                    <th translate="no"
-                                        class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider"
-                                        style="border: none !important;">
-                                        Tanggal Dibuat</th>
-                                    <th translate="no"
-                                        class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider"
-                                        style="border: none !important;">
-                                        Dinas</th>
-                                    <th translate="no"
-                                        class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider"
-                                        style="border: none !important;">
-                                        Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach ($users as $user)
-                                    <tr class="table-row">
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $user->name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $user->email }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                class="px-2 py-1 text-xs font-semibold rounded-full
+                <div class="overflow-x-auto">
+                    <table class="table min-w-full divide-y divide-gray-200 m-0">
+                        <thead class="bg-gray-50" style="background-color: #0f1b3d; color: white;">
+                            <tr>
+                                <th translate="no" class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider"
+                                    style="border: none !important;">
+                                    Nama</th>
+                                <th translate="no" class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider"
+                                    style="border: none !important;">
+                                    Email</th>
+                                <th translate="no" class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider"
+                                    style="border: none !important;">
+                                    Peran</th>
+                                <th translate="no" class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider"
+                                    style="border: none !important;">
+                                    Tanggal Dibuat</th>
+                                <th translate="no" class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider"
+                                    style="border: none !important;">
+                                    Dinas</th>
+                                <th translate="no" class="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider"
+                                    style="border: none !important;">
+                                    Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach ($users as $user)
+                                <tr class="table-row">
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $user->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $user->email }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span
+                                            class="px-2 py-1 text-xs font-semibold rounded-full
                                         @if ($user->role == 'admin') bg-purple-100 text-purple-800
                                         @elseif($user->role == 'monitor') bg-blue-100 text-blue-800
                                         @else bg-gray-100 text-gray-800 @endif">
-                                                {{ ucfirst($user->role) }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $user->created_at->format('Y-m-d') }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $user->dinas }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
+                                            {{ ucfirst($user->role) }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $user->created_at->format('Y-m-d') }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $user->dinas }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-left text-sm">
+                                        <div class="d-flex flex-wrap align-items-center gap-2">
                                             @if (auth()->user()->role === 'superadmin' || (auth()->user()->role === 'admin' && $user->role !== 'superadmin'))
-                                                <button type="button" class="text-orange-600 hover:text-orange-900 mr-3"
+                                                <button type="button"
+                                                    class="btn btn-sm btn-outline-warning rounded-pill px-3 fw-semibold shadow-sm"
                                                     data-bs-toggle="modal"
-                                                    data-bs-target="#resetPasswordModal{{ $user->id }}">
-                                                    Reset Password
+                                                    data-bs-target="#resetPasswordModal{{ $user->id }}"
+                                                    style="color: #ea580c; border-color: #ea580c;">
+                                                    <i class="fas fa-key me-1"></i> Reset Password
                                                 </button>
 
                                                 <!-- Modal Reset Password -->
@@ -215,22 +203,25 @@
 
                                             @if (auth()->user()->role === 'superadmin')
                                                 <a href="{{ route('users.edit', $user) }}"
-                                                    class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
+                                                    class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold shadow-sm">
+                                                    <i class="fas fa-edit me-1"></i> Edit
+                                                </a>
                                                 <form action="{{ route('users.destroy', $user) }}" method="POST"
-                                                    class="inline" onsubmit="return confirmDeleteUser(this);">
+                                                    class="d-inline m-0" onsubmit="return confirmDeleteUser(this);">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:text-red-900">
-                                                        Delete
+                                                    <button type="submit"
+                                                        class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold shadow-sm">
+                                                        <i class="fas fa-trash-alt me-1"></i> Delete
                                                     </button>
                                                 </form>
                                             @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <div class="mt-4 mb-2 d-flex justify-content-center">

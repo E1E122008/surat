@@ -14,7 +14,13 @@ class BantuanController extends Controller
     public function index()
     {
         if (in_array(Auth::user()->role, ['admin', 'superadmin'])) {
-            $query = HelpRequest::latest();
+            if (request()->has('sort')) {
+                session(['bantuan_sort' => request('sort')]);
+            }
+            $sortOrder = session('bantuan_sort', 'desc');
+            $sortDir = ($sortOrder === 'asc') ? 'asc' : 'desc';
+
+            $query = HelpRequest::orderBy('created_at', $sortDir);
 
             if (request()->filled('search')) {
                 $search = request('search');
@@ -30,8 +36,8 @@ class BantuanController extends Controller
                 $query->where('status', request('status'));
             }
 
-            $requests = $query->paginate(15);
-            return view('bantuan.admin', compact('requests'));
+            $requests = $query->paginate(15)->appends(request()->query());
+            return view('bantuan.admin', compact('requests', 'sortOrder'));
         }
         $riwayat = HelpRequest::where('user_id', Auth::id())->latest()->get();
         return view('bantuan.index', compact('riwayat'));

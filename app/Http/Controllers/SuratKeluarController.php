@@ -14,7 +14,11 @@ class SuratKeluarController extends Controller
     {
         $query = SuratKeluar::query();
         
-        $sortOrder = $request->input('sort', 'asc');
+        if ($request->has('sort')) {
+            session(['surat_keluar_sort' => $request->sort]);
+        }
+        $sortOrder = session('surat_keluar_sort', 'desc');
+
         if ($sortOrder === 'asc') {
             $query->oldest();
         } else {

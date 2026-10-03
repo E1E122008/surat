@@ -8,32 +8,6 @@
 @section('content')
     <!-- Welcome Section -->
     <!-- Welcome Section -->
-    @if (session('error'))
-        <div id="auto-dismiss-alert"
-            class="alert alert-danger alert-dismissible fade show shadow-sm border-0 d-flex align-items-center mb-4"
-            role="alert"
-            style="background-color: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444 !important; border-radius: 8px;">
-            <i class="fas fa-exclamation-triangle me-3 fs-5" style="color: #ef4444;"></i>
-            <div>
-                <strong class="d-block mb-1">Akses Ditolak</strong>
-                <span style="font-size: 14.5px;">{{ session('error') }}</span>
-            </div>
-            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"
-                style="filter: invert(34%) sepia(85%) saturate(1915%) hue-rotate(338deg) brightness(97%) contrast(98%);"></button>
-        </div>
-    @endif
-    @if (session('success'))
-        <div id="auto-dismiss-alert-success"
-            class="alert alert-success alert-dismissible fade show shadow-sm border-0 d-flex align-items-center mb-4"
-            role="alert"
-            style="background-color: #dcfce7; color: #166534; border-left: 4px solid #22c55e !important; border-radius: 8px;">
-            <i class="fas fa-check-circle me-3 fs-5" style="color: #22c55e;"></i>
-            <div>
-                <span style="font-size: 14.5px;">{{ session('success') }}</span>
-            </div>
-            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
     <div class="dashboard-welcome p-4 rounded-4 shadow-sm"
         style="background-color: var(--putih-kartu); border: 1px solid var(--border-sangat-tipis);">

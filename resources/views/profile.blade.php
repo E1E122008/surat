@@ -382,14 +382,18 @@
                                 <input type="text" class="form-control" name="phone"
                                     value="{{ auth()->user()->phone }}">
                             </div>
+                            <div class="mb-3">
+                                <label class="form-label">Jabatan</label>
+                                <input type="text" class="form-control" name="jabatan"
+                                    value="{{ auth()->user()->jabatan }}">
+                            </div>
                             @if (auth()->user()->role === 'admin')
                                 <div class="mb-3">
                                     <label class="form-label">Role</label>
                                     <select class="form-select" name="role">
                                         <option value="">Pilih Role</option>
                                         <option value="admin" {{ auth()->user()->role == 'admin' ? 'selected' : '' }}>
-                                            Admin
-                                        </option>
+                                            Admin</option>
                                         <option value="user" {{ auth()->user()->role == 'user' ? 'selected' : '' }}>User
                                         </option>
                                         <option value="monitor" {{ auth()->user()->role == 'monitor' ? 'selected' : '' }}>
@@ -426,15 +430,30 @@
                         <div class="modal-body">
                             <div class="mb-3">
                                 <label class="form-label">Password Lama</label>
-                                <input type="password" class="form-control" name="current_password" required>
+                                <div class="position-relative">
+                                    <input type="password" class="form-control pe-5" id="current_password"
+                                        name="current_password" required>
+                                    <i class="fas fa-eye-slash" onclick="togglePassword('current_password', this)"
+                                        style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; transition: color 0.3s;"></i>
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Password Baru</label>
-                                <input type="password" class="form-control" name="password" required>
+                                <div class="position-relative">
+                                    <input type="password" class="form-control pe-5" id="password" name="password"
+                                        required>
+                                    <i class="fas fa-eye-slash" onclick="togglePassword('password', this)"
+                                        style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; transition: color 0.3s;"></i>
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Konfirmasi Password Baru</label>
-                                <input type="password" class="form-control" name="password_confirmation" required>
+                                <div class="position-relative">
+                                    <input type="password" class="form-control pe-5" id="password_confirmation"
+                                        name="password_confirmation" required>
+                                    <i class="fas fa-eye-slash" onclick="togglePassword('password_confirmation', this)"
+                                        style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; transition: color 0.3s;"></i>
+                                </div>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -496,4 +515,23 @@
                 background: #dee2e6;
             }
         </style>
+    @endpush
+
+    @push('scripts')
+        <script>
+            function togglePassword(inputId, iconElement) {
+                const input = document.getElementById(inputId);
+                if (input.type === "password") {
+                    input.type = "text";
+                    iconElement.classList.remove('fa-eye-slash');
+                    iconElement.classList.add('fa-eye');
+                    iconElement.style.color = '#3b82f6';
+                } else {
+                    input.type = "password";
+                    iconElement.classList.remove('fa-eye');
+                    iconElement.classList.add('fa-eye-slash');
+                    iconElement.style.color = '#94a3b8';
+                }
+            }
+        </script>
     @endpush

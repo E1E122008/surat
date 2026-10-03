@@ -89,23 +89,28 @@ class TransaksiSuratController extends Controller
             });
         }
 
-        // Ambil hasil query
-        $suratMasuk = $suratMasuk->latest()->paginate(10);
-        $suratKeluar = $suratKeluar->latest()->get();
-        $sk = $sk->latest()->paginate(10);
-        $perda = $perda->latest()->paginate(10);
-        $pergub = $pergub->latest()->paginate(10);
-        $sppdDalam = $sppdDalam->latest()->get();
-        $sppdLuar = $sppdLuar->latest()->get();
-        $sptDalam = $sptDalam->orderBy('created_at', 'desc')->get();
-        $sptLuar = $sptLuar->orderBy('created_at', 'desc')->get();
+        // Ambil hasil query dengan Session Sorting (Default 'desc' = Terbaru)
+        if ($request->has('sort')) {
+            session(['transaksi_surat_sort' => $request->sort]);
+        }
+        $sortOrder = session('transaksi_surat_sort', 'desc');
+
+        $suratMasuk = $suratMasuk->orderBy('created_at', $sortOrder)->paginate(10)->appends($request->query());
+        $suratKeluar = $suratKeluar->orderBy('created_at', $sortOrder)->get();
+        $sk = $sk->orderBy('created_at', $sortOrder)->paginate(10)->appends($request->query());
+        $perda = $perda->orderBy('created_at', $sortOrder)->paginate(10)->appends($request->query());
+        $pergub = $pergub->orderBy('created_at', $sortOrder)->paginate(10)->appends($request->query());
+        $sppdDalam = $sppdDalam->orderBy('created_at', $sortOrder)->get();
+        $sppdLuar = $sppdLuar->orderBy('created_at', $sortOrder)->get();
+        $sptDalam = $sptDalam->orderBy('created_at', $sortOrder)->get();
+        $sptLuar = $sptLuar->orderBy('created_at', $sortOrder)->get();
 
         // Hitung total untuk setiap jenis surat
-        $totalSuratMasuk = $suratMasuk->count();
+        $totalSuratMasuk = $suratMasuk->total();
         $totalSuratKeluar = $suratKeluar->count();
-        $totalSK = $sk->count();
-        $totalPerda = $perda->count();
-        $totalPergub = $pergub->count();
+        $totalSK = $sk->total();
+        $totalPerda = $perda->total();
+        $totalPergub = $pergub->total();
         $totalSppdDalam = $sppdDalam->count();
         $totalSppdLuar = $sppdLuar->count();
         $totalSptDalam = $sptDalam->count();
@@ -126,7 +131,7 @@ class TransaksiSuratController extends Controller
             'totalSuratMasuk', 'totalSuratKeluar', 'totalSK', 
             'totalPerda', 'totalPergub', 'totalSppdDalam', 
             'totalSppdLuar', 'totalSptDalam', 'totalSptLuar',
-            'approvalRequest', 'search', 'tab'
+            'approvalRequest', 'search', 'tab', 'sortOrder'
         ));
     }
 
@@ -147,7 +152,7 @@ class TransaksiSuratController extends Controller
         ]);
 
         // Kirim notifikasi ke admin
-        $admins = User::where('role', 'admin')->get();
+        $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
         Notification::send($admins, new ApprovalRequestNotification($approvalRequest));
 
         return redirect()->route('data-requests.index')

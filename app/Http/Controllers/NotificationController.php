@@ -17,12 +17,26 @@ class NotificationController extends Controller
         $notification = auth()->user()->notifications()->findOrFail($id);
         $notification->markAsRead();
 
-        // Redirect kustom berdasarkan data dari notifikasi
-        if (isset($notification->data['approval_request_id'])) {
+        // Redirect kustom berdasarkan TIPE notifikasi dan ROLE
+        if ($notification->type === 'App\Notifications\DataRequestNotification') {
+            if (auth()->user()->role === 'admin' || auth()->user()->role === 'superadmin') {
+                return redirect()->route('admin.approval-requests.index');
+            }
             return redirect()->route('data-requests.show', $notification->data['approval_request_id']);
         }
-        if (isset($notification->data['help_request_id'])) {
-            return redirect(route('bantuan.index') . '#riwayat');
+        
+        if ($notification->type === 'App\Notifications\ApprovalRequestNotification') {
+            if (auth()->user()->role === 'admin' || auth()->user()->role === 'superadmin') {
+                return redirect()->route('admin.approval-requests.index');
+            }
+            return redirect()->route('transaksi-surat.index');
+        }
+
+        if ($notification->type === 'App\Notifications\HelpRequestNotification') {
+            if (auth()->user()->role === 'admin' || auth()->user()->role === 'superadmin') {
+                return redirect()->route('bantuan.index');
+            }
+            return redirect()->route('bantuan.riwayat');
         }
         
         return back();

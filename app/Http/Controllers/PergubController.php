@@ -37,7 +37,11 @@ class PergubController extends Controller
             });
         }
 
-        $sortOrder = $request->input('sort', 'asc');
+        if ($request->has('sort')) {
+            session(['pergub_sort' => $request->sort]);
+        }
+        $sortOrder = session('pergub_sort', 'desc');
+
         if ($sortOrder === 'asc') {
             $query->oldest();
         } else {

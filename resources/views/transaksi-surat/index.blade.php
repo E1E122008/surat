@@ -52,7 +52,7 @@
                     {{-- Right-side controls --}}
                     <div class="d-flex flex-wrap gap-2 align-items-center">
                         {{-- Urutkan --}}
-                        @php $sortOrder = request('sort', 'asc'); @endphp
+
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary dropdown-toggle text-nowrap" type="button"
                                 data-bs-toggle="dropdown"
@@ -323,11 +323,12 @@
         // Detail modal logic (shared across all tabs)
         function openDetail(data) {
             const bd = document.getElementById('arsip-detail-backdrop');
-            document.getElementById('det-header').textContent = (data.no_surat || '-') + ' Ã¢â‚¬Â¢ ' + (data.tanggal || '-');
+            document.getElementById('det-header').textContent = (data.no_surat || '-') + ' Ã¢â‚¬Â¢ ' + (data.tanggal ||
+            '-');
             document.getElementById('det-agenda').textContent = data.no_agenda || '-';
             document.getElementById('det-pengirim').textContent = data.pengirim || '-';
             document.getElementById('det-perihal').textContent = data.perihal || '-';
-                        // Format Disposisi Column UI (JS Parser Mirroring the Server UI)
+            // Format Disposisi Column UI (JS Parser Mirroring the Server UI)
             const detDisp = document.getElementById('det-disposisi');
             // Pastikan tidak ada border sisa teks jika null
             if (!data.disposisi || data.disposisi.trim() === '-' || data.disposisi.trim() === '') {
@@ -363,35 +364,42 @@
                     tujuanDisposisi = otherParts.shift();
                 }
 
-                let html = '<div class="d-flex flex-column align-items-start text-start mt-2" style="gap: 8px; min-width: 240px; padding: 4px 0;">';
-                
+                let html =
+                    '<div class="d-flex flex-column align-items-start text-start mt-2" style="gap: 8px; min-width: 240px; padding: 4px 0;">';
+
                 if (persetujuanKetua) {
                     const isSukses = persetujuanKetua.toLowerCase().includes('sudah');
                     const bgClass = isSukses ? 'bg-success text-white' : 'bg-warning text-dark';
                     const iconClass = isSukses ? 'fa-check' : 'fa-clock';
-                    html += `<span class="badge ${bgClass} shadow-sm" style="font-size: 0.75rem; padding: 6px 12px; border-radius: 6px; font-weight: 500; letter-spacing: 0.3px;"><i class="fas ${iconClass} me-1"></i> ${persetujuanKetua}</span>`;
+                    html +=
+                        `<span class="badge ${bgClass} shadow-sm" style="font-size: 0.75rem; padding: 6px 12px; border-radius: 6px; font-weight: 500; letter-spacing: 0.3px;"><i class="fas ${iconClass} me-1"></i> ${persetujuanKetua}</span>`;
                 }
 
                 if (tujuanDisposisi) {
-                    html += `<div style="font-size: 0.85rem; font-weight: 600; color: #1e293b; display: flex; align-items: flex-start; gap: 8px; padding-top: 4px;"><i class="fas fa-level-down-alt text-primary mt-1" style="transform: rotate(90deg); font-size: 0.8rem; margin-left: 2px;"></i> <span style="flex: 1; line-height: 1.4;">${tujuanDisposisi}</span></div>`;
+                    html +=
+                        `<div style="font-size: 0.85rem; font-weight: 600; color: #1e293b; display: flex; align-items: flex-start; gap: 8px; padding-top: 4px;"><i class="fas fa-level-down-alt text-primary mt-1" style="transform: rotate(90deg); font-size: 0.8rem; margin-left: 2px;"></i> <span style="flex: 1; line-height: 1.4;">${tujuanDisposisi}</span></div>`;
                 }
 
                 if (subDisposisi) {
-                    html += `<div style="font-size: 0.8rem; color: #475569; display: flex; align-items: flex-start; gap: 8px;"><i class="fas fa-angle-double-right text-muted mt-1" style="font-size: 0.75rem; margin-left: 1px;"></i><span style="flex: 1; line-height: 1.4;"><span class="fw-bold" style="color: #334155;">Diteruskan:</span> ${subDisposisi}</span></div>`;
+                    html +=
+                        `<div style="font-size: 0.8rem; color: #475569; display: flex; align-items: flex-start; gap: 8px;"><i class="fas fa-angle-double-right text-muted mt-1" style="font-size: 0.75rem; margin-left: 1px;"></i><span style="flex: 1; line-height: 1.4;"><span class="fw-bold" style="color: #334155;">Diteruskan:</span> ${subDisposisi}</span></div>`;
                 }
 
                 if (catatan) {
-                    html += `<div class="w-100 mt-1" style="background-color: #f8fafc; border-left: 3px solid #3b82f6; padding: 8px 12px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);"><div style="font-size: 0.65rem; font-weight: 700; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;"><i class="fas fa-comment-alt me-1"></i> Catatan</div><div class="fst-italic" style="font-size: 0.8rem; color: #334155; line-height: 1.4;">${catatan}</div></div>`;
+                    html +=
+                        `<div class="w-100 mt-1" style="background-color: #f8fafc; border-left: 3px solid #3b82f6; padding: 8px 12px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);"><div style="font-size: 0.65rem; font-weight: 700; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;"><i class="fas fa-comment-alt me-1"></i> Catatan</div><div class="fst-italic" style="font-size: 0.8rem; color: #334155; line-height: 1.4;">${catatan}</div></div>`;
                 }
 
                 if (tanggalDisposisi) {
-                    html += `<div class="mt-1" style="font-size: 0.75rem; color: #64748b; font-weight: 500; display: flex; align-items: center; gap: 6px;"><i class="far fa-calendar-alt" style="color: #94a3b8;"></i> <span>${tanggalDisposisi}</span></div>`;
+                    html +=
+                        `<div class="mt-1" style="font-size: 0.75rem; color: #64748b; font-weight: 500; display: flex; align-items: center; gap: 6px;"><i class="far fa-calendar-alt" style="color: #94a3b8;"></i> <span>${tanggalDisposisi}</span></div>`;
                 }
 
                 if (otherParts.length > 0) {
                     html += `<div class="mt-1" style="font-size: 0.75rem; color: #64748b;">`;
                     otherParts.forEach(p => {
-                        html += `<div class="mb-1" style="display: flex; align-items: flex-start; gap: 6px;"><i class="fas fa-circle mt-1" style="font-size: 4px; color: #cbd5e1;"></i><span>${p}</span></div>`;
+                        html +=
+                            `<div class="mb-1" style="display: flex; align-items: flex-start; gap: 6px;"><i class="fas fa-circle mt-1" style="font-size: 4px; color: #cbd5e1;"></i><span>${p}</span></div>`;
                     });
                     html += `</div>`;
                 }

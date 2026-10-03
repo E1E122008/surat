@@ -39,7 +39,11 @@ class PerdaController extends Controller
             });
         }
 
-        $sortOrder = $request->input('sort', 'asc');
+        if ($request->has('sort')) {
+            session(['perda_sort' => $request->sort]);
+        }
+        $sortOrder = session('perda_sort', 'desc');
+
         if ($sortOrder === 'asc') {
             $query->oldest();
         } else {

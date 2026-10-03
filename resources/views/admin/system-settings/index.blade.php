@@ -8,18 +8,6 @@
 @endsection
 
 @section('content')
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 d-flex align-items-center mb-4"
-            role="alert"
-            style="background-color: #dcfce7; color: #166534; border-left: 4px solid #22c55e !important; border-radius: 8px;">
-            <i class="fas fa-check-circle me-3 fs-5" style="color: #22c55e;"></i>
-            <div>
-                <span style="font-size: 14.5px;">{{ session('success') }}</span>
-            </div>
-            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
     <div class="bg-white p-4 rounded-4 shadow-sm mb-4">
         <!-- Nav Tabs -->
         <ul class="nav nav-pills mb-4 pb-2" id="settingsTab" role="tablist" style="border-bottom: 1px solid #e2e8f0;">
@@ -423,19 +411,82 @@
                     },
                     title: {
                         display: false
-                    } // We use card header instead
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0
+                        },
+                        max: 10
+                    },
+                    x: {
+                        display: true,
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
                 }
             };
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // Tab shown event to trigger chart render specifically for Tab 2
-            var chartTabSelected = document.getElementById('chart-tab')
-            chartTabSelected.addEventListener('shown.bs.tab', function(event) {
-                updateCharts(null, 'incoming');
-                updateCharts(null, 'outgoing');
-            })
+        function initSettingsEvents() {
+            var chartTabSelected = document.getElementById('chart-tab');
+            if (chartTabSelected) {
+                // Hapus bind lama untuk menghindari double-trigger
+                chartTabSelected.removeEventListener('shown.bs.tab', window._handleChartTabShow);
+
+                window._handleChartTabShow = function(event) {
+                    updateCharts(null, 'incoming');
+                    updateCharts(null, 'outgoing');
+                };
+
+                chartTabSelected.addEventListener('shown.bs.tab', window._handleChartTabShow);
+
+                // Langsung render jika tab kebetulan secara dinamis disetel aktif
+                if (chartTabSelected.classList.contains('active')) {
+                    window._handleChartTabShow();
+                }
+            }
+        }
+
+        // 1. Eksekusi standard instan (karena script berada di akhir body)
+        initSettingsEvents();
+
+        // 2. Proteksi BFCache (Mencegah black/blank canvas akibat memori browser cache purge)
+        // Ketika Browser Back Button ditekan, canvas 2D context biasanya hancur. Chart harus digambar ulang.
+        window.addEventListener('pageshow', function(event) {
+            initSettingsEvents(); // Re-attach listener
+            if (event.persisted) {
+                // Hancurkan chart usang untuk memaksa canvas redraw
+                if (incomingChartSys) {
+                    incomingChartSys.destroy();
+                    incomingChartSys = null;
+                }
+                if (outgoingChartSys) {
+                    outgoingChartSys.destroy();
+                    outgoingChartSys = null;
+                }
+
+                var chartTab = document.getElementById('chart-tab');
+                if (chartTab && chartTab.classList.contains('active')) {
+                    updateCharts(null, 'incoming');
+                    updateCharts(null, 'outgoing');
+                }
+            }
         });
+
+        // 3. Cadangan proteksi SPA (Livewire/Turbolinks)
+        document.addEventListener('DOMContentLoaded', initSettingsEvents);
+        document.addEventListener('turbo:load', initSettingsEvents);
+        document.addEventListener('livewire:navigated', initSettingsEvents);
     </script>
     <style>
         @media print {

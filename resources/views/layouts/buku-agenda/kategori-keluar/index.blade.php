@@ -250,7 +250,6 @@
                         </form>
                     </div>
 
-                    @php $sortOrder = request('sort', 'asc'); @endphp
                     <div class="d-flex flex-wrap gap-2 align-items-center">
                         {{-- Sort --}}
                         <div class="dropdown">
@@ -277,28 +276,12 @@
                         </button>
 
                         {{-- Export --}}
-                        <div class="dropdown">
-                            <button class="btn btn-success dropdown-toggle text-nowrap" type="button"
-                                data-bs-toggle="dropdown"
-                                style="border-radius:30px; height:42px; padding:0 18px; font-weight:600;">
-                                <i class="fas fa-download me-1"></i>
-                                <span class="d-none d-sm-inline">Ekspor</span>
-                            </button>
-                            <ul class="dropdown-menu shadow">
-                                <li>
-                                    <a class="dropdown-item"
-                                        href="{{ route('buku-agenda.kategori-keluar.export', ['filterType' => request('filterType'), 'mingguKe' => request('mingguKe'), 'bulan' => request('bulan'), 'tahun' => request('tahun'), 'tab' => request('tab', 'surat-keluar')]) }}">
-                                        <i class="fas fa-file-excel me-2 text-success"></i>Export Excel
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item"
-                                        href="{{ route('buku-agenda.kategori-keluar.export-pdf', ['filterType' => request('filterType'), 'mingguKe' => request('mingguKe'), 'bulan' => request('bulan'), 'tahun' => request('tahun'), 'tab' => request('tab', 'surat-keluar')]) }}">
-                                        <i class="fas fa-file-pdf me-2 text-danger"></i>Export PDF
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+                        <a href="{{ route('buku-agenda.kategori-keluar.export', ['filterType' => request('filterType'), 'mingguKe' => request('mingguKe'), 'bulan' => request('bulan'), 'tahun' => request('tahun'), 'tab' => request('tab', 'surat-keluar'), 'search' => request('search'), 'sort' => request('sort')]) }}"
+                            class="btn btn-success text-nowrap"
+                            style="border-radius:30px; height:42px; padding:0 18px; font-weight:600; display:inline-flex; align-items:center;">
+                            <i class="fas fa-file-excel me-1"></i>
+                            <span class="d-none d-sm-inline">Ekspor</span>
+                        </a>
 
                         {{-- Badge --}}
                         @php
@@ -340,15 +323,9 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request('tab') == 'sppd-dalam' ? 'active' : '' }}"
-                                href="{{ route('buku-agenda.kategori-keluar.index', ['tab' => 'sppd-dalam', 'sort' => request('sort'), 'search' => request('search')]) }}">
-                                <i class="fas fa-map-marker-alt me-1"></i> SPPD Dalam Daerah
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request('tab') == 'sppd-luar' ? 'active' : '' }}"
-                                href="{{ route('buku-agenda.kategori-keluar.index', ['tab' => 'sppd-luar', 'sort' => request('sort'), 'search' => request('search')]) }}">
-                                <i class="fas fa-globe me-1"></i> SPPD Luar Daerah
+                            <a class="nav-link {{ request('tab') == 'sk-karo' ? 'active' : '' }}"
+                                href="{{ route('buku-agenda.kategori-keluar.index', ['tab' => 'sk-karo', 'sort' => request('sort'), 'search' => request('search')]) }}">
+                                <i class="fas fa-file-signature me-1"></i> SK KARO
                             </a>
                         </li>
                         <li class="nav-item">
@@ -358,17 +335,26 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ request('tab') == 'sppd-dalam' ? 'active' : '' }}"
+                                href="{{ route('buku-agenda.kategori-keluar.index', ['tab' => 'sppd-dalam', 'sort' => request('sort'), 'search' => request('search')]) }}">
+                                <i class="fas fa-map-marker-alt me-1"></i> SPPD Dalam Daerah
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ request('tab') == 'spt-luar' ? 'active' : '' }}"
                                 href="{{ route('buku-agenda.kategori-keluar.index', ['tab' => 'spt-luar', 'sort' => request('sort'), 'search' => request('search')]) }}">
                                 <i class="fas fa-clipboard me-1"></i> SPT Luar Daerah
                             </a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link {{ request('tab') == 'sk-karo' ? 'active' : '' }}"
-                                href="{{ route('buku-agenda.kategori-keluar.index', ['tab' => 'sk-karo', 'sort' => request('sort'), 'search' => request('search')]) }}">
-                                <i class="fas fa-file-signature me-1"></i> SK KARO
+                            <a class="nav-link {{ request('tab') == 'sppd-luar' ? 'active' : '' }}"
+                                href="{{ route('buku-agenda.kategori-keluar.index', ['tab' => 'sppd-luar', 'sort' => request('sort'), 'search' => request('search')]) }}">
+                                <i class="fas fa-globe me-1"></i> SPPD Luar Daerah
                             </a>
                         </li>
+
+
                     </ul>
                 </div>
 
@@ -379,9 +365,10 @@
                     @php
                         function buildLmpData($surat)
                         {
-                            $raw = is_array($surat->lampiran) ? $surat->lampiran : json_decode($surat->lampiran, true);
-                            if (!$raw && is_string($surat->lampiran) && $surat->lampiran) {
-                                $raw = [['path' => $surat->lampiran, 'name' => basename($surat->lampiran)]];
+                            $l = $surat->lampiran ?? $surat->file_surat;
+                            $raw = is_array($l) ? $l : json_decode($l, true);
+                            if (!$raw && is_string($l) && $l) {
+                                $raw = [['path' => $l, 'name' => basename($l)]];
                             }
                             if (!$raw) {
                                 return [];
@@ -438,7 +425,8 @@
                                             <td class="text-center">{{ $index + 1 }}</td>
                                             <td style="white-space:nowrap;">{{ $surat->no_surat }}</td>
                                             <td class="text-center" style="white-space:nowrap;">
-                                                {{ $surat->tanggal ? $surat->tanggal->format('d/m/Y') : '-' }}</td>
+                                                {{ $surat->tanggal ? $surat->tanggal->format('d/m/Y') : '-' }}
+                                            </td>
                                             <td><span class="perihal-cell"
                                                     title="{{ $surat->perihal }}">{{ $surat->perihal }}</span></td>
                                             <td class="text-center">
@@ -729,9 +717,10 @@
                                 <thead>
                                     <tr>
                                         <th class="text-center" style="width:48px;">NO</th>
-                                        <th>NO. SURAT</th>
+                                        <th>NO SK</th>
                                         <th class="text-center" style="width:130px;">TANGGAL</th>
                                         <th>PERIHAL</th>
+                                        <th>PEJABAT TTD</th>
                                         <th class="text-center" style="width:100px;">AKSI</th>
                                     </tr>
                                 </thead>
@@ -741,14 +730,15 @@
                                             $lmpData = buildLmpData($surat);
                                             $det = json_encode(
                                                 [
-                                                    'no_surat' => $surat->no_surat,
-                                                    'no_agenda' => '-',
-                                                    'tanggal' => $surat->tanggal
-                                                        ? $surat->tanggal->format('d/m/Y')
+                                                    'no_surat' => $surat->no_sk,
+                                                    'no_agenda' => null,
+                                                    'tanggal' => $surat->tanggal_sk
+                                                        ? \Carbon\Carbon::parse($surat->tanggal_sk)->format('d/m/Y')
                                                         : '-',
-                                                    'pengirim' => '-',
+                                                    'pengirim' => null,
                                                     'perihal' => $surat->perihal,
-                                                    'disposisi' => '-',
+                                                    'pejabat_ttd' => $surat->pejabat_ttd,
+                                                    'disposisi' => null,
                                                     'isAdmin' => true,
                                                     'lampiran' => $lmpData,
                                                 ],
@@ -757,11 +747,13 @@
                                         @endphp
                                         <tr>
                                             <td class="text-center">{{ $index + 1 }}</td>
-                                            <td style="white-space:nowrap;">{{ $surat->no_surat }}</td>
+                                            <td style="white-space:nowrap;">{{ $surat->no_sk }}</td>
                                             <td class="text-center" style="white-space:nowrap;">
-                                                {{ $surat->tanggal ? $surat->tanggal->format('d/m/Y') : '-' }}</td>
+                                                {{ $surat->tanggal_sk ? \Carbon\Carbon::parse($surat->tanggal_sk)->format('d/m/Y') : '-' }}
+                                            </td>
                                             <td><span class="perihal-cell"
                                                     title="{{ $surat->perihal }}">{{ $surat->perihal }}</span></td>
+                                            <td>{{ $surat->pejabat_ttd }}</td>
                                             <td class="text-center">
                                                 <button type="button" class="btn btn-sm btn-light"
                                                     style="border-radius:20px;font-size:.8rem;padding:5px 14px;border:1px solid #e2e8f0;"
@@ -872,6 +864,11 @@
                 <p id="det-petugas" class="detail-field-value"></p>
             </div>
 
+            <div id="det-pejabat-wrap" style="display:none;">
+                <p class="detail-field-label">Pejabat TTD</p>
+                <p id="det-pejabat" class="detail-field-value"></p>
+            </div>
+
             <p class="detail-field-label">Perihal</p>
             <p id="det-perihal" class="detail-field-value"></p>
 
@@ -901,6 +898,15 @@
                 petugasWrap.style.display = 'block';
             } else {
                 petugasWrap.style.display = 'none';
+            }
+
+            // Pejabat TTD (khusus untuk SK)
+            const pejabatWrap = document.getElementById('det-pejabat-wrap');
+            if (data.pejabat_ttd && data.pejabat_ttd !== '-') {
+                document.getElementById('det-pejabat').textContent = data.pejabat_ttd;
+                pejabatWrap.style.display = 'block';
+            } else {
+                pejabatWrap.style.display = 'none';
             }
 
             const lampWrap = document.getElementById('det-lampiran-wrap');

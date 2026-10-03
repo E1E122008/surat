@@ -31,13 +31,15 @@ class HelpRequestNotification extends Notification
         if ($this->type === 'new') {
             return [
                 'type' => 'App\Notifications\HelpRequestNotification',
-                'title' => 'Laporan masuk dari ' . $this->helpRequest->nama_pengirim,
+                'title' => 'Laporan Bantuan Baru',
+                'message' => 'Laporan masuk dari ' . $this->helpRequest->nama_pengirim,
                 'help_request_id' => $this->helpRequest->id,
             ];
         } else {
             return [
                 'type' => 'App\Notifications\HelpRequestNotification',
-                'title' => 'Laporan kendala Anda: ' . ucfirst($this->helpRequest->status),
+                'title' => 'Status Pelaporan Bantuan',
+                'message' => 'Laporan kendala Anda: ' . ucfirst($this->helpRequest->status),
                 'help_request_id' => $this->helpRequest->id,
             ];
         }

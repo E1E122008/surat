@@ -32,7 +32,11 @@ class SuratMasukController extends Controller
         $query = SuratMasuk::query();
 
         // Fitur Sorting Dinamis
-        $sortOrder = $request->input('sort', 'asc');
+        if ($request->has('sort')) {
+            session(['surat_masuk_sort' => $request->sort]);
+        }
+        $sortOrder = session('surat_masuk_sort', 'desc');
+
         if ($sortOrder === 'asc') {
             $query->oldest();
         } else {

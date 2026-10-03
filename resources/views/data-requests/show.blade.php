@@ -104,7 +104,7 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-muted text-uppercase small mb-1">Catatan</label>
+                            <label class="form-label fw-bold text-muted text-uppercase small mb-1">Catatan Admin</label>
                             <p class="fs-6 fw-medium text-dark">{{ $dataRequest->notes ?: '-' }}</p>
                         </div>
 

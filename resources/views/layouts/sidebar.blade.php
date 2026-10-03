@@ -18,12 +18,14 @@
                     'url' => route('dashboard'),
                     'active' => request()->routeIs('dashboard'),
                     'roles' => ['admin', 'monitor', 'user', 'superadmin'],
+                    'badgeColor' => '#2563EB',
                 ],
                 [
                     'title' => 'Surat Umum',
                     'icon' => 'fas fa-envelope',
                     'active' => request()->routeIs('surat-masuk.*') || request()->routeIs('surat-keluar.*'),
                     'roles' => ['admin', 'monitor', 'superadmin'],
+                    'badgeColor' => '#F59E0B',
                     'submenu' => [
                         [
                             'title' => 'Surat Masuk',
@@ -45,12 +47,14 @@
                     'url' => route('sk-karo.index'),
                     'active' => request()->routeIs('sk-karo.*'),
                     'roles' => ['admin', 'monitor', 'superadmin'],
+                    'badgeColor' => '#0D9488',
                 ],
                 [
                     'title' => 'Regis Draft PHD',
                     'icon' => 'fas fa-scroll',
                     'active' => request()->routeIs('draft-phd.*'),
                     'roles' => ['admin', 'monitor', 'superadmin'],
+                    'badgeColor' => '#7C3AED',
                     'submenu' => [
                         [
                             'title' => 'SK',
@@ -80,6 +84,7 @@
                         request()->routeIs('spt-dalam-daerah.*') ||
                         request()->routeIs('spt-luar-daerah.*'),
                     'roles' => ['admin', 'monitor', 'superadmin'],
+                    'badgeColor' => '#DB2777',
                     'submenu' => [
                         [
                             'title' => 'SPT DD',
@@ -103,6 +108,7 @@
                         request()->routeIs('sppd-dalam-daerah.*') ||
                         request()->routeIs('sppd-luar-daerah.*'),
                     'roles' => ['admin', 'monitor', 'superadmin'],
+                    'badgeColor' => '#4F46E5',
                     'submenu' => [
                         [
                             'title' => 'SPPD DD',
@@ -124,13 +130,15 @@
                     'url' => route('transaksi-surat.index'),
                     'active' => request()->routeIs('transaksi-surat.*'),
                     'roles' => ['user'],
+                    'badgeColor' => '#78716C',
                 ],
                 [
                     'title' => 'Pengajuan Berkas Baru',
                     'icon' => 'fas fa-folder-plus',
                     'url' => route('data-requests.index'),
                     'active' => request()->routeIs('data-requests.*'),
-                    'roles' => ['user', 'monitor'],
+                    'roles' => ['user'],
+                    'badgeColor' => '#16A34A',
                 ],
             ],
         ],
@@ -142,6 +150,7 @@
                     'icon' => 'fas fa-file-signature',
                     'active' => request()->routeIs('buku-agenda.*'),
                     'roles' => ['admin', 'superadmin'],
+                    'badgeColor' => '#78716C',
                     'submenu' => [
                         [
                             'title' => 'Surat Masuk',
@@ -163,15 +172,17 @@
                     'url' => route('users.index'),
                     'active' => request()->routeIs('users.index'),
                     'roles' => ['admin', 'superadmin'],
+                    'badgeColor' => '#0891B2',
                 ],
                 [
                     'title' => 'Persetujuan',
                     'icon' => 'fas fa-clipboard-check',
                     'url' => route('admin.approval-requests.index'),
                     'active' => Request::is('admin/approval-requests*'),
-                    'roles' => ['admin', 'superadmin'],
+                    'roles' => ['admin', 'superadmin', 'monitor'],
                     'badge' => $pendingApprovalCount > 0 ? $pendingApprovalCount : null,
                     'badgeClass' => 'bg-warning text-dark',
+                    'badgeColor' => '#16A34A',
                 ],
                 [
                     'title' => in_array($userRole, ['admin', 'superadmin']) ? 'Pelaporan' : 'Bantuan & Kontak',
@@ -181,9 +192,9 @@
                     'url' => route('bantuan.index'),
                     'active' => request()->routeIs('bantuan.index'),
                     'roles' => ['admin', 'monitor', 'user', 'superadmin'],
-                    'iconStyle' => request()->routeIs('bantuan.index') ? 'color: #fbbf24;' : '',
                     'badge' => $pendingHelpCount > 0 ? $pendingHelpCount : null,
                     'badgeClass' => 'bg-danger text-white',
+                    'badgeColor' => '#DC2626',
                 ],
             ],
         ],
@@ -195,6 +206,134 @@
         --sidebar-collapsed-width: 72px;
         --gold-aksen: #eab308;
         --navy-utama: #0f1b3d;
+    }
+
+    /* Kustomisasi colored badge icon */
+    .sidebar .icon-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        margin-right: 12px;
+        flex-shrink: 0;
+        background-color: var(--badge-color, #64748b);
+        box-shadow: 0 3px 8px color-mix(in srgb, var(--badge-color, #64748b) 40%, transparent);
+        transition: all 0.2s ease;
+    }
+
+    .sidebar .icon-wrapper i {
+        color: #ffffff !important;
+        font-size: 15px;
+        margin-right: 0 !important;
+    }
+
+    /* State aktif untuk icon badge (gold ring + label bold) */
+    .sidebar a.menu-link.active .icon-wrapper {
+        box-shadow: 0 0 0 2px var(--navy-utama), 0 0 0 4px var(--gold-aksen) !important;
+    }
+
+    .sidebar a.menu-link.active .menu-text {
+        font-weight: 700 !important;
+        color: var(--gold-aksen) !important;
+    }
+
+    /* Kustomisasi submenu colored badge icon */
+    .sidebar .submenu-icon-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        margin-right: 12px;
+        flex-shrink: 0;
+        background-color: var(--badge-color, #64748b);
+        box-shadow: 0 3px 6px color-mix(in srgb, var(--badge-color, #64748b) 40%, transparent);
+        transition: all 0.2s ease;
+    }
+
+    .sidebar .submenu-icon-wrapper i {
+        color: #ffffff !important;
+        font-size: 13px !important;
+        margin-right: 0 !important;
+    }
+
+    /* State aktif untuk submenu icon badge (ring tipis emas & bold label) */
+    .sidebar .submenu-panel a.active .submenu-icon-wrapper {
+        box-shadow: 0 0 0 2px var(--navy-utama), 0 0 0 3.5px var(--gold-aksen) !important;
+    }
+
+    .sidebar .submenu-panel a.active .submenu-text {
+        font-weight: 700 !important;
+        color: var(--gold-aksen) !important;
+    }
+
+    /* Brand Badge Customizations (Gabungan Teks & Logo) */
+    .sidebar .brand-badge-wrapper {
+        background: rgba(59, 130, 246, 0.15);
+        border-radius: 12px;
+        padding: 8px 12px;
+        transition: all 0.2s ease;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        max-width: 100%;
+        text-decoration: none !important;
+        margin-right: 8px;
+    }
+
+    @media (min-width: 992px) {
+        .sidebar .brand-badge-wrapper {
+            margin-right: 0px;
+        }
+    }
+
+    .sidebar .brand-badge-wrapper:hover {
+        background: rgba(59, 130, 246, 0.25);
+    }
+
+    .sidebar .brand-logo {
+        height: 32px;
+        width: 32px;
+        object-fit: contain;
+        margin-right: 14px !important;
+        margin-left: 0 !important;
+        transition: all 0.2s ease;
+        flex-shrink: 0 !important;
+    }
+
+    .sidebar .brand-text {
+        margin: 0 !important;
+        padding: 0 !important;
+        text-align: left !important;
+        flex: 0 1 auto !important;
+        font-family: var(--font-heading);
+        font-weight: 800;
+        font-size: 14.5px;
+        color: #f8fafc;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        overflow: visible;
+    }
+
+    @media (min-width: 992px) {
+        .sidebar.collapsed .brand-badge-wrapper {
+            padding: 8px;
+            justify-content: center;
+            background: rgba(59, 130, 246, 0.15);
+            flex-grow: 0;
+            margin-right: 0;
+        }
+
+        .sidebar.collapsed .brand-logo {
+            margin-right: 0;
+            width: 24px;
+            height: 24px;
+        }
+
+        .sidebar.collapsed .brand-text {
+            display: none !important;
+        }
     }
 
     /* Scroll flekisbel - container menu */
@@ -367,9 +506,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
+            width: 36px;
+            height: 36px;
+            border-radius: 9px;
             transition: all 0.2s;
         }
 
@@ -385,12 +524,15 @@
         }
 
         .sidebar.collapsed a.menu-link.active .icon-wrapper {
-            background-color: rgba(234, 179, 8, 0.14) !important;
-            border-left: 3px solid var(--gold-aksen);
+            background-color: var(--badge-color) !important;
+            /* Warna tetap penuh */
+            border-left: none !important;
+            box-shadow: 0 0 0 2px var(--navy-utama), 0 0 0 4px var(--gold-aksen) !important;
+            /* Gold ring active */
         }
 
         .sidebar.collapsed a.menu-link.active i {
-            color: var(--gold-aksen) !important;
+            color: #ffffff !important;
         }
 
         /* STATE HOVER MODE COLLAPSED */
@@ -461,9 +603,13 @@
             display: inline !important;
         }
 
-        .sidebar.collapsed .submenu-container i {
+        .sidebar.collapsed .submenu-container .submenu-icon-wrapper {
             margin-right: 12px !important;
-            font-size: 14px;
+        }
+
+        .sidebar.collapsed .submenu-container .submenu-icon-wrapper i {
+            margin-right: 0 !important;
+            font-size: 13px !important;
         }
 
         .sidebar.collapsed .submenu-container a {
@@ -474,7 +620,6 @@
         /* KEMBALIKAN STYLE AKTIF & HOVER DIMODE EXPANDED (Menghidupkan highlight sebari penuh) */
         .sidebar:not(.collapsed) a.menu-link.active {
             background-color: rgba(255, 255, 255, 0.05) !important;
-            border-left: 4px solid var(--gold-aksen) !important;
         }
 
         .sidebar:not(.collapsed) a.menu-link:hover {
@@ -510,21 +655,32 @@
 
 <!-- Struktur Inti DIV Sidebar ditata 3 LAPIS VERTIKAL YANG STRICT -->
 <div class="sidebar flex flex-col overflow-hidden" id="sidebar" style="height: 100vh;">
+    <!-- INLINE SCRIPT ANTI-FOUC (Glitch Layout Re-paint Override) -->
+    <script>
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+            document.getElementById('sidebar').classList.add('collapsed');
+        }
+    </script>
+
 
     <!-- 1. HEADER LOGO CONTAINER (TIDAK IKUT SCROLL) -->
-    <div class="flex-shrink-0 logo-container rail-slot d-flex align-items-center position-relative"
-        style="border-bottom: 1px solid rgba(148, 163, 184, 0.15); min-height: 70px; width: 100%; padding-bottom: 12px;">
-        <img src="{{ !empty($systemSetting) && $systemSetting->logo ? asset('storage/' . $systemSetting->logo) : asset('images/logo.png') }}"
-            alt="Logo" class="rail-slot-logo"
-            style="height: 42px; width: auto; object-fit: contain; margin-right: 12px; margin-left: 0;">
-        <a class="navbar-brand mb-0 pb-0 border-0 text-start overflow-hidden whitespace-nowrap"
-            href="{{ route('dashboard') }}"
-            style="font-family: var(--font-heading); font-weight: 700; font-size: 17px; color: #f8fafc; letter-spacing: 0; text-overflow: ellipsis;">
-            SIAP BROH!!!
-        </a>
+    <div class="flex-shrink-0 px-3 position-relative d-flex align-items-center justify-content-between"
+        style="border-bottom: 1px solid rgba(148, 163, 184, 0.15); height: 76px; width: 100%;">
+
+        <div class="brand-badge-wrapper d-flex align-items-center"
+            onclick="window.location.href='{{ route('dashboard') }}'"
+            style="cursor: pointer; justify-content: flex-start;">
+
+            <img src="{{ !empty($systemSetting) && $systemSetting->logo ? asset('storage/' . $systemSetting->logo) : asset('images/logo.png') }}"
+                alt="Logo" class="brand-logo">
+
+            <a class="brand-text text-decoration-none" href="{{ route('dashboard') }}">SIAP BROH !!!</a>
+
+        </div>
+
         <!-- Ikon Tutup Sidebar (Hanya Mobile) -->
-        <button class="close-sidebar d-lg-none ms-auto me-3 d-flex align-items-center justify-content-center"
-            onclick="closeSidebar()" style="background: none; border: none; cursor: pointer; z-index: 20;">
+        <button class="close-sidebar d-lg-none ms-auto position-relative" onclick="closeSidebar()"
+            style="background: none; border: none; cursor: pointer; z-index: 20;">
             <i class="fas fa-times" style="font-size: 20px; color: #ffffff;"></i>
         </button>
     </div>
@@ -549,9 +705,9 @@
                                 @if (!$hasSubmenu) title="{{ $item['title'] }}" data-tippy="true" @endif
                                 @if ($hasSubmenu) onclick="toggleSubmenu(event, this)" @endif>
 
-                                <div class="icon-wrapper">
-                                    <i class="{{ $item['icon'] }}"
-                                        style="{{ isset($item['iconStyle']) ? $item['iconStyle'] : '' }}"></i>
+                                <div class="icon-wrapper"
+                                    style="--badge-color: {{ $item['badgeColor'] ?? '#64748B' }};">
+                                    <i class="{{ $item['icon'] }}"></i>
                                     @if ($hasSubmenu)
                                         <span class="submenu-indicator"></span>
                                     @endif
@@ -585,7 +741,10 @@
                                             <li class="my-1">
                                                 <a class="flex items-center p-2 rounded-lg {{ $sub['active'] ? 'active' : '' }}"
                                                     href="{{ $sub['url'] }}">
-                                                    <i class="{{ $sub['icon'] }} mr-2 w-5 text-center"></i>
+                                                    <div class="submenu-icon-wrapper"
+                                                        style="--badge-color: {{ $sub['badgeColor'] ?? ($item['badgeColor'] ?? '#64748B') }};">
+                                                        <i class="{{ $sub['icon'] }}"></i>
+                                                    </div>
                                                     <span
                                                         class="submenu-text whitespace-nowrap">{{ $sub['title'] }}</span>
                                                 </a>

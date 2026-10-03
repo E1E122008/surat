@@ -9,7 +9,7 @@ use App\Models\SuratMasuk;
 use App\Models\SK;
 use App\Models\Perda;
 use App\Models\Pergub;
-use App\Notifications\ApprovalRequestNotification;
+use App\Notifications\DataRequestNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -20,7 +20,10 @@ class ApprovalRequestController extends Controller
 {
     public function index(Request $request)
     {
-        $sortOrder = $request->input('sort', 'asc');
+        if ($request->has('sort')) {
+            session(['approval_requests_sort' => $request->sort]);
+        }
+        $sortOrder = session('approval_requests_sort', 'desc');
         $sortDir = ($sortOrder === 'asc') ? 'asc' : 'desc';
         $query = ApprovalRequest::with('user')->orderBy('created_at', $sortDir);
 
@@ -52,7 +55,7 @@ class ApprovalRequestController extends Controller
             ->where('type', 'App\Notifications\ApprovalRequestNotification')
             ->markAsRead();
 
-        return view('admin.approval-requests.index', compact('approvalRequests', 'totalFiltered', 'totalAll'));
+        return view('admin.approval-requests.index', compact('approvalRequests', 'totalFiltered', 'totalAll', 'sortOrder'));
     }
 
     public function approve(Request $request, $id)
@@ -167,7 +170,7 @@ class ApprovalRequestController extends Controller
             ]);
 
             // Send notification to user
-            $approvalRequest->user->notify(new ApprovalRequestNotification($approvalRequest, 'approved'));
+            $approvalRequest->user->notify(new DataRequestNotification($approvalRequest));
 
             \App\Models\ActivityLog::log('approval_accept', "Menyetujui permohonan surat (No: {$approvalRequest->no_surat})");
 
@@ -203,7 +206,7 @@ class ApprovalRequestController extends Controller
         ]);
 
         // Send notification to user
-        $approvalRequest->user->notify(new ApprovalRequestNotification($approvalRequest, 'rejected'));
+        $approvalRequest->user->notify(new DataRequestNotification($approvalRequest));
 
         \App\Models\ActivityLog::log('approval_reject', "Menolak permohonan surat (No: {$approvalRequest->no_surat})");
 

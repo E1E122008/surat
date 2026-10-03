@@ -34,8 +34,15 @@ class ApprovalRequestNotification extends Notification
             'rejected' => 'Permintaan persetujuan Anda telah ditolak'
         ];
 
+        $titles = [
+            'new' => 'Permintaan Akses Arsip',
+            'approved' => 'Akses Aksip Disetujui',
+            'rejected' => 'Akses Aksip Ditolak'
+        ];
+
         return [
             'approval_request_id' => $this->approvalRequest->id,
+            'title' => $titles[$this->type],
             'message' => $messages[$this->type],
             'type' => $this->type,
             'notes' => $this->approvalRequest->notes

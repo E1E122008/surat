@@ -96,12 +96,6 @@
         </form>
     </div>
 
-    @if (session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
-    @endif
-
     <style>
         .drag-drop-zone {
             border: 2px dashed #d1d5db;

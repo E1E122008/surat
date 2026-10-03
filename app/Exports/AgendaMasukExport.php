@@ -20,14 +20,18 @@ class AgendaMasukExport implements FromCollection, WithHeadings, WithMapping
     protected $bulan;
     protected $tahun;
     protected $tab;
+    protected $search;
+    protected $sort;
 
-    public function __construct($filterType = null, $mingguKe = null, $bulan = null, $tahun = null, $tab = 'surat-masuk')
+    public function __construct($filterType = null, $mingguKe = null, $bulan = null, $tahun = null, $tab = 'surat-masuk', $search = null, $sort = 'desc')
     {
         $this->filterType = $filterType;
         $this->mingguKe = $mingguKe;
         $this->bulan = $bulan;
         $this->tahun = $tahun ?? now()->year;
         $this->tab = $tab;
+        $this->search = $search;
+        $this->sort = $sort ?? 'desc';
     }
 
     public function collection()
@@ -38,10 +42,24 @@ class AgendaMasukExport implements FromCollection, WithHeadings, WithMapping
             'mingguKe' => $this->mingguKe,
             'bulan' => $this->bulan,
             'tahun' => $this->tahun,
-            'tab' => $this->tab
+            'tab' => $this->tab,
+            'search' => $this->search,
+            'sort' => $this->sort
         ]);
 
         $query = $this->getQueryByTab();
+        
+        // Logika pencarian
+        if ($this->search) {
+            $search = $this->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('no_agenda', 'LIKE', "%{$search}%")
+                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                  ->orWhere('pengirim', 'LIKE', "%{$search}%")
+                  ->orWhere('perihal', 'LIKE', "%{$search}%")
+                  ->orWhere('disposisi', 'LIKE', "%{$search}%");
+            });
+        }
         
         if ($this->filterType) {
             switch ($this->filterType) {
@@ -72,7 +90,11 @@ class AgendaMasukExport implements FromCollection, WithHeadings, WithMapping
             }
         }
 
-        $result = $query->latest()->get();
+        if ($this->sort === 'asc') {
+            $result = $query->oldest('tanggal_terima')->get();
+        } else {
+            $result = $query->latest('tanggal_terima')->get();
+        }
         
         // Debug untuk melihat jumlah data
         \Log::info('Query Result Count: ' . $result->count());

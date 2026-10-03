@@ -11,21 +11,6 @@
             <h2 class="header h2"><i class="fas fa-file-signature text-primary me-2"></i> <strong>Surat Keputusan Kepala
                     Biro</strong></h2>
         </div>
-
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle me-2"></i>
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-        @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
         @if ($errors->any())
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <i class="fas fa-exclamation-triangle me-2"></i>
@@ -179,7 +164,6 @@
                             </div>
                         </form>
 
-                        @php $sortOrder = request('sort', 'asc'); @endphp
                         <!-- SORT URUTKAN -->
                         <div class="dropdown d-flex justify-content-stretch fixed-action-width">
                             <button class="btn btn-outline-secondary dropdown-toggle shadow-sm w-100 m-0 text-nowrap"
@@ -273,8 +257,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                         <div class="dropdown">
                                             <button class="btn btn-light btn-sm dropdown-toggle shadow-sm" type="button"
-                                                data-bs-toggle="dropdown" aria-expanded="false"
-                                                style="border-radius: 8px;">
+                                                data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 8px;">
                                                 <i class="fas fa-cog"></i>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end shadow lampiran-dropdown">
@@ -419,7 +402,7 @@
             font-size: 1em;
             margin-right: 0.5rem;
         }
-</style>
+    </style>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>

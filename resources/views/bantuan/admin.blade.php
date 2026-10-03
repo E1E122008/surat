@@ -6,19 +6,35 @@
 @endsection
 
 @section('content')
+    <style>
+        .surat-badge {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(90deg, #5b7ef1 0%, #6ea8fe 100%);
+            color: #fff;
+            font-weight: 500;
+            border-radius: 2rem;
+            padding: 0.3rem 1rem;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(91, 126, 241, 0.08);
+            gap: 0.5rem;
+        }
+
+        .surat-badge-sm {
+            font-size: 0.95rem;
+            padding: 0.2rem 0.8rem;
+        }
+
+        .surat-badge i {
+            font-size: 1em;
+        }
+    </style>
     <div class="mb-4">
         <h2 class="header h2"><i class="fas fa-inbox text-primary me-2"></i> <strong>Pelaporan & Bantuan Aplikasi</strong>
         </h2>
         <p class="text-muted mt-2" style="font-size: 0.95rem;">Daftar keluhan pengguna internal dan kendala akses tamu luar.
         </p>
     </div>
-
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
     <style>
         @media (min-width: 768px) {
@@ -64,7 +80,6 @@
                     </div>
                 </form>
 
-                @php $sortOrder = request('sort', 'asc'); @endphp
                 <!-- SORT URUTKAN -->
                 <div class="dropdown d-flex justify-content-stretch fixed-action-width">
                     <button class="btn btn-outline-secondary dropdown-toggle shadow-sm w-100 m-0 text-nowrap" type="button"
@@ -99,7 +114,7 @@
                         <th class="py-3 px-4" style="min-width: 220px;">IDENTITAS PENGIRIM</th>
                         <th class="py-3 px-4" style="width: 1%; white-space: nowrap;">TOPIK KENDALA</th>
                         <th class="py-3 px-4" style="width: auto;">DESKRIPSI KELUHAN</th>
-                        <th class="py-3 px-4 text-center" style="width: 10%; white-space: nowrap;">STATUS</th>
+                        <th class="py-3 px-4 text-center" style="width: 10%; white-space: nowrap;">AKSI</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -185,13 +200,22 @@
                 <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
                     <div class="modal-header border-bottom-0">
                         <h5 class="modal-title" style="font-weight: 700; color: var(--navy-utama);">
-                            Respons Keluhan Permintaan</h5>
+                            Detail Keluhan & Update Status</h5>
                         <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
                     <form action="{{ route('bantuan.status.update', $req->id) }}" method="POST">
                         @csrf
                         <div class="modal-body pt-0">
+                            <div class="mb-4 p-3 bg-light rounded" style="border: 1px solid #e2e8f0;">
+                                <label
+                                    style="font-size: 0.85rem; font-weight: 700; color: var(--slate-500); text-transform: uppercase;">Deskripsi
+                                    Keluhan Lengkap</label>
+                                <p class="mb-0 mt-2 text-dark" style="font-size: 0.95rem; line-height: 1.5;">
+                                    {{ $req->deskripsi }}
+                                </p>
+                            </div>
+
                             <div class="mb-3">
                                 <label class="form-label" style="font-weight: 600; color: var(--slate-700);">Ubah
                                     Status</label>

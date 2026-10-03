@@ -211,24 +211,17 @@
             align-items: center;
         }
     </style>
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert"
-            style="border-radius: 8px; border: 1px solid #10b981; background: rgba(16,185,129,0.05); color: #059669;">
-            <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
     <div class="bantuan-header">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
                 <h1 class="bantuan-title">Bantuan & Kontak</h1>
-                <p class="bantuan-subtitle">Coba cari jawaban di panduan singkat, atau kirim permintaan ke Admin bila belum
-                    terjawab.</p>
+                <p class="bantuan-subtitle">kirim permintaan ke Admin bila butuh bantuan atau hubungi via WhatsApp langsung
+                </p>
             </div>
             <a href="{{ route('bantuan.riwayat') }}"
                 style="color: #d97706; font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: color 0.3s; margin-bottom: 2rem;">
-                Riwayat Permintaan Bantuan Saya &rarr;
+                Permintaan Bantuan Saya &rarr;
             </a>
         </div>
 
@@ -240,7 +233,7 @@
                     <div class="panduan-card">
                         <h3 class="panduan-title">Arsip & Riwayat Surat</h3>
                         <ul class="mt-3 text-muted" style="font-size: 0.9rem; padding-left: 1.2rem; line-height: 1.6;">
-                            <li>Melihat daftar seluruh surat (Masuk, Keputusan, Perda, Pergub).</li>
+                            <li>Melihat daftar seluruh surat (Masuk, Keputusan, Peraturan Daerah, Peraturan Gubernur).</li>
                             <li>Memantau status surat (tercatat, ditolak, direvisi, disetujui).</li>
                             <li>Mengecek posisi atau riwayat disposisi surat.</li>
                         </ul>
@@ -250,41 +243,9 @@
                     <div class="panduan-card">
                         <h3 class="panduan-title">Pengajuan Berkas Baru</h3>
                         <ul class="mt-3 text-muted" style="font-size: 0.9rem; padding-left: 1.2rem; line-height: 1.6;">
-                            <li>Membuat dan mengirimkan draf Surat atau Peraturan ke Admin.</li>
+                            <li>Membuat dan mengirimkan draf Surat ke Admin Biro Hukum.</li>
                             <li>Mengunggah lampiran salinan fisik/digital.</li>
                             <li>Memperbaiki/mengirim ulang surat jika ditolak.</li>
-                        </ul>
-                    </div>
-                </div>
-            @else
-                <!-- Tampilan Role Admin / Default -->
-                <div class="col-md-4">
-                    <div class="panduan-card">
-                        <h3 class="panduan-title">Surat Umum</h3>
-                        <ul class="mt-3 text-muted" style="font-size: 0.9rem; padding-left: 1.2rem; line-height: 1.6;">
-                            <li>Cara mencatat Surat Masuk & Surat Keluar.</li>
-                            <li>Mencetak Lembar Disposisi.</li>
-                            <li>Meneruskan surat ke Pimpinan (Karo).</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="panduan-card">
-                        <h3 class="panduan-title">Regis Draft PHD</h3>
-                        <ul class="mt-3 text-muted" style="font-size: 0.9rem; padding-left: 1.2rem; line-height: 1.6;">
-                            <li>Registrasi SK, Perda, dan Pergub.</li>
-                            <li>Verifikasi dan Tanda Tangan.</li>
-                            <li>Pengarsipan dokumen hukum.</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="panduan-card">
-                        <h3 class="panduan-title">Akun & Kata Sandi</h3>
-                        <ul class="mt-3 text-muted" style="font-size: 0.9rem; padding-left: 1.2rem; line-height: 1.6;">
-                            <li>Manajemen pengguna dan roles (Admin/User).</li>
-                            <li>Mereset kata sandi lewat dashboard.</li>
-                            <li>Mengatasi penolakan login sistem.</li>
                         </ul>
                     </div>
                 </div>
@@ -353,8 +314,7 @@
                                     <option value="" disabled selected>Pilih salah satu masalah...</option>
                                     <option value="Error Sistem/Bug">Error Sistem / Fitur Tidak Berjalan</option>
                                     <option value="Kendala Upload Lampiran">Kendala Upload Lampiran Surat</option>
-                                    <option value="Perbaikan Data (Salah Input)">Perbaikan Data (Salah Input Resi)</option>
-                                    <option value="Permasalahan Akun (Ubah Identitas)">Permasalahan Akun (Ubah Identitas)
+                                    <option value="Permasalahan Akun (Ubah Identitas)">Permasalahan Akun
                                     </option>
                                     <option value="Lainnya">Lainnya...</option>
                                 </select>
@@ -389,6 +349,3 @@
             </div>
         </div>
     @endsection
-
-
-

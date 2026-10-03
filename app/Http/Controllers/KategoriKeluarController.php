@@ -166,7 +166,10 @@ class KategoriKeluarController extends Controller
             }
         }
 
-        $sortOrder = $request->input('sort', 'asc');
+        if ($request->has('sort')) {
+            session(['kategori_keluar_sort' => $request->sort]);
+        }
+        $sortOrder = session('kategori_keluar_sort', 'desc');
         $sortDir = ($sortOrder === 'desc') ? 'desc' : 'asc';
 
         // Eksekusi query
@@ -247,116 +250,8 @@ class KategoriKeluarController extends Controller
             $request->mingguKe,
             $request->bulan,
             $request->tahun,
-            $tab
+            $tab,
+            $request->search,
+            $request->sort
         ), $fileName);
-    }
-
-    public function exportPDF(Request $request)
-    {
-        $tab = $request->tab ?? 'surat-keluar';
-        
-        // Inisialisasi query berdasarkan tab
-        switch($tab) {
-            case 'surat-keluar':
-                $query = SuratKeluar::query();
-                $title = 'Arsip Surat Keluar';
-                break;
-            case 'sppd-dalam':
-                $query = SppdDalamDaerah::query();
-                $title = 'Arsip SPPD Dalam Daerah';
-                break;
-            case 'sppd-luar':
-                $query = SppdLuarDaerah::query();
-                $title = 'Arsip SPPD Luar Daerah';
-                break;
-            case 'spt-dalam':
-                $query = SptDalamDaerah::query();
-                $title = 'Arsip SPT Dalam Daerah';
-                break;
-            case 'spt-luar':
-                $query = SptLuarDaerah::query();
-                $title = 'Arsip SPT Luar Daerah';
-                break;
-            case 'sk-karo':
-                $query = SkKaro::query();
-                $title = 'Arsip SK KARO';
-                break;
-            default:
-                $query = SuratKeluar::query();
-                $title = 'Arsip Surat Keluar';
-        }
-
-        // Terapkan filter jika ada
-        if ($request->has('filterType')) {
-            switch ($request->filterType) {
-                case 'minggu':
-                    $weekNumber = $request->mingguKe;
-                    $currentMonth = Carbon::create(null, $request->bulan ?? now()->month);
-                    
-                    switch($weekNumber) {
-                        case 1:
-                            $startDate = $currentMonth->copy()->startOfMonth();
-                            $endDate = $currentMonth->copy()->startOfMonth()->addDays(6);
-                            break;
-                        case 2:
-                            $startDate = $currentMonth->copy()->startOfMonth()->addDays(7);
-                            $endDate = $currentMonth->copy()->startOfMonth()->addDays(13);
-                            break;
-                        case 3:
-                            $startDate = $currentMonth->copy()->startOfMonth()->addDays(14);
-                            $endDate = $currentMonth->copy()->startOfMonth()->addDays(20);
-                            break;
-                        case 4:
-                            $startDate = $currentMonth->copy()->startOfMonth()->addDays(21);
-                            $endDate = $currentMonth->copy()->endOfMonth();
-                            break;
-                        default:
-                            $startDate = $currentMonth->copy()->startOfMonth();
-                            $endDate = $currentMonth->copy()->endOfMonth();
-                    }
-                    
-                    $dateCol = ($tab == 'sk-karo') ? 'tanggal_sk' : 'tanggal';
-                    $query->whereBetween($dateCol, [$startDate, $endDate]);
-                    $filterInfo = "Minggu ke-{$weekNumber} Bulan " . $currentMonth->format('F Y');
-                    break;
-
-                case 'bulan':
-                    $month = $request->bulan;
-                    $year = $request->tahun ?? now()->year;
-                    $dateCol = ($tab == 'sk-karo') ? 'tanggal_sk' : 'tanggal';
-                    $query->whereMonth($dateCol, $month)->whereYear($dateCol, $year);
-                    $filterInfo = "Bulan " . Carbon::create(null, $month, 1)->format('F') . " {$year}";
-                    break;
-
-                case 'tahun':
-                    $year = $request->tahun;
-                    $dateCol = ($tab == 'sk-karo') ? 'tanggal_sk' : 'tanggal';
-                    $query->whereYear($dateCol, $year);
-                    $filterInfo = "Tahun {$year}";
-                    break;
-
-                default:
-                    $filterInfo = "Semua Data";
-            }
-        } else {
-            $filterInfo = "Semua Data";
-        }
-
-        // Ambil data
-        $data = $dateCol = ($tab == 'sk-karo') ? 'tanggal_sk' : 'tanggal';
-        $data = $query->orderBy($dateCol, 'desc')->get();
-
-        // Generate PDF
-        $pdf = PDF::loadView('layouts.buku-agenda.pdf-keluar', [
-            'title' => $title,
-            'filterInfo' => $filterInfo,
-            'data' => $data
-        ]);
-
-        // Set paper ke A4
-        $pdf->setPaper('a4');
-
-        // Download PDF
-        return $pdf->download($title . ' - ' . $filterInfo . '.pdf');
-    }
-}
+    }}

@@ -13,18 +13,6 @@
         </div>
         <div class="bg-white shadow-sm rounded-lg">
             <div class="p-4">
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert" id="alertBox">
-                        <i class="fas fa-check-circle me-2"></i>
-                        {{ session('success') }}
-                    </div>
-                @endif
-                @if (session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alertBox">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        {{ session('error') }}
-                    </div>
-                @endif
                 <!-- STANDARDIZED ACTION BAR -->
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-4"
                     style="border-bottom: 1px solid rgba(0,0,0,0.05);">
@@ -52,7 +40,6 @@
                             </div>
                         </form>
 
-                        @php $sortOrder = request('sort', 'asc'); @endphp
                         <!-- SORT URUTKAN -->
                         <div class="dropdown d-flex justify-content-stretch fixed-action-width">
                             <button class="btn btn-outline-secondary dropdown-toggle shadow-sm w-100 m-0 text-nowrap"
@@ -185,7 +172,7 @@
                         {{ method_exists($sppd, 'total') ? $sppd->total() : $sppd->count() }}
                     </span>
                 </div>
-</div>
+            </div>
         </div>
     </div>
 

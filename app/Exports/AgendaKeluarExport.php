@@ -22,14 +22,18 @@ class AgendaKeluarExport implements FromCollection, WithHeadings, WithMapping
     protected $bulan;
     protected $tahun;
     protected $tab;
+    protected $search;
+    protected $sort;
 
-    public function __construct($filterType = null, $mingguKe = null, $bulan = null, $tahun = null, $tab = 'surat-keluar')
+    public function __construct($filterType = null, $mingguKe = null, $bulan = null, $tahun = null, $tab = 'surat-keluar', $search = null, $sort = 'desc')
     {
         $this->filterType = $filterType;
         $this->mingguKe = $mingguKe;
         $this->bulan = $bulan;
         $this->tahun = $tahun ?? now()->year;
         $this->tab = $tab;
+        $this->search = $search;
+        $this->sort = $sort ?? 'desc';
     }
 
     public function collection()
@@ -39,10 +43,35 @@ class AgendaKeluarExport implements FromCollection, WithHeadings, WithMapping
             'mingguKe' => $this->mingguKe,
             'bulan' => $this->bulan,
             'tahun' => $this->tahun,
-            'tab' => $this->tab
+            'tab' => $this->tab,
+            'search' => $this->search,
+            'sort' => $this->sort
         ]);
 
         $query = $this->getQueryByTab();
+        
+        // Logika pencarian
+        if ($this->search) {
+            $search = $this->search;
+            if ($this->tab === 'surat-keluar') {
+                $query->where(function ($q) use ($search) {
+                    $q->where('no_surat', 'LIKE', "%{$search}%")
+                      ->orWhere('perihal', 'LIKE', "%{$search}%");
+                });
+            } else if (in_array($this->tab, ['sppd-dalam', 'sppd-luar', 'spt-dalam', 'spt-luar'])) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('no_surat', 'LIKE', "%{$search}%")
+                      ->orWhere('perihal', 'LIKE', "%{$search}%")
+                      ->orWhere('tujuan', 'LIKE', "%{$search}%")
+                      ->orWhere('nama_petugas', 'LIKE', "%{$search}%");
+                });
+            } else if ($this->tab === 'sk-karo') {
+                $query->where(function ($q) use ($search) {
+                    $q->where('no_sk', 'LIKE', "%{$search}%")
+                      ->orWhere('perihal', 'LIKE', "%{$search}%");
+                });
+            }
+        }
         
         if ($this->filterType) {
             switch ($this->filterType) {
@@ -54,22 +83,27 @@ class AgendaKeluarExport implements FromCollection, WithHeadings, WithMapping
                         ? $currentMonth->copy()->endOfMonth()->endOfDay()
                         : $currentMonth->copy()->addDays($weekStart + 6)->endOfDay();
                     
-                    $query->whereBetween(isset(\->tab) && \->tab == \'sk-karo\' ? \'tanggal_sk\' : \'tanggal\', [$startDate, $endDate])
-                          ->whereYear(isset(\->tab) && \->tab == \'sk-karo\' ? \'tanggal_sk\' : \'tanggal\', $this->tahun);
+                    $query->whereBetween($this->tab == 'sk-karo' ? 'tanggal_sk' : 'tanggal', [$startDate, $endDate])
+                          ->whereYear($this->tab == 'sk-karo' ? 'tanggal_sk' : 'tanggal', $this->tahun);
                     break;
 
                 case 'bulan':
-                    $query->whereMonth(isset(\->tab) && \->tab == \'sk-karo\' ? \'tanggal_sk\' : \'tanggal\', $this->bulan)
-                          ->whereYear(isset(\->tab) && \->tab == \'sk-karo\' ? \'tanggal_sk\' : \'tanggal\', $this->tahun);
+                    $query->whereMonth($this->tab == 'sk-karo' ? 'tanggal_sk' : 'tanggal', $this->bulan)
+                          ->whereYear($this->tab == 'sk-karo' ? 'tanggal_sk' : 'tanggal', $this->tahun);
                     break;
 
                 case 'tahun':
-                    $query->whereYear(isset(\->tab) && \->tab == \'sk-karo\' ? \'tanggal_sk\' : \'tanggal\', $this->tahun);
+                    $query->whereYear($this->tab == 'sk-karo' ? 'tanggal_sk' : 'tanggal', $this->tahun);
                     break;
             }
         }
 
-        return $query->latest(isset(\->tab) && \->tab == \'sk-karo\' ? \'tanggal_sk\' : \'tanggal\')->get();
+        $dateCol = $this->tab == 'sk-karo' ? 'tanggal_sk' : 'tanggal';
+        if ($this->sort === 'asc') {
+            return $query->oldest($dateCol)->get();
+        } else {
+            return $query->latest($dateCol)->get();
+        }
     }
 
     protected function getQueryByTab()
@@ -111,14 +145,6 @@ class AgendaKeluarExport implements FromCollection, WithHeadings, WithMapping
                 'Perihal',
                 'Pejabat TTD',
                 'Lampiran'
-            ],
-            'sk-karo' => [
-                ,
-                ->no_sk ?? '-',
-                ->tanggal_sk ? \Carbon\Carbon::parse(->tanggal_sk)->format('d/m/Y') : '-',
-                ->perihal ?? '-',
-                ->pejabat_ttd ?? '-',
-                ->file_surat ? asset('storage/' . json_decode(->file_surat, true)[0]['path']) : '-'
             ],
             'spt-dalam', 'spt-luar' => [
                 'No',
@@ -164,20 +190,12 @@ class AgendaKeluarExport implements FromCollection, WithHeadings, WithMapping
                 $lampiran
             ],
             'sk-karo' => [
-                'No',
-                'Nomor SK',
-                'Tanggal',
-                'Perihal',
-                'Pejabat TTD',
-                'Lampiran'
-            ],
-            'sk-karo' => [
-                ,
-                ->no_sk ?? '-',
-                ->tanggal_sk ? \Carbon\Carbon::parse(->tanggal_sk)->format('d/m/Y') : '-',
-                ->perihal ?? '-',
-                ->pejabat_ttd ?? '-',
-                ->file_surat ? asset('storage/' . json_decode(->file_surat, true)[0]['path']) : '-'
+                $no,
+                $row->no_sk ?? '-',
+                $row->tanggal_sk ? \Carbon\Carbon::parse($row->tanggal_sk)->format('d/m/Y') : '-',
+                $row->perihal ?? '-',
+                $row->pejabat_ttd ?? '-',
+                $row->file_surat ? asset('storage/' . json_decode($row->file_surat, true)[0]['path']) : '-'
             ],
             'spt-dalam', 'spt-luar' => [
                 $no,

@@ -16,7 +16,8 @@ class UserProfileController extends Controller
         $query = \App\Models\ActivityLog::with('user')->latest();
 
         if (auth()->user()->role !== 'superadmin') {
-            $query->where('user_id', auth()->id());
+            $query->where('user_id', auth()->id())
+                  ->whereNotIn('action', ['login', 'logout']);
         }
 
         $recentActivities = $query->take(3)->get();
@@ -32,7 +33,7 @@ class UserProfileController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . auth()->id(),
             'phone' => 'nullable|string|max:20',
-            'jabatan' => 'required|string|max:100',
+            'jabatan' => 'nullable|string|max:100',
             'nip' => 'nullable|string|max:50',
             'role' => 'nullable|in:admin,user,monitor',
         ]);

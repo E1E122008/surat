@@ -25,7 +25,11 @@ class SptLuarDaerahController extends Controller
             });
         }
         
-        $sortOrder = $request->input('sort', 'asc');
+        if ($request->has('sort')) {
+            session(['spt_luar_daerah_sort' => $request->sort]);
+        }
+        $sortOrder = session('spt_luar_daerah_sort', 'desc');
+
         if ($sortOrder === 'asc') {
             $query->oldest();
         } else {

@@ -194,7 +194,6 @@
                 <select name="kendala" class="form-select" required>
                     <option value="" disabled selected>Pilih salah satu...</option>
                     <option value="Lupa Kata Sandi">Lupa Kata Sandi</option>
-                    <option value="Akun Diblokir">Akun Diblokir</option>
                     <option value="Belum Memiliki Akun">Belum Memiliki Akun</option>
                     <option value="Lainnya">Lainnya</option>
                 </select>

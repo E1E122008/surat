@@ -119,7 +119,7 @@
                     </h4>
                 </div>
                 <div class="ticket-meta">
-                    Tiket #REQ-{{ str_pad($req->id, 4, '0', STR_PAD_LEFT) }} — Dikirim
+                    Laporan #REQ-{{ str_pad($req->id, 4, '0', STR_PAD_LEFT) }} — Dikirim
                     {{ $req->created_at->format('d M Y, H:i') }} WITA
                 </div>
                 <div class="ticket-body">
@@ -143,6 +143,3 @@
     </div>
 </div>
 @endsection
-
-
-

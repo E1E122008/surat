@@ -69,6 +69,11 @@ class DataRequestController extends Controller
             'notes' => 'nullable|string',
             'no_surat' => 'required|string|max:255',
             'no_hp' => 'required|string|max:20', // validasi no_hp
+        ], [
+            'lampiran.required' => 'File lampiran wajib diunggah (minimal satu).',
+            'lampiran.*.mimes' => 'Seluruh file yang diunggah harus dalam format PDF atau Word.',
+            'lampiran.*.max' => 'Ukuran untuk tiap file maksimal adalah 2GB.',
+            'lampiran.*.file' => 'Konfigurasi file tidak valid.',
         ]);
 
         $lampiranPaths = [];
@@ -80,7 +85,7 @@ class DataRequestController extends Controller
                 ];
             }
         }
-        // Pastikan ada minimal 1 PDF dan 1 Word
+        // Pastikan ada minimal 1 file (PDF atau Word)
         $hasPdf = false;
         $hasWord = false;
         foreach ($lampiranPaths as $file) {
@@ -88,8 +93,8 @@ class DataRequestController extends Controller
             if ($ext === 'pdf') $hasPdf = true;
             if ($ext === 'doc' || $ext === 'docx') $hasWord = true;
         }
-        if (!$hasPdf || !$hasWord) {
-            return redirect()->back()->withInput()->withErrors(['lampiran' => 'Wajib melampirkan file PDF dan Word.']);
+        if (!$hasPdf && !$hasWord) {
+            return redirect()->back()->withInput()->withErrors(['lampiran' => 'Wajib melampirkan minimal salah satu file (PDF atau Word).']);
         }
 
         $dataRequest = ApprovalRequest::create([
@@ -108,7 +113,7 @@ class DataRequestController extends Controller
         Log::info('Data Request created:', $dataRequest->toArray());
 
         // Notify admin
-        $admins = \App\Models\User::where('role', 'admin')->get();
+        $admins = \App\Models\User::whereIn('role', ['admin', 'superadmin'])->get();
         if ($admins->count() > 0) {
             \Illuminate\Support\Facades\Notification::send($admins, new DataRequestNotification($dataRequest));
         }

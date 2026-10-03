@@ -24,7 +24,9 @@ class User extends Authenticatable
         'phone',
         'avatar',
         'role',
-        'dinas'
+        'dinas',
+        'jabatan',
+        'nip'
     ];
 
     /**

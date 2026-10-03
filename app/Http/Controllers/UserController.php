@@ -30,7 +30,10 @@ class UserController extends Controller
             $query->where('role', $request->role);
         }
         
-        $sortOrder = $request->sort === 'asc' ? 'asc' : 'desc';
+        if ($request->has('sort')) {
+            session(['users_sort' => $request->sort]);
+        }
+        $sortOrder = session('users_sort', 'desc');
         $query->orderBy('created_at', $sortOrder);
 
         $users = $query->paginate(10)->withQueryString();
@@ -41,7 +44,7 @@ class UserController extends Controller
             $totalUsers = User::count();
         }
 
-        return view('users.index', compact('users', 'totalUsers'));
+        return view('users.index', compact('users', 'totalUsers', 'sortOrder'));
     }
 
     public function create()

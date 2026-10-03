@@ -14,18 +14,6 @@
         <div class="bg-white shadow-sm rounded-lg">
             <div class="p-4">
                 {{-- ALERT SECTION --}}
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert" id="alertBox">
-                        <i class="fas fa-check-circle me-2"></i>
-                        {{ session('success') }}
-                    </div>
-                @endif
-                @if (session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alertBox">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        {{ session('error') }}
-                    </div>
-                @endif
                 <!-- STANDARDIZED ACTION BAR -->
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-4"
                     style="border-bottom: 1px solid rgba(0,0,0,0.05);">
@@ -53,7 +41,6 @@
                             </div>
                         </form>
 
-                        @php $sortOrder = request('sort', 'asc'); @endphp
                         <!-- SORT URUTKAN -->
                         <div class="dropdown d-flex justify-content-stretch fixed-action-width">
                             <button class="btn btn-outline-secondary dropdown-toggle shadow-sm w-100 m-0 text-nowrap"
@@ -144,7 +131,7 @@
                                         @if ($pergub->disposisi)
                                             @php
                                                 $disposisiParts = explode('|', $pergub->disposisi);
-                                                                                                $persetujuanKetua = null;
+                                                $persetujuanKetua = null;
                                                 $tujuanDisposisi = null;
                                                 $subDisposisi = null;
                                                 $tanggalDisposisi = null;
@@ -163,7 +150,8 @@
                                                     ) {
                                                         $persetujuanKetua = $trimmedPart;
                                                     } elseif (
-                                                        stripos($trimmedPart, 'Persetujuan Ke') !== false && stripos($trimmedPart, 'Biro Hukum:') !== false
+                                                        stripos($trimmedPart, 'Persetujuan Ke') !== false &&
+                                                        stripos($trimmedPart, 'Biro Hukum:') !== false
                                                     ) {
                                                         // Fallback untuk format lama
                                                         $persetujuanKetua = $trimmedPart;
@@ -194,39 +182,54 @@
                                                     $otherParts = array_slice($otherParts, 1);
                                                 }
                                             @endphp
-                                            <div class="d-flex flex-column align-items-start text-start" style="gap: 8px; min-width: 240px; padding: 4px 0;">
+                                            <div class="d-flex flex-column align-items-start text-start"
+                                                style="gap: 8px; min-width: 240px; padding: 4px 0;">
                                                 {{-- Tampilkan Status Persetujuan Terlebih Dahulu --}}
                                                 @if ($persetujuanKetua)
-                                                    <span class="badge {{ stripos($persetujuanKetua, 'Sudah') !== false ? 'bg-success' : 'bg-warning text-dark' }} shadow-sm" style="font-size: 0.75rem; padding: 6px 12px; border-radius: 6px; font-weight: 500; letter-spacing: 0.3px;">
-                                                        <i class="fas {{ stripos($persetujuanKetua, 'Sudah') !== false ? 'fa-check' : 'fa-clock' }} me-1"></i> {{ $persetujuanKetua }}
+                                                    <span
+                                                        class="badge {{ stripos($persetujuanKetua, 'Sudah') !== false ? 'bg-success' : 'bg-warning text-dark' }} shadow-sm"
+                                                        style="font-size: 0.75rem; padding: 6px 12px; border-radius: 6px; font-weight: 500; letter-spacing: 0.3px;">
+                                                        <i
+                                                            class="fas {{ stripos($persetujuanKetua, 'Sudah') !== false ? 'fa-check' : 'fa-clock' }} me-1"></i>
+                                                        {{ $persetujuanKetua }}
                                                     </span>
                                                 @endif
 
                                                 {{-- Tampilkan Tujuan Disposisi Utama --}}
                                                 @if ($tujuanDisposisi)
-                                                    <div style="font-size: 0.85rem; font-weight: 600; color: #1e293b; display: flex; align-items: flex-start; gap: 8px; padding-top: 4px;">
-                                                        <i class="fas fa-level-down-alt text-primary mt-1" style="transform: rotate(90deg); font-size: 0.8rem; margin-left: 2px;"></i> 
-                                                        <span style="flex: 1; line-height: 1.4;">{{ $tujuanDisposisi }}</span>
+                                                    <div
+                                                        style="font-size: 0.85rem; font-weight: 600; color: #1e293b; display: flex; align-items: flex-start; gap: 8px; padding-top: 4px;">
+                                                        <i class="fas fa-level-down-alt text-primary mt-1"
+                                                            style="transform: rotate(90deg); font-size: 0.8rem; margin-left: 2px;"></i>
+                                                        <span
+                                                            style="flex: 1; line-height: 1.4;">{{ $tujuanDisposisi }}</span>
                                                     </div>
                                                 @endif
 
                                                 {{-- Tampilkan Diteruskan ke --}}
                                                 @if ($subDisposisi)
-                                                    <div style="font-size: 0.8rem; color: #475569; display: flex; align-items: flex-start; gap: 8px;">
-                                                        <i class="fas fa-angle-double-right text-muted mt-1" style="font-size: 0.75rem; margin-left: 1px;"></i>
+                                                    <div
+                                                        style="font-size: 0.8rem; color: #475569; display: flex; align-items: flex-start; gap: 8px;">
+                                                        <i class="fas fa-angle-double-right text-muted mt-1"
+                                                            style="font-size: 0.75rem; margin-left: 1px;"></i>
                                                         <span style="flex: 1; line-height: 1.4;">
-                                                            <span class="fw-bold" style="color: #334155;">Diteruskan:</span> {{ $subDisposisi }}
+                                                            <span class="fw-bold"
+                                                                style="color: #334155;">Diteruskan:</span>
+                                                            {{ $subDisposisi }}
                                                         </span>
                                                     </div>
                                                 @endif
 
                                                 {{-- Tampilkan Catatan --}}
                                                 @if ($catatan)
-                                                    <div class="w-100 mt-1" style="background-color: #f8fafc; border-left: 3px solid #3b82f6; padding: 8px 12px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
-                                                        <div style="font-size: 0.65rem; font-weight: 700; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">
+                                                    <div class="w-100 mt-1"
+                                                        style="background-color: #f8fafc; border-left: 3px solid #3b82f6; padding: 8px 12px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                                                        <div
+                                                            style="font-size: 0.65rem; font-weight: 700; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">
                                                             <i class="fas fa-comment-alt me-1"></i> Catatan
                                                         </div>
-                                                        <div class="fst-italic" style="font-size: 0.8rem; color: #334155; line-height: 1.4;">
+                                                        <div class="fst-italic"
+                                                            style="font-size: 0.8rem; color: #334155; line-height: 1.4;">
                                                             {{ $catatan }}
                                                         </div>
                                                     </div>
@@ -234,8 +237,9 @@
 
                                                 {{-- Tampilkan Tanggal --}}
                                                 @if ($tanggalDisposisi)
-                                                    <div class="mt-1" style="font-size: 0.75rem; color: #64748b; font-weight: 500; display: flex; align-items: center; gap: 6px;">
-                                                        <i class="far fa-calendar-alt" style="color: #94a3b8;"></i> 
+                                                    <div class="mt-1"
+                                                        style="font-size: 0.75rem; color: #64748b; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                                                        <i class="far fa-calendar-alt" style="color: #94a3b8;"></i>
                                                         <span>{{ $tanggalDisposisi }}</span>
                                                     </div>
                                                 @endif
@@ -244,8 +248,10 @@
                                                 @if (count($otherParts) > 0)
                                                     <div class="mt-1" style="font-size: 0.75rem; color: #64748b;">
                                                         @foreach ($otherParts as $part)
-                                                            <div class="mb-1" style="display: flex; align-items: flex-start; gap: 6px;">
-                                                                <i class="fas fa-circle mt-1" style="font-size: 4px; color: #cbd5e1;"></i>
+                                                            <div class="mb-1"
+                                                                style="display: flex; align-items: flex-start; gap: 6px;">
+                                                                <i class="fas fa-circle mt-1"
+                                                                    style="font-size: 4px; color: #cbd5e1;"></i>
                                                                 <span>{{ $part }}</span>
                                                             </div>
                                                         @endforeach
@@ -342,7 +348,7 @@
                         {{ method_exists($pergubs, 'total') ? $pergubs->total() : $pergubs->count() }}
                     </span>
                 </div>
-</div>
+            </div>
         </div>
     </div>
 

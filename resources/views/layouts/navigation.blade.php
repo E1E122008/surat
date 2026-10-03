@@ -187,23 +187,66 @@
             padding: 4px 0;
         }
     }
+
+    /* Kustomisasi State Hamburger Dinamis (Aktif vs Ciut) */
+    .sidebar-toggler {
+        background: rgba(59, 130, 246, 0.15) !important;
+        border-radius: 10px;
+        width: 44px;
+        height: 44px;
+        transition: all 0.2s ease;
+        border: 1.5px solid #eab308 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+    }
+
+    .sidebar-toggler svg {
+        stroke: #eab308 !important;
+        width: 24px;
+        height: 24px;
+        stroke-width: 2.5px;
+    }
+
+    /* Saat Sidebar diciutkan di Desktop */
+    html.sidebar-mode-collapsed .sidebar-toggler {
+        background: transparent !important;
+        border-color: transparent !important;
+    }
+
+    html.sidebar-mode-collapsed .sidebar-toggler svg {
+        stroke: #cbd5e1 !important;
+        stroke-width: 2px !important;
+    }
+
+    /* Saat berada di layar Mobile (Selalu Netral by default) */
+    @media (max-width: 991.98px) {
+        .sidebar-toggler {
+            background: transparent !important;
+            border-color: transparent !important;
+        }
+
+        .sidebar-toggler svg {
+            stroke: #cbd5e1 !important;
+            stroke-width: 2px !important;
+        }
+    }
 </style>
 <nav class="navbar navbar-expand-lg navbar-dark w-100 custom-navbar">
     <div class="container-fluid">
         <!-- GROUP KIRI (Hamburger + Title) -->
         <div class="mobile-left-group">
-            <div class="hamburger-wrapper rail-slot">
-                <button
-                    class="btn btn-outline-light border-0 shadow-none bg-transparent sidebar-toggler touch-target m-0"
-                    onclick="toggleSidebar()" aria-label="Toggle Sidebar">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#cbd5e1"
-                        style="width: 28px; height: 28px; stroke-width: 2px;">
+            <div class="hamburger-wrapper position-relative ms-0 ms-md-2" style="margin-right: 12px;">
+                <button class="btn shadow-none sidebar-toggler touch-target m-0" onclick="toggleSidebar()"
+                    aria-label="Toggle Sidebar">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </button>
             </div>
-            <a href="{{ route('dashboard') }}" class="mobile-brand-title" style="text-decoration: none;">SIAP
-                BROH!!!</a>
+            <a href="{{ route('dashboard') }}" class="mobile-brand-title" style="text-decoration: none;">SIAP BROH
+                !!!</a>
         </div>
 
         <div class="me-auto d-none d-md-flex align-items-center" style="min-width: 0;">
@@ -239,8 +282,8 @@
                     <i class="fas fa-bell icon-mobile"></i>
                     @if (Auth::user()->unreadNotifications->count() > 0)
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill"
-                            style="font-size: 0.6rem; margin-top: 5px; margin-left: -5px; background-color: #dc2626; border: 2px solid #0f1b3d;">
-                            {{ Auth::user()->unreadNotifications->count() }}
+                            style="font-size: 0.65rem; margin-top: 5px; margin-left: -5px; padding: 0.35em 0.5em; background-color: #ef4444; border: 1.5px solid #0f1b3d;">
+                            {{ Auth::user()->unreadNotifications->count() > 9 ? '9+' : Auth::user()->unreadNotifications->count() }}
                         </span>
                     @endif
                 </a>
@@ -303,9 +346,14 @@
                                     <h6 class="mb-1" style="font-size: 0.85rem; font-weight: 600; color: #1e293b;">
                                         {{ $title }}
                                     </h6>
-                                    <p class="mb-0 text-muted" style="font-size: 0.75rem;">
-                                        {{ $notification->created_at->diffForHumans() }}
+                                    <p class="mb-1 text-muted"
+                                        style="font-size: 0.75rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"
+                                        title="{{ $notification->data['message'] ?? 'Ada pembaruan data.' }}">
+                                        {{ $notification->data['message'] ?? 'Ada pembaruan data.' }}
                                     </p>
+                                    <span class="text-secondary" style="font-size: 0.7rem;">
+                                        {{ $notification->created_at->diffForHumans() }}
+                                    </span>
                                 </div>
                             </a>
                         </li>

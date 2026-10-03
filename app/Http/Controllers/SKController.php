@@ -26,7 +26,11 @@ class SKController extends Controller
             });
         }
 
-        $sortOrder = $request->input('sort', 'asc');
+        if ($request->has('sort')) {
+            session(['sk_draft_sort' => $request->sort]);
+        }
+        $sortOrder = session('sk_draft_sort', 'desc');
+
         if ($sortOrder === 'asc') {
             $query->oldest();
         } else {

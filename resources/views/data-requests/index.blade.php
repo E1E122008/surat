@@ -7,18 +7,6 @@
 
 @section('content')
     <div class="container-fluid">
-        @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show auto-dismiss-alert" role="alert">
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show auto-dismiss-alert" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
         @if ($errors->any())
             <div class="alert alert-danger alert-dismissible fade show auto-dismiss-alert" role="alert">
                 <ul class="mb-0">
@@ -439,7 +427,7 @@
                                         class="text-danger">*</span></label>
                                 <input type="file" class="form-control" id="lampiran" name="lampiran[]"
                                     accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xls,.xlsx,.zip,.rar" multiple required>
-                                <small class="form-text text-muted">wajib melampirkan file PDF dan Wordnya. Max 2GB per
+                                <small class="form-text text-muted">Wajib melampirkan (PDF atau Word atau Keduanya). Max 2GB per
                                     file.</small>
                             </div>
                             <div class="col-12">
