@@ -2938,24 +2938,35 @@
 
                             const doc = parser.parseFromString(html, 'text/html');
 
+                            // Update Title
+                            const title = doc.querySelector('title');
+                            if (title) document.title = title.innerText;
+
+                            // Update breadcrumb
+                            const breadcrumbContainer = document.getElementById('breadcrumb-container');
+                            const newBreadcrumbContainer = doc.getElementById('breadcrumb-container');
+                            if (breadcrumbContainer && newBreadcrumbContainer) {
+                                breadcrumbContainer.innerHTML = newBreadcrumbContainer.innerHTML;
+                            }
+
+                            // Update Sidebar
+                            const sidebar = document.getElementById('sidebar');
+                            const newSidebar = doc.getElementById('sidebar');
+                            if (sidebar && newSidebar) {
+                                sidebar.innerHTML = newSidebar.innerHTML;
+                                if (typeof initFlyoutHoverLogic === 'function') initFlyoutHoverLogic();
+                            }
+
                             const mainContent = document.getElementById('main-content');
-
                             const newMainContent = doc.getElementById('main-content');
-
                             if (mainContent && newMainContent) {
-
                                 mainContent.innerHTML = newMainContent.innerHTML;
 
                                 // Scroll lembut kembali ke atas daftar
-
                                 window.scrollTo({
-
                                     top: 0,
-
                                     behavior: 'auto'
-
                                 });
-
                             }
 
                         }).catch(err => {
@@ -2971,29 +2982,37 @@
             });
 
             // Handle tombol back/forward di browser
-
             window.addEventListener('popstate', function() {
-
                 fetch(window.location.href)
-
                     .then(res => res.text())
-
                     .then(html => {
-
                         const parser = new DOMParser();
-
                         const doc = parser.parseFromString(html, 'text/html');
 
+                        // Update Title
+                        const title = doc.querySelector('title');
+                        if (title) document.title = title.innerText;
+
+                        // Update breadcrumb
+                        const breadcrumbContainer = document.getElementById('breadcrumb-container');
+                        const newBreadcrumbContainer = doc.getElementById('breadcrumb-container');
+                        if (breadcrumbContainer && newBreadcrumbContainer) {
+                            breadcrumbContainer.innerHTML = newBreadcrumbContainer.innerHTML;
+                        }
+
+                        // Update Sidebar
+                        const sidebar = document.getElementById('sidebar');
+                        const newSidebar = doc.getElementById('sidebar');
+                        if (sidebar && newSidebar) {
+                            sidebar.innerHTML = newSidebar.innerHTML;
+                            if (typeof initFlyoutHoverLogic === 'function') initFlyoutHoverLogic();
+                        }
+
                         const mainContent = document.getElementById('main-content');
-
                         const newMainContent = doc.getElementById('main-content');
-
                         if (mainContent && newMainContent) mainContent.innerHTML = newMainContent
-
                             .innerHTML;
-
                     });
-
             });
 
         });

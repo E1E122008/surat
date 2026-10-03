@@ -200,7 +200,8 @@ class KategoriKeluarController extends Controller
             'skKaro',
             'activeTab',
             'filterInfo',
-            'totalSurat'
+            'totalSurat',
+            'sortOrder'
         ));
     }
 

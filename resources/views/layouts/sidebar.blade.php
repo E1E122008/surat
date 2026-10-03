@@ -280,6 +280,7 @@
         max-width: 100%;
         text-decoration: none !important;
         margin-right: 8px;
+        transform: translateY(-4px);
     }
 
     @media (min-width: 992px) {
@@ -323,6 +324,7 @@
             background: rgba(59, 130, 246, 0.15);
             flex-grow: 0;
             margin-right: 0;
+            transform: translateY(0);
         }
 
         .sidebar.collapsed .brand-logo {
@@ -627,7 +629,7 @@
             transform: translateX(4px);
         }
 
-        /* Normal expanded behavior (Accordion Panel) */
+        /* Normal expanded behavior for desktop (Accordion Panel) */
         .sidebar:not(.collapsed) .submenu-container {
             position: static;
             padding-left: 0;
@@ -647,6 +649,22 @@
 
         .sidebar:not(.collapsed) .menu-item.open .submenu-container {
             display: block;
+        }
+    }
+
+    /* Terapkan logika accordion .open untuk Sidebar Mobile & Desktop Expanded (di luar mode collapsed) */
+    .submenu-container {
+        display: none;
+    }
+
+    .menu-item.open>.submenu-container {
+        display: block;
+    }
+
+    /* Untuk memastikan khusus pada Desktop Collapsed tidak terpengaruh override */
+    @media (min-width: 992px) {
+        .sidebar.collapsed .menu-item.open>.submenu-container:not(.show-flyout) {
+            display: none !important;
         }
     }
 </style>
@@ -680,7 +698,7 @@
 
         <!-- Ikon Tutup Sidebar (Hanya Mobile) -->
         <button class="close-sidebar d-lg-none ms-auto position-relative" onclick="closeSidebar()"
-            style="background: none; border: none; cursor: pointer; z-index: 20;">
+            style="background: none; border: none; cursor: pointer; z-index: 20; transform: translateY(-4px);">
             <i class="fas fa-times" style="font-size: 20px; color: #ffffff;"></i>
         </button>
     </div>

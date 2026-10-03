@@ -249,7 +249,7 @@
                 !!!</a>
         </div>
 
-        <div class="me-auto d-none d-md-flex align-items-center" style="min-width: 0;">
+        <div id="breadcrumb-container" class="me-auto d-none d-md-flex align-items-center" style="min-width: 0;">
             @hasSection('breadcrumb')
                 <div class="breadcrumb-navbar d-flex flex-nowrap align-items-center"
                     style="margin-top: 1px; max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
