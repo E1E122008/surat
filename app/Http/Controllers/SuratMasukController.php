@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\SuratMasukExport;
 use App\Models\SuratMasuk;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use App\Exports\SuratMasukExport;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Notification;
-use App\Notifications\ApprovalRequestNotification;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SuratMasukController extends Controller
 {
@@ -19,11 +16,11 @@ class SuratMasukController extends Controller
     public function apiShow($id)
     {
         $surat = SuratMasuk::findOrFail($id);
-        
+
         return response()->json([
             'id' => $surat->id,
             'disposisi' => $surat->disposisi,
-            'status' => $surat->status
+            'status' => $surat->status,
         ]);
     }
 
@@ -45,14 +42,15 @@ class SuratMasukController extends Controller
 
         if ($request->has('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('no_agenda', 'LIKE', "%{$search}%")
-                  ->orWhere('no_surat', 'LIKE', "%{$search}%")
-                  ->orWhere('pengirim', 'LIKE', "%{$search}%");
+                    ->orWhere('no_surat', 'LIKE', "%{$search}%")
+                    ->orWhere('pengirim', 'LIKE', "%{$search}%");
             });
         }
 
         $suratMasuk = $query->paginate(10)->appends($request->query());
+
         return view('surat-masuk.index', compact('suratMasuk', 'sortOrder'));
     }
 
@@ -62,7 +60,7 @@ class SuratMasukController extends Controller
     }
 
     public function store(Request $request)
-    { 
+    {
         try {
             $validated = $request->validate([
                 'no_surat' => 'required|string|max:255',
@@ -92,7 +90,7 @@ class SuratMasukController extends Controller
             $lampiranPaths = [];
             if ($request->hasFile('lampiran')) {
                 $files = $request->file('lampiran');
-                if (!is_array($files)) {
+                if (! is_array($files)) {
                     $files = [$files];
                 }
                 foreach ($files as $file) {
@@ -118,24 +116,26 @@ class SuratMasukController extends Controller
                 Storage::disk('public')->delete($path);
             }
 
-            Log::error('Terjadi kesalahan saat mengajukan surat masuk: ' . $e->getMessage());
+            Log::error('Terjadi kesalahan saat mengajukan surat masuk: '.$e->getMessage());
 
             return redirect()->back()
-                            ->with('error', 'Terjadi kesalahan saat mengajukan surat masuk: ' . $e->getMessage())
-                            ->withInput();
+                ->with('error', 'Terjadi kesalahan saat mengajukan surat masuk: '.$e->getMessage())
+                ->withInput();
         }
     }
 
     public function detail($id)
     {
         $surat = SuratMasuk::findOrFail($id);
+
         return view('surat-masuk.detail', compact('surat'));
     }
-    
 
-    public function edit(SuratMasuk $suratMasuk)
+    public function edit($id)   // atau tetap SuratMasuk $suratMasuk juga boleh
     {
+        $suratMasuk = SuratMasuk::findOrFail($id);
         $lampiranLama = $suratMasuk->lampiran ? array_values(json_decode($suratMasuk->lampiran, true)) : [];
+
         return view('surat-masuk.edit', compact('suratMasuk', 'lampiranLama'));
     }
 
@@ -169,7 +169,7 @@ class SuratMasukController extends Controller
             // Proses lampiran yang ada
             foreach ($lampiranSebelumnya as $file) {
                 // Jika file tidak dihapus dan masih ada di lampiran_lama
-                if (!in_array($file['path'], $lampiranDihapus) && in_array($file['path'], $lampiranLama)) {
+                if (! in_array($file['path'], $lampiranDihapus) && in_array($file['path'], $lampiranLama)) {
                     $lampiranData[] = $file;
                 } else {
                     // Hapus file fisik jika user hapus lampiran
@@ -199,7 +199,7 @@ class SuratMasukController extends Controller
                 ->with('success', 'Data surat masuk berhasil diperbarui!');
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat memperbarui data: ' . $e->getMessage());
+                ->with('error', 'Terjadi kesalahan saat memperbarui data: '.$e->getMessage());
         }
     }
 
@@ -217,7 +217,7 @@ class SuratMasukController extends Controller
                     }
                 }
             }
-                
+
             // Delete the SuratMasuk record
             $noSuratLama = $suratMasuk->no_surat;
             $suratMasuk->delete();
@@ -226,16 +226,17 @@ class SuratMasukController extends Controller
 
             return redirect()->route('surat-masuk.index')
                 ->with('success', 'Data surat masuk berhasil dihapus!');
-                
+
         } catch (\Exception $e) {
             return redirect()->route('surat-masuk.index')
-                ->with('error', 'Gagal menghapus surat masuk: ' . $e->getMessage());
+                ->with('error', 'Gagal menghapus surat masuk: '.$e->getMessage());
         }
     }
 
-    public function export() 
+    public function export()
     {
-        \App\Models\ActivityLog::log('document_export', "Mendownload Excel Surat Masuk");
+        \App\Models\ActivityLog::log('document_export', 'Mendownload Excel Surat Masuk');
+
         return Excel::download(new SuratMasukExport, 'surat-masuk.xlsx');
     }
 
@@ -260,18 +261,19 @@ class SuratMasukController extends Controller
 
             $suratMasuk = SuratMasuk::findOrFail($id);
             $suratMasuk->update([
-                'catatan' => $request->catatan
+                'catatan' => $request->catatan,
             ]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Catatan berhasil diperbarui'
+                'message' => 'Catatan berhasil diperbarui',
             ]);
         } catch (\Exception $e) {
             Log::error('Error updating catatan:', ['error' => $e->getMessage()]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal memperbarui catatan'
+                'message' => 'Gagal memperbarui catatan',
             ], 500);
         }
     }
@@ -279,12 +281,14 @@ class SuratMasukController extends Controller
     public function show($id)
     {
         $surat = SuratMasuk::findOrFail($id);
+
         return view('surat-masuk.detail', compact('surat'));
     }
 
     public function status($id)
     {
         $surat = SuratMasuk::findOrFail($id);
+
         return view('surat-masuk.status', compact('surat'));
     }
 
@@ -292,7 +296,7 @@ class SuratMasukController extends Controller
     {
         try {
             $request->validate([
-                'status' => 'required|in:tercatat,terdisposisi,diproses,koreksi,diambil,selesai'
+                'status' => 'required|in:tercatat,terdisposisi,diproses,koreksi,diambil,selesai',
             ]);
 
             $surat = SuratMasuk::findOrFail($id);
@@ -301,7 +305,7 @@ class SuratMasukController extends Controller
 
             return redirect()->back()->with('success', 'Status berhasil diperbarui.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengupdate status: '.$e->getMessage());
         }
     }
 
@@ -313,7 +317,7 @@ class SuratMasukController extends Controller
                 'disposisi' => 'required',
                 'tanggal_disposisi' => 'required|date',
                 'catatan' => 'nullable',
-                'persetujuan_ketua' => 'nullable|in:Sudah,Belum,sudah,belum'
+                'persetujuan_ketua' => 'nullable|in:Sudah,Belum,sudah,belum',
             ]);
 
             // Ambil data surat masuk
@@ -340,24 +344,24 @@ class SuratMasukController extends Controller
 
             // Format disposisi: Status Persetujuan terlebih dahulu, kemudian informasi lainnya
             $disposisiParts = [];
-            
+
             // 1. Status Persetujuan Kepala Biro Hukum (pertama)
-            $disposisiParts[] = $statusPersetujuan . ' di Setujui Kepala Biro Hukum';
-            
+            $disposisiParts[] = $statusPersetujuan.' di Setujui Kepala Biro Hukum';
+
             // 2. Tujuan Disposisi
             $disposisiParts[] = $request->disposisi;
-            
+
             // 3. Diteruskan ke (jika ada)
             if ($request->sub_disposisi) {
-                $disposisiParts[] = 'Diteruskan ke: ' . $request->sub_disposisi;
+                $disposisiParts[] = 'Diteruskan ke: '.$request->sub_disposisi;
             }
-            
+
             // 4. Tanggal Disposisi
-            $disposisiParts[] = 'Tanggal: ' . $request->tanggal_disposisi;
-            
+            $disposisiParts[] = 'Tanggal: '.$request->tanggal_disposisi;
+
             // 5. Catatan (jika ada)
             if ($request->catatan) {
-                $disposisiParts[] = 'Catatan: ' . $request->catatan;
+                $disposisiParts[] = 'Catatan: '.$request->catatan;
             }
 
             // Gabungkan semua bagian dengan separator
@@ -365,48 +369,48 @@ class SuratMasukController extends Controller
 
             // Update kolom disposisi
             $suratMasuk->update([
-                'disposisi' => $disposisiText
+                'disposisi' => $disposisiText,
             ]);
 
             return redirect()->back()
-                            ->with('success', 'Disposisi berhasil ditambahkan');
+                ->with('success', 'Disposisi berhasil ditambahkan');
 
         } catch (\Exception $e) {
             return redirect()->back()
-                            ->with('error', 'Gagal menambahkan disposisi: ' . $e->getMessage());
+                ->with('error', 'Gagal menambahkan disposisi: '.$e->getMessage());
         }
     }
 
     public function review(Request $request, $id)
     {
-        if (!Auth::user()->role === 'admin') {
+        if (! Auth::user()->role === 'admin') {
             return redirect()->back()->with('error', 'Unauthorized access');
         }
 
         $suratMasuk = SuratMasuk::findOrFail($id);
-        
+
         $validated = $request->validate([
             'status' => 'required|in:approved,rejected',
             'admin_notes' => 'nullable|string',
-            'no_agenda' => 'required_if:status,approved|string|max:255'
+            'no_agenda' => 'required_if:status,approved|string|max:255',
         ]);
 
         // Preserve existing data
         $updateData = [
             'status' => $validated['status'],
-            'admin_notes' => $validated['admin_notes']
+            'admin_notes' => $validated['admin_notes'],
         ];
 
         // Only update no_agenda if status is approved
-        if ($validated['status'] === 'approved' && !empty($validated['no_agenda'])) {
+        if ($validated['status'] === 'approved' && ! empty($validated['no_agenda'])) {
             $updateData['no_agenda'] = $validated['no_agenda'];
         }
 
         $suratMasuk->update($updateData);
 
         $status = $validated['status'] === 'approved' ? 'disetujui' : 'ditolak';
+
         return redirect()->route('surat-masuk.index')
             ->with('success', "Surat masuk telah {$status}");
     }
-
 }

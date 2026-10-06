@@ -1,35 +1,31 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\SuratMasukController;
-use App\Http\Controllers\SuratKeluarController;
+use App\Http\Controllers\Admin\ApprovalRequestController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\BukuAgendaController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DataRequestController;
+use App\Http\Controllers\DisposisiController;
+use App\Http\Controllers\KategoriKeluarController;
+use App\Http\Controllers\PerdaController;
+use App\Http\Controllers\PergubController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SKController;
+use App\Http\Controllers\SkKaroController;
 use App\Http\Controllers\SppdDalamDaerahController;
 use App\Http\Controllers\SppdLuarDaerahController;
 use App\Http\Controllers\SptDalamDaerahController;
 use App\Http\Controllers\SptLuarDaerahController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\BukuAgendaController;
-use App\Http\Controllers\UserProfileController;
-use App\Http\Controllers\SKController;
-use App\Http\Controllers\PerdaController;
-use App\Http\Controllers\PergubController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\DisposisiController;
-use App\Http\Controllers\KategoriKeluarController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SuratKeluarController;
+use App\Http\Controllers\SuratMasukController;
 use App\Http\Controllers\TransaksiSuratController;
-use App\Http\Controllers\Admin\ApprovalRequestController;
-use App\Http\Controllers\DataRequestController;
-use App\Http\Controllers\SkKaroController;
-
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserProfileController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
-
-
 
 Route::get('login', [AuthenticatedSessionController::class, 'create'])
     ->name('login')
@@ -50,9 +46,9 @@ Route::post('bantuan-akses', function (\Illuminate\Http\Request $request) {
         'kontak' => $request->input('kontak'),
         'kendala' => $request->input('kendala'),
         'deskripsi' => $request->input('deskripsi') ?? '-',
-        'status' => 'menunggu'
+        'status' => 'menunggu',
     ]);
-    
+
     $admins = \App\Models\User::where('role', 'admin')->get();
     \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\HelpRequestNotification($helpRequest, 'new'));
 
@@ -80,13 +76,13 @@ Route::middleware(['auth'])->group(function () {
         // Routes untuk semua role (termasuk monitor) - hanya view
         Route::get('surat-masuk', [SuratMasukController::class, 'index'])->name('surat-masuk.index');
         Route::get('surat-masuk/{id}/detail', [SuratMasukController::class, 'detail'])->name('surat-masuk.detail');
-        
+
         // Routes yang dibatasi untuk monitor - hanya admin dan user
         Route::get('surat-masuk/create', [SuratMasukController::class, 'create'])->name('surat-masuk.create')->middleware('preventMonitor');
         Route::post('surat-masuk', [SuratMasukController::class, 'store'])->name('surat-masuk.store')->middleware('preventMonitor');
         Route::get('surat-masuk/{id}/status', [SuratMasukController::class, 'status'])->name('surat-masuk.status')->middleware('preventMonitor');
         Route::get('surat-masuk/{id}/edit', [SuratMasukController::class, 'edit'])->name('surat-masuk.edit')->middleware('preventMonitor');
-        Route::put('surat-masuk/{suratMasuk}', [SuratMasukController::class, 'update'])->name('surat-masuk.update')->middleware('preventMonitor');
+        Route::put('surat-masuk/{id}', [SuratMasukController::class, 'update'])->name('surat-masuk.update')->middleware('preventMonitor');
         Route::post('/surat-masuk/{id}/update-status', [SuratMasukController::class, 'updateStatus'])
             ->name('surat-masuk.update-status')->middleware('preventMonitor');
         Route::delete('surat-masuk/{suratMasuk}', [SuratMasukController::class, 'destroy'])
@@ -102,7 +98,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('sppd-dalam-daerah', [SppdDalamDaerahController::class, 'index'])->name('sppd-dalam-daerah.index');
         Route::get('sppd-dalam-daerah/{id}/detail', [SppdDalamDaerahController::class, 'detail'])
             ->name('sppd-dalam-daerah.detail');
-        
+
         // Routes yang dibatasi untuk monitor
         Route::get('sppd-dalam-daerah/create', [SppdDalamDaerahController::class, 'create'])
             ->name('sppd-dalam-daerah.create')->middleware('preventMonitor');
@@ -121,7 +117,7 @@ Route::middleware(['auth'])->group(function () {
         // Routes untuk semua role (termasuk monitor) - hanya view
         Route::get('sppd-luar-daerah', [SppdLuarDaerahController::class, 'index'])->name('sppd-luar-daerah.index');
         Route::get('/sppd-luar-daerah/{id}/detail', [SppdLuarDaerahController::class, 'detail'])->name('sppd-luar-daerah.detail');
-        
+
         // Routes yang dibatasi untuk monitor
         Route::get('sppd-luar-daerah/create', [SppdLuarDaerahController::class, 'create'])
             ->name('sppd-luar-daerah.create')->middleware('preventMonitor');
@@ -140,7 +136,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('spt-dalam-daerah', [SptDalamDaerahController::class, 'index'])->name('spt-dalam-daerah.index');
         Route::get('spt-dalam-daerah/{id}/detail', [SptDalamDaerahController::class, 'detail'])
             ->name('spt-dalam-daerah.detail');
-        
+
         // Routes yang dibatasi untuk monitor
         Route::get('spt-dalam-daerah/create', [SptDalamDaerahController::class, 'create'])->name('spt-dalam-daerah.create')->middleware('preventMonitor');
         Route::post('spt-dalam-daerah', [SptDalamDaerahController::class, 'store'])->name('spt-dalam-daerah.store')->middleware('preventMonitor');
@@ -158,7 +154,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('spt-luar-daerah', [SptLuarDaerahController::class, 'index'])->name('spt-luar-daerah.index');
         Route::get('spt-luar-daerah/{id}/detail', [SptLuarDaerahController::class, 'detail'])
             ->name('spt-luar-daerah.detail');
-        
+
         // Routes yang dibatasi untuk monitor
         Route::get('spt-luar-daerah/create', [SptLuarDaerahController::class, 'create'])->name('spt-luar-daerah.create')->middleware('preventMonitor');
         Route::post('spt-luar-daerah', [SptLuarDaerahController::class, 'store'])->name('spt-luar-daerah.store')->middleware('preventMonitor');
@@ -175,7 +171,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/buku-agenda', [BukuAgendaController::class, 'index'])->name('buku-agenda.index');
         Route::get('/buku-agenda/kategori-masuk', [BukuAgendaController::class, 'kategoriMasuk'])->name('buku-agenda.kategori-masuk.index');
         Route::get('/buku-agenda/kategori-keluar', [KategoriKeluarController::class, 'index'])->name('buku-agenda.kategori-keluar.index');
-        
+
         // Routes yang dibatasi untuk monitor - export
         Route::get('/buku-agenda/export', [BukuAgendaController::class, 'export'])->name('buku-agenda.export')->middleware('preventMonitor');
         Route::get('/buku-agenda/kategori-keluar/export', [KategoriKeluarController::class, 'export'])
@@ -218,7 +214,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Routes untuk semua role (termasuk monitor) - hanya view
         Route::get('/draft-phd/sk/{sk}/detail', [SKController::class, 'detail'])->name('draft-phd.sk.detail');
-        
+
         // Routes yang dibatasi untuk monitor
         Route::get('/draft-phd/sk/create', [SKController::class, 'create'])->name('draft-phd.sk.create')->middleware('preventMonitor');
         Route::post('/draft-phd/sk', [SKController::class, 'store'])->name('draft-phd.sk.store')->middleware('preventMonitor');
@@ -233,12 +229,12 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('/update-disposisi/{id}', [SuratMasukController::class, 'updateDisposisi'])->middleware('preventMonitor');
         Route::post('/surat-masuk/{id}/update-catatan', [SuratMasukController::class, 'updateCatatan'])->name('surat-masuk.update-catatan')->middleware('preventMonitor');
-        
+
         Route::put('sppd-dalam-daerah/{id}', [SppdDalamDaerahController::class, 'update'])->name('sppd-dalam-daerah.update')->middleware('preventMonitor');
 
-        //Route perda - Routes untuk semua role (termasuk monitor) - hanya view
+        // Route perda - Routes untuk semua role (termasuk monitor) - hanya view
         Route::get('/draft-phd/perda/{perda}/detail', [PerdaController::class, 'detail'])->name('draft-phd.perda.detail');
-        
+
         // Routes yang dibatasi untuk monitor
         Route::get('/draft-phd/perda/create', [PerdaController::class, 'create'])->name('draft-phd.perda.create')->middleware('preventMonitor');
         Route::post('/draft-phd/perda', [PerdaController::class, 'store'])->name('draft-phd.perda.store')->middleware('preventMonitor');
@@ -254,9 +250,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/draft-phd/perda/{id}/update-disposisi', [PerdaController::class, 'updateDisposisi'])
             ->name('draft-phd.perda.update-disposisi')->middleware('preventMonitor');
 
-        //Route pergub - Routes untuk semua role (termasuk monitor) - hanya view
+        // Route pergub - Routes untuk semua role (termasuk monitor) - hanya view
         Route::get('/draft-phd/pergub/{pergub}/detail', [PergubController::class, 'detail'])->name('draft-phd.pergub.detail');
-        
+
         // Routes yang dibatasi untuk monitor
         Route::get('/draft-phd/pergub/create', [PergubController::class, 'create'])->name('draft-phd.pergub.create')->middleware('preventMonitor');
         Route::post('/draft-phd/pergub', [PergubController::class, 'store'])->name('draft-phd.pergub.store')->middleware('preventMonitor');
@@ -274,7 +270,7 @@ Route::middleware(['auth'])->group(function () {
         // Routes untuk semua role (termasuk monitor) - hanya view
         Route::get('/disposisi', [DisposisiController::class, 'index'])->name('disposisi.index');
         Route::get('/disposisi/{id}', [DisposisiController::class, 'detail'])->name('disposisi.detail');
-        
+
         // Routes yang dibatasi untuk monitor
         Route::put('/disposisi/{id}', [DisposisiController::class, 'update'])->name('disposisi.update')->middleware('preventMonitor');
         Route::get('/disposisi/{id}/edit', [DisposisiController::class, 'edit'])->name('disposisi.edit')->middleware('preventMonitor');
@@ -363,4 +359,3 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifications/read/{id}', [App\Http\Controllers\NotificationController::class, 'read'])->name('notifications.read');
     Route::post('/notifications/read-all', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.read.all');
 });
-

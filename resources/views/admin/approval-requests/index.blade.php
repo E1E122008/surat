@@ -10,6 +10,8 @@
         <div class="mb-4">
             <h2 class="header h2"><i class="fas fa-shield-alt text-primary me-2"></i> <strong>Daftar Data Persetujuan</strong>
             </h2>
+            <p class="text-muted mt-2" style="font-size: 0.95rem;">Daftar pengajuan surat yang dikirimkan pengguna.
+            </p>
         </div>
         <div class="row">
             <div class="col-12">
