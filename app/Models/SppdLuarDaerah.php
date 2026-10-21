@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class SppdLuarDaerah extends Model
 {
-    use HasFactory;
+    use HasFactory, Concerns\TercatatDiLogAktivitas;
+
+    protected string $labelLog = 'SPPD Luar Daerah';
 
     protected $table = 'sppd_luar_daerah';
     

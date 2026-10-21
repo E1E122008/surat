@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class SuratMasuk extends Model
 {
-    use HasFactory;
+    use HasFactory, Concerns\TercatatDiLogAktivitas;
+
+    protected string $labelLog = 'Surat Masuk';
 
     protected $table = 'surat_masuk';
     
@@ -34,9 +36,4 @@ class SuratMasuk extends Model
     protected $attributes = [
         'status' => 'pending_review'
     ];
-
-    public function disposisi()
-    {
-        return $this->hasOne(DisposisiSuratMasuk::class);
-    }
 } 

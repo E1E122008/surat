@@ -46,18 +46,19 @@ class SppdLuarDaerahController extends Controller
     }
 
     public function store(Request $request)
-    {   
-        try {
+    {
+        // Validasi di luar try agar pesan error per-field tetap tampil di form.
         $validated = $request->validate([
             'no_surat' => 'required|string|max:255',
             'tanggal' => 'required|date',
             'tujuan' => 'required|string|max:255',
             'perihal' => 'required|string|max:255',
             'nama_petugas' => 'required|string',
-                'lampiran' => 'nullable|array',
-                'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2147483648',
+            'lampiran' => 'nullable|array',
+            'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2147483648',
         ]);
 
+        try {
             $lampiranPaths = [];
         if ($request->hasFile('lampiran')) {
                 $files = $request->file('lampiran');
@@ -106,18 +107,18 @@ class SppdLuarDaerahController extends Controller
 
     public function update(Request $request, $id)
     {
-        try {
-            $sppdLuarDaerah = SppdLuarDaerah::findOrFail($id);
-            $validated = $request->validate([
-                'no_surat' => 'required|string|max:255',
-                'tanggal' => 'required|date',
-                'tujuan' => 'required|string|max:255',
-                'perihal' => 'required|string|max:255',
-                'nama_petugas' => 'required|string',
-                'lampiran' => 'nullable|array',
-                'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2147483648',
-            ]);
+        $sppdLuarDaerah = SppdLuarDaerah::findOrFail($id);
+        $validated = $request->validate([
+            'no_surat' => 'required|string|max:255',
+            'tanggal' => 'required|date',
+            'tujuan' => 'required|string|max:255',
+            'perihal' => 'required|string|max:255',
+            'nama_petugas' => 'required|string',
+            'lampiran' => 'nullable|array',
+            'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2147483648',
+        ]);
 
+        try {
             // Ambil lampiran lama yang dipertahankan
             $lampiranLama = $request->input('lampiran_lama', []);
             $lampiranDihapus = $request->input('lampiran_dihapus', []);
@@ -159,38 +160,26 @@ class SppdLuarDaerahController extends Controller
         }
     }
 
-    public function destroy(SppdLuarDaerah $sppdLuarDaerah)
-    {   
+    public function destroy($id)
+    {
         try {
-            // Delete file if exists
-        if ($sppdLuarDaerah->lampiran) {
-                $lampiranData = json_decode($sppdLuarDaerah->lampiran, true);
-                if (is_array($lampiranData)) {
-                    foreach ($lampiranData as $lampiran) {
-                        if (isset($lampiran['path']) && Storage::disk('public')->exists($lampiran['path'])) {
-                            Storage::disk('public')->delete($lampiran['path']);
-                        }
-                    }
-                }
-        }
+            if (!$this->hapusRecord(SppdLuarDaerah::find($id))) {
+                return redirect()->route('sppd-luar-daerah.index')
+                    ->with('error', 'Data SPPD Luar Daerah tidak ditemukan atau gagal dihapus.');
+            }
 
-        $sppdLuarDaerah->delete();
-
-        return redirect()->route('sppd-luar-daerah.index')
-            ->with('success', 'SPPD Luar Daerah berhasil dihapus');
+            return redirect()->route('sppd-luar-daerah.index')
+                ->with('success', 'SPPD Luar Daerah berhasil dihapus');
         } catch (\Exception $e) {
             return redirect()->route('sppd-luar-daerah.index')
                 ->with('error', 'Gagal menghapus SPPD Luar Daerah: ' . $e->getMessage());
         }
     }
 
-    public function print(SppdLuarDaerah $sppdLuarDaerah)
-    {
-        return view('sppd-luar-daerah.print', compact('sppdLuarDaerah'));
-    }
-
     public function export()
     {
+        \App\Models\ActivityLog::log('document_export', 'Mendownload Excel SPPD Luar Daerah');
+
         return Excel::download(new SppdLuarDaerahExport, 'sppd-luar-daerah.xlsx');
     }
 } 

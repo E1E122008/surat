@@ -15,6 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'checkRole' => \App\Http\Middleware\CheckRole::class,
             'preventMonitor' => \App\Http\Middleware\PreventMonitorActions::class,
         ]);
+        $middleware->web(append: [
+            \App\Http\Middleware\PreventDuplicateSubmission::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;    
 use App\Models\Perda;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
@@ -105,6 +106,8 @@ class PerdaController extends Controller
 
             return redirect()->route('draft-phd.perda.index')
                 ->with('success', 'Perda berhasil ditambahkan');
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             if (isset($path) && Storage::disk('public')->exists($path)) {
                 Storage::disk('public')->delete($path);
@@ -190,6 +193,8 @@ class PerdaController extends Controller
 
             return redirect()->route('draft-phd.perda.index')
                 ->with('success', 'Perda berhasil diperbarui');
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             Log::error('Terjadi kesalahan saat memperbarui data!' . $e->getMessage());
             return redirect()->back()
@@ -230,6 +235,8 @@ class PerdaController extends Controller
             $perda->save();
 
             return redirect()->back()->with('success', 'Status berhasil diperbarui.');
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
         }
@@ -238,20 +245,10 @@ class PerdaController extends Controller
     public function destroy(Perda $perda)
     {
         try {
-            // Delete file if exists
-            if ($perda->lampiran) {
-                $lampiranData = json_decode($perda->lampiran, true);
-                if (is_array($lampiranData)) {
-                    foreach ($lampiranData as $lampiran) {
-                        if (isset($lampiran['path']) && Storage::disk('public')->exists($lampiran['path'])) {
-                            Storage::disk('public')->delete($lampiran['path']);
-                        }
-                    }
-                }
+            if (!$this->hapusRecord($perda)) {
+                return redirect()->back()
+                    ->with('error', 'Data tidak ditemukan atau gagal dihapus.');
             }
-                
-            // Delete the Perda record
-            $perda->delete();
 
             return redirect()->route('draft-phd.perda.index')
                 ->with('success', 'Surat Peraturan Daerah berhasil dihapus');
@@ -264,6 +261,8 @@ class PerdaController extends Controller
 
     public function export()
     {
+        \App\Models\ActivityLog::log('document_export', 'Mendownload Excel Perda');
+
         return Excel::download(new PerdaExport(), 'perda.xlsx');
     }
 
@@ -283,7 +282,7 @@ class PerdaController extends Controller
 
             // Tentukan status persetujuan (prioritas dari form, jika tidak ada ambil dari existing)
             $statusPersetujuan = 'Belum';
-            if ($request->has('persetujuan_ketua')) {
+            if ($request->has('persetujuan_ketua') && $this->bolehUbahPersetujuan()) {
                 // Normalisasi input (uppercase first letter)
                 $inputValue = ucfirst(strtolower($request->persetujuan_ketua));
                 if (in_array($inputValue, ['Sudah', 'Belum'])) {
@@ -333,6 +332,8 @@ class PerdaController extends Controller
             return redirect()->back()
                             ->with('success', 'Disposisi berhasil ditambahkan');
 
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             return redirect()->back()
                             ->with('error', 'Gagal menambahkan disposisi: ' . $e->getMessage());
@@ -341,6 +342,11 @@ class PerdaController extends Controller
 
     public function updateDisposisi(Request $request, $id)
     {
+        // Status persetujuan Kepala Biro hanya boleh diubah oleh admin
+        if (!$this->bolehUbahPersetujuan()) {
+            return response()->json(['success' => false, 'message' => 'Hanya admin yang dapat mengubah status persetujuan.'], 403);
+        }
+
         try {
             $request->validate([
                 'disposisi' => 'required|string',
@@ -354,6 +360,8 @@ class PerdaController extends Controller
                 'success' => true,
                 'message' => 'Disposisi berhasil diperbarui'
             ]);
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             Log::error('Error updating disposisi:', ['error' => $e->getMessage()]);
             return response()->json([

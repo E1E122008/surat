@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SuratKeluar;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Storage;
 use App\Exports\SuratKeluarExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -76,6 +77,8 @@ class SuratKeluarController extends Controller
             return redirect()->route('surat-keluar.index')
                 ->with('success', ' Surat keluar berhasil ditambahkan!');
                 
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             // Jika terjadi error saat upload file, hapus file yang sudah terupload
             if (isset($lampiranPaths)) {
@@ -147,6 +150,8 @@ class SuratKeluarController extends Controller
             return redirect()->route('surat-keluar.index')
                 ->with('success', ' Surat keluar berhasil diperbarui!');
                 
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             return redirect()->route('surat-keluar.edit', $suratKeluar->id)
                 ->with('error', ' Gagal memperbarui surat keluar: ' . $e->getMessage());
@@ -156,21 +161,12 @@ class SuratKeluarController extends Controller
     public function destroy(SuratKeluar $suratKeluar)
     {
         try {
-            // Delete file if exists
-        if ($suratKeluar->lampiran) {
-                $lampiranData = json_decode($suratKeluar->lampiran, true);
-                if (is_array($lampiranData)) {
-                    foreach ($lampiranData as $lampiran) {
-                        if (isset($lampiran['path']) && Storage::disk('public')->exists($lampiran['path'])) {
-                            Storage::disk('public')->delete($lampiran['path']);
-                        }
-                    }
-                }
-        }
+            if (!$this->hapusRecord($suratKeluar)) {
+                return redirect()->back()
+                    ->with('error', 'Data tidak ditemukan atau gagal dihapus.');
+            }
 
-        $suratKeluar->delete();
-
-        return redirect()->route('surat-keluar.index')
+            return redirect()->route('surat-keluar.index')
                 ->with('success', ' Surat keluar berhasil dihapus!');
                 
         } catch (\Exception $e) {
@@ -181,6 +177,8 @@ class SuratKeluarController extends Controller
 
     public function export()
     {
+        \App\Models\ActivityLog::log('document_export', 'Mendownload Excel Surat Keluar');
+
         return Excel::download(new SuratKeluarExport, 'surat-keluar.xlsx');
     }
 } 

@@ -103,9 +103,11 @@
                         <a href="{{ route('spt-dalam-daerah.index') }}" class="btn-cancel flex items-center justify-center h-12 w-32 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-200">
                             <i class="fas fa-arrow-left mr-2"></i> Kembali
                         </a>
-                        <a href="{{ route('spt-dalam-daerah.edit', $spt->id) }}" class="btn-edit flex items-center justify-center h-12 w-32 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200">
-                            <i class="fas fa-edit mr-2"></i> Edit
-                        </a>
+                        @if (auth()->user()->role !== 'monitor')
+                            <a href="{{ route('spt-dalam-daerah.edit', $spt->id) }}" class="btn-edit flex items-center justify-center h-12 w-32 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200">
+                                <i class="fas fa-edit mr-2"></i> Edit
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>

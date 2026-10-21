@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SptDalamDaerah;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Storage;
 use App\Exports\SptDalamDaerahExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -77,6 +78,8 @@ class SptDalamDaerahController extends Controller
         SptDalamDaerah::create($validated);
         return redirect()->route('spt-dalam-daerah.index')
             ->with('success', 'SPT Dalam Daerah berhasil ditambahkan');
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             if (isset($lampiranPaths)) {
                 foreach ($lampiranPaths as $lampiran) {
@@ -153,6 +156,8 @@ class SptDalamDaerahController extends Controller
 
             return redirect()->route('spt-dalam-daerah.index')
                 ->with('success', 'SPT Dalam Daerah berhasil diperbarui');
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Terjadi kesalahan saat memperbarui SPT Dalam Daerah: ' . $e->getMessage());
@@ -162,22 +167,13 @@ class SptDalamDaerahController extends Controller
     public function destroy(SptDalamDaerah $sptDalamDaerah)
     {
         try {
-            // Delete file if exists
-        if ($sptDalamDaerah->lampiran) {
-                $lampiranData = json_decode($sptDalamDaerah->lampiran, true);
-                if (is_array($lampiranData)) {
-                    foreach ($lampiranData as $lampiran) {
-                        if (isset($lampiran['path']) && Storage::disk('public')->exists($lampiran['path'])) {
-                            Storage::disk('public')->delete($lampiran['path']);
-                        }
-                    }
-                }
-        }
+            if (!$this->hapusRecord($sptDalamDaerah)) {
+                return redirect()->back()
+                    ->with('error', 'Data tidak ditemukan atau gagal dihapus.');
+            }
 
-        $sptDalamDaerah->delete();
-
-        return redirect()->route('spt-dalam-daerah.index')
-            ->with('success', 'SPT Dalam Daerah berhasil dihapus');
+            return redirect()->route('spt-dalam-daerah.index')
+                ->with('success', 'SPT Dalam Daerah berhasil dihapus');
         } catch (\Exception $e) {
             return redirect()->route('spt-dalam-daerah.index')
                 ->with('error', 'Gagal menghapus SPT Dalam Daerah: ' . $e->getMessage());
@@ -188,6 +184,8 @@ class SptDalamDaerahController extends Controller
 
     public function export()
     {
+        \App\Models\ActivityLog::log('document_export', 'Mendownload Excel SPT Dalam Daerah');
+
         return Excel::download(new SptDalamDaerahExport, 'spt-dalam-daerah.xlsx');
     }
 } 

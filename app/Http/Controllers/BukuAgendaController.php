@@ -181,6 +181,8 @@ class BukuAgendaController extends Controller
 
     public function export(Request $request)
     {
+        \App\Models\ActivityLog::log('document_export', 'Mendownload Excel Arsip Surat Masuk (tab: ' . ($request->tab ?? '-') . ')');
+
         $filterType = $request->filterType;
         $tab = $request->tab ?? 'surat-masuk';
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SkKaro;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Storage;
 use App\Exports\SkKaroExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -45,6 +46,8 @@ class SkKaroController extends Controller
 
     public function export()
     {
+        \App\Models\ActivityLog::log('document_export', 'Mendownload Excel SK Kepala Biro');
+
         return Excel::download(new SkKaroExport, 'sk-karo.xlsx');
     }
 
@@ -79,6 +82,8 @@ class SkKaroController extends Controller
             
             return redirect()->route('sk-karo.index')->with('success', 'SK KARO berhasil ditambahkan!');
                 
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             // Hapus jika gagal
             if (isset($lampiranPaths)) {
@@ -144,6 +149,8 @@ class SkKaroController extends Controller
 
             return redirect()->route('sk-karo.index')->with('success', 'SK KARO berhasil diperbarui!');
                 
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal memperbarui: ' . $e->getMessage());
         }
@@ -152,19 +159,12 @@ class SkKaroController extends Controller
     public function destroy($id)
     {
         try {
-            $sk = SkKaro::findOrFail($id);
-            if ($sk->file_surat) {
-                $lampiranData = json_decode($sk->file_surat, true);
-                if (is_array($lampiranData)) {
-                    foreach ($lampiranData as $lampiran) {
-                        if (isset($lampiran['path']) && Storage::disk('public')->exists($lampiran['path'])) {
-                            Storage::disk('public')->delete($lampiran['path']);
-                        }
-                    }
-                }
-            }
+            $sk = SkKaro::find($id);
 
-            $sk->delete();
+            if (!$this->hapusRecord($sk, 'file_surat')) {
+                return redirect()->back()
+                    ->with('error', 'Data tidak ditemukan atau gagal dihapus.');
+            }
 
             return redirect()->back()->with('success', 'SK KARO berhasil dihapus!');
                 

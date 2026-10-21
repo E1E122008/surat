@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pergub;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Storage;
 use App\Exports\PergubExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -106,6 +107,8 @@ class PergubController extends Controller
 
             return redirect()->route('draft-phd.pergub.index')
                 ->with('success', 'Pergub berhasil ditambahkan');
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             if (isset($path) && Storage::disk('public')->exists($path)) {
                 Storage::disk('public')->delete($path);
@@ -191,6 +194,8 @@ class PergubController extends Controller
 
             return redirect()->route('draft-phd.pergub.index')
                 ->with('success', 'Pergub berhasil diperbarui');
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             Log::error('Terjadi kesalahan saat memperbarui data pergub! ' . $e->getMessage());
             return redirect()->back()
@@ -231,6 +236,8 @@ class PergubController extends Controller
             $pergub->save();
 
             return redirect()->back()->with('success', 'Status berhasil diperbarui.');
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
         }
@@ -239,20 +246,10 @@ class PergubController extends Controller
     public function destroy(Pergub $pergub)
     {
         try {
-            // Delete file if exists
-            if ($pergub->lampiran) {
-                $lampiranData = json_decode($pergub->lampiran, true);
-                if (is_array($lampiranData)) {
-                    foreach ($lampiranData as $lampiran) {
-                        if (isset($lampiran['path']) && Storage::disk('public')->exists($lampiran['path'])) {
-                            Storage::disk('public')->delete($lampiran['path']);
-                        }
-                    }
-                }
+            if (!$this->hapusRecord($pergub)) {
+                return redirect()->back()
+                    ->with('error', 'Data tidak ditemukan atau gagal dihapus.');
             }
-                
-            // Delete the Pergub record
-            $pergub->delete();
 
             return redirect()->route('draft-phd.pergub.index')
                 ->with('success', 'Pergub berhasil dihapus');
@@ -265,6 +262,8 @@ class PergubController extends Controller
 
     public function export()
     {
+        \App\Models\ActivityLog::log('document_export', 'Mendownload Excel Pergub');
+
         return Excel::download(new PergubExport(), 'pergub.xlsx');
     }
 
@@ -285,7 +284,7 @@ class PergubController extends Controller
 
             // Tentukan status persetujuan (prioritas dari form, jika tidak ada ambil dari existing)
             $statusPersetujuan = 'Belum';
-            if ($request->has('persetujuan_ketua')) {
+            if ($request->has('persetujuan_ketua') && $this->bolehUbahPersetujuan()) {
                 // Normalisasi input (uppercase first letter)
                 $inputValue = ucfirst(strtolower($request->persetujuan_ketua));
                 if (in_array($inputValue, ['Sudah', 'Belum'])) {
@@ -335,6 +334,8 @@ class PergubController extends Controller
             return redirect()->back()
                             ->with('success', 'Disposisi berhasil ditambahkan');
 
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             return redirect()->back()
                             ->with('error', 'Gagal menambahkan disposisi: ' . $e->getMessage());
@@ -343,6 +344,11 @@ class PergubController extends Controller
 
     public function updateDisposisi(Request $request, $id)
     {
+        // Status persetujuan Kepala Biro hanya boleh diubah oleh admin
+        if (!$this->bolehUbahPersetujuan()) {
+            return response()->json(['success' => false, 'message' => 'Hanya admin yang dapat mengubah status persetujuan.'], 403);
+        }
+
         try {
             $request->validate([
                 'disposisi' => 'required|string',
@@ -356,6 +362,8 @@ class PergubController extends Controller
                 'success' => true,
                 'message' => 'Disposisi berhasil diperbarui'
             ]);
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             Log::error('Error updating disposisi pergub: ' . $e->getMessage());
             return response()->json([

@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pergub extends Model
 {
-    use HasFactory;
+    use HasFactory, Concerns\TercatatDiLogAktivitas;
+
+    protected string $labelLog = 'Pergub';
 
     protected $table = 'pergub';
     

@@ -472,11 +472,6 @@
             });
         });
 
-        // Inisialisasi DataTables
-        $(document).ready(function() {
-            // This script block is no longer needed as DataTables is removed.
-            // Keeping it for now as it might be used elsewhere or for future reference.
-        });
 
         function confirmDelete(id, el) {
             const noSurat = el ? (el.dataset.noSurat || '-') : '-';
@@ -498,7 +493,7 @@
                             </tr>
                         </table>
                         <p style="margin-top:10px; color:#ef4444; font-size:0.82rem; font-weight:500;">
-                            âš ï¸ Data ini akan dihapus secara permanen!
+                            <i class="fas fa-exclamation-triangle"></i> Data ini akan dihapus secara permanen!
                         </p>
                     </div>`,
                 showCancelButton: true,

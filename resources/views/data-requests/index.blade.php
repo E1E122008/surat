@@ -604,4 +604,14 @@
             font-size: 0.75rem;
         }
     </style>
+
+    @if (request('buat'))
+        <script>
+            // Dibuka dari /data-requests/create: langsung tampilkan form pengajuan
+            document.addEventListener('DOMContentLoaded', function() {
+                const modal = document.getElementById('requestModal');
+                if (modal && window.bootstrap) bootstrap.Modal.getOrCreateInstance(modal).show();
+            });
+        </script>
+    @endif
 @endsection

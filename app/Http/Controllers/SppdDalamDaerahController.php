@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SppdDalamDaerah;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Storage;
 use App\Exports\SppdDalamDaerahExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -77,6 +78,8 @@ class SppdDalamDaerahController extends Controller
 
         return redirect()->route('sppd-dalam-daerah.index')
             ->with('success', 'SPPD Dalam Daerah berhasil ditambahkan');
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             if (isset($lampiranPaths)) {
                 foreach ($lampiranPaths as $lampiran) {
@@ -153,31 +156,27 @@ class SppdDalamDaerahController extends Controller
 
             return redirect()->route('sppd-dalam-daerah.index')
                 ->with('success', 'SPPD Dalam Daerah berhasil diperbarui');
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Terjadi kesalahan saat memperbarui data: ' . $e->getMessage());
         }
     }
 
-    public function destroy(SppdDalamDaerah $sppdDalamDaerah)
+    public function destroy($id)
     {
         try {
-            // Delete file if exists
-        if ($sppdDalamDaerah->lampiran) {
-                $lampiranData = json_decode($sppdDalamDaerah->lampiran, true);
-                if (is_array($lampiranData)) {
-                    foreach ($lampiranData as $lampiran) {
-                        if (isset($lampiran['path']) && Storage::disk('public')->exists($lampiran['path'])) {
-                            Storage::disk('public')->delete($lampiran['path']);
-                        }
-                    }
-                }
-        }
+            // Route memakai {id}; dicari manual agar tidak menghapus model kosong
+            $sppdDalamDaerah = SppdDalamDaerah::find($id);
 
-        $sppdDalamDaerah->delete();
+            if (!$this->hapusRecord($sppdDalamDaerah)) {
+                return redirect()->back()
+                    ->with('error', 'Data tidak ditemukan atau gagal dihapus.');
+            }
 
-        return redirect()->route('sppd-dalam-daerah.index')
-            ->with('success', 'SPPD Dalam Daerah berhasil dihapus');
+            return redirect()->route('sppd-dalam-daerah.index')
+                ->with('success', 'SPPD Dalam Daerah berhasil dihapus');
         } catch (\Exception $e) {
             return redirect()->route('sppd-dalam-daerah.index')
                 ->with('error', 'Gagal menghapus SPPD Dalam Daerah: ' . $e->getMessage());
@@ -186,6 +185,8 @@ class SppdDalamDaerahController extends Controller
 
     public function export()
     {
+        \App\Models\ActivityLog::log('document_export', 'Mendownload Excel SPPD Dalam Daerah');
+
         return Excel::download(new SppdDalamDaerahExport, 'sppd-dalam-daerah.xlsx');
     }
 } 

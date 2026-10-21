@@ -5,11 +5,9 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\BukuAgendaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataRequestController;
-use App\Http\Controllers\DisposisiController;
 use App\Http\Controllers\KategoriKeluarController;
 use App\Http\Controllers\PerdaController;
 use App\Http\Controllers\PergubController;
-use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SKController;
 use App\Http\Controllers\SkKaroController;
 use App\Http\Controllers\SppdDalamDaerahController;
@@ -55,7 +53,7 @@ Route::post('bantuan-akses', function (\Illuminate\Http\Request $request) {
     return redirect()->route('login')->with('success', 'Permintaan Anda telah tercatat. Admin Sistem akan segera menghubungi Anda.');
 })->name('bantuan.akses.kirim')->middleware('guest');
 // Rute untuk mengupdate status HelpRequest dari panel admin
-Route::post('bantuan/{id}/status', [\App\Http\Controllers\BantuanController::class, 'updateStatus'])->name('bantuan.status.update')->middleware('auth');
+Route::post('bantuan/{id}/status', [\App\Http\Controllers\BantuanController::class, 'updateStatus'])->name('bantuan.status.update')->middleware(['auth', 'checkRole:admin,superadmin']);
 
 Route::match(['get', 'post'], 'logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout')
@@ -90,9 +88,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('surat-masuk-export', [SuratMasukController::class, 'export'])
             ->name('surat-masuk.export')->middleware('preventMonitor');
 
-        Route::resource('surat-keluar', SuratKeluarController::class);
+        // Daftar boleh dilihat monitor; tambah/edit/hapus dibatasi seperti modul lain
+        Route::resource('surat-keluar', SuratKeluarController::class)->only('index');
+        Route::resource('surat-keluar', SuratKeluarController::class)->except(['index', 'show'])
+            ->middleware('preventMonitor');
         Route::get('surat-keluar-export', [SuratKeluarController::class, 'export'])
-            ->name('surat-keluar.export');
+            ->name('surat-keluar.export')->middleware('preventMonitor');
 
         // Routes untuk semua role (termasuk monitor) - hanya view
         Route::get('sppd-dalam-daerah', [SppdDalamDaerahController::class, 'index'])->name('sppd-dalam-daerah.index');
@@ -109,8 +110,6 @@ Route::middleware(['auth'])->group(function () {
             ->name('sppd-dalam-daerah.update')->middleware('preventMonitor');
         Route::delete('sppd-dalam-daerah/{id}', [SppdDalamDaerahController::class, 'destroy'])
             ->name('sppd-dalam-daerah.destroy')->middleware('preventMonitor');
-        Route::get('sppd-dalam-daerah/{sppdDalamDaerah}/print', [SppdDalamDaerahController::class, 'print'])
-            ->name('sppd-dalam-daerah.print')->middleware('preventMonitor');
         Route::get('sppd-dalam-daerah-export', [SppdDalamDaerahController::class, 'export'])
             ->name('sppd-dalam-daerah.export')->middleware('preventMonitor');
 
@@ -126,9 +125,7 @@ Route::middleware(['auth'])->group(function () {
             ->name('sppd-luar-daerah.edit')->middleware('preventMonitor');
         Route::put('sppd-luar-daerah/{id}', [SppdLuarDaerahController::class, 'update'])
             ->name('sppd-luar-daerah.update')->middleware('preventMonitor');
-        Route::delete('sppd-luar-daerah/{sppdLuarDaerah}', [SppdLuarDaerahController::class, 'destroy'])->name('sppd-luar-daerah.destroy')->middleware('preventMonitor');
-        Route::get('sppd-luar-daerah/{sppdLuarDaerah}/print', [SppdLuarDaerahController::class, 'print'])
-            ->name('sppd-luar-daerah.print')->middleware('preventMonitor');
+        Route::delete('sppd-luar-daerah/{id}', [SppdLuarDaerahController::class, 'destroy'])->name('sppd-luar-daerah.destroy')->middleware('preventMonitor');
         Route::get('sppd-luar-daerah-export', [SppdLuarDaerahController::class, 'export'])
             ->name('sppd-luar-daerah.export')->middleware('preventMonitor');
 
@@ -145,8 +142,6 @@ Route::middleware(['auth'])->group(function () {
         Route::put('spt-dalam-daerah/{sptDalamDaerah}', [SptDalamDaerahController::class, 'update'])
             ->name('spt-dalam-daerah.update')->middleware('preventMonitor');
         Route::delete('spt-dalam-daerah/{sptDalamDaerah}', [SptDalamDaerahController::class, 'destroy'])->name('spt-dalam-daerah.destroy')->middleware('preventMonitor');
-        Route::get('spt-dalam-daerah/{sptDalamDaerah}/print', [SptDalamDaerahController::class, 'print'])
-            ->name('spt-dalam-daerah.print')->middleware('preventMonitor');
         Route::get('spt-dalam-daerah-export', [SptDalamDaerahController::class, 'export'])
             ->name('spt-dalam-daerah.export')->middleware('preventMonitor');
 
@@ -167,23 +162,19 @@ Route::middleware(['auth'])->group(function () {
         Route::get('spt-luar-daerah-export', [SptLuarDaerahController::class, 'export'])
             ->name('spt-luar-daerah.export')->middleware('preventMonitor');
 
-        // Routes untuk semua role (termasuk monitor) - hanya view
-        Route::get('/buku-agenda', [BukuAgendaController::class, 'index'])->name('buku-agenda.index');
-        Route::get('/buku-agenda/kategori-masuk', [BukuAgendaController::class, 'kategoriMasuk'])->name('buku-agenda.kategori-masuk.index');
-        Route::get('/buku-agenda/kategori-keluar', [KategoriKeluarController::class, 'index'])->name('buku-agenda.kategori-keluar.index');
-
-        // Routes yang dibatasi untuk monitor - export
-        Route::get('/buku-agenda/export', [BukuAgendaController::class, 'export'])->name('buku-agenda.export')->middleware('preventMonitor');
-        Route::get('/buku-agenda/kategori-keluar/export', [KategoriKeluarController::class, 'export'])
-            ->name('buku-agenda.kategori-keluar.export')->middleware('preventMonitor');
-        Route::get('/buku-agenda/kategori-keluar/export-pdf', [KategoriKeluarController::class, 'exportPDF'])
-            ->name('buku-agenda.kategori-keluar.export-pdf')->middleware('preventMonitor');
-        Route::get('/buku-agenda/export-pdf', [BukuAgendaController::class, 'exportPDF'])->name('buku-agenda.export-pdf')->middleware('preventMonitor');
+        // Arsip (Buku Agenda) - khusus admin dan superadmin, sesuai menu sidebar
+        Route::middleware('checkRole:admin,superadmin')->group(function () {
+            Route::get('/buku-agenda', [BukuAgendaController::class, 'index'])->name('buku-agenda.index');
+            Route::get('/buku-agenda/kategori-keluar', [KategoriKeluarController::class, 'index'])->name('buku-agenda.kategori-keluar.index');
+            Route::get('/buku-agenda/export', [BukuAgendaController::class, 'export'])->name('buku-agenda.export');
+            Route::get('/buku-agenda/kategori-keluar/export', [KategoriKeluarController::class, 'export'])
+                ->name('buku-agenda.kategori-keluar.export');
+        });
 
         // Routes SK KARO (Opsi B: Menu Utama Independen)
         Route::get('sk-karo', [SkKaroController::class, 'index'])->name('sk-karo.index');
         Route::get('sk-karo/create', [SkKaroController::class, 'create'])->name('sk-karo.create')->middleware('preventMonitor');
-        Route::get('sk-karo-export', [SkKaroController::class, 'export'])->name('sk-karo.export');
+        Route::get('sk-karo-export', [SkKaroController::class, 'export'])->name('sk-karo.export')->middleware('preventMonitor');
         Route::post('sk-karo', [SkKaroController::class, 'store'])->name('sk-karo.store')->middleware('preventMonitor');
         Route::get('sk-karo/{id}/edit', [SkKaroController::class, 'edit'])->name('sk-karo.edit')->middleware('preventMonitor');
         Route::put('sk-karo/{id}', [SkKaroController::class, 'update'])->name('sk-karo.update')->middleware('preventMonitor');
@@ -195,21 +186,13 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/profile/password', [UserProfileController::class, 'updatePassword'])->name('profile.password');
     Route::post('/profile/avatar', [UserProfileController::class, 'updateAvatar'])->name('profile.avatar');
 
-    Route::get('/profile/history', [UserProfileController::class, 'history'])->name('profile.history');
     Route::get('/profile/activity', [\App\Http\Controllers\ActivityLogController::class, 'index'])->name('profile.activity');
-    Route::get('/profile/login-history', [UserProfileController::class, 'loginHistory'])->name('profile.login-history');
-    Route::get('/profile/logout-history', [UserProfileController::class, 'logoutHistory'])->name('profile.logout-history');
-    Route::get('/profile/avatar', [UserProfileController::class, 'avatar'])->name('profile.avatar');
-    Route::post('/profile/avatar', [UserProfileController::class, 'updateAvatar'])->name('profile.update-avatar');
-    Route::get('/profile/password', [UserProfileController::class, 'password'])->name('profile.password');
-    Route::post('/profile/password', [UserProfileController::class, 'updatePassword'])->name('profile.update-password');
 
     Route::middleware(['checkRole:admin,superadmin,monitor'])->group(function () {
         Route::get('/draft-phd/sk', [SKController::class, 'index'])->name('draft-phd.sk.index');
 
         Route::get('/draft-phd/perda', [PerdaController::class, 'index'])->name('draft-phd.perda.index');
 
-        Route::put('/draft-phd/perda/{perda}/update-status', [PerdaController::class, 'updateStatus'])->name('draft-phd.perda.update-status')->middleware('preventMonitor');
         Route::get('/draft-phd/pergub', [PergubController::class, 'index'])->name('draft-phd.pergub.index');
 
         // Routes untuk semua role (termasuk monitor) - hanya view
@@ -227,10 +210,9 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/draft-phd/sk/{sk}', [SKController::class, 'destroy'])->name('draft-phd.sk.destroy')->middleware('preventMonitor');
         Route::post('/draft-phd/sk/{id}/update-catatan', [SKController::class, 'updateCatatan'])->middleware('preventMonitor');
 
-        Route::post('/update-disposisi/{id}', [SuratMasukController::class, 'updateDisposisi'])->middleware('preventMonitor');
+        Route::post('/surat-masuk/{id}/update-disposisi', [SuratMasukController::class, 'updateDisposisi'])
+            ->name('surat-masuk.update-disposisi')->middleware('preventMonitor');
         Route::post('/surat-masuk/{id}/update-catatan', [SuratMasukController::class, 'updateCatatan'])->name('surat-masuk.update-catatan')->middleware('preventMonitor');
-
-        Route::put('sppd-dalam-daerah/{id}', [SppdDalamDaerahController::class, 'update'])->name('sppd-dalam-daerah.update')->middleware('preventMonitor');
 
         // Route perda - Routes untuk semua role (termasuk monitor) - hanya view
         Route::get('/draft-phd/perda/{perda}/detail', [PerdaController::class, 'detail'])->name('draft-phd.perda.detail');
@@ -266,17 +248,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/draft-phd/pergub/export', [PergubController::class, 'export'])->name('draft-phd.pergub.export')->middleware('preventMonitor');
         Route::post('/draft-phd/pergub/{id}/disposisi', [PergubController::class, 'disposisi'])
             ->name('draft-phd.pergub.disposisi')->middleware('preventMonitor');
+        Route::post('/draft-phd/pergub/{id}/update-disposisi', [PergubController::class, 'updateDisposisi'])
+            ->name('draft-phd.pergub.update-disposisi')->middleware('preventMonitor');
 
-        // Routes untuk semua role (termasuk monitor) - hanya view
-        Route::get('/disposisi', [DisposisiController::class, 'index'])->name('disposisi.index');
-        Route::get('/disposisi/{id}', [DisposisiController::class, 'detail'])->name('disposisi.detail');
-
-        // Routes yang dibatasi untuk monitor
-        Route::put('/disposisi/{id}', [DisposisiController::class, 'update'])->name('disposisi.update')->middleware('preventMonitor');
-        Route::get('/disposisi/{id}/edit', [DisposisiController::class, 'edit'])->name('disposisi.edit')->middleware('preventMonitor');
-        Route::get('/surat-masuk/{id}/status', [SuratMasukController::class, 'status'])->name('surat-masuk.status')->middleware('preventMonitor');
-        Route::post('/surat-masuk/{id}/update-status', [SuratMasukController::class, 'updateStatus'])->name('surat-masuk.update-status')->middleware('preventMonitor');
-        Route::get('/dashboard/chart-data', [DashboardController::class, 'getChartData'])->name('dashboard.chart-data');
+        // Disposisi melekat pada tiap surat (kolom `disposisi`), diisi lewat modal di halaman modul
         Route::post('/surat-masuk/{id}/disposisi', [SuratMasukController::class, 'disposisi'])
             ->name('surat-masuk.disposisi')->middleware('preventMonitor');
         Route::post('/draft-phd/sk/{id}/disposisi', [SKController::class, 'disposisi'])
@@ -284,59 +259,36 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // User Management Routes - untuk admin (terbatas) dan superadmin (penuh)
-    Route::resource('users', UserController::class)->middleware('checkRole:admin,superadmin');
+    Route::resource('users', UserController::class)->except('show')->middleware('checkRole:admin,superadmin');
     Route::put('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.resetPassword')->middleware('checkRole:admin,superadmin');
-    Route::resource('roles', RoleController::class)->middleware('checkRole:superadmin');
 
     // System Settings (Superadmin Only)
     Route::get('system-settings', [\App\Http\Controllers\SystemSettingController::class, 'index'])->name('system-settings.index')->middleware('checkRole:superadmin');
     Route::post('system-settings', [\App\Http\Controllers\SystemSettingController::class, 'update'])->name('system-settings.update')->middleware('checkRole:superadmin');
 
-    // Transaksi Surat - hanya untuk user
-    Route::get('/transaksi-surat', [TransaksiSuratController::class, 'index'])->name('transaksi-surat.index')->middleware('checkRole:user,monitor');
-
-    // Data Request Routes - index dan detail untuk user saja, create/store/cancel/edit/update hanya untuk user
+    // Data Request Routes - hanya untuk user (form pengajuan ada di modal halaman index)
     Route::get('data-requests', [DataRequestController::class, 'index'])->name('data-requests.index')->middleware('checkRole:user');
-    Route::get('data-requests/{dataRequest}', [DataRequestController::class, 'show'])->name('data-requests.show')->middleware('checkRole:user');
+    // 'create' harus didaftarkan sebelum '{dataRequest}' agar tidak tertangkap sebagai ID
     Route::get('data-requests/create', [DataRequestController::class, 'create'])->name('data-requests.create')->middleware('checkRole:user');
+    Route::get('data-requests/{dataRequest}', [DataRequestController::class, 'show'])->name('data-requests.show')->middleware('checkRole:user');
     Route::post('data-requests', [DataRequestController::class, 'store'])->name('data-requests.store')->middleware('checkRole:user');
-    Route::get('data-requests/{dataRequest}/edit', [DataRequestController::class, 'edit'])->name('data-requests.edit')->middleware('checkRole:user');
-    Route::put('data-requests/{dataRequest}', [DataRequestController::class, 'update'])->name('data-requests.update')->middleware('checkRole:user');
     Route::delete('/data-requests/{dataRequest}/cancel', [DataRequestController::class, 'cancel'])->name('data-requests.cancel')->middleware('checkRole:user');
 
 });
 
-// API Route untuk detail surat masuk JSON
-Route::get('/api/surat-masuk/{id}', [App\Http\Controllers\SuratMasukController::class, 'apiShow']);
-
-// API Route untuk detail perda JSON
-Route::get('/api/perda/{id}', [App\Http\Controllers\PerdaController::class, 'apiShow']);
-
-// API Route untuk detail pergub JSON
-Route::get('/api/pergub/{id}', [App\Http\Controllers\PergubController::class, 'apiShow']);
+// API JSON detail disposisi/status (dipakai halaman Surat Masuk, Perda, Pergub).
+// Wajib login dengan role yang sama seperti halaman modulnya.
+Route::middleware(['auth', 'checkRole:admin,superadmin,monitor'])->group(function () {
+    Route::get('/api/surat-masuk/{id}', [SuratMasukController::class, 'apiShow']);
+    Route::get('/api/perda/{id}', [PerdaController::class, 'apiShow']);
+    Route::get('/api/pergub/{id}', [PergubController::class, 'apiShow']);
+});
 
 // User Routes
 Route::middleware(['auth', 'checkRole:user'])->group(function () {
     // Transaksi Surat routes
     Route::get('/transaksi-surat', [TransaksiSuratController::class, 'index'])->name('transaksi-surat.index');
 });
-
-// Approval Request Routes
-Route::get('/transaksi-surat/request-approval', [TransaksiSuratController::class, 'showRequestForm'])
-    ->name('transaksi-surat.request-form')
-    ->middleware(['auth', 'checkRole:user']);
-
-Route::post('/transaksi-surat/request-approval', [TransaksiSuratController::class, 'requestApproval'])
-    ->name('transaksi-surat.request-approval')
-    ->middleware(['auth', 'checkRole:user']);
-
-Route::post('/transaksi-surat/approve/{id}', [TransaksiSuratController::class, 'approveRequest'])
-    ->name('transaksi-surat.approve')
-    ->middleware(['auth', 'checkRole:admin']);
-
-Route::post('/transaksi-surat/reject/{id}', [TransaksiSuratController::class, 'rejectRequest'])
-    ->name('transaksi-surat.reject')
-    ->middleware(['auth', 'checkRole:admin']);
 
 // Akses Index Admin & Monitor (Monitor hanya read-only)
 Route::middleware(['auth', 'checkRole:admin,monitor,superadmin'])->prefix('admin')->name('admin.')->group(function () {
@@ -351,8 +303,7 @@ Route::middleware(['auth', 'checkRole:admin,superadmin'])->prefix('admin')->name
         ->name('approval-requests.approve');
     Route::post('/approval-requests/{id}/reject', [ApprovalRequestController::class, 'reject'])
         ->name('approval-requests.reject');
-    Route::post('/approval-requests', [ApprovalRequestController::class, 'store'])->name('approval-requests.store');
-    Route::post('/approval-requests/{id}/toggle-fisik', [ApprovalRequestController::class, 'toggleFisik'])->name('admin.approval-requests.toggle-fisik');
+    Route::post('/approval-requests/{id}/toggle-fisik', [ApprovalRequestController::class, 'toggleFisik'])->name('approval-requests.toggle-fisik');
 });
 Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');

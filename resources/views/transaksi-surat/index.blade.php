@@ -27,7 +27,7 @@
         <div class="bg-white shadow-sm" style="border-radius: 12px;">
             <div class="p-4">
 
-                {{-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ TOOLBAR Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ --}}
+                {{-- TOOLBAR --}}
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-3 mb-3 pb-3"
                     style="border-bottom: 1px solid rgba(0,0,0,0.06);">
 
@@ -70,7 +70,7 @@
                             </ul>
                         </div>
 
-                        {{-- Badge jumlah Ã¢â‚¬â€œ desktop inline, mobile full-width row via CSS --}}
+                        {{-- Badge jumlah - desktop inline, mobile full-width row via CSS --}}
                         @php
                             $activeTab = request('tab', 'surat-masuk');
                             $jumlahLabel = match ($activeTab) {
@@ -86,7 +86,7 @@
                     </div>
                 </div>
 
-                {{-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ TABS (scrollable on mobile) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ --}}
+                {{-- TABS (scrollable on mobile) --}}
                 <div class="arsip-tabs-wrap mb-3">
                     <ul class="nav nav-tabs flex-nowrap" style="border-bottom:1px solid #dee2e6; white-space:nowrap;">
                         <li class="nav-item">
@@ -116,7 +116,7 @@
                     </ul>
                 </div>
 
-                {{-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ TAB CONTENT Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ --}}
+                {{-- TAB CONTENT --}}
                 <div class="tab-content">
                     @include('transaksi-surat.partials.surat-masuk')
                     @include('transaksi-surat.partials.sk')
@@ -323,7 +323,7 @@
         // Detail modal logic (shared across all tabs)
         function openDetail(data) {
             const bd = document.getElementById('arsip-detail-backdrop');
-            document.getElementById('det-header').textContent = (data.no_surat || '-') + ' Ã¢â‚¬Â¢ ' + (data.tanggal ||
+            document.getElementById('det-header').textContent = (data.no_surat || '-') + ' • ' + (data.tanggal ||
             '-');
             document.getElementById('det-agenda').textContent = data.no_agenda || '-';
             document.getElementById('det-pengirim').textContent = data.pengirim || '-';
@@ -446,7 +446,7 @@
         });
     </script>
 
-    {{-- Ã¢â€â‚¬Ã¢â€â‚¬ SHARED DETAIL MODAL (single DOM element, data injected via JS) Ã¢â€â‚¬Ã¢â€â‚¬ --}}
+    {{-- SHARED DETAIL MODAL (single DOM element, data injected via JS) --}}
     <div class="detail-modal-backdrop" id="arsip-detail-backdrop">
         <div class="detail-modal-box">
             <button class="detail-close-btn" onclick="closeDetail()" aria-label="Tutup">

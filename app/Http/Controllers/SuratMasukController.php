@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\SuratMasukExport;
 use App\Models\SuratMasuk;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -72,7 +73,7 @@ class SuratMasukController extends Controller
                 'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2147483648',
                 'catatan' => 'nullable|string',
                 'no_agenda' => 'nullable|string|max:255',
-                'disposisi' => 'nullable|string|max:255',
+                'disposisi' => 'nullable|string',
                 'status' => 'nullable|string|max:255',
                 'admin_notes' => 'nullable|string',
             ]);
@@ -104,13 +105,13 @@ class SuratMasukController extends Controller
 
             $suratMasuk = SuratMasuk::create($validated);
 
-            \App\Models\ActivityLog::log('document_create', "Menambahkan Surat Masuk (No: {$suratMasuk->no_surat})");
-
             $successMessage = 'Surat masuk berhasil ditambahkan.';
 
             return redirect()->route('surat-masuk.index')
                 ->with('success', $successMessage);
 
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             if (isset($path) && Storage::disk('public')->exists($path)) {
                 Storage::disk('public')->delete($path);
@@ -153,7 +154,7 @@ class SuratMasukController extends Controller
                 'perihal' => 'required|string|max:255',
                 'lampiran' => 'nullable|array',
                 'lampiran.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2147483648',
-                'disposisi' => 'nullable|string|max:255',
+                'disposisi' => 'nullable|string',
                 'status' => 'nullable|string|max:255',
                 'submitted_by' => 'nullable|exists:users,id',
                 'catatan' => 'nullable|string',
@@ -193,10 +194,10 @@ class SuratMasukController extends Controller
 
             $suratMasuk->update($validated);
 
-            \App\Models\ActivityLog::log('document_update', "Melakukan update Surat Masuk (No: {$suratMasuk->no_surat})");
-
             return redirect()->route('surat-masuk.index')
                 ->with('success', 'Data surat masuk berhasil diperbarui!');
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Terjadi kesalahan saat memperbarui data: '.$e->getMessage());
@@ -206,23 +207,11 @@ class SuratMasukController extends Controller
     public function destroy(SuratMasuk $suratMasuk)
     {
         try {
-            // Delete file if exists
-            if ($suratMasuk->lampiran) {
-                $lampiranData = json_decode($suratMasuk->lampiran, true);
-                if (is_array($lampiranData)) {
-                    foreach ($lampiranData as $lampiran) {
-                        if (isset($lampiran['path']) && Storage::disk('public')->exists($lampiran['path'])) {
-                            Storage::disk('public')->delete($lampiran['path']);
-                        }
-                    }
-                }
-            }
-
-            // Delete the SuratMasuk record
             $noSuratLama = $suratMasuk->no_surat;
-            $suratMasuk->delete();
-
-            \App\Models\ActivityLog::log('document_delete', "Menghapus Surat Masuk (No: {$noSuratLama})");
+            if (!$this->hapusRecord($suratMasuk)) {
+                return redirect()->back()
+                    ->with('error', 'Data tidak ditemukan atau gagal dihapus.');
+            }
 
             return redirect()->route('surat-masuk.index')
                 ->with('success', 'Data surat masuk berhasil dihapus!');
@@ -242,8 +231,13 @@ class SuratMasukController extends Controller
 
     public function updateDisposisi(Request $request, $id)
     {
+        // Status persetujuan Kepala Biro hanya boleh diubah oleh admin
+        if (!$this->bolehUbahPersetujuan()) {
+            return response()->json(['success' => false, 'message' => 'Hanya admin yang dapat mengubah status persetujuan.'], 403);
+        }
+
         $request->validate([
-            'disposisi' => 'required|string|max:255',
+            'disposisi' => 'required|string',
         ]);
 
         $suratMasuk = SuratMasuk::findOrFail($id);
@@ -304,6 +298,8 @@ class SuratMasukController extends Controller
             $surat->save();
 
             return redirect()->back()->with('success', 'Status berhasil diperbarui.');
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal mengupdate status: '.$e->getMessage());
         }
@@ -325,7 +321,7 @@ class SuratMasukController extends Controller
 
             // Tentukan status persetujuan (prioritas dari form, jika tidak ada ambil dari existing)
             $statusPersetujuan = 'Belum';
-            if ($request->has('persetujuan_ketua')) {
+            if ($request->has('persetujuan_ketua') && $this->bolehUbahPersetujuan()) {
                 // Normalisasi input (uppercase first letter)
                 $inputValue = ucfirst(strtolower($request->persetujuan_ketua));
                 if (in_array($inputValue, ['Sudah', 'Belum'])) {
@@ -375,6 +371,8 @@ class SuratMasukController extends Controller
             return redirect()->back()
                 ->with('success', 'Disposisi berhasil ditambahkan');
 
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Gagal menambahkan disposisi: '.$e->getMessage());

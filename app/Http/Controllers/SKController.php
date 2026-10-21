@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SK; // Pastikan model SK sudah ada
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Storage;
 use App\Exports\SKExport; // Pastikan Anda memiliki export untuk SK
 use Maatwebsite\Excel\Facades\Excel;
@@ -120,6 +121,8 @@ class SKController extends Controller
             return redirect()->route('draft-phd.sk.index')
                 ->with('success', ' SK berhasil ditambahkan!');
                 
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             // Jika terjadi error saat upload file, hapus file yang sudah terupload
             if (isset($path) && Storage::disk('public')->exists($path)) {
@@ -152,6 +155,8 @@ class SKController extends Controller
             $sk->save();
 
             return redirect()->back()->with('success', ' Status berhasil diperbarui!');
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
         }
@@ -222,6 +227,8 @@ class SKController extends Controller
             return redirect()->route('draft-phd.sk.index')
                 ->with('success', ' SK berhasil diperbarui!');
                 
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             Log::error('Terjadi kesalahan saat memperbarui SK: ' . $e->getMessage());
             return redirect()->back()
@@ -233,20 +240,10 @@ class SKController extends Controller
     public function destroy(SK $sk)
     {
         try {
-            // Delete file if exists
-            if ($sk->lampiran) {
-                $lampiranData = json_decode($sk->lampiran, true);
-                if (is_array($lampiranData)) {
-                    foreach ($lampiranData as $lampiran) {
-                        if (Storage::disk('public')->exists($lampiran['path'])) {
-                            Storage::disk('public')->delete($lampiran['path']);
-                        }
-                    }
-                }
+            if (!$this->hapusRecord($sk)) {
+                return redirect()->back()
+                    ->with('error', 'Data tidak ditemukan atau gagal dihapus.');
             }
-                
-            // Delete the SK record
-            $sk->delete();
 
             return redirect()->route('draft-phd.sk.index')
                 ->with('success', ' SK berhasil dihapus!');
@@ -259,6 +256,8 @@ class SKController extends Controller
 
     public function export() 
     {
+        \App\Models\ActivityLog::log('document_export', 'Mendownload Excel SK');
+
         return Excel::download(new SKExport, 'sk.xlsx'); // Pastikan Anda memiliki export untuk SK
     }
 
@@ -302,7 +301,7 @@ class SKController extends Controller
 
             // Tentukan status persetujuan (prioritas dari form, jika tidak ada ambil dari existing)
             $statusPersetujuan = 'Belum';
-            if ($request->has('persetujuan_ketua')) {
+            if ($request->has('persetujuan_ketua') && $this->bolehUbahPersetujuan()) {
                 $inputValue = ucfirst(strtolower($request->persetujuan_ketua));
                 if (in_array($inputValue, ['Sudah', 'Belum'])) {
                     $statusPersetujuan = $inputValue;
@@ -350,6 +349,8 @@ class SKController extends Controller
             return redirect()->back()
                             ->with('success', 'Disposisi berhasil ditambahkan');
 
+        } catch (ValidationException $e) {
+            throw $e; // biarkan Laravel menampilkan pesan error per kolom
         } catch (\Exception $e) {
             return redirect()->back()
                             ->with('error', 'Gagal menambahkan disposisi: ' . $e->getMessage());

@@ -72,18 +72,8 @@ class ApprovalRequestController extends Controller
         try {
             DB::beginTransaction();
 
-            Log::debug('APPROVE: Mulai proses persetujuan', [
-                'approvalRequest_id' => $approvalRequest->id,
-                'request_data' => $request->all()
-            ]);
-
             // Check for duplicate no_surat based on letter type
             $duplicateCheck = $this->checkDuplicateNoSurat($approvalRequest->no_surat, $approvalRequest->letter_type);
-            Log::debug('APPROVE: Cek duplikat nomor surat', [
-                'no_surat' => $approvalRequest->no_surat,
-                'letter_type' => $approvalRequest->letter_type,
-                'duplicate' => $duplicateCheck
-            ]);
             
             if ($duplicateCheck) {
                 DB::rollBack();
@@ -103,9 +93,6 @@ class ApprovalRequestController extends Controller
                 'tanggal_diterima' => $request->tanggal_diterima,
                 'notes' => $request->admin_notes,
             ]);
-            Log::debug('APPROVE: ApprovalRequest diupdate', [
-                'approvalRequest' => $approvalRequest->toArray()
-            ]);
 
             // Create entry in the corresponding main table
             $lampiranPaths = [];
@@ -120,9 +107,6 @@ class ApprovalRequestController extends Controller
                 // Ambil lampiran dari approvalRequest jika tidak ada upload baru
                 $lampiranPaths = json_decode($approvalRequest->lampiran, true) ?? [];
             }
-            Log::debug('APPROVE: Data lampiran yang akan disimpan', [
-                'lampiranPaths' => $lampiranPaths
-            ]);
             $data = [
                 'no_agenda' => $request->no_agenda,
                 'no_surat' => $approvalRequest->no_surat,
@@ -136,27 +120,19 @@ class ApprovalRequestController extends Controller
                 'catatan' => $approvalRequest->notes,
                 'disposisi' => $request->disposisi,
             ];
-            Log::debug('APPROVE: Data surat yang akan disimpan', [
-                'data' => $data,
-                'letter_type' => $approvalRequest->letter_type
-            ]);
 
             switch ($approvalRequest->letter_type) {
                 case 'surat_masuk':
                     $result = SuratMasuk::create($data);
-                    Log::debug('APPROVE: SuratMasuk::create result', ['result' => $result]);
                     break;
                 case 'sk':
                     $result = SK::create($data);
-                    Log::debug('APPROVE: SK::create result', ['result' => $result]);
                     break;
                 case 'perda':
                     $result = Perda::create($data);
-                    Log::debug('APPROVE: Perda::create result', ['result' => $result]);
                     break;
                 case 'pergub':
                     $result = Pergub::create($data);
-                    Log::debug('APPROVE: Pergub::create result', ['result' => $result]);
                     break;
                 default:
                     Log::error('APPROVE: Jenis surat tidak valid', ['letter_type' => $approvalRequest->letter_type]);

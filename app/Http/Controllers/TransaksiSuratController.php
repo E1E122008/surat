@@ -14,9 +14,6 @@ use App\Models\SptDalamDaerah;
 use App\Models\SptLuarDaerah;
 use App\Models\ApprovalRequest;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
-use App\Notifications\ApprovalRequestNotification;
-use Illuminate\Support\Facades\Notification;
 
 class TransaksiSuratController extends Controller
 {
@@ -134,83 +131,4 @@ class TransaksiSuratController extends Controller
             'approvalRequest', 'search', 'tab', 'sortOrder'
         ));
     }
-
-    public function requestApproval(Request $request)
-    {
-        $request->validate([
-            'letter_type' => 'required|string',
-            'sender' => 'required|string|max:255',
-            'notes' => 'required|string|max:500',
-        ]);
-
-        $approvalRequest = ApprovalRequest::create([
-            'user_id' => Auth::id(),
-            'letter_type' => $request->letter_type,
-            'sender' => $request->sender,
-            'notes' => $request->notes,
-            'status' => 'pending'
-        ]);
-
-        // Kirim notifikasi ke admin
-        $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
-        Notification::send($admins, new ApprovalRequestNotification($approvalRequest));
-
-        return redirect()->route('data-requests.index')
-            ->with('success', 'Permintaan persetujuan telah dikirim. Anda akan mendapatkan notifikasi setelah diproses oleh admin.');
-    }
-
-    public function approveRequest(Request $request, $id)
-    {
-        if (Auth::user()->role !== 'admin') {
-            return redirect()->back()->with('error', 'Hanya admin yang dapat menyetujui permintaan.');
-        }
-
-        $approvalRequest = ApprovalRequest::findOrFail($id);
-        $approvalRequest->update([
-            'status' => 'approved',
-            'approved_by' => Auth::id(),
-            'approved_at' => now(),
-            'notes' => $request->notes
-        ]);
-
-        return redirect()->back()->with('success', 'Permintaan telah disetujui.');
-    }
-
-    public function rejectRequest(Request $request, $id)
-    {
-        if (Auth::user()->role !== 'admin') {
-            return redirect()->back()->with('error', 'Hanya admin yang dapat menolak permintaan.');
-        }
-
-        $approvalRequest = ApprovalRequest::findOrFail($id);
-        $approvalRequest->update([
-            'status' => 'rejected',
-            'approved_by' => Auth::id(),
-            'approved_at' => now(),
-            'notes' => $request->notes
-        ]);
-
-        return redirect()->back()->with('success', 'Permintaan telah ditolak.');
-    }
-
-    public function create()
-    {
-        if (Auth::user()->role === 'user') {
-            $approvalRequest = ApprovalRequest::where('user_id', Auth::id())
-                ->where('status', 'approved')
-                ->first();
-
-            if (!$approvalRequest) {
-                return redirect()->route('transaksi-surat.index')
-                    ->with('error', 'Anda perlu mendapatkan persetujuan admin terlebih dahulu.');
-            }
-        }
-
-        return view('transaksi-surat.create');
-    }
-
-    public function showRequestForm()
-    {
-        return view('transaksi-surat.request-form');
-    }
-} 
+}

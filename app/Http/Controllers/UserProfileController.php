@@ -35,7 +35,6 @@ class UserProfileController extends Controller
             'phone' => 'nullable|string|max:20',
             'jabatan' => 'nullable|string|max:100',
             'nip' => 'nullable|string|max:50',
-            'role' => 'nullable|in:admin,user,monitor',
         ]);
 
         $updateData = $request->only([
@@ -46,10 +45,7 @@ class UserProfileController extends Controller
             'nip'
         ]);
 
-        // Hanya admin yang bisa mengubah role
-        if (auth()->user()->role === 'admin' && $request->has('role')) {
-            $updateData['role'] = $request->role;
-        }
+        // Role tidak bisa diubah dari profil; perubahan role hanya lewat Manajemen Pengguna oleh superadmin
 
         auth()->user()->update($updateData);
 

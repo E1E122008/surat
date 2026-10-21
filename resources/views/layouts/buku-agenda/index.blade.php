@@ -7,14 +7,14 @@
 
 @section('content')
     <style>
-        /* Ã¢â€â‚¬Ã¢â€â‚¬ Search focus Ã¢â€â‚¬Ã¢â€â‚¬ */
+        /* -- Search focus -- */
         .arsip-search-input:focus {
             border-color: #2563eb !important;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, .15) !important;
             outline: none;
         }
 
-        /* Ã¢â€â‚¬Ã¢â€â‚¬ Tabs scrollable on mobile Ã¢â€â‚¬Ã¢â€â‚¬ */
+        /* -- Tabs scrollable on mobile -- */
         .arsip-tabs-wrap {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
@@ -45,7 +45,7 @@
             background: none;
         }
 
-        /* Ã¢â€â‚¬Ã¢â€â‚¬ Table Ã¢â€â‚¬Ã¢â€â‚¬ */
+        /* -- Table -- */
         .arsip-table {
             min-width: 620px;
         }
@@ -89,7 +89,7 @@
             display: block;
         }
 
-        /* Ã¢â€â‚¬Ã¢â€â‚¬ Badge Ã¢â€â‚¬Ã¢â€â‚¬ */
+        /* -- Badge -- */
         .surat-badge {
             display: inline-flex;
             align-items: center;
@@ -103,7 +103,7 @@
             box-shadow: 0 2px 8px rgba(91, 126, 241, .1);
         }
 
-        /* Ã¢â€â‚¬Ã¢â€â‚¬ Mobile badge full-width Ã¢â€â‚¬Ã¢â€â‚¬ */
+        /* -- Mobile badge full-width -- */
         @media (max-width: 767.98px) {
             .arsip-count-badge {
                 width: 100%;
@@ -111,7 +111,7 @@
             }
         }
 
-        /* Ã¢â€â‚¬Ã¢â€â‚¬ Detail Modal Ã¢â€â‚¬Ã¢â€â‚¬ */
+        /* -- Detail Modal -- */
         .detail-modal-backdrop {
             position: fixed;
             inset: 0;
@@ -246,7 +246,7 @@
         <div class="bg-white shadow-sm" style="border-radius:12px;">
             <div class="p-4">
 
-                {{-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ TOOLBAR Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ --}}
+                {{-- TOOLBAR --}}
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-3 mb-3 pb-3"
                     style="border-bottom:1px solid rgba(0,0,0,.06);">
 
@@ -336,7 +336,7 @@
                     </div>
                 @endif
 
-                {{-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ TABS Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ --}}
+                {{-- TABS --}}
                 <div class="arsip-tabs-wrap mb-3">
                     <ul class="nav nav-tabs flex-nowrap">
                         <li class="nav-item">
@@ -366,10 +366,10 @@
                     </ul>
                 </div>
 
-                {{-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ TAB CONTENT Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ --}}
+                {{-- TAB CONTENT --}}
                 <div class="tab-content">
 
-                    {{-- Ã¢â€¢ÂÃ¢â€¢Â TAB: SURAT MASUK Ã¢â€¢ÂÃ¢â€¢Â --}}
+                    {{-- TAB: SURAT MASUK --}}
                     <div class="tab-pane fade {{ request('tab', 'surat-masuk') == 'surat-masuk' ? 'show active' : '' }}"
                         id="surat-masuk">
                         <div class="table-responsive" style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
@@ -451,7 +451,7 @@
                         </div>
                     </div>
 
-                    {{-- Ã¢â€¢ÂÃ¢â€¢Â TAB: SURAT KEPUTUSAN Ã¢â€¢ÂÃ¢â€¢Â --}}
+                    {{-- TAB: SURAT KEPUTUSAN --}}
                     <div class="tab-pane fade {{ request('tab') == 'surat-keputusan' ? 'show active' : '' }}"
                         id="surat-keputusan">
                         <div class="table-responsive" style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
@@ -533,7 +533,7 @@
                         </div>
                     </div>
 
-                    {{-- Ã¢â€¢ÂÃ¢â€¢Â TAB: PERDA Ã¢â€¢ÂÃ¢â€¢Â --}}
+                    {{-- TAB: PERDA --}}
                     <div class="tab-pane fade {{ request('tab') == 'perda' ? 'show active' : '' }}" id="perda">
                         <div class="table-responsive" style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
                             <table class="table arsip-table">
@@ -614,7 +614,7 @@
                         </div>
                     </div>
 
-                    {{-- Ã¢â€¢ÂÃ¢â€¢Â TAB: PERGUB Ã¢â€¢ÂÃ¢â€¢Â --}}
+                    {{-- TAB: PERGUB --}}
                     <div class="tab-pane fade {{ request('tab') == 'pergub' ? 'show active' : '' }}" id="pergub">
                         <div class="table-responsive" style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
                             <table class="table arsip-table">
@@ -701,9 +701,9 @@
     </div>
 
     <script>
-        // Ã¢â€â‚¬Ã¢â€â‚¬ Detail panel Ã¢â€â‚¬Ã¢â€â‚¬
+        // -- Detail panel --
         function openDetail(data) {
-            document.getElementById('det-header').textContent = (data.no_surat || '-') + ' Ã¢â‚¬Â¢ ' + (data.tanggal ||
+            document.getElementById('det-header').textContent = (data.no_surat || '-') + ' • ' + (data.tanggal ||
             '-');
             document.getElementById('det-agenda').textContent = data.no_agenda || '-';
             document.getElementById('det-pengirim').textContent = data.pengirim || '-';
@@ -826,7 +826,7 @@
             document.getElementById('arsip-detail-backdrop').classList.remove('active');
         }
 
-        // Ã¢â€â‚¬Ã¢â€â‚¬ Filter modal logic Ã¢â€â‚¬Ã¢â€â‚¬
+        // -- Filter modal logic --
         document.addEventListener('DOMContentLoaded', function() {
             // Close detail on backdrop click
             const bd = document.getElementById('arsip-detail-backdrop');
@@ -869,7 +869,7 @@
 
 
 @section('modals')
-    {{-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ FILTER MODAL Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ --}}
+    {{-- FILTER MODAL --}}
     <div class="modal fade" id="filterModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content" style="border-radius:12px;">
@@ -936,7 +936,7 @@
         </div>
     </div>
 
-    {{-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ DETAIL PANEL Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ --}}
+    {{-- DETAIL PANEL --}}
     <div class="detail-modal-backdrop" id="arsip-detail-backdrop">
         <div class="detail-modal-box">
             <button class="detail-close-btn" onclick="closeDetail()" aria-label="Tutup"><i

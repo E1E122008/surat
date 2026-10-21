@@ -381,7 +381,7 @@
                         <div class="px-3 pb-2 pt-1 text-center">
                             <a href="{{ route('notifications.index') }}" class="dropdown-item text-center fw-bold"
                                 style="font-size: 0.85rem; color: #2563eb; background: transparent;">
-                                Liha Semua Notifikasi
+                                Lihat Semua Notifikasi
                             </a>
                         </div>
                     </div>

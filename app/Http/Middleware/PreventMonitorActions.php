@@ -19,16 +19,8 @@ class PreventMonitorActions
     public function handle(Request $request, Closure $next)
     {
         if (Auth::check() && Auth::user()->role === 'monitor') {
-            // Log the unauthorized attempt to superadmin
-            $superadmin = \App\Models\User::where('role', 'superadmin')->first();
-            if ($superadmin) {
-                \App\Models\ActivityLog::log(
-                    'Security Alert: Akses Ditolak',
-                    "Pengguna '" . Auth::user()->name . "' (Role: " . Auth::user()->role . ") mencoba mengeksekusi aksi terlarang: " . $request->fullUrl(),
-                    $superadmin->id
-                );
-                $superadmin->notify(new \App\Notifications\SecurityAlertNotification(Auth::user()->name, $request->fullUrl()));
-            }
+            // Catat atas nama pelaku dan kabari semua superadmin
+            \App\Notifications\SecurityAlertNotification::laporkan('mencoba mengeksekusi aksi terlarang', $request->fullUrl());
 
             return redirect()->route('dashboard')
                 ->with('error', 'Anda tidak memiliki izin untuk melakukan aksi ini. Role monitor hanya dapat melihat data.');

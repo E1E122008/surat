@@ -67,6 +67,12 @@ class BantuanController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
+        // Hanya admin/superadmin (dijaga juga di route) yang menindaklanjuti laporan
+        $request->validate([
+            'status' => 'required|in:menunggu,diproses,selesai',
+            'balasan_admin' => 'nullable|string',
+        ]);
+
         $helpRequest = HelpRequest::findOrFail($id);
         $helpRequest->update([
             'status' => $request->status,

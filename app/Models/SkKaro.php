@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class SkKaro extends Model
 {
+    use Concerns\TercatatDiLogAktivitas;
+
+    protected string $labelLog = 'SK Kepala Biro';
+    protected string $kolomNomorLog = 'no_sk';
+
     protected $fillable = [
         'no_sk',
         'tanggal_sk',

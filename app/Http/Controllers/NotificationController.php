@@ -32,6 +32,13 @@ class NotificationController extends Controller
             return redirect()->route('transaksi-surat.index');
         }
 
+        if ($notification->type === 'App\Notifications\SecurityAlertNotification') {
+            // Buka Riwayat Aktivitas, langsung difilter ke pengguna pelaku bila tercatat
+            return redirect()->route('profile.activity', array_filter([
+                'user_id' => $notification->data['user_id'] ?? null,
+            ]));
+        }
+
         if ($notification->type === 'App\Notifications\HelpRequestNotification') {
             if (auth()->user()->role === 'admin' || auth()->user()->role === 'superadmin') {
                 return redirect()->route('bantuan.index');

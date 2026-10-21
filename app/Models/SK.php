@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class SK extends Model
 {
-    use HasFactory;
+    use HasFactory, Concerns\TercatatDiLogAktivitas;
+
+    protected string $labelLog = 'SK';
 
     protected $table = 'sks';
     

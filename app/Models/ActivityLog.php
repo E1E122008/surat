@@ -8,6 +8,7 @@ class ActivityLog extends Model
 {
     protected $fillable = [
         'user_id',
+        'nama_pengguna',
         'action',
         'description',
     ];
@@ -18,13 +19,30 @@ class ActivityLog extends Model
     }
 
     /**
+     * Nama pelaku untuk ditampilkan. Bila akunnya sudah dihapus, riwayat tetap ada
+     * dan ditandai "(Akun dihapus)".
+     */
+    public function getNamaPelakuAttribute(): string
+    {
+        if ($this->user) {
+            return $this->user->name;
+        }
+
+        return $this->nama_pengguna ? $this->nama_pengguna . ' (Akun dihapus)' : 'System';
+    }
+
+    /**
      * Static helper to log an activity gracefully without crashing main execution.
      */
     public static function log($action, $description = null, $userId = null)
     {
         try {
+            $userId = $userId ?? auth()->id();
+
             self::create([
-                'user_id' => $userId ?? auth()->id(),
+                'user_id' => $userId,
+                // Salinan nama agar riwayat tetap terbaca setelah akunnya dihapus
+                'nama_pengguna' => $userId ? User::whereKey($userId)->value('name') : null,
                 'action' => $action,
                 'description' => $description,
             ]);

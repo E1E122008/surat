@@ -126,9 +126,9 @@
                                 <select id="filter-waktu-masuk" class="form-select form-select-sm"
                                     onchange="updateCharts(event, 'incoming')"
                                     style="border-radius: 20px; font-size: 13px; font-weight: 600; padding: 5px 14px; border: 1.5px solid #e2e8f0; background-color: #f8fafc; min-width: 155px; cursor: pointer;">
-                                    <option value="minggu">📅 7 Minggu Terakhir</option>
+                                    <option value="minggu">📅 8 Minggu Terakhir</option>
                                     <option value="bulan" selected>📅 6 Bulan Terakhir</option>
-                                    <option value="tahun">📅 12 Bulan Terakhir</option>
+                                    <option value="tahun">📅 Per Tahun (5 Tahun Terakhir)</option>
                                 </select>
                             </div>
                         </div>
@@ -157,9 +157,9 @@
                                 <select id="filter-waktu-keluar" class="form-select form-select-sm"
                                     onchange="updateCharts(event, 'outgoing')"
                                     style="border-radius: 20px; font-size: 13px; font-weight: 600; padding: 5px 14px; border: 1.5px solid #e2e8f0; background-color: #f8fafc; min-width: 155px; cursor: pointer;">
-                                    <option value="minggu">📅 7 Minggu Terakhir</option>
+                                    <option value="minggu">📅 8 Minggu Terakhir</option>
                                     <option value="bulan" selected>📅 6 Bulan Terakhir</option>
-                                    <option value="tahun">📅 12 Bulan Terakhir</option>
+                                    <option value="tahun">📅 Per Tahun (5 Tahun Terakhir)</option>
                                 </select>
                             </div>
                         </div>

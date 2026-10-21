@@ -58,17 +58,24 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'in:admin,user,monitor,superadmin'],
+            // Hanya superadmin yang boleh membuat akun superadmin
+            'role' => ['required', auth()->user()->role === 'superadmin'
+                ? 'in:admin,user,monitor,superadmin'
+                : 'in:admin,user,monitor'],
             'dinas' => ['required', 'string', 'max:255'],
+        ], [
+            'role.in' => 'Role yang dipilih tidak diizinkan untuk akun Anda.',
         ]);
 
-        User::create([
+        $akunBaru = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
             'dinas' => $request->dinas,
         ]);
+
+        \App\Models\ActivityLog::log('user_create', "Membuat akun {$akunBaru->name} (Role: {$akunBaru->role})");
 
         return redirect()->route('users.index')
             ->with('success', 'User berhasil ditambahkan.');
@@ -114,6 +121,8 @@ class UserController extends Controller
         if ($request->has('dinas')) {
             $user->update(['dinas' => $request->dinas]);
         }
+
+        \App\Models\ActivityLog::log('user_update', "Memperbarui akun {$user->name} (Role: {$user->role})");
 
         return redirect()->route('users.index')
             ->with('success', 'User berhasil diperbarui.');

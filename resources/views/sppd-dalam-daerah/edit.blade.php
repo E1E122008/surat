@@ -14,25 +14,26 @@
                     <div class="mb-6">
                         <h2 class="text-2xl font-semibold">Edit SPPD Dalam Daerah</h2>
                     </div>
-                    <form action="{{ route('sppd-dalam-daerah.update', $sppdDalamDaerah->id) }}" method="POST" enctype="multipart/form-data" id="editForm">
+                    <form action="{{ route('sppd-dalam-daerah.update', $sppdDalamDaerah->id) }}" method="POST"
+                        enctype="multipart/form-data" id="editForm">
                         @csrf
                         @method('PUT')
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            
+
                             <div>
                                 <label for="no_surat" class="block text-sm font-medium text-gray-700">Nomor Surat</label>
-                                <input type="text" name="no_surat" id="no_surat" 
-                                    class="form-control @error('no_surat') is-invalid @enderror" 
+                                <input type="text" name="no_surat" id="no_surat"
+                                    class="form-control @error('no_surat') is-invalid @enderror"
                                     value="{{ old('no_surat', $sppdDalamDaerah->no_surat) }}" readonly>
-                                @error('no_surat')  
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>         
+                                @error('no_surat')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
                             <div>
                                 <label for="tanggal" class="block text-sm font-medium text-gray-700">Tanggal</label>
-                                <input type="date" name="tanggal" id="tanggal" 
-                                    class="form-control @error('tanggal') is-invalid @enderror" 
+                                <input type="date" name="tanggal" id="tanggal"
+                                    class="form-control @error('tanggal') is-invalid @enderror"
                                     value="{{ old('tanggal', $sppdDalamDaerah->tanggal->format('Y-m-d')) }}" required>
                                 @error('tanggal')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
@@ -40,11 +41,11 @@
                             </div>
                             <div>
                                 <label for="tujuan" class="block text-sm font-medium text-gray-700">Tujuan</label>
-                                <input type="text" name="tujuan" id="tujuan" 
-                                    class="form-control @error('tujuan') is-invalid @enderror" 
+                                <input type="text" name="tujuan" id="tujuan"
+                                    class="form-control @error('tujuan') is-invalid @enderror"
                                     value="{{ old('tujuan', $sppdDalamDaerah->tujuan) }}" required>
                                 @error('tujuan')
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p> 
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
@@ -54,56 +55,62 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="form-group mb-3">
                                 <label for="perihal" class="block text-sm font-medium text-gray-700 mb-2">Perihal</label>
-                                <textarea 
-                                    name="perihal" 
-                                    id="perihal" 
-                                    class="form-textarea" 
-                                    placeholder="Masukkan perihal surat" 
-                                    required
-                                >{{ old('perihal', $sppdDalamDaerah->perihal) }}</textarea>
+                                <textarea name="perihal" id="perihal" class="form-textarea" placeholder="Masukkan perihal surat" required>{{ old('perihal', $sppdDalamDaerah->perihal) }}</textarea>
                                 @error('perihal')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
                             <div class="form-group mb-3">
                                 <label for="nama_petugas">Nama Petugas</label>
-                                <textarea name="nama_petugas" id="nama_petugas" rows="4"    
-                                    class="form-textarea" 
-                                    placeholder="Masukkan nama petugas" 
+                                <textarea name="nama_petugas" id="nama_petugas" rows="4" class="form-textarea" placeholder="Masukkan nama petugas"
                                     required>{{ old('nama_petugas', $sppdDalamDaerah->nama_petugas) }}</textarea>
                                 @error('nama_petugas')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
-                            
+
                             <div class="form-group md:col-span-2">
                                 <label for="lampiran" class="text-sm font-medium">Lampiran Saat Ini</label>
                                 @php
-                                    $lampiran = is_array($sppdDalamDaerah->lampiran) ? $sppdDalamDaerah->lampiran : json_decode($sppdDalamDaerah->lampiran, true);
+                                    $lampiran = is_array($sppdDalamDaerah->lampiran)
+                                        ? $sppdDalamDaerah->lampiran
+                                        : json_decode($sppdDalamDaerah->lampiran, true);
                                 @endphp
-                                @if($lampiran && count($lampiran))
+                                @if ($lampiran && count($lampiran))
                                     <div class="mt-2 space-y-3">
-                                        @foreach($lampiranLama as $idx => $file)
+                                        @foreach ($lampiranLama as $idx => $file)
                                             @php
-                                                $ext = isset($file['name']) ? strtolower(pathinfo($file['name'], PATHINFO_EXTENSION)) : '';
+                                                $ext = isset($file['name'])
+                                                    ? strtolower(pathinfo($file['name'], PATHINFO_EXTENSION))
+                                                    : '';
                                                 $iconClass = 'fa-file-alt text-gray-500';
-                                                if (in_array($ext, ['pdf'])) $iconClass = 'fa-file-pdf text-red-500';
-                                                elseif (in_array($ext, ['doc', 'docx'])) $iconClass = 'fa-file-word text-blue-600';
-                                                elseif (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'])) $iconClass = 'fa-file-image text-blue-500';
+                                                if (in_array($ext, ['pdf'])) {
+                                                    $iconClass = 'fa-file-pdf text-red-500';
+                                                } elseif (in_array($ext, ['doc', 'docx'])) {
+                                                    $iconClass = 'fa-file-word text-blue-600';
+                                                } elseif (
+                                                    in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'])
+                                                ) {
+                                                    $iconClass = 'fa-file-image text-blue-500';
+                                                }
                                             @endphp
-                                            <div class="lampiran-item flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 border border-gray-200 hover:bg-gray-100 transition-colors duration-200" data-index="{{ $idx }}" data-path="{{ $file['path'] }}">
+                                            <div class="lampiran-item flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 border border-gray-200 hover:bg-gray-100 transition-colors duration-200"
+                                                data-index="{{ $idx }}" data-path="{{ $file['path'] }}">
                                                 <div class="flex items-center flex-1 min-w-0">
                                                     <i class="fas {{ $iconClass }} text-xl mr-3 flex-shrink-0"></i>
                                                     <div class="flex-1 min-w-0">
                                                         <a href="{{ asset('storage/' . $file['path']) }}" target="_blank"
-                                                           class="text-gray-900 font-medium hover:text-blue-600 transition-colors duration-200 truncate block"
-                                                           title="{{ $file['name'] }}">
+                                                            class="text-gray-900 font-medium hover:text-blue-600 transition-colors duration-200 truncate block"
+                                                            title="{{ $file['name'] }}">
                                                             {{ $file['name'] }}
                                                         </a>
                                                         <p class="text-xs text-gray-500 mt-1">
                                                             @php
                                                                 $filePath = public_path('storage/' . $file['path']);
-                                                                $fileSize = file_exists($filePath) ? number_format(filesize($filePath) / 1024, 1) . ' KB' : 'File tidak ditemukan';
+                                                                $fileSize = file_exists($filePath)
+                                                                    ? number_format(filesize($filePath) / 1024, 1) .
+                                                                        ' KB'
+                                                                    : 'File tidak ditemukan';
                                                             @endphp
                                                             {{ strtoupper($ext) }} • {{ $fileSize }}
                                                         </p>
@@ -117,7 +124,8 @@
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </div>
-                                                <input type="hidden" name="lampiran_lama[]" value="{{ $file['path'] }}" class="lampiran-input">
+                                                <input type="hidden" name="lampiran_lama[]" value="{{ $file['path'] }}"
+                                                    class="lampiran-input">
                                             </div>
                                         @endforeach
                                     </div>
@@ -125,10 +133,11 @@
                                     <div class="mt-2 text-gray-500 italic">Tidak ada lampiran</div>
                                 @endif
                             </div>
-                            
+
                             <div class="form-group md:col-span-2">
-                                <label for="lampiran" class="block text-sm font-medium text-gray-700">Tambah Lampiran Baru</label>
-                                
+                                <label for="lampiran" class="block text-sm font-medium text-gray-700">Tambah Lampiran
+                                    Baru</label>
+
                                 <!-- Drag & Drop Zone -->
                                 <div id="drag-drop-zone" class="drag-drop-zone">
                                     <div class="drag-drop-content">
@@ -145,13 +154,14 @@
                                         </p>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Hidden file input -->
-                                <input type="file" name="lampiran[]" id="lampiran" class="hidden" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
-                                
+                                <input type="file" name="lampiran[]" id="lampiran" class="hidden" multiple
+                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+
                                 <!-- File preview container -->
                                 <div id="file-preview" class="mt-4 space-y-2"></div>
-                                
+
                                 @error('lampiran')
                                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                                 @enderror
@@ -159,15 +169,13 @@
                         </div>
 
                         <div class="button-container">
-                            <a href="{{ route('sppd-dalam-daerah.detail', $sppdDalamDaerah->id) }}" 
-                                class="btn-cancel">
+                            <a href="{{ route('sppd-dalam-daerah.index', $sppdDalamDaerah->id) }}" class="btn-cancel">
                                 Batal
                             </a>
-                            <button type="submit" 
-                                class="btn-update">
+                            <button type="submit" class="btn-update">
                                 Update
                             </button>
-                        </div>      
+                        </div>
                     </form>
                 </div>
             </div>
@@ -184,13 +192,13 @@
             background-color: #f9fafb;
             cursor: pointer;
         }
-        
+
         .drag-drop-zone.dragover {
             border-color: #3b82f6;
             background-color: #eff6ff;
             transform: scale(1.02);
         }
-        
+
         .drag-drop-zone:hover {
             border-color: #9ca3af;
             background-color: #f3f4f6;
@@ -201,71 +209,77 @@
     <script>
         let lampiranDihapus = [];
         let selectedFiles = [];
-        
+
         document.addEventListener('DOMContentLoaded', function() {
             const dragZone = document.getElementById('drag-drop-zone');
             const fileInput = document.getElementById('lampiran');
             const browseBtn = document.getElementById('browse-btn');
             const filePreview = document.getElementById('file-preview');
-            
+
             browseBtn.addEventListener('click', function() {
                 fileInput.click();
             });
-            
+
             fileInput.addEventListener('change', function(e) {
                 handleFiles(e.target.files);
             });
-            
+
             dragZone.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 dragZone.classList.add('dragover');
             });
-            
+
             dragZone.addEventListener('dragleave', function(e) {
                 e.preventDefault();
                 dragZone.classList.remove('dragover');
             });
-            
+
             dragZone.addEventListener('drop', function(e) {
                 e.preventDefault();
                 dragZone.classList.remove('dragover');
                 handleFiles(e.dataTransfer.files);
             });
-            
+
             dragZone.addEventListener('click', function() {
                 fileInput.click();
             });
-            
+
             function handleFiles(files) {
                 for (let file of files) {
-                    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/jpg', 'image/png'];
-                    
+                    const allowedTypes = ['application/pdf', 'application/msword',
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg',
+                        'image/jpg', 'image/png'
+                    ];
+
                     if (!allowedTypes.includes(file.type)) {
-                        showError(`File "${file.name}" tidak didukung. Hanya PDF, DOC, DOCX, JPG, JPEG, PNG yang diizinkan.`);
+                        showError(
+                            `File "${file.name}" tidak didukung. Hanya PDF, DOC, DOCX, JPG, JPEG, PNG yang diizinkan.`
+                            );
                         continue;
                     }
-                    
+
                     if (file.size > 2 * 1024 * 1024 * 1024) {
                         showError(`File "${file.name}" terlalu besar. Maksimal 2GB per file.`);
                         continue;
                     }
-                    
+
                     selectedFiles.push(file);
                     addFilePreview(file);
                 }
-                
+
                 updateFileInput();
             }
-            
+
             function addFilePreview(file) {
                 const fileItem = document.createElement('div');
-                fileItem.className = 'file-item flex items-center justify-between bg-blue-50 rounded-lg px-4 py-3 border border-blue-200';
+                fileItem.className =
+                    'file-item flex items-center justify-between bg-blue-50 rounded-lg px-4 py-3 border border-blue-200';
                 fileItem.dataset.name = file.name;
-                
+
                 const fileIcon = getFileIcon(file.type);
                 const fileSize = formatFileSize(file.size);
                 const fileExt = file.name.split('.').pop().toUpperCase();
-                
+
                 fileItem.innerHTML = `
                     <div class="flex items-center flex-1 min-w-0">
                         <i class="fas ${fileIcon} text-xl mr-3 flex-shrink-0"></i>
@@ -284,10 +298,10 @@
                         </button>
                     </div>
                 `;
-                
+
                 filePreview.appendChild(fileItem);
             }
-            
+
             function removeNewFile(fileName) {
                 selectedFiles = selectedFiles.filter(file => file.name !== fileName);
                 const fileItem = filePreview.querySelector(`[data-name="${fileName}"]`);
@@ -296,15 +310,15 @@
                 }
                 updateFileInput();
             }
-            
+
             function updateFileInput() {
                 const dt = new DataTransfer();
                 selectedFiles.forEach(file => dt.items.add(file));
                 fileInput.files = dt.files;
             }
-            
+
             function getFileIcon(fileType) {
-                switch(fileType) {
+                switch (fileType) {
                     case 'application/pdf':
                         return 'fas fa-file-pdf text-red-500';
                     case 'application/msword':
@@ -318,7 +332,7 @@
                         return 'fas fa-file text-gray-500';
                 }
             }
-            
+
             function formatFileSize(bytes) {
                 if (bytes === 0) return '0 Bytes';
                 const k = 1024;
@@ -326,7 +340,7 @@
                 const i = Math.floor(Math.log(bytes) / Math.log(k));
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
             }
-            
+
             function showError(message) {
                 Swal.fire({
                     icon: 'error',
@@ -334,10 +348,10 @@
                     text: message
                 });
             }
-            
+
             window.removeNewFile = removeNewFile;
         });
-        
+
         function hapusLampiran(index, filename) {
             Swal.fire({
                 title: 'Hapus Lampiran?',
@@ -352,23 +366,23 @@
                 if (result.isConfirmed) {
                     const lampiranItems = document.querySelectorAll('.lampiran-item');
                     let targetItem = null;
-                    
+
                     for (let item of lampiranItems) {
                         if (parseInt(item.dataset.index) === index) {
                             targetItem = item;
                             break;
                         }
                     }
-                    
+
                     if (targetItem) {
                         const path = targetItem.dataset.path;
                         if (path) {
                             lampiranDihapus.push(path);
                         }
-                        
+
                         targetItem.remove();
                         updateLampiranInputs();
-                        
+
                         Swal.fire(
                             'Terhapus!',
                             'Lampiran berhasil dihapus dari daftar.',
@@ -378,11 +392,11 @@
                 }
             });
         }
-        
+
         function updateLampiranInputs() {
             const existingInputs = document.querySelectorAll('input[name="lampiran_lama[]"]');
             existingInputs.forEach(input => input.remove());
-            
+
             const lampiranItems = document.querySelectorAll('.lampiran-item');
             lampiranItems.forEach(item => {
                 const path = item.dataset.path;
@@ -395,7 +409,7 @@
                 }
             });
         }
-        
+
         document.getElementById('editForm').addEventListener('submit', function(e) {
             lampiranDihapus.forEach(path => {
                 const input = document.createElement('input');
@@ -404,7 +418,7 @@
                 input.value = path;
                 this.appendChild(input);
             });
-            
+
             const submitBtn = this.querySelector('button[type="submit"]');
             if (submitBtn) {
                 submitBtn.disabled = true;
@@ -413,6 +427,3 @@
         });
     </script>
 @endsection
-
-
-

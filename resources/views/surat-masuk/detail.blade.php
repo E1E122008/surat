@@ -190,7 +190,7 @@
                                                         $filePath = public_path('storage/' . $file['path']);
                                                         $fileSize = file_exists($filePath) ? number_format(filesize($filePath) / 1024, 1) . ' KB' : 'File tidak ditemukan';
                                                     @endphp
-                                                    {{ strtoupper($ext) }} â€¢ {{ $fileSize }}
+                                                    {{ strtoupper($ext) }} &bull; {{ $fileSize }}
                                                 </p>
                                             </div>
                                         </div>

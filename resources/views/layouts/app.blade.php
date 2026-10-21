@@ -2706,9 +2706,10 @@
             });
         @endif
 
-        // Konfirmasi delete dengan loading state
+        // Konfirmasi delete dengan loading state (fallback global).
+        // Tidak menimpa confirmDelete yang sudah didefinisikan oleh halaman (mis. versi dengan detail data).
 
-        function confirmDelete(id) {
+        window.confirmDelete = window.confirmDelete || function(id) {
 
             Swal.fire({
 
@@ -2745,7 +2746,7 @@
                     document.getElementById('delete-form-' + id).submit();
                 }
             });
-        }
+        };
     </script>
 
     <script>
@@ -2772,6 +2773,62 @@
             });
 
         });
+    </script>
+
+    <!-- PROTEKSI KIRIM GANDA (berlaku untuk semua form POST) -->
+    <script>
+        (function() {
+            function newToken() {
+                if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+                return Date.now().toString(36) + Math.random().toString(36).slice(2);
+            }
+
+            // Didaftarkan di document agar handler milik halaman (yang bisa membatalkan submit) jalan lebih dulu
+            document.addEventListener('submit', function(e) {
+                const form = e.target;
+                if (e.defaultPrevented || !(form instanceof HTMLFormElement)) return;
+                if ((form.getAttribute('method') || 'get').toLowerCase() !== 'post') return;
+                if (form.hasAttribute('target') || form.hasAttribute('data-allow-resubmit')) return;
+
+                if (form.dataset.submitting === '1') {
+                    e.preventDefault();
+                    return;
+                }
+                form.dataset.submitting = '1';
+
+                let tokenInput = form.querySelector('input[name="_submit_token"]');
+                if (!tokenInput) {
+                    tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '_submit_token';
+                    tokenInput.value = newToken();
+                    form.appendChild(tokenInput);
+                }
+
+                // Dinonaktifkan setelah event selesai agar nilai tombol submit tetap ikut terkirim
+                setTimeout(function() {
+                    form.querySelectorAll('button[type="submit"], input[type="submit"]').forEach(function(btn) {
+                        btn.disabled = true;
+                        if (btn.tagName === 'BUTTON' && !btn.dataset.keepLabel) {
+                            btn.dataset.originalHtml = btn.innerHTML;
+                            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Memproses...';
+                        }
+                    });
+                }, 0);
+            });
+
+            // Halaman yang dibuka lagi lewat tombol Back: buka kembali kunci form
+            window.addEventListener('pageshow', function(e) {
+                if (!e.persisted) return;
+                document.querySelectorAll('form[data-submitting="1"]').forEach(function(form) {
+                    delete form.dataset.submitting;
+                    form.querySelectorAll('button[type="submit"], input[type="submit"]').forEach(function(btn) {
+                        btn.disabled = false;
+                        if (btn.dataset.originalHtml) btn.innerHTML = btn.dataset.originalHtml;
+                    });
+                });
+            });
+        })();
     </script>
 
     <!-- SEAMLESS AJAX LIVE SEARCH & NAVIGATION -->
@@ -2906,9 +2963,11 @@
 
                 // Pengecualian batas aman: Jika link memiliki target/method/bukan GET biasa, abaikan
 
+                // Hanya link ke halaman yang sama (beda query: sort/paginasi) yang di-AJAX-kan.
+                // Link ke halaman lain (Detail/Edit di menu Aksi) dimuat penuh agar script halamannya berjalan.
                 if (link && link.href && !link.href.includes('#') && !link.hasAttribute('data-bs-toggle') &&
-
-                    link.href.includes(window.location.origin)) {
+                    link.href.includes(window.location.origin) &&
+                    new URL(link.href).pathname === window.location.pathname) {
 
                     e.preventDefault();
 

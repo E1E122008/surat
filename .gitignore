@@ -28,3 +28,13 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+/.claude
+/.agent
+/tests/Feature/DataRequestTest.php
+/tests/Feature/DisposisiTest.php
+/tests/Feature/HakAksesAksiTest.php
+/tests/Feature/KeamananRouteTest.php
+/tests/Feature/ModulSuratEditDetailTest.php
+/tests/Feature/ModulSuratTest.php
+/tests/Feature/NavigasiRiwayatTest.php
+/tests/Feature/PenyesuaianAksesTest.php

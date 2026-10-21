@@ -359,7 +359,7 @@
                             </tr>
                         </table>
                         <p style="margin-top:10px; color:#ef4444; font-size:0.82rem; font-weight:500;">
-                            Ã¢Å¡Â Ã¯Â¸Â Data ini akan dihapus secara permanen!
+                            <i class="fas fa-exclamation-triangle"></i> Data ini akan dihapus secara permanen!
                         </p>
                     </div>`,
                 showCancelButton: true,

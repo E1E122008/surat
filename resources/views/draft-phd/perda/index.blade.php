@@ -686,7 +686,7 @@
                             </tr>
                         </table>
                         <p style="margin-top:10px; color:#ef4444; font-size:0.82rem; font-weight:500;">
-                            ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸Ã‚Â Data ini akan dihapus secara permanen!
+                            <i class="fas fa-exclamation-triangle"></i> Data ini akan dihapus secara permanen!
                         </p>
                     </div>`,
                 showCancelButton: true,
@@ -1242,10 +1242,4 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // The DataTables initialization is removed as per the new_code.
-            // The pagination links are now handled by the Blade template's {{ $perdas->links('pagination::bootstrap-4') }}
-        });
-    </script>
 @endsection

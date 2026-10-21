@@ -207,6 +207,8 @@ class KategoriKeluarController extends Controller
 
     public function export(Request $request)
     {
+        \App\Models\ActivityLog::log('document_export', 'Mendownload Excel Arsip Surat Keluar (tab: ' . ($request->tab ?? '-') . ')');
+
         $filterType = $request->filterType;
         $tab = $request->tab ?? 'surat-keluar';
         

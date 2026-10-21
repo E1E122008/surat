@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\ApprovalRequest;
-use App\Models\SuratMasuk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
@@ -55,7 +54,8 @@ class DataRequestController extends Controller
 
     public function create()
     {
-        return view('data-requests.create');
+        // Form pengajuan berada di modal halaman index; buka modal tersebut
+        return redirect()->route('data-requests.index', ['buat' => 1]);
     }
 
     public function store(Request $request)
@@ -110,7 +110,7 @@ class DataRequestController extends Controller
             'no_hp' => $validated['no_hp'], // simpan no_hp
         ]);
 
-        Log::info('Data Request created:', $dataRequest->toArray());
+        Log::info('Data Request created', ['id' => $dataRequest->id, 'user_id' => $dataRequest->user_id]);
 
         // Notify admin
         $admins = \App\Models\User::whereIn('role', ['admin', 'superadmin'])->get();
@@ -121,7 +121,6 @@ class DataRequestController extends Controller
         // Simpan log aktivitas untuk Pengajuan Berkas Baru
         \App\Models\ActivityLog::log('CREATE_PENGAJUAN', "Mengajukan berkas baru (Jenis: " . strtoupper($validated['letter_type']) . " - No: " . $validated['no_surat'] . ")", Auth::id());
 
-        Log::info('Redirecting to data-requests.index');
         return redirect()->route('data-requests.index')
             ->with('success', 'Permintaan berhasil dikirim. Menunggu review admin.');
     }
@@ -132,50 +131,15 @@ class DataRequestController extends Controller
         return view('data-requests.show', compact('dataRequest'));
     }
 
-    public function edit(ApprovalRequest $dataRequest)
-    {
-        $this->authorize('update', $dataRequest);
-        
-        if ($dataRequest->status != 'approved') {
-            return redirect()->route('data-requests.index')
-                ->with('error', 'Permintaan belum disetujui.');
-        }
-
-        $suratMasuk = null;
-        if ($dataRequest->data_type == 'disposisi') {
-            $suratMasuk = SuratMasuk::all();
-        }
-
-        return view('data-requests.edit', compact('dataRequest', 'suratMasuk'));
-    }
-
-    public function update(Request $request, ApprovalRequest $dataRequest)
-    {
-        $this->authorize('update', $dataRequest);
-
-        $validated = $request->validate([
-            'status' => 'required|in:approved,rejected',
-            'admin_notes' => 'nullable|string',
-        ]);
-
-        $dataRequest->update([
-            'status' => $validated['status'],
-            'admin_notes' => $validated['admin_notes'],
-        ]);
-
-        // Notify user
-        $dataRequest->user->notify(new DataRequestNotification($dataRequest));
-
-        return redirect()->route('data-requests.index')
-            ->with('success', 'Status permintaan berhasil diperbarui.');
-    }
-
     public function cancel(ApprovalRequest $dataRequest)
     {
-        // You might want to add authorization here, e.g., using a policy
-        // $this->authorize('cancel', $dataRequest);
+        // Hanya pemilik pengajuan yang boleh membatalkan
+        if ((int) $dataRequest->user_id !== (int) Auth::id()) {
+            return redirect()->route('data-requests.index')
+                ->with('error', 'Anda tidak berhak membatalkan pengajuan ini.');
+        }
 
-        // Optional: Check if the request status is pending before canceling
+        // Pembatalan hanya untuk pengajuan yang masih menunggu review
         if ($dataRequest->status !== 'pending') {
             return redirect()->route('data-requests.index')
                 ->with('error', 'Permintaan hanya bisa dibatalkan jika statusnya masih Menunggu Review.');

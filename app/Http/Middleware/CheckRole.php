@@ -24,9 +24,15 @@ class CheckRole
 
         $userRole = Auth::user()->role;
         
-        // Superadmin bypasses all role restrictions (Hak akses penuh/God mode)
+        // Superadmin boleh masuk semua halaman admin/monitor, tetapi tidak ke halaman
+        // yang murni milik user (pengajuan surat), sesuai .agent/workflows/superadmin_workflow.md
         if ($userRole === 'superadmin') {
-            return $next($request);
+            if (array_intersect($roles, ['admin', 'superadmin', 'monitor'])) {
+                return $next($request);
+            }
+
+            return redirect()->route('dashboard')
+                ->with('error', 'Halaman ini khusus untuk pengguna pengaju surat.');
         }
 
         // Jika role user ada dalam daftar roles yang diizinkan
@@ -34,16 +40,8 @@ class CheckRole
             return $next($request);
         }
 
-        // Temukan superadmin untuk menyimpan log aktivitas kepadanya
-        $superadmin = \App\Models\User::where('role', 'superadmin')->first();
-        if ($superadmin) {
-            \App\Models\ActivityLog::log(
-                'Security Alert: Akses Ditolak',
-                "Pengguna '" . Auth::user()->name . "' (Role: " . Auth::user()->role . ") mencoba masuk ke rute terlarang secara paksa: " . $request->fullUrl(),
-                $superadmin->id
-            );
-            $superadmin->notify(new \App\Notifications\SecurityAlertNotification(Auth::user()->name, $request->fullUrl()));
-        }
+        // Catat atas nama pelaku dan kabari semua superadmin
+        \App\Notifications\SecurityAlertNotification::laporkan('mencoba masuk ke rute terlarang secara paksa', $request->fullUrl());
 
         // Redirect dengan alert
         return redirect()->route('dashboard')

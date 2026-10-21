@@ -75,7 +75,12 @@
                         $iconBg = 'rgba(100, 116, 139, 0.1)';
                         $iconColor = '#64748b';
 
-                        if (str_contains($log->action, 'login') || str_contains($log->action, 'logout')) {
+                        if (str_contains($log->action, 'Security Alert')) {
+                            $color = 'red';
+                            $icon = 'shield-alt';
+                            $iconBg = 'rgba(239, 68, 68, 0.12)';
+                            $iconColor = '#dc2626';
+                        } elseif (str_contains($log->action, 'login') || str_contains($log->action, 'logout')) {
                             $color = 'blue';
                             $icon = 'sign-in-alt';
                             $iconBg = 'rgba(56, 189, 248, 0.1)';
@@ -141,7 +146,7 @@
                                     @if (auth()->user()->role === 'superadmin')
                                         <div class="d-flex align-items-center text-muted" style="font-size: 0.8rem;">
                                             <i class="fas fa-user-circle me-1"></i>
-                                            <span class="fw-medium">{{ optional($log->user)->name ?? 'System' }}</span>
+                                            <span class="fw-medium">{{ $log->nama_pelaku }}</span>
                                         </div>
                                     @endif
                                 </div>
