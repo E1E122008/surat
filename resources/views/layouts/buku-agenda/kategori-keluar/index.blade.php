@@ -363,6 +363,8 @@
 
                     {{-- ══ SURAT KELUAR ══ --}}
                     @php
+                        // Dibungkus function_exists agar tidak error bila view dirender lebih dari sekali dalam satu proses
+                        if (!function_exists('buildLmpData')) {
                         function buildLmpData($surat)
                         {
                             $l = $surat->lampiran ?? $surat->file_surat;
@@ -385,6 +387,7 @@
                                 ];
                             }
                             return $out;
+                        }
                         }
                     @endphp
 
@@ -959,6 +962,12 @@
                 if (filterType.value === 'minggu') mingguSub.style.display = 'block';
                 if (filterType.value === 'bulan') bulanSub.style.display = 'block';
                 if (filterType.value === 'tahun') tahunSub.style.display = 'block';
+
+                // Kolom di bagian yang tersembunyi tidak ikut dikirim, supaya isian "tahun"
+                // di bagian Bulan tidak tertimpa oleh isian "tahun" di bagian Tahun
+                [mingguSub, bulanSub, tahunSub].forEach(sub => {
+                    sub.querySelectorAll('input, select').forEach(el => el.disabled = sub.style.display === 'none');
+                });
             }
             showFilterSub();
             filterType.addEventListener('change', showFilterSub);

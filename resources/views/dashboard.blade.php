@@ -89,6 +89,25 @@
                 <div class="mb-4">
                     <div class="card bg-white shadow-sm border-0">
                         <div class="card-body">
+                            {{-- Navigasi geser grafik: selalu 6 bulan, bergeser 1 bulan per klik --}}
+                            <div class="grafik-navigasi d-flex align-items-center justify-content-center gap-2 mb-2">
+                                <button type="button" id="grafik-mundur" class="btn btn-light btn-sm grafik-nav-btn"
+                                    title="Bulan sebelumnya" aria-label="Bulan sebelumnya"
+                                    @disabled(!$bisaMundur)>
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <span id="grafik-rentang" class="fw-semibold text-center" style="min-width: 150px; color: #0f1b3d;">
+                                    {{ $rentang }}
+                                </span>
+                                <button type="button" id="grafik-maju" class="btn btn-light btn-sm grafik-nav-btn"
+                                    title="Bulan berikutnya" aria-label="Bulan berikutnya" @disabled(!$bisaMaju)>
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                                <button type="button" id="grafik-bulan-ini" class="btn btn-outline-primary btn-sm ms-2"
+                                    style="border-radius: 20px;" @disabled($bulanIni)>
+                                    Bulan ini
+                                </button>
+                            </div>
                             <div class="row g-0">
                                 <div class="col-md-6">
                                     <div style="position: relative; height: 320px; width: 100%;">
@@ -105,7 +124,12 @@
                     </div>
                 </div>
 
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-5 g-4 pb-2">
+                <div class="d-flex align-items-center mb-1 mt-2">
+                    <h6 class="mb-0 fw-bold" style="color: #0f1b3d;">
+                        <i class="fas fa-calendar-alt me-2" style="color: #64748b;"></i>Jumlah Surat Tahun {{ $tahun }}
+                    </h6>
+                </div>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4 pb-2">
                     <div class="col">
                         <div class="dashboard-card surat-masuk p-4 bg-white shadow-sm">
                             <h2 class="card-value">{{ $jumlahSuratMasuk }}</h2>
@@ -118,6 +142,13 @@
                             <h2 class="card-value">{{ $jumlahSuratKeluar }}</h2>
                             <p class="card-title">Surat Keluar</p>
                             <i class="fas fa-paper-plane fa-2x card-icon"></i>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="dashboard-card sk-karo p-4 bg-white shadow-sm">
+                            <h2 class="card-value">{{ $skKaroCount }}</h2>
+                            <p class="card-title">SK Kepala Biro</p>
+                            <i class="fas fa-file-contract fa-2x card-icon"></i>
                         </div>
                     </div>
                     <div class="col">
@@ -558,14 +589,62 @@
                 });
             }
 
-            // Load data awal (hanya jika chart elements ada)
-            if (incomingChartElement && outgoingChartElement) {
-                updateCharts({
-                    preventDefault: () => {}
-                }, 'incoming');
-                updateCharts({
-                    preventDefault: () => {}
-                }, 'outgoing');
+            // ===== Navigasi geser grafik (6 bulan, geser 1 bulan per klik) =====
+            // Data awal sudah dikirim server bersama halaman, jadi tidak perlu diambil ulang.
+            let akhirGrafik = @json($akhir);
+            const tombolMundur = document.getElementById('grafik-mundur');
+            const tombolMaju = document.getElementById('grafik-maju');
+            const tombolBulanIni = document.getElementById('grafik-bulan-ini');
+            const labelRentang = document.getElementById('grafik-rentang');
+
+            function geserBulan(ym, langkah) {
+                const [tahun, bulan] = ym.split('-').map(Number);
+                const tanggal = new Date(tahun, bulan - 1 + langkah, 1);
+                return tanggal.getFullYear() + '-' + String(tanggal.getMonth() + 1).padStart(2, '0');
+            }
+
+            function perbaruiGrafik(chart, data, kunciSeri) {
+                if (!chart) return;
+                chart.data.labels = data.labels;
+                kunciSeri.forEach((kunci, i) => chart.data.datasets[i].data = data[kunci]);
+                const maxValue = getMaxValue(chart.data.datasets);
+                chart.options.scales.y.ticks.stepSize = calculateStepSize(maxValue);
+                chart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.1) : 10;
+                chart.update();
+            }
+
+            async function muatGrafik(akhir) {
+                if (!tombolMundur) return;
+                [tombolMundur, tombolMaju, tombolBulanIni].forEach(t => t.disabled = true);
+                labelRentang.style.opacity = '0.5';
+
+                try {
+                    const url = '/dashboard/chart-data?period=bulan' + (akhir ? '&akhir=' + encodeURIComponent(akhir) : '');
+                    const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                    if (!response.ok) throw new Error('Gagal memuat data grafik');
+                    const data = await response.json();
+
+                    akhirGrafik = data.akhir;
+                    labelRentang.textContent = data.rentang;
+                    perbaruiGrafik(incomingChart, data, ['suratMasukData', 'skData', 'perdaData', 'pergubData']);
+                    perbaruiGrafik(outgoingChart, data, ['suratKeluarData', 'sppdDalamData', 'sppdLuarData', 'sptDalamData', 'sptLuarData']);
+
+                    tombolMundur.disabled = !data.bisaMundur;
+                    tombolMaju.disabled = !data.bisaMaju;
+                    tombolBulanIni.disabled = data.bulanIni;
+                } catch (error) {
+                    console.error(error);
+                    // Kembalikan tombol supaya pengguna bisa mencoba lagi
+                    [tombolMundur, tombolMaju, tombolBulanIni].forEach(t => t.disabled = false);
+                } finally {
+                    labelRentang.style.opacity = '1';
+                }
+            }
+
+            if (tombolMundur && incomingChartElement && outgoingChartElement) {
+                tombolMundur.addEventListener('click', () => muatGrafik(geserBulan(akhirGrafik, -1)));
+                tombolMaju.addEventListener('click', () => muatGrafik(geserBulan(akhirGrafik, 1)));
+                tombolBulanIni.addEventListener('click', () => muatGrafik(null));
             }
         });
     </script>
@@ -609,6 +688,20 @@
         .dashboard-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .grafik-nav-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .grafik-nav-btn:disabled {
+            opacity: 0.35;
         }
 
         .card-value {

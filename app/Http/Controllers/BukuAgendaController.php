@@ -29,12 +29,12 @@ class BukuAgendaController extends Controller
         if ($request->has('filterType')) {
             switch ($request->filterType) {
                 case 'minggu':
-                    $bulan = Carbon::create(null, $request->input('bulan', now()->month))->format('F');
+                    $bulan = Carbon::create(null, $request->input('bulan', now()->month))->locale('id')->translatedFormat('F');
                     $tahun = $request->input('tahun', now()->year);
                     $filterInfo = "Minggu ke-{$request->mingguKe} {$bulan} {$tahun}";
                     break;
                 case 'bulan':
-                    $bulan = Carbon::create(null, $request->bulan)->format('F');
+                    $bulan = Carbon::create(null, (int) $request->bulan)->locale('id')->translatedFormat('F');
                     $tahun = $request->input('tahun', now()->year);
                     $filterInfo = "Bulan {$bulan} {$tahun}";
                     break;
@@ -122,14 +122,16 @@ class BukuAgendaController extends Controller
 
                 case 'bulan':
                     $month = $request->bulan;
+                    // Tahun yang dipilih di form (default tahun berjalan)
+                    $tahunDipilih = (int) $request->input('tahun', now()->year);
                     $query->whereMonth('tanggal_terima', $month)
-                        ->whereYear('tanggal_terima', now()->year);
+                        ->whereYear('tanggal_terima', $tahunDipilih);
                     $querysks->whereMonth('tanggal_terima', $month)
-                        ->whereYear('tanggal_terima', now()->year);
+                        ->whereYear('tanggal_terima', $tahunDipilih);
                     $queryPerda->whereMonth('tanggal_terima', $month)
-                        ->whereYear('tanggal_terima', now()->year);
+                        ->whereYear('tanggal_terima', $tahunDipilih);
                     $queryPergub->whereMonth('tanggal_terima', $month)
-                        ->whereYear('tanggal_terima', now()->year);
+                        ->whereYear('tanggal_terima', $tahunDipilih);
                     break;
 
                 case 'tahun':

@@ -30,12 +30,12 @@ class KategoriKeluarController extends Controller
         if ($request->has('filterType')) {
             switch ($request->filterType) {
                 case 'minggu':
-                    $bulan = Carbon::create(null, $request->input('bulan', now()->month))->format('F');
+                    $bulan = Carbon::create(null, $request->input('bulan', now()->month))->locale('id')->translatedFormat('F');
                     $tahun = $request->input('tahun', now()->year);
                     $filterInfo = "Minggu ke-{$request->mingguKe} {$bulan} {$tahun}";
                     break;
                 case 'bulan':
-                    $bulan = Carbon::create(null, $request->bulan)->format('F');
+                    $bulan = Carbon::create(null, (int) $request->bulan)->locale('id')->translatedFormat('F');
                     $tahun = $request->input('tahun', now()->year);
                     $filterInfo = "Bulan {$bulan} {$tahun}";
                     break;
@@ -138,16 +138,18 @@ class KategoriKeluarController extends Controller
 
                 case 'bulan':
                     $month = $request->bulan;
+                    // Tahun yang dipilih di form (default tahun berjalan)
+                    $tahunDipilih = (int) $request->input('tahun', now()->year);
                     $querySuratKeluar->whereMonth('tanggal', $month)
-                                    ->whereYear('tanggal', now()->year);
+                                    ->whereYear('tanggal', $tahunDipilih);
                     $querySppdDalamDaerah->whereMonth('tanggal', $month)
-                                    ->whereYear('tanggal', now()->year);
+                                    ->whereYear('tanggal', $tahunDipilih);
                     $querySppdLuarDaerah->whereMonth('tanggal', $month)
-                                    ->whereYear('tanggal', now()->year);
+                                    ->whereYear('tanggal', $tahunDipilih);
                     $querySptDalamDaerah->whereMonth('tanggal', $month)
-                                    ->whereYear('tanggal', now()->year);
-                    $querySptLuarDaerah->whereMonth('tanggal', $month)->whereYear('tanggal', now()->year);
-                    $querySkKaro->whereMonth('tanggal_sk', $month)->whereYear('tanggal_sk', now()->year);
+                                    ->whereYear('tanggal', $tahunDipilih);
+                    $querySptLuarDaerah->whereMonth('tanggal', $month)->whereYear('tanggal', $tahunDipilih);
+                    $querySkKaro->whereMonth('tanggal_sk', $month)->whereYear('tanggal_sk', $tahunDipilih);
                     break;
 
                 case 'tahun':

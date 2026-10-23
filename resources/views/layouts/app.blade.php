@@ -1743,6 +1743,14 @@
 
         }
 
+        .dashboard-card.sk-karo {
+
+            background: linear-gradient(135deg, #134E4A, #5EEAD4);
+
+            color: white;
+
+        }
+
         /* Dashboard Card Styling */
 
         .dashboard-card {
